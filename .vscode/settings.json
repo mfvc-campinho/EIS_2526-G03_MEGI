@@ -1,0 +1,60 @@
+{
+  "editor.fontSize": 13,
+  "editor.fontFamily": "'Fira Code', Consolas, 'Source Code Pro', Menlo, 'DejaVu Sans Mono', 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "workbench.colorTheme": "OM Theme (Default Dracula Italic)",
+  "workbench.iconTheme": "material-icon-theme",
+
+  "editor.rulers": [80, 120],
+  "editor.formatOnSave": true,
+
+  // Indentações por linguagem
+  "[html]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[php]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  },
+
+  // File associations (assegura deteção)
+  "files.associations": {
+    "*.php": "php",
+    "*.phtml": "php",
+    "*.js": "javascriptreact",
+    "*.html": "html"
+  },
+
+  // Code Runner: permitir correr PHP e Node (ajusta caminho se necessário)
+  "code-runner.executorMap": {
+    "python": "python -u",
+    "javascript": "node",
+    "php": "php",
+    "html": "echo open in browser"
+  },
+  "code-runner.runInTerminal": true,
+  "code-runner.clearPreviousOutput": true,
+
+  // Terminal (opcional): define shell se preferires bash/zsh
+  "terminal.integrated.shell.osx": "/bin/zsh",
+  "terminal.integrated.shell.linux": "/bin/bash",
+  "terminal.integrated.fontSize": 12,
+
+  // Lint/format (desativa Python se não precisares aqui)
+  "python.formatting.provider": "none",
+  "python.linting.flake8Enabled": false,
+  "python.linting.mypyEnabled": false
+}

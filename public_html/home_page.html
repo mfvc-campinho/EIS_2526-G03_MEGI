@@ -15,10 +15,11 @@
         • user_page.html
     R17: The system must allow the user to use the system easily without technical knowledge.
 -->
-
 <html lang="en">
 <head>
   <meta charset="utf-8">
+
+  <!-- Page title -->
   <title>Collections — Home Page</title>
 
   <!-- SEO: keywords, description, author -->
@@ -35,6 +36,10 @@
   <!-- Project stylesheet (keep CSS outside HTML) -->
   <link href="styles.css" rel="stylesheet">
 
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
   <style>
     .card img.rounded-circle {
       width:120px;
@@ -64,10 +69,15 @@
 
       <div id="primaryNav" class="collapse navbar-collapse">
         <!-- Search -->
-        <form class="d-flex me-auto my-2 my-lg-0" role="search" aria-label="Site search">
-          <label class="visually-hidden" for="searchTerm">Search collections or items</label>
-          <input id="searchTerm" class="form-control me-2" type="search" placeholder="Search collections, items, events…">
-          <button class="btn btn-outline-primary" type="submit" title="Search the site">Search</button>
+        <form class="d-flex me-auto my-2 my-lg-0" role="search" aria-label="Site search" style="max-width: 500px; width: 100%;">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="bi bi-search" aria-hidden="true"></i>
+            </span>
+            <label class="visually-hidden" for="searchTerm">Search collections or items</label>
+            <input id="searchTerm" class="form-control border-start-0" type="search"
+                  placeholder="Search…" aria-label="Search collections or items">
+          </div>
         </form>
 
         <!-- Primary navigation -->
@@ -75,7 +85,11 @@
           <li class="nav-item"><a class="nav-link" href="collection_page.html" title="Browse all collections">Collections</a></li>
           <li class="nav-item"><a class="nav-link" href="#" title="Read blog posts by the community">Blogs</a></li>
           <li class="nav-item"><a class="nav-link" href="event_page.html" title="See upcoming events">Events</a></li>
-          <li class="nav-item"><a class="nav-link" href="user_page.html" title="Open your profile">Login / Profile</a></li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="user_page.html" title="Open your profile">
+              <i class="bi bi-person-circle me-1"></i> Login / Profile
+            </a>
+          </li>
         </ul>
       </div>
     </nav>
@@ -107,8 +121,12 @@
         <div class="row g-4">
           <!-- Left column: News / Events ticker -->
           <div class="col-12 col-lg-4">
-            <h2 class="h4">News &amp; Event Highlights</h2>
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
+              <h2 class="h4 mb-0">News &amp; Event Highlights</h2>
+            </div>
             <p class="text-muted">Short updates from your collections and the community.</p>
+
 
             <ul id="newsList" class="list-group" aria-live="polite" aria-busy="false">
               <!-- Filled by script (Progressive Enhancement).
@@ -162,11 +180,13 @@
       </div>
     </section>
 
-     <!-- ================== CREATE NEW COLLECTION (NOVO) ================== -->
-    <!-- Simples e funcional para cumprir o requisito “It should also be possible to create a new collection on this page.” -->
+    <!-- ================== CREATE NEW COLLECTION ================== -->
     <section class="py-5 bg-light border-top border-bottom">
       <div class="container-xxl">
-        <h2 class="h4 mb-3">Create a New Collection</h2>
+        <div class="d-flex align-items-center mb-3">
+          <h2 class="h4 mb-0">Create a New Collection</h2>
+          <span class="material-icons ms-2" aria-hidden="true">create</span>
+        </div>
         <!--
           Este formulário é simples e envia por GET para collection_page.html,
           apenas para demonstrar o fluxo na Sprint 1. Depois você pode trocar
@@ -199,6 +219,49 @@
       </div>
     </section>
 
+
+    <!-- ================== COMMUNITY SUBSCRIBE (before Featured Collections) ================== -->
+    <section class="py-5 bg-light border-top border-bottom">
+      <div class="container-xxl">
+        <div class="row align-items-center gy-3">
+          <!-- Copy/text -->
+          <div class="col-12 col-lg-7">
+            <h2 class="h4 mb-2">Get tips, event alerts, and new collection highlights</h2>
+            <p class="text-muted mb-0">
+              Subscribe to receive occasional updates about your favorite collections and upcoming events.
+            </p>
+          </div>
+
+          <!-- Form -->
+          <div class="col-12 col-lg-5">
+            <form class="input-group" action="#" method="get" aria-label="Subscribe to updates">
+              <span class="input-group-text bg-white">
+                <!-- envelope icon (Bootstrap Icons) -->
+                <i class="bi bi-envelope" aria-hidden="true"></i>
+              </span>
+              <label for="subscribeEmail" class="visually-hidden">Email address</label>
+              <input
+                id="subscribeEmail"
+                name="email"
+                type="email"
+                class="form-control"
+                placeholder="Enter your email"
+                required
+              />
+              <button class="btn btn-dark fw-semibold" type="submit" title="Subscribe to updates">
+                SUBSCRIBE
+              </button>
+            </form>
+            <!-- small consent note (optional) -->
+            <p class="form-text mt-2">
+              You can unsubscribe anytime. We only send relevant updates about collections and events.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
     <!-- =======================================================
          FEATURED COLLECTIONS (Top 5)
          - Grid of collection cards (circles in the sketch are interpreted here as round thumbnails).
@@ -208,7 +271,6 @@
       <div class="container-xxl">
         <div class="d-flex align-items-baseline justify-content-between">
           <h2 class="h4 mb-3">Featured Collections (Top 5)</h2>
-          <a class="link-primary" href="collection_page.html" title="Browse all collections">Browse all</a>
         </div>
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-4">
@@ -380,9 +442,7 @@
       </div>
 
       <nav aria-label="Footer navigation">
-        <a class="link-light me-3" href="team_page.html" title="Meet the team">Team</a>
-        <a class="link-light me-3" href="#" title="Read our guidelines">Guidelines</a>
-        <a class="link-light" href="#" title="Read our privacy policy">Privacy</a>
+        <a class="link-light me-3" href="team_page.html" title="Meet the team">About Us</a>
       </nav>
     </div>
   </footer>

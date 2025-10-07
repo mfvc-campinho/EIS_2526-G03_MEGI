@@ -29,11 +29,23 @@
   <!-- Responsiveness -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Bootstrap (optional, matches teammate’s event_page.html) -->
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Project stylesheet (keep CSS outside HTML as requested) -->
+  <!-- Project stylesheet (keep CSS outside HTML) -->
   <link href="styles.css" rel="stylesheet">
+
+  <style>
+    .card img.rounded-circle {
+      width:120px;
+      height:120px;
+      object-fit:contain;
+      background-color:#fff;
+      padding:10px;
+      border:2px solid #e0e0e0;
+    }
+  </style>
+
 
   <!-- Favicons are optional; add later if needed -->
 </head>
@@ -203,7 +215,7 @@
           <!-- Books -->
           <div class="col">
             <div class="card h-100 text-center">
-              <img src="images/books_placeholder.jpg" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Books collection thumbnail">
+              <img src="../images/books.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Books collection thumbnail">
               <div class="card-body">
                 <h3 class="h6">Books</h3>
                 <ul class="list-unstyled small mb-0">
@@ -219,7 +231,7 @@
           <!-- Vinyl -->
           <div class="col">
             <div class="card h-100 text-center">
-              <img src="images/vinyl_placeholder.jpg" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Vinyl records collection thumbnail">
+              <img src="../images/vynil.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Vinyl records collection thumbnail">
               <div class="card-body">
                 <h3 class="h6">Vinyl Records</h3>
                 <ul class="list-unstyled small mb-0">
@@ -234,7 +246,7 @@
           <!-- Coins -->
           <div class="col">
             <div class="card h-100 text-center">
-              <img src="images/coins_placeholder.jpg" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Coins collection thumbnail">
+              <img src="../images/coins.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Coins collection thumbnail">
               <div class="card-body">
                 <h3 class="h6">Coins</h3>
                 <ul class="list-unstyled small mb-0">
@@ -249,7 +261,7 @@
           <!-- Stamps -->
           <div class="col">
             <div class="card h-100 text-center">
-              <img src="images/stamps_placeholder.jpg" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Stamps collection thumbnail">
+              <img src="../images/stamps.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Stamps collection thumbnail">
               <div class="card-body">
                 <h3 class="h6">Stamps</h3>
                 <ul class="list-unstyled small mb-0">
@@ -264,7 +276,7 @@
           <!-- Retro Games -->
           <div class="col">
             <div class="card h-100 text-center">
-              <img src="images/retro_placeholder.jpg" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Retro games collection thumbnail">
+              <img src="../images/retro_games.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Retro games collection thumbnail">
               <div class="card-body">
                 <h3 class="h6">Retro Games</h3>
                 <ul class="list-unstyled small mb-0">
@@ -329,13 +341,44 @@
     </section>
   </main>
 
-  <!-- =========================================================
-       FOOTER
-       - Includes Team page link and secondary links.
-       ========================================================= -->
+<!-- =========================================================
+     FOOTER
+     - Includes GitHub logo, Team page link and secondary links.
+     ========================================================= -->
   <footer class="py-4 bg-dark text-light mt-auto">
     <div class="container-xxl d-flex flex-column flex-sm-row align-items-center justify-content-between">
-      <p class="mb-2 mb-sm-0">© 2025 EIS_2526-GXX — Collections Project</p>
+      <div class="d-flex align-items-center mb-2 mb-sm-0">
+        <!-- GitHub Icon (Bootstrap Icons CDN) -->
+        <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer"
+           class="d-inline-flex align-items-center text-light text-decoration-none me-2"
+           title="Open project on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-github"
+               viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8a8.003 8.003 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
+                     0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                     0-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07
+                     -1.78-.2-3.64-.89-3.64-3.95
+                     0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
+                     0 0 .67-.21 2.2.82a7.48 7.48 0 0 1 2-.27c.68 0 1.36.09 2 .27
+                     1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+                     .51.56.82 1.27.82 2.15
+                     0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                     0 1.07-.01 1.93-.01 2.2
+                     0 .21.15.46.55.38A8.003 8.003 0 0 0 16 8
+                     c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+
+        <span class="small">
+          Made with ❤️ by
+          <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI"
+             target="_blank" rel="noopener noreferrer"
+             class="text-decoration-none text-light fw-semibold">
+             EIS_2526-G03_MEGI
+          </a>
+        </span>
+      </div>
+
       <nav aria-label="Footer navigation">
         <a class="link-light me-3" href="team_page.html" title="Meet the team">Team</a>
         <a class="link-light me-3" href="#" title="Read our guidelines">Guidelines</a>
@@ -343,6 +386,10 @@
       </nav>
     </div>
   </footer>
+
+  <!-- Bootstrap Icons (needed for the GitHub logo) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 
   <!-- =========================================================
        SCRIPTS

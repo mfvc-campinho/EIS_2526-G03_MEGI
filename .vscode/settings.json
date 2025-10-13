@@ -1,0 +1,61 @@
+{
+  "editor.fontSize": 13,
+  "editor.fontFamily": "'Fira Code', Consolas, 'Source Code Pro', Menlo, 'DejaVu Sans Mono', 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "workbench.colorTheme": "OM Theme (Default Dracula Italic)",
+  "workbench.iconTheme": "material-icon-theme",
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "[html]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[php]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  },
+  "files.associations": {
+    "*.php": "php",
+    "*.phtml": "php",
+    "*.js": "javascriptreact",
+    "*.jsx": "javascriptreact",
+    "*.tsx": "typescriptreact",
+    "*.html": "html"
+  },
+  "emmet.includeLanguages": {
+    "php": "html",
+    "javascript": "javascript",
+    "javascriptreact": "html"
+  },
+  "code-runner.executorMap": {
+    "python": "python -u",
+    "javascript": "node",
+    "php": "php",
+    "html": ""
+  },
+  "code-runner.runInTerminal": true,
+  "code-runner.clearPreviousOutput": true,
+  "terminal.integrated.shell.osx": "/bin/zsh",
+  "terminal.integrated.shell.linux": "/bin/bash",
+  "terminal.integrated.fontSize": 12,
+  "python.formatting.provider": "none",
+  "python.linting.flake8Enabled": false,
+  "python.linting.mypyEnabled": false
+}

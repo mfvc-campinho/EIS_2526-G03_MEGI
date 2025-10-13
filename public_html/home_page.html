@@ -1,1 +1,602 @@
-// Matheus
+<!DOCTYPE html>
+<!--
+  [M.EGI017] Enterprise Information Systems — Sprint 1
+  Home Page for the Collections Management Web IS.
+
+  Notes for reviewers:
+  - This file follows the team’s requirements table (R1, R2, R16, R17).
+    R1: View the top 5 collections (e.g. last added or user-choosen) and some items form those collections on the home page. 
+    R2: Create  or delete a collection.
+    R16: The system must allow the user to naviagate interactively between the following pages:
+        • event_page.html
+        • collection_page.html
+        • item_page.html
+        • team_page.html
+        • user_page.html
+    R17: The system must allow the user to use the system easily without technical knowledge.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <!-- Page title -->
+  <title>Collections — Home Page</title>
+
+  <!-- SEO: keywords, description, author -->
+  <meta name="description" content="Manage and explore multiple types of collections: books, vinyl, stamps, coins, and more. View items, events, rankings and community highlights.">
+  <meta name="keywords" content="collections, items, events, books, vinyl, stamps, coins, retro games, hobby">
+  <meta name="author" content="EIS_2526-G03_MEGI">
+
+  <!-- Responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Project stylesheet (keep CSS outside HTML) -->
+  <link href="CSS/styles.css" rel="stylesheet">
+
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <style>
+    .card img.rounded-circle {
+      width:120px;
+      height:120px;
+      object-fit:contain;
+      background-color:#fff;
+      padding:10px;
+      border:2px solid #e0e0e0;
+    }
+  </style>
+
+
+  <!-- Favicons are optional; add later if needed -->
+</head>
+
+<body>
+  <!-- =============== GLOBAL HEADER / NAVIGATION =============== -->
+  <header class="border-bottom bg-light">
+    <nav class="container-xxl navbar navbar-expand-lg" aria-label="Primary navigation">
+      <a class="navbar-brand fw-semibold" href="home_page.html" title="Go to Home">Collections</a>
+
+      <!-- Collapsible button for small screens -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#primaryNav"
+              aria-controls="primaryNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div id="primaryNav" class="collapse navbar-collapse">
+        <!-- Search -->
+        <form class="d-flex me-auto my-2 my-lg-0" role="search" aria-label="Site search" style="max-width: 500px; width: 100%;">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="bi bi-search" aria-hidden="true"></i>
+            </span>
+            <label class="visually-hidden" for="searchTerm">Search collections or items</label>
+            <input id="searchTerm" class="form-control border-start-0" type="search"
+                  placeholder="Search…" aria-label="Search collections or items">
+          </div>
+        </form>
+
+        <!-- Primary navigation -->
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="collection_page.html" title="Browse all collections">Collections</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" title="Read blog posts by the community">Blogs</a></li>
+          <li class="nav-item"><a class="nav-link" href="event_page.html" title="See upcoming events">Events</a></li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="user_page.html" title="Open your profile">
+              <i class="bi bi-person-circle me-1"></i> Login / Profile
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- =============== HERO / TAGLINE =============== -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container-xxl">
+      <h1 class="display-5 fw-bold">Discover, Manage, and Enjoy Your Collections</h1>
+      <p class="lead mb-4">
+        Create and explore multiple types of collections. Track items, view events, and learn from the community.
+      </p>
+      <div class="d-flex gap-2">
+        <a class="btn btn-primary btn-lg" href="collection_page.html" title="Open all collections">Browse Collections</a>
+        <a class="btn btn-outline-secondary btn-lg" href="event_page.html" title="See the next events">Upcoming Events</a>
+      </div>
+    </div>
+  </section>
+
+  <main id="main-content">
+    <!-- =======================================================
+         NEWS / EVENTS (left) + COMMUNITY SPOTLIGHT (right)
+         - Mirrors the wireframe: a left rolling window for news/events
+           and a right panel for community notes/opinions.
+         - Uses headings for indexing and accessibility.
+         ======================================================= -->
+    <section class="py-5">
+      <div class="container-xxl">
+        <div class="row g-4">
+          <!-- Left column: News / Events ticker -->
+          <div class="col-12 col-lg-4">
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
+              <h2 class="h4 mb-0">News &amp; Event Highlights</h2>
+            </div>
+            <p class="text-muted">Short updates from your collections and the community.</p>
+
+
+            <ul id="newsList" class="list-group" aria-live="polite" aria-busy="false">
+              <!-- Filled by script (Progressive Enhancement).
+                   NoScript fallback below. -->
+            </ul>
+
+            <noscript>
+              <ul class="list-group mt-3">
+                <li class="list-group-item">
+                  <strong>Book Fair 2025</strong><br>
+                  City Library — 12/03/2025. Meet collectors and trade rare editions.
+                </li>
+                <li class="list-group-item">
+                  <strong>Vinyl Swap Night</strong><br>
+                  Community Hall — 20/03/2025. Bring your records!
+                </li>
+              </ul>
+            </noscript>
+
+            <div class="mt-3">
+              <a class="link-primary" href="event_page.html" title="Open all events">See all events</a>
+            </div>
+          </div>
+
+          <!-- Right column: Community spotlight / editorial box -->
+          <div class="col-12 col-lg-8">
+            <h2 class="h4">Community Spotlight</h2>
+            <article class="card">
+              <div class="card-body">
+                <h3 class="card-title h5">Most common collections this month</h3>
+                <p class="card-text">
+                  Books, Vinyl Records, Coins, Stamps, and Retro Games are trending among our users.
+                  Explore popular items and discover tips to classify and value your pieces.
+                </p>
+                <a class="btn btn-sm btn-outline-primary" href="collection_page.html" title="Explore popular collections">Explore popular collections</a>
+              </div>
+            </article>
+
+            <article class="card mt-3">
+              <div class="card-body">
+                <h3 class="card-title h5">Opinion: Caring for rare vinyl records</h3>
+                <p class="card-text">
+                  Proper storage and tracking can extend the life of your records.
+                  Use our item page to record condition, location, and acquisition date.
+                </p>
+                <a class="btn btn-sm btn-outline-secondary" href="item_page.html" title="Open a sample item page">Open a sample item</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================== CREATE NEW COLLECTION ================== -->
+    <section class="py-5 bg-light border-top border-bottom">
+      <div class="container-xxl">
+        <div class="d-flex align-items-center mb-3">
+          <h2 class="h4 mb-0">Create a New Collection</h2>
+          <span class="material-icons ms-2" aria-hidden="true">create</span>
+        </div>
+        <!--
+          Este formulário é simples e envia por GET para collection_page.html,
+          apenas para demonstrar o fluxo na Sprint 1. Depois você pode trocar
+          o action para um endpoint real ou manipular via JavaScript.
+        -->
+        <form class="row g-3" action="collection_page.html" method="get">
+          <div class="col-12 col-md-4">
+            <label for="colName" class="form-label">Collection name</label>
+            <input id="colName" name="name" type="text" class="form-control" required>
+          </div>
+          <div class="col-12 col-md-4">
+            <label for="colType" class="form-label">Type</label>
+            <select id="colType" name="type" class="form-select" required>
+              <option value="">Select…</option>
+              <option>Books</option>
+              <option>Vinyl Records</option>
+              <option>Coins</option>
+              <option>Stamps</option>
+              <option>Retro Games</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="colDesc" class="form-label">Short description</label>
+            <textarea id="colDesc" name="description" class="form-control" rows="2" placeholder="Describe your collection…"></textarea>
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit" title="Create the collection">Create collection</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- ================== COMMUNITY SUBSCRIBE (before Featured Collections) ================== -->
+    <section class="py-5 bg-light border-top border-bottom">
+      <div class="container-xxl">
+        <div class="row align-items-center gy-3">
+          <!-- Copy/text -->
+          <div class="col-12 col-lg-7">
+            <h2 class="h4 mb-2">Get tips, event alerts, and new collection highlights</h2>
+            <p class="text-muted mb-0">
+              Subscribe to receive occasional updates about your favorite collections and upcoming events.
+            </p>
+          </div>
+
+          <!-- Form -->
+          <div class="col-12 col-lg-5">
+            <form class="input-group" action="#" method="get" aria-label="Subscribe to updates">
+              <span class="input-group-text bg-white">
+                <!-- envelope icon (Bootstrap Icons) -->
+                <i class="bi bi-envelope" aria-hidden="true"></i>
+              </span>
+              <label for="subscribeEmail" class="visually-hidden">Email address</label>
+              <input
+                id="subscribeEmail"
+                name="email"
+                type="email"
+                class="form-control"
+                placeholder="Enter your email"
+                required
+              />
+              <button class="btn btn-dark fw-semibold" type="submit" title="Subscribe to updates">
+                SUBSCRIBE
+              </button>
+            </form>
+            <!-- small consent note (optional) -->
+            <p class="form-text mt-2">
+              You can unsubscribe anytime. We only send relevant updates about collections and events.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- =======================================================
+         FEATURED COLLECTIONS (Top 5)
+         - Grid of collection cards (circles in the sketch are interpreted here as round thumbnails).
+         - Each card lists 2–3 sample items with descriptive links.
+         ======================================================= -->
+    <section class="py-5">
+      <div class="container-xxl">
+        <div class="d-flex align-items-baseline justify-content-between">
+          <h2 class="h4 mb-3">Featured Collections (Top 5)</h2>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-4">
+          <!-- Books -->
+          <div class="col">
+            <div class="card h-100 text-center">
+              <img src="../images/books.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Books collection thumbnail">
+              <div class="card-body">
+                <h3 class="h6">Books</h3>
+                <ul class="list-unstyled small mb-0">
+                  <li><a href="item_page.html" title="Open The Pragmatic Programmer item">The Pragmatic Programmer</a></li>
+                  <li><a href="item_page.html" title="Open Clean Code item">Clean Code</a></li>
+                  <li><a href="item_page.html" title="Open Introduction to Algorithms item">Introduction to Algorithms</a></li>
+                </ul>
+                <div class="mt-2"><a class="link-primary" href="collection_page.html" title="Open Books collection">Open collection</a></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vinyl -->
+          <div class="col">
+            <div class="card h-100 text-center">
+              <img src="../images/vynil.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Vinyl records collection thumbnail">
+              <div class="card-body">
+                <h3 class="h6">Vinyl Records</h3>
+                <ul class="list-unstyled small mb-0">
+                  <li><a href="item_page.html" title="Open The Dark Side of the Moon item">Pink Floyd — The Dark Side of the Moon</a></li>
+                  <li><a href="item_page.html" title="Open Kind of Blue item">Miles Davis — Kind of Blue</a></li>
+                </ul>
+                <div class="mt-2"><a class="link-primary" href="collection_page.html" title="Open Vinyl Records collection">Open collection</a></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coins -->
+          <div class="col">
+            <div class="card h-100 text-center">
+              <img src="../images/coins.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Coins collection thumbnail">
+              <div class="card-body">
+                <h3 class="h6">Coins</h3>
+                <ul class="list-unstyled small mb-0">
+                  <li><a href="item_page.html" title="Open Portuguese Escudo item">Portuguese Escudo (1995)</a></li>
+                  <li><a href="item_page.html" title="Open Euro Commemorative item">Euro Commemorative (2002)</a></li>
+                </ul>
+                <div class="mt-2"><a class="link-primary" href="collection_page.html" title="Open Coins collection">Open collection</a></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stamps -->
+          <div class="col">
+            <div class="card h-100 text-center">
+              <img src="../images/stamps.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Stamps collection thumbnail">
+              <div class="card-body">
+                <h3 class="h6">Stamps</h3>
+                <ul class="list-unstyled small mb-0">
+                  <li><a href="item_page.html" title="Open Penny Black item">Penny Black (replica)</a></li>
+                  <li><a href="item_page.html" title="Open Portugal CTT item">Portugal CTT (1953)</a></li>
+                </ul>
+                <div class="mt-2"><a class="link-primary" href="collection_page.html" title="Open Stamps collection">Open collection</a></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Retro Games -->
+          <div class="col">
+            <div class="card h-100 text-center">
+              <img src="../images/retro_games.png" class="rounded-circle mx-auto d-block mt-3" width="120" height="120" alt="Retro games collection thumbnail">
+              <div class="card-body">
+                <h3 class="h6">Retro Games</h3>
+                <ul class="list-unstyled small mb-0">
+                  <li><a href="item_page.html" title="Open Super Mario Bros item">Super Mario Bros. (NES)</a></li>
+                  <li><a href="item_page.html" title="Open Sonic the Hedgehog item">Sonic the Hedgehog (Genesis)</a></li>
+                </ul>
+                <div class="mt-2"><a class="link-primary" href="collection_page.html" title="Open Retro Games collection">Open collection</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <a class="btn btn-outline-dark" href="collection_page.html" title="Discover more collections">Discover more</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         GENERAL STATISTICS (Site activity overview)
+         - Simple, readable metrics; lorem text can be replaced later.
+         ======================================================= -->
+    <section class="py-5">
+      <div class="container-xxl">
+        <h2 class="h4">Statistics</h2>
+        <p class="text-muted">
+          Quick overview of community activity. Numbers are examples for layout only.
+        </p>
+
+        <div class="row g-4">
+          <div class="col-6 col-md-3">
+            <div class="p-3 border rounded text-center">
+              <p class="display-6 mb-0" aria-label="Total collections">128</p>
+              <p class="mb-0">Collections</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3 border rounded text-center">
+              <p class="display-6 mb-0" aria-label="Total items">1,942</p>
+              <p class="mb-0">Items</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3 border rounded text-center">
+              <p class="display-6 mb-0" aria-label="Upcoming events">7</p>
+              <p class="mb-0">Upcoming Events</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3 border rounded text-center">
+              <p class="display-6 mb-0" aria-label="Active users">356</p>
+              <p class="mb-0">Active Users</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-3">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique
+          senectus et netus et malesuada fames ac turpis egestas.
+        </p>
+      </div>
+    </section>
+  </main>
+
+<!-- =========================================================
+     FOOTER
+     - Includes GitHub logo, Team page link and secondary links.
+     ========================================================= -->
+  <footer class="py-4 bg-dark text-light mt-auto">
+    <div class="container-xxl d-flex flex-column flex-sm-row align-items-center justify-content-between">
+      <div class="d-flex align-items-center mb-2 mb-sm-0">
+        <!-- GitHub Icon (Bootstrap Icons CDN) -->
+        <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer"
+           class="d-inline-flex align-items-center text-light text-decoration-none me-2"
+           title="Open project on GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-github"
+               viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8a8.003 8.003 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
+                     0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                     0-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07
+                     -1.78-.2-3.64-.89-3.64-3.95
+                     0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
+                     0 0 .67-.21 2.2.82a7.48 7.48 0 0 1 2-.27c.68 0 1.36.09 2 .27
+                     1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+                     .51.56.82 1.27.82 2.15
+                     0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                     0 1.07-.01 1.93-.01 2.2
+                     0 .21.15.46.55.38A8.003 8.003 0 0 0 16 8
+                     c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+
+        <span class="small">
+          Made with ❤️ by
+          <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI"
+             target="_blank" rel="noopener noreferrer"
+             class="text-decoration-none text-light fw-semibold">
+             EIS_2526-G03_MEGI
+          </a>
+        </span>
+      </div>
+
+      <nav aria-label="Footer navigation">
+        <a class="link-light me-3" href="team_page.html" title="Meet the team">About Us</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Bootstrap Icons (needed for the GitHub logo) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+  <!-- =========================================================
+       SCRIPTS
+       - Progressive enhancement: render Top 5 and News dynamically.
+       - Replace the mock data with real data sources later.
+       ========================================================= -->
+  <script>
+    "use strict";
+
+    // --------- Mock DATA (replace with DB-backed JSON later) ----------
+    const topCollections = [
+      {
+        name: "Books",
+        img: "images/books_placeholder.jpg",
+        imgAlt: "Books collection thumbnail",
+        items: [
+          { title: "The Pragmatic Programmer", href: "item_page.html" },
+          { title: "Clean Code", href: "item_page.html" },
+          { title: "Introduction to Algorithms", href: "item_page.html" }
+        ]
+      },
+      {
+        name: "Vinyl Records",
+        img: "images/vinyl_placeholder.jpg",
+        imgAlt: "Vinyl records collection thumbnail",
+        items: [
+          { title: "Pink Floyd — The Dark Side of the Moon", href: "item_page.html" },
+          { title: "Miles Davis — Kind of Blue", href: "item_page.html" }
+        ]
+      },
+      {
+        name: "Coins",
+        img: "images/coins_placeholder.jpg",
+        imgAlt: "Coins collection thumbnail",
+        items: [
+          { title: "Portuguese Escudo (1995)", href: "item_page.html" },
+          { title: "Euro Commemorative (2002)", href: "item_page.html" }
+        ]
+      },
+      {
+        name: "Stamps",
+        img: "images/stamps_placeholder.jpg",
+        imgAlt: "Stamps collection thumbnail",
+        items: [
+          { title: "Penny Black (replica)", href: "item_page.html" },
+          { title: "Portugal CTT (1953)", href: "item_page.html" }
+        ]
+      },
+      {
+        name: "Retro Games",
+        img: "images/retro_placeholder.jpg",
+        imgAlt: "Retro games collection thumbnail",
+        items: [
+          { title: "Super Mario Bros. (NES)", href: "item_page.html" },
+          { title: "Sonic the Hedgehog (Genesis)", href: "item_page.html" }
+        ]
+      }
+    ];
+
+    const news = [
+      { title: "Book Fair 2025", text: "City Library — 12/03/2025. Meet collectors and trade rare editions.", href: "event_page.html" },
+      { title: "Vinyl Swap Night", text: "Community Hall — 20/03/2025. Bring your records!", href: "event_page.html" },
+      { title: "Coin Appraisal Session", text: "Museum Annex — 05/04/2025. Free entry for students.", href: "event_page.html" }
+    ];
+
+    // --------- Helpers ----------
+    const el = (tag, className, text) => {
+      const n = document.createElement(tag);
+      if (className) n.className = className;
+      if (text) n.textContent = text;
+      return n;
+    };
+
+    // --------- Render News / Events list ----------
+    (function renderNews() {
+      const container = document.getElementById("newsList");
+      if (!container) return;
+
+      news.forEach(item => {
+        const li = el("li", "list-group-item");
+        const strong = el("strong", null, item.title);
+
+        const p = el("p", "mb-1", item.text);
+        const a = el("a", "link-primary", "Open event details");
+        a.href = item.href;
+        a.title = `Open ${item.title}`;
+
+        li.appendChild(strong);
+        li.appendChild(document.createElement("br"));
+        li.appendChild(p);
+        li.appendChild(a);
+
+        container.appendChild(li);
+      });
+    })();
+
+    // --------- Render Featured Collections grid ----------
+    (function renderCollections() {
+      const grid = document.getElementById("collectionsGrid");
+      if (!grid) return;
+
+      topCollections.forEach(col => {
+        const colDiv = el("div", "col");
+        const card  = el("div", "card h-100 text-center");
+
+        // Image (round thumbnail)
+        const img  = document.createElement("img");
+        img.src    = col.img;
+        img.alt    = col.imgAlt;
+        img.width  = 120;
+        img.height = 120;
+        img.className = "rounded-circle mx-auto d-block mt-3";
+        card.appendChild(img);
+
+        // Body
+        const body = el("div", "card-body");
+        const h3   = el("h3", "h6", col.name);
+        body.appendChild(h3);
+
+        // Items list
+        const list = el("ul", "list-unstyled small mb-0");
+        col.items.slice(0, 3).forEach(it => {
+          const li = document.createElement("li");
+          const a  = el("a", "link-secondary", it.title);
+          a.href   = it.href;
+          a.title  = `Open ${it.title} item`;
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+        body.appendChild(list);
+
+        // Link to collection page
+        const more = el("div", "mt-2");
+        const aCol = el("a", "link-primary", "Open collection");
+        aCol.href  = "collection_page.html";
+        aCol.title = `Open ${col.name} collection`;
+        more.appendChild(aCol);
+        body.appendChild(more);
+
+        card.appendChild(body);
+        colDiv.appendChild(card);
+        grid.appendChild(colDiv);
+      });
+    })();
+  </script>
+
+  <!-- Bootstrap bundle (for navbar toggler) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

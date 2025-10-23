@@ -61,23 +61,419 @@
 
 /* ====== CONTROLES ====== */
 .carousel-control-prev-icon,
-.carousel-control-next-icon {
-  filter: invert(1);
+/* Minimal styles to replace Bootstrap for the project home page
+   - Responsive header/nav
+   - Carousel fallbacks
+   - Grid for featured collections
+   - Cards, buttons and simple utilities
+*/
+
+:root {
+  --max-width: 1100px;
+  --gap: 16px;
+  --brand: #0b5fff;
+  --muted: #6c757d;
+  --bg: #fff;
 }
 
-/* ====== Fallback de cor por slide ====== */
-.bg-fallback-1 {
-  background-color: #0d6efd;
+* {
+  box-sizing: border-box
 }
 
-/* azul */
-.bg-fallback-2 {
-  background-color: #198754;
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  line-height: 1.4;
+  color: #111;
+  margin: 0;
+  background: var(--bg)
 }
 
-/* verde */
-.bg-fallback-3 {
-  background-color: #6c757d;
+.container-xxl {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 16px
 }
 
-/* cinza */
+/* Header / Nav */
+.site-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e6e6e6
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 12px 16px
+}
+
+.brand {
+  font-weight: 600;
+  color: var(--brand);
+  text-decoration: none;
+  font-size: 1.1rem
+}
+
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  font-size: 1.2rem
+}
+
+.primary-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px
+}
+
+.search-form {
+  margin-right: 8px
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px 8px
+}
+
+.search-icon {
+  font-size: 20px;
+  color: var(--muted);
+  margin-right: 8px
+}
+
+.search-input {
+  border: 0;
+  outline: none;
+  font-size: 0.95rem
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0
+}
+
+.nav-list a {
+  color: #111;
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 6px
+}
+
+.nav-list a:hover {
+  background: #eee
+}
+
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 6px
+}
+
+.profile-link .material-icons {
+  font-size: 20px
+}
+
+.profile-text {
+  display: inline-block
+}
+
+/* Responsive nav */
+@media (max-width:720px) {
+  .nav-toggle {
+    display: inline-block
+  }
+
+  .primary-nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 56px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    display: none
+  }
+
+  .primary-nav.open {
+    display: flex
+  }
+
+  .search-form {
+    order: 0
+  }
+
+  .nav-list {
+    flex-direction: column
+  }
+}
+
+/* Carousel fallbacks */
+.carousel-container {
+  width: 100%;
+  overflow: hidden
+}
+
+.carousel-item {
+  position: relative;
+  padding: 36px 0;
+  color: #fff
+}
+
+.carousel-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 320px;
+  object-fit: cover
+}
+
+.carousel-caption {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 12px 16px;
+  border-radius: 6px
+}
+
+.carousel-caption h5 {
+  margin: 0 0 6px 0
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  background: var(--brand);
+  color: #fff
+}
+
+.btn.btn-outline {
+  background: transparent;
+  border-color: #444;
+  color: #222
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 0.9rem
+}
+
+.btn-outline-light {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #fff
+}
+
+/* Featured collections grid */
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16px;
+  margin-top: 16px
+}
+
+@media(min-width:520px) {
+  .collections-grid {
+    grid-template-columns: repeat(2, 1fr)
+  }
+}
+
+@media(min-width:960px) {
+  .collections-grid {
+    grid-template-columns: repeat(5, 1fr)
+  }
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center
+}
+
+.card .card-body {
+  padding: 8px
+}
+
+.card img {
+  border-radius: 999px;
+  width: 120px;
+  height: 120px;
+  object-fit: cover
+}
+
+.card h3 {
+  margin: 6px 0
+}
+
+.list-unstyled {
+  padding: 0;
+  margin: 0;
+  list-style: none
+}
+
+.link-primary {
+  color: var(--brand);
+  text-decoration: none
+}
+
+.link-primary:hover {
+  text-decoration: underline
+}
+
+.discover-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px
+}
+
+/* News list and cards */
+.list-group {
+  padding: 0;
+  margin: 0;
+  list-style: none
+}
+
+.list-group-item {
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  margin-bottom: 8px
+}
+
+.card.article {
+  padding: 10px
+}
+
+/* Forms and inputs */
+input[type=text],
+input[type=email],
+input[type=search],
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px
+}
+
+.form-text {
+  color: var(--muted);
+  font-size: 0.9rem
+}
+
+/* Stats grid */
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px
+}
+
+@media(min-width:720px) {
+  .row {
+    grid-template-columns: repeat(4, 1fr)
+  }
+}
+
+.p-3 {
+  padding: 12px
+}
+
+.border {
+  border: 1px solid #e6e6e6
+}
+
+.rounded {
+  border-radius: 8px
+}
+
+.text-center {
+  text-align: center
+}
+
+.display-6 {
+  font-size: 1.6rem;
+  font-weight: 600
+}
+
+/* Footer */
+footer {
+  background: #222;
+  color: #f5f5f5;
+  padding: 16px 0
+}
+
+footer a {
+  color: #ddd
+}
+
+/* small helpers */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap
+}
+
+/* utility spacing used in original markup */
+.py-5 {
+  padding-top: 32px;
+  padding-bottom: 32px
+}
+
+.bg-light {
+  background: #f8f9fa
+}
+
+.border-top {
+  border-top: 1px solid #e6e6e6
+}
+
+.border-bottom {
+  border-bottom: 1px solid #e6e6e6
+}
+
+.mt-3 {
+  margin-top: 12px
+}
+
+.mt-4 {
+  margin-top: 16px
+}
+
+.mb-0 {
+  margin-bottom: 0
+}
+
+.small {
+  font-size: 0.9rem
+}
+
+/* Accessibility focus */
+a:focus,
+button:focus,
+input:focus {
+  outline: 3px solid rgba(11, 95, 255, 0.2);
+  outline-offset: 2px
+}

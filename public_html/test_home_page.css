@@ -1,0 +1,572 @@
+/* Estilos Base (Para Telas Grandes) */
+body {
+  font-family: sans-serif;
+  /* Isso é importante para evitar a barra de rolagem horizontal */
+  overflow-x: hidden;
+  /* Remova qualquer margem ou padding extra no body, se houver */
+  margin: 0;
+  padding: 0;
+}
+
+
+.navbar {
+  background-color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Cola quando chega ao topo */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+
+.nav-brand {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+/* Links de Navegação */
+.nav-links {
+  display: flex;
+  /* Visível em telas grandes */
+  align-items: center;
+  /* Reset para telas grandes */
+  position: static;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+  transition: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #007bff;
+  padding: 8px 15px;
+  margin-left: 10px;
+  font-size: 1em;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #0056b3;
+}
+
+/* Ícones de Login e Lupa */
+.login-profile .icon {
+  margin-right: 5px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-left: 20px;
+  padding: 2px 5px;
+  background-color: #fff;
+}
+
+.search-container input {
+  display: block;
+  /* garante que aparece */
+  border: none;
+  outline: none;
+  padding: 5px;
+  width: 150px;
+  /* ajusta o tamanho */
+}
+
+
+.search-icon {
+  color: #555;
+  cursor: pointer;
+  font-size: 1.1em;
+}
+
+/* Botão Hamburger (Escondido por padrão em telas grandes) */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  cursor: pointer;
+  color: #333;
+}
+
+
+/* ---------------------------------------------------- */
+/* Media Query para Responsividade (Telas Pequenas)    */
+/* ---------------------------------------------------- */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 15px;
+    position: stick;
+    width: 100%;
+  }
+
+  /* Mostrar o Botão Hamburger */
+  .hamburger {
+    display: block;
+  }
+
+  /* Colapsar os Links de Navegação */
+  .nav-links {
+    /* MUDANÇA CRUCIAL: REMOVER POSICIONAMENTO ABSOLUTO */
+    /* Para que o menu empurre o conteúdo, ele precisa estar no fluxo normal. */
+    position: static;
+    /* OU REMOVA A PROPRIEDADE POR COMPLETO */
+
+    width: 100%;
+    background-color: #fff;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+
+    /* O menu deve vir imediatamente após os outros elementos da navbar */
+    /* Para o menu ficar na linha de baixo, pode ser necessário forçar a quebra. */
+    flex-basis: 100%;
+    /* Força o elemento a ocupar a linha inteira */
+
+    /* A CHAVE PARA O EFEITO SLIDE-DOWN: */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    display: flex;
+  }
+
+  /* Estilos dos itens dentro do menu (mantidos) */
+  .nav-links a,
+  .search-container {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 20px;
+    display: flex;
+    border: none;
+  }
+
+  .search-container input {
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin: 0;
+  }
+
+  /* Ocultar o Home (opcional) */
+  .nav-links a:first-child {
+    display: none;
+  }
+
+  /* CLASSE ATIVA: Mostra o Menu Deslizando e OBRIGA A EMPURRAR */
+  .nav-links.active {
+    /* Valor alto o suficiente para caber todo o conteúdo do menu */
+    max-height: 400px;
+  }
+}
+
+/* ---------------------------------------------------- */
+/* ESTILOS DA SECÇÃO DE RANKING (5 COLUNAS)            */
+/* ---------------------------------------------------- */
+
+.ranking-section {
+  background-color: #f4f4f4;
+  padding: 10px 10px;
+  text-align: center;
+  min-height: 100vh;
+  /* cobre toda a altura da janela */
+  box-sizing: border-box;
+  margin-bottom: 0;
+}
+
+.ranking-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.ranking-card {
+  display: block;
+  /* permite padding e tamanho */
+  text-decoration: none;
+  /* remove o sublinhado padrão do link */
+  color: inherit;
+  /* mantém a cor do texto original */
+}
+
+/* Card #1 (grande) */
+.ranking-card.destaque {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px 30px;
+  /* mais respiro dentro do card */
+  width: 85%;
+  /* ligeiramente maior */
+  max-width: 1000px;
+  text-align: center;
+  transition: transform 0.2s;
+  min-height: 100px;
+  /* altura mínima maior */
+}
+
+.ranking-card.destaque:hover {
+  transform: translateY(-5px);
+}
+
+/* Linha com 4 blocos */
+.ranking-linha {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 20px;
+  /* espaço lateral dentro da linha */
+  box-sizing: border-box;
+}
+
+/* Cards pequenos */
+.ranking-card.pequeno {
+  flex: 1 1 22%;
+  max-width: 23%;
+  min-width: 200px;
+  min-height: 100px;
+  /* altura aumentada */
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.2s;
+  box-sizing: border-box;
+}
+
+.ranking-card.pequeno:hover {
+  transform: translateY(-5px);
+}
+
+/* Tipografia */
+.ranking-card h3 {
+  margin-top: 5px;
+  font-size: 2em;
+  color: #ff4d00;
+  margin-bottom: 5px;
+}
+
+.ranking-card h4 {
+  font-size: 1.2em;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.ranking-card p {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.ranking-card a {
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.ranking-card a:hover {
+  text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .ranking-card.pequeno {
+    flex: 1 1 45%;
+    /* 2 por linha */
+    max-width: 48%;
+  }
+
+  .ranking-card.destaque {
+    width: 90%;
+    padding: 40px 30px;
+  }
+
+  .ranking-section {
+    padding: 30px 30px;
+  }
+}
+
+@media (max-width: 500px) {
+  .ranking-card.pequeno {
+    flex: 1 1 100%;
+    /* 1 por linha */
+    max-width: 100%;
+  }
+
+  .ranking-section {
+    padding: 20px 20px;
+    min-height: 100vh;
+  }
+}
+
+
+/* ---------------------------------------------------- */
+/* ESTILOS DO FOOTER (Rodapé)                           */
+/* ---------------------------------------------------- */
+
+footer {
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  padding: 15px 20px;
+
+  /* MUDANÇA: Simplificar para width: 100% */
+  /* Com box-sizing: border-box, o padding é incluído e não causa overflow */
+  width: 100%;
+
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+
+  /* Remova min-width e as margens negativas se as tiver adicionado */
+  /* z-index: 100; (opcional, para garantir que não é sobreposto) */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+
+  align-items: center;
+  max-width: 1200px;
+  /* Isto limita o conteúdo interno */
+  margin: 0 auto;
+}
+
+.made-with {
+  font-size: 0.9em;
+}
+
+
+
+
+
+/* Estilos Gerais do Carrossel */
+/* Estilos Gerais do Carrossel */
+/* Estilos Gerais do Carrossel */
+/* Estilos Gerais do Carrossel */
+.carousel-container {
+  width: 100%;
+  margin: 0;
+  position: relative;
+
+  /* CORREÇÃO: Removemos o padding para que as setas possam ir até à borda. */
+  padding: 0;
+
+  overflow: hidden;
+}
+
+/* O Track (Pista) que Contém Todos os Slides */
+.carousel-track {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Cada Slide */
+.carousel-slide {
+  min-width: 100%;
+  box-sizing: border-box;
+
+  /* CORREÇÃO: Adicionamos o padding diretamente no slide */
+  /* Isto garante que o conteúdo não toque nas setas ou na borda da tela */
+  padding: 30px 60px;
+  /* Aumentei o padding lateral para 60px */
+
+  text-align: center;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Cores de Fundo */
+.slide-1 {
+  background-color: #e0f7fa;
+}
+
+.slide-2 {
+  background-color: #fff3e0;
+}
+
+.slide-3 {
+  background-color: #f3e5f5;
+}
+
+
+/* Estilos das Setas de Navegação (Posicionamento inalterado, pois left: 0 funciona sem padding) */
+.prev-button,
+.next-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 1.5em;
+  z-index: 10;
+  transition: background-color 0.3s;
+}
+
+.prev-button:hover,
+.next-button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.prev-button {
+  left: 0;
+  border-radius: 0 5px 5px 0;
+}
+
+.next-button {
+  right: 0;
+  border-radius: 5px 0 0 5px;
+}
+
+
+
+/* 🔹 FILTRO — versão moderna */
+.ranking-filter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding: 12px 20px;
+
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  width: 80%;
+  max-width: 850px;
+  margin-left: auto;
+  margin-right: auto;
+  transition: all 0.2s ease-in-out;
+}
+
+.ranking-filter:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔹 Label */
+.ranking-filter label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1em;
+}
+
+/* 🔹 Select estilizado */
+.ranking-filter select {
+  appearance: none;
+  /* remove a seta feia padrão */
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1em;
+  color: #333;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.ranking-filter select:hover,
+.ranking-filter select:focus {
+  border-color: #007bff;
+}
+
+/* 🔹 Campo de pesquisa */
+.filter-search {
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1em;
+  width: 200px;
+  color: #333;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.filter-search:focus {
+  border-color: #007bff;
+}
+
+/* 🔹 Responsivo */
+@media (max-width: 600px) {
+  .ranking-filter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-search {
+    width: 100%;
+  }
+}
+
+/* 🔹 BOTÕES DE AÇÃO (embaixo do ranking) */
+.ranking-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+/* Estilo base dos botões */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Cores específicas */
+.btn.add {
+  background-color: #007bff;
+}
+
+.btn.add:hover {
+  background-color: #0056b3;
+}
+
+.btn.edit {
+  background-color: #ffa500;
+}
+
+.btn.edit:hover {
+  background-color: #cc8400;
+}
+
+.btn.delete {
+  background-color: #dc3545;
+}
+
+.btn.delete:hover {
+  background-color: #a71d2a;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .ranking-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 80%;
+  }
+}

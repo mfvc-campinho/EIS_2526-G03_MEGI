@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Responsivo Slide-Down</title>
+
+  <link rel="stylesheet" href="test_home_page.css">
+  <script src="test_home_page.js"></script>
+
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="#" class="nav-brand">Logo / Título</a>
+
+    <button class="hamburger" aria-label="Abrir Menu">
+      &#9776; </button>
+
+    <div class="nav-links">
+      <a href="#">Home</a>
+      <a href="#">Collections</a>
+      <a href="#">About Us</a>
+      <a href="#" class="login-profile">
+        <span class="icon">&#x1F464;</span> Login / Profile
+      </a>
+      <div class="search-container">
+        <span class="search-icon">&#128269;</span> <input type="text" placeholder="Search...">
+      </div>
+    </div>
+  </nav>
+
+
+
+  <main>
+    <section class="ranking-section">
+
+      <h2>Nosso Top 5 Ranking</h2>
+      <!-- 🔹 FILTRO (por cima do #1) -->
+      <div class="ranking-filter">
+        <label for="category">Filtrar por:</label>
+        <select id="category">
+          <option value="all">Todas as Categorias</option>
+          <option value="livros">Livros</option>
+          <option value="música">Música</option>
+          <option value="filmes">Filmes</option>
+        </select>
+
+        <input type="text" placeholder="Pesquisar..." class="filter-search">
+      </div>
+      <div class="ranking-container">
+        <!-- Card #1 — destaque grande -->
+        <a class="ranking-card destaque" href="team_page.html">
+          <h3>#1</h3>
+          <h4>BooksLovedByCassandra</h4>
+          <p>@Cassandra</p>
+        </a>
+
+
+        <!-- Linha dos 4 menores -->
+        <div class="ranking-linha">
+          <div class="ranking-card pequeno">
+            <h3>#2</h3>
+            <h4>Escolha do Cliente</h4>
+            <p>Melhor relação custo-benefício.</p>
+            <a href="#">Ver Detalhes</a>
+          </div>
+
+          <div class="ranking-card pequeno">
+            <h3>#3</h3>
+            <h4>Em Ascensão</h4>
+            <p>O produto que mais cresceu.</p>
+            <a href="#">Ver Detalhes</a>
+          </div>
+          <div class="ranking-card pequeno">
+            <h3>#4</h3>
+            <h4>Novidade</h4>
+            <p>Recentemente adicionado ao ranking.</p>
+            <a href="#">Ver Detalhes</a>
+          </div>
+          <div class="ranking-card pequeno">
+            <h3>#5</h3>
+            <h4>Destaque do Mês</h4>
+            <p>Excelente performance no mês atual.</p>
+            <a href="#">Ver Detalhes</a>
+          </div>
+        </div>
+      </div>
+      <!-- 🔹 BOTÕES DE GESTÃO DE COLEÇÕES -->
+      <div class="ranking-actions">
+        <button class="btn add">➕ Adicionar Coleção</button>
+        <button class="btn edit">✏️ Editar Coleções</button>
+        <button class="btn delete">🗑️ Apagar Coleções</button>
+        <button class="btn add"> Visitar outras Coleções</button>
+      </div>
+
+    </section>
+
+    <div class="carousel-container">
+      <div class="carousel-track">
+
+        <div class="carousel-slide slide-1">
+        </div>
+
+        <div class="carousel-slide slide-2">
+        </div>
+
+        <div class="carousel-slide slide-3">
+        </div>
+
+      </div>
+
+      <button class="prev-button" aria-label="Anterior">&#10094;</button>
+      <button class="next-button" aria-label="Próximo">&#10095;</button>
+    </div>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-left">
+          <span class="made-with">Made with 💖 by EIS_2S2G_G03_MEGI</span>
+        </div>
+
+      </div>
+    </footer>
+
+</body>
+
+</html>

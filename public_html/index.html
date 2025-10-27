@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login or sign up</title>
+  <link rel="stylesheet" href="index.css" />
+
+</head>
+
+<body id="page-body">
+
+
+  <header class="top-bar">
+    <h1>Welcome <span id="user-indicator"></span></h1>
+  </header>
+
+  <div class="container">
+    <!-- LOGIN SECTION (now on the left) -->
+    <div class="left">
+      <form id="loginForm">
+        <input type="text" id="email" placeholder="Email address" />
+        <input type="password" id="password" placeholder="Password" />
+        <button type="submit" class="login-btn" id="login-btn">Log In</button>
+        <hr>
+        <button class="other-btn" id="forgetBtn">Forgotten password?</button>
+      </form>
+
+      <div id="auth-controls" style="display:none;">
+
+        <button id="login-collector-button" class="other-btn">Enter as Collector</button>
+      </div>
+
+    </div>
+
+    <!-- GUEST + CREATE ACCOUNT SECTION (now on the right) -->
+    <div class="right">
+      <button type="button" class="new-account">Create new account</button>
+      <hr>
+      <a href="home_page.html">
+        <button type="button" class="other-btn" id="guestBtn">Enter as Guest</button>
+      </a>
+
+
+      <script src="general.js"></script>
+      <script src="index.js"></script>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menu Responsivo Slide-Down</title>
+  <title>Main Menu</title>
 
   <link rel="stylesheet" href="../css/general.css"> <!-- Elements specific to all pages -->
   <link rel="stylesheet" href="../css/test_home_page_specific.css"> <!-- Elements specific only to this page -->
@@ -100,6 +100,11 @@
 
     </section>
 
+    <!-- Indicador de estado do utilizador -->
+    <div class="user-state-indicator">
+      Estado atual: <span id="user-indicator"></span>
+    </div>
+
     <div class="carousel-container">
       <div class="carousel-track">
 
@@ -133,7 +138,7 @@
       </div>
     </footer>
 </body>
-
+<script src="general.js"></script>
 <script>
   const buttons = document.querySelectorAll('.explore-btn');
   const cards = document.querySelectorAll('.collection-card');
@@ -147,6 +152,8 @@
       });
     });
   });
+
+
 </script>
 
 </html>

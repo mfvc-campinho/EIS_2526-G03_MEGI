@@ -1,0 +1,290 @@
+body {
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: #f0f2f5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- TOP BAR ---- */
+.top-bar {
+  width: 100%;
+  background-color: #1877f2;
+  color: white;
+  text-align: center;
+  padding: 16px 0;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+/* ---- CONTAINER ---- */
+.container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* centers vertically */
+  gap: 80px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* LOGIN BOX (LEFT) */
+.left {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 320px;
+  box-sizing: border-box;
+}
+
+.left input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.login-btn {
+  background-color: #1877f2;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #166fe5;
+}
+
+.forgot {
+  display: block;
+  margin: 12px 0;
+  color: #1877f2;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.forgot:hover {
+  text-decoration: underline;
+}
+
+.other-btn {
+  background-color: #e4e6eb;
+  color: #050505;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.other-btn:hover {
+  background-color: #d8dadf;
+}
+
+
+/* RIGHT BOX (GUEST + CREATE ACCOUNT) */
+.right {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 280px;
+  box-sizing: border-box;
+}
+
+
+.right input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.login-btn {
+  background-color: #1877f2;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #166fe5;
+}
+
+
+hr {
+  border: none;
+  border-top: 1px solid #dddfe2;
+  margin: 20px 0;
+}
+
+.new-account {
+  background-color: #42b72a;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.new-account:hover {
+  background-color: #36a420;
+}
+
+.other-btn {
+  background-color: #e4e6eb;
+  color: #050505;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.other-btn:hover {
+  background-color: #d8dadf;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+    gap: 25px;
+  }
+}
+
+
+/* GUEST VS COLLECTOR /*
+
+/* ------------------------------------------- */
+/* VARIÁVEIS DE ESTADO NO BODY */
+/* O body pode ter: (nenhuma classe), .is-guest, ou .is-collector */
+/* ------------------------------------------- */
+
+/* 1. REGRAS PARA QUANDO O UTILIZADOR É 'GUEST' */
+.is-guest .hidden-for-guest,
+.is-guest .hidden-for-collector {
+  /* Guests não veem nada de exclusivo para registados ou collectors */
+  display: none !important;
+}
+
+.is-guest .visible-for-guest {
+  /* Guests veem as mensagens de Guest */
+  display: block !important;
+  border: 1px solid blue;
+  padding: 10px;
+}
+
+
+/* 2. REGRAS PARA QUANDO O UTILIZADOR É 'COLLECTOR' */
+.is-collector .hidden-for-guest,
+.is-collector .visible-for-guest {
+  /* Collectors não veem conteúdo de Guest, mas veem conteúdo normal de registado */
+  display: none !important;
+}
+
+/* ------------------------------------------- */
+/* REGRAS PADRÃO (APLICA-SE QUANDO NÃO HÁ CLASSE DE ESTADO NO BODY) */
+/* ------------------------------------------- */
+
+/* Esconde o conteúdo "apenas para guest" por padrão */
+.visible-for-guest {
+  display: none;
+}
+
+/* Estiliza o indicador de utilizador no cabeçalho */
+#user-indicator {
+  display: inline-block;
+  min-width: 25px;
+  /* Garante espaço para o G ou C */
+  text-align: center;
+  border-radius: 50%;
+  background-color: #333;
+  color: white;
+  font-size: 0.7em;
+  padding: 3px 6px;
+  margin-left: 10px;
+  vertical-align: top;
+}
+
+
+/* ------------------------------------------- */
+/* REGRAS PADRÃO (BODY SEM CLASSE: ESTADO GUEST) */
+/* ------------------------------------------- */
+
+/* Conteúdo de Collector é escondido por padrão (para Guests) */
+.visible-for-collector {
+  display: none !important;
+}
+
+/* Conteúdo de Guest é visível por padrão */
+.visible-for-guest {
+  display: block;
+  border: 1px solid gray;
+  padding: 10px;
+}
+
+
+/* ------------------------------------------- */
+/* REGRAS PARA QUANDO O UTILIZADOR É 'COLLECTOR' (body tem .is-collector) */
+/* ------------------------------------------- */
+
+.is-collector .visible-for-collector {
+  /* Collectors veem o seu conteúdo */
+  display: block !important;
+  border: 1px solid green;
+  padding: 10px;
+}
+
+.is-collector .visible-for-guest {
+  /* Collectors não veem a mensagem de Guest */
+  display: none !important;
+}
+
+
+/* Estiliza o indicador de utilizador no cabeçalho */
+#user-indicator {
+  display: inline-block;
+  min-width: 25px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #333;
+  color: white;
+  font-size: 0.7em;
+  padding: 3px 6px;
+  margin-left: 10px;
+  vertical-align: top;
+}

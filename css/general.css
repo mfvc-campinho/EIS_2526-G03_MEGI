@@ -1,0 +1,135 @@
+/* Base */
+:root {
+  --pill-bg: #20b2aa;
+  /* lightseagreen */
+  --pill-text: #ffffff;
+  --pill-border: #2a2a2a;
+  --shadow: 0 6px 24px rgba(0, 0, 0, .25);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Header fixo opcional */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(#eee, #eee);
+  /* evita “vazios” nas bordas */
+  padding: 12px 0;
+  /* respiro ao redor da pílula */
+}
+
+/* NAV “pílula” */
+.navbar-pill {
+  width: min(1280px, 94%);
+  /* ocupa a tela sem colar nas laterais */
+  margin: 0 auto;
+  padding: 22px 32px;
+  background: var(--pill-bg);
+  color: var(--pill-text);
+  border: 1px solid var(--pill-border);
+  border-radius: 9999px;
+  /* pílula perfeita */
+  box-shadow: var(--shadow);
+
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Menu central */
+.menu {
+  list-style: none;
+  display: flex;
+  gap: clamp(24px, 6vw, 68px);
+  /* distância fluida entre itens */
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  /* ocupa o centro e “empurra” a busca à direita */
+  justify-content: center;
+  /* centraliza itens */
+}
+
+.menu a {
+  color: var(--pill-text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: clamp(1rem, 1.6vw, 1.6rem);
+  /* responsivo sem exagero */
+  letter-spacing: .3px;
+  line-height: 1;
+  display: inline-block;
+  padding: 6px 4px;
+  /* área de clique */
+  transition: opacity .2s ease, transform .15s ease;
+}
+
+.menu a:hover {
+  opacity: .9;
+  transform: translateY(-1px);
+  /* micro-efeito (evita “pulos” do layout) */
+}
+
+/* Triângulo do “Collections ▾” */
+.menu .has-caret::after {
+  content: " ▾";
+  font-weight: 600;
+}
+
+/* Busca à direita */
+.nav-search {
+  flex: 0 0 auto;
+  /* não estica demais */
+}
+
+.nav-search input[type="search"] {
+  width: clamp(160px, 22vw, 320px);
+  /* tamanho ideal e responsivo */
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, .25);
+  outline: none;
+  font-size: 1rem;
+  color: #333;
+  background: #fff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .06);
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.nav-search input[type="search"]::placeholder {
+  color: #7a7a7a;
+}
+
+.nav-search input[type="search"]:focus {
+  border-color: #ddd;
+  background: #f7f7f7;
+}
+
+/* Acessibilidade: label invisível e legível por leitores de ecrã */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Hover dos links anterior: remover “scale(1.5)” que quebrava o layout */
+.navbar a:hover {
+  transform: none;
+}
+
+/* caso exista CSS antigo */

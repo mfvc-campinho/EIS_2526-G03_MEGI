@@ -8,6 +8,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 <head>
   <meta charset="utf-8">
   <title>Coleções — Equipa</title>
+  <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/Test_style.css">
 </head>
 
@@ -15,10 +16,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
   <header>
     <nav class="navbar">
       <a href="../public_html/home_page.html">Home</a>
-      <input type="search" placeholder="Search">
-      <a href="../public_html/collection_page.html">Collections</a>
+
+      <!-- 🔽 Drop-down menu -->
+      <div class="dropdown">
+        <a href="../public_html/collection_page.html" class="dropbtn">Collections ▾</a>
+        <div class="dropdown-content">
+          <a href="#">Playboy Portuguesas</a>
+          <a href="#">Escudos Portugueses</a>
+          <a href="#">Cartas de Pokemon</a>
+        </div>
+      </div>
+
       <a href="/Aboutus">About us</a>
       <a href="../public_html/user_page.html">Login / Profile</a>
+
+      <input type="search" placeholder="Search">
     </nav>
   </header>
 
@@ -57,6 +69,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
       </div>
     </section>
   </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-left">
+        <span class="small">
+          Made with ❤️ by
+          <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer"
+            class="text-decoration-none text-light fw-semibold">
+            EIS_2526-G03_MEGI
+          </a>
+        </span>
+      </div>
+
+    </div>
+  </footer>
 </body>
 
 </html>

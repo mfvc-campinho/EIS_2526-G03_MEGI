@@ -1,16 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
   <meta charset="utf-8">
-
-  <!-- Page title -->
   <title>Collection Page</title>
-
-  <!-- SEO: keywords, description, author -->
   <meta name="description"
     content="Manage and explore multiple types of collections: books, vinyl, stamps, coins, and more. View items, events, rankings and community highlights.">
   <meta name="keywords" content="collections, items, events, books, vinyl, stamps, coins, retro games, hobby">
   <meta name="author" content="EIS_2526-G03_MEGI">
-
-  <!-- Responsiveness -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Bootstrap -->
@@ -18,31 +15,26 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Project stylesheet (CSS) -->
-  <link rel="stylesheet" href="../css/collection.css">
+  <link rel="stylesheet" href="collection.css">
 
   <!-- Google Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
-  <!-- =============== GLOBAL HEADER / NAVIGATION =============== -->
   <header>
     <nav class="navbar">
       <a href="../public_html/home_page.html">Home</a>
-
-      <!-- 🔽 Drop-down menu -->
       <div class="dropdown">
-        <a href="../public_html/collection_page.html" class="dropbtn">Collections ▾</a>
+        <a href="../public_html/collection_page.html" class="dropbtn">Collections</a>
         <div class="dropdown-content">
           <a href="#">Playboy Portuguesas</a>
           <a href="#">Escudos Portugueses</a>
           <a href="#">Cartas de Pokemon</a>
         </div>
       </div>
-
       <a href="/Aboutus">About us</a>
       <a href="../public_html/user_page.html">Login / Profile</a>
-
       <input type="search" placeholder="Search">
     </nav>
   </header>
@@ -50,7 +42,6 @@
   <h1>Our Collections</h1>
 
   <div class="collection-container">
-    <!-- Example cards — add or remove as many as you want -->
     <div class="collection-card">
       <img src="images/escudos.jpg" alt="Art Collection" class="collection-image">
       <div class="collection-content">
@@ -97,20 +88,30 @@
     </div>
   </div>
 
-  <!-- =============== GLOBAL RODAPÉ (FOOTER) =============== -->
+  <!-- Script externo -->
+  <script src="script.js"></script>
 </body>
-
 <script>
-  const buttons = document.querySelectorAll('.explore-btn');
-  const cards = document.querySelectorAll('.collection-card');
+  document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll(".explore-btn");
 
-  buttons.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      cards.forEach((card, i) => {
-        if (i !== index) {
-          card.classList.add('hidden'); // esconde os outros
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        const title = button.closest(".collection-card").querySelector(".collection-title").textContent.trim();
+
+        let id = "";
+        if (title.includes("Escudos")) id = "escudos";
+        else if (title.includes("Playboys")) id = "playboys";
+        else if (title.includes("Pokemon")) id = "pokemon";
+        else if (title.includes("Retratos")) id = "retratos";
+        else if (title.includes("Futebol")) id = "camisolas";
+
+        if (id) {
+          window.location.href = `specific_collection.html?id=${id}`;
         }
       });
     });
   });
 </script>
+
+</html>

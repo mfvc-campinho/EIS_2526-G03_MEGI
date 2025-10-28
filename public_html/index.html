@@ -5,7 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login or sign up</title>
+  <link rel="stylesheet" href="../css/general.css" />
   <link rel="stylesheet" href="index.css" />
+
+
 
 </head>
 
@@ -22,20 +25,17 @@
       <form id="loginForm">
         <input type="text" id="email" placeholder="Email address" />
         <input type="password" id="password" placeholder="Password" />
-        <button type="submit" class="login-btn" id="login-btn">Log In</button>
-        <hr>
-        <button class="other-btn" id="forgetBtn">Forgotten password?</button>
+        <button type="submit" class="login-btn" id="login-collector">Log In</button>
       </form>
 
-      <div id="auth-controls" style="display:none;">
-
-        <button id="login-collector-button" class="other-btn">Enter as Collector</button>
-      </div>
-
+      <button id="enter-collector-button" class="other-btn" style="display:none;">Enter as Collector</button>
+      <hr>
+      <button class="other-btn" id="forgetBtn">Forgotten password?</button>
+      <button id="logout-collector-button" class="other-btn" style="display:none;">Logout Collector</button>
     </div>
 
     <!-- GUEST + CREATE ACCOUNT SECTION (now on the right) -->
-    <div class="right">
+    <div class="right" id="guestSection">
       <button type="button" class="new-account">Create new account</button>
       <hr>
       <a href="home_page.html">
@@ -43,7 +43,6 @@
       </a>
 
 
-      <script src="general.js"></script>
       <script src="index.js"></script>
     </div>
   </div>

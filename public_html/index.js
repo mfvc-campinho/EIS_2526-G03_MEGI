@@ -8,7 +8,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  // Validação básica
+  // Basic Validation
   if (email === "" && password === "") {
     alert("Please enter your email and password.");
     return;
@@ -23,7 +23,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   }
 
 
-  // Validação de formato de email
+  // Format E-mail Validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     alert("Please enter a valid email address.");
@@ -31,11 +31,11 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
   }
 
 
-  // Validação normal (demo)
+  // Alert Validation
   alert("Login successful! (Demo version)");
 
-  // Após login aprovado, mostra botão de collector
-  document.getElementById('auth-controls').style.display = 'block';
+  // Após login normal, não esconder o formulário permanentemente
+  // O estado será controlado pelo checkAuthStatus
 });
 
 document.getElementById("guestBtn").addEventListener("click", function () {
@@ -43,7 +43,7 @@ document.getElementById("guestBtn").addEventListener("click", function () {
 });
 
 // ----------------------------------------------------
-// Forgot Password - show system-like alert
+// Forgot Password - show  alert
 // ----------------------------------------------------
 
 document.getElementById("forgetBtn").addEventListener("click", function () {
@@ -54,46 +54,77 @@ document.getElementById("forgetBtn").addEventListener("click", function () {
 // State Management for Collector Login
 // ----------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
+  // Ao carregar, define estado inicial se não existir
+  if (!sessionStorage.getItem('userRole')) {
+    sessionStorage.setItem('userRole', 'none'); // guest
+  }
   const pageBody = document.getElementById('page-body');
   const guestButton = document.getElementById('guestBtn');
-  const collectorButton = document.getElementById('login-collector-button');
+  const collectorButton = document.getElementById('enter-collector-button');
   const userIndicator = document.getElementById('user-indicator');
+  const logoutCollectorButton = document.getElementById('logout-collector-button');
+  const loginForm = document.getElementById('loginForm');
+  const createAccountBtn = document.querySelector('.new-account');
+  const forgetBtn = document.getElementById('forgetBtn');
+  const guestSection = document.getElementById('guestSection');
 
   // Function 1: CHECK AUTH STATUS
   function checkAuthStatus() {
-    // Verifica se o estado 'collector' está definido no sessionStorage
-    const isCollector = sessionStorage.getItem('userRole') === 'collector';
-
-    // 1. Limpa o estado e define os padrões (ESTADO GUEST)
-    pageBody.classList.remove('is-collector');
-    collectorButton.style.display = 'inline-block';
-    userIndicator.textContent = 'G'; // Indicador: G de Guest
-
+    const isCollector = sessionStorage.getItem('userRole') === 'C';
     if (isCollector) {
-      // 2. Estado COLLECTOR
-      pageBody.classList.add('is-collector');
-      collectorButton.style.display = 'none'; // Esconde o botão de login
-      userIndicator.textContent = 'Collector'; // Indicador: L de Collector
+      // Collector: Buttons to exclusive to Collector
+      if (collectorButton) collectorButton.style.display = 'inline-block';
+      if (logoutCollectorButton) logoutCollectorButton.style.display = 'inline-block';
+      if (loginForm) loginForm.style.display = 'none';
+      if (createAccountBtn) createAccountBtn.style.display = 'none';
+      if (forgetBtn) forgetBtn.style.display = 'none';
+      if (guestSection) guestSection.style.display = 'none';
+
+      userIndicator.textContent = 'C';
+    } else {
+      // Guest: Show Forms, create account and other settings
+      if (collectorButton) collectorButton.style.display = 'none';
+      if (logoutCollectorButton) logoutCollectorButton.style.display = 'none';
+      if (loginForm) loginForm.style.display = 'block';
+      if (createAccountBtn) createAccountBtn.style.display = 'inline-block';
+      if (forgetBtn) forgetBtn.style.display = 'inline-block';
+      if (guestSection) guestSection.style.display = 'block';
+
+      userIndicator.textContent = 'G';
     }
   }
 
   // Function 2: HANDLE COLLECTOR LOGIN
 
-  // Botão Collector (Login)
-  collectorButton.addEventListener('click', () => {
-    // Define a chave para "collector"
-    sessionStorage.setItem('userRole', 'collector');
-    checkAuthStatus();
-  });
+  // Botão login normal muda para collector
+  const loginBtn = document.getElementById('login-collector');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', function (e) {
+      // O submit já faz validação, aqui só mudamos o estado
+      sessionStorage.setItem('userRole', 'C');
+      checkAuthStatus();
+    });
+  }
 
   // Collector login
-  if (document.getElementById('login-collector-button')) {
-    document.getElementById('login-collector-button').addEventListener('click', function (e) {
+  if (document.getElementById('enter-collector-button')) {
+    document.getElementById('enter-collector-button').addEventListener('click', function (e) {
       e.preventDefault();
       // Aqui podes adicionar validação extra se quiseres
-      sessionStorage.setItem('userRole', 'collector');
+      sessionStorage.setItem('userRole', 'C');
       alert("Login como Collector bem-sucedido!");
       window.location.href = 'home_page.html'; // Redireciona para a página definida
+    });
+  }
+
+  // Collector logout
+  if (logoutCollectorButton) {
+    logoutCollectorButton.addEventListener('click', function (e) {
+      e.preventDefault();
+      sessionStorage.setItem('userRole', 'none'); // guest
+      alert("Logout Collector realizado!");
+      checkAuthStatus();
+      window.location.href = 'index.html';
     });
   }
 

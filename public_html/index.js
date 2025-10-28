@@ -1,133 +1,108 @@
 // ----------------------------------------------------
-// Login Form Validation
+// 🌐 LOGIN + ROLE MANAGEMENT SCRIPT
+// Everything runs after DOM is fully loaded
 // ----------------------------------------------------
 
-document.getElementById("loginForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  // Basic Validation
-  if (email === "" && password === "") {
-    alert("Please enter your email and password.");
-    return;
-  }
-  if (email === "") {
-    alert("Please enter your email address.");
-    return;
-  }
-  if (password === "") {
-    alert("Please enter your password.");
-    return;
-  }
-
-
-  // Format E-mail Validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    alert("Please enter a valid email address.");
-    return;
-  }
-
-
-  // Alert Validation
-  alert("Login successful! (Demo version)");
-
-  // Após login normal, não esconder o formulário permanentemente
-  // O estado será controlado pelo checkAuthStatus
-});
-
-document.getElementById("guestBtn").addEventListener("click", function () {
-  alert("You’re browsing as a guest!");
-});
-
-// ----------------------------------------------------
-// Forgot Password - show  alert
-// ----------------------------------------------------
-
-document.getElementById("forgetBtn").addEventListener("click", function () {
-  alert("⚠️ SERVICE UNAVAILABLE.\nPlease contact your administrator.");
-});
-
-// ----------------------------------------------------
-// State Management for Collector Login
-// ----------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  // Ao carregar, define estado inicial se não existir
-  if (!sessionStorage.getItem('userRole')) {
-    sessionStorage.setItem('userRole', 'none'); // guest
+
+  // ----------------------------------------------------
+  // 🧩 LOGIN FORM VALIDATION
+  // ----------------------------------------------------
+  const loginForm = document.getElementById("loginForm");
+
+  if (loginForm) {
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault(); // Prevent reload
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      // ✅ Basic validation already handled by HTML (required, type="email")
+      // Here we just double-check email format manually if needed
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      // Demo-only feedback
+      alert("Login successful! (Demo version)");
+    });
   }
-  const pageBody = document.getElementById('page-body');
-  const guestButton = document.getElementById('guestBtn');
-  const collectorButton = document.getElementById('enter-collector-button');
+
+  // ----------------------------------------------------
+  // 👥 STATE MANAGEMENT (Collector vs Guest)
+  // ----------------------------------------------------
+
+  // Initialize user role if not defined
+  if (!sessionStorage.getItem('userRole')) {
+    sessionStorage.setItem('userRole', 'none'); // Default: guest
+  }
+
+  // Cache DOM elements
   const userIndicator = document.getElementById('user-indicator');
+  const guestSection = document.getElementById('guestSection');
+  const collectorButton = document.getElementById('enter-collector-button');
   const logoutCollectorButton = document.getElementById('logout-collector-button');
-  const loginForm = document.getElementById('loginForm');
   const createAccountBtn = document.querySelector('.new-account');
   const forgetBtn = document.getElementById('forgetBtn');
-  const guestSection = document.getElementById('guestSection');
+  const loginBtn = document.getElementById('login-collector');
 
-  // Function 1: CHECK AUTH STATUS
+  // ----------------------------------------------------
+  // 🔸 FUNCTION: Update UI based on current role
+  // ----------------------------------------------------
   function checkAuthStatus() {
     const isCollector = sessionStorage.getItem('userRole') === 'C';
-    if (isCollector) {
-      // Collector: Buttons to exclusive to Collector
-      if (collectorButton) collectorButton.style.display = 'inline-block';
-      if (logoutCollectorButton) logoutCollectorButton.style.display = 'inline-block';
-      if (loginForm) loginForm.style.display = 'none';
-      if (createAccountBtn) createAccountBtn.style.display = 'none';
-      if (forgetBtn) forgetBtn.style.display = 'none';
-      if (guestSection) guestSection.style.display = 'none';
 
-      userIndicator.textContent = 'C';
-    } else {
-      // Guest: Show Forms, create account and other settings
-      if (collectorButton) collectorButton.style.display = 'none';
-      if (logoutCollectorButton) logoutCollectorButton.style.display = 'none';
-      if (loginForm) loginForm.style.display = 'block';
-      if (createAccountBtn) createAccountBtn.style.display = 'inline-block';
-      if (forgetBtn) forgetBtn.style.display = 'inline-block';
-      if (guestSection) guestSection.style.display = 'block';
+    // Toggle visibility based on role
+    loginForm.style.display = isCollector ? 'none' : 'block';
+    guestSection.style.display = isCollector ? 'none' : 'block';
+    collectorButton.style.display = isCollector ? 'inline-block' : 'none';
+    logoutCollectorButton.style.display = isCollector ? 'inline-block' : 'none';
+    createAccountBtn.style.display = isCollector ? 'none' : 'inline-block';
+    forgetBtn.style.display = isCollector ? 'none' : 'inline-block';
 
-      userIndicator.textContent = 'G';
-    }
+    // Update user indicator (C = Collector, G = Guest)
+    userIndicator.textContent = isCollector ? 'C' : 'G';
   }
 
-  // Function 2: HANDLE COLLECTOR LOGIN
-
-  // Botão login normal muda para collector
-  const loginBtn = document.getElementById('login-collector');
+  // ----------------------------------------------------
+  // 🔸 EVENT: Manual "login as Collector" (demo)
+  // ----------------------------------------------------
   if (loginBtn) {
-    loginBtn.addEventListener('click', function (e) {
-      // O submit já faz validação, aqui só mudamos o estado
+    loginBtn.addEventListener('click', () => {
       sessionStorage.setItem('userRole', 'C');
       checkAuthStatus();
     });
   }
 
-  // Collector login
-  if (document.getElementById('enter-collector-button')) {
-    document.getElementById('enter-collector-button').addEventListener('click', function (e) {
+  // ----------------------------------------------------
+  // 🔸 EVENT: Enter Collector Mode (redirect)
+  // ----------------------------------------------------
+  if (collectorButton) {
+    collectorButton.addEventListener('click', (e) => {
       e.preventDefault();
-      // Aqui podes adicionar validação extra se quiseres
       sessionStorage.setItem('userRole', 'C');
-      alert("Login como Collector bem-sucedido!");
-      window.location.href = 'home_page.html'; // Redireciona para a página definida
+      alert("Collector login successful!");
+      window.location.href = 'home_page.html';
     });
   }
 
-  // Collector logout
+  // ----------------------------------------------------
+  // 🔸 EVENT: Logout Collector
+  // ----------------------------------------------------
   if (logoutCollectorButton) {
-    logoutCollectorButton.addEventListener('click', function (e) {
+    logoutCollectorButton.addEventListener('click', (e) => {
       e.preventDefault();
-      sessionStorage.setItem('userRole', 'none'); // guest
-      alert("Logout Collector realizado!");
+      sessionStorage.setItem('userRole', 'none'); // Back to guest
+      alert("Collector logout successful!");
       checkAuthStatus();
       window.location.href = 'index.html';
     });
   }
 
-  // Inicia a verificação ao carregar a página
-  checkAuthStatus();
+  // ----------------------------------------------------
+  // 🔹 INITIALIZATION
+  // ----------------------------------------------------
+  checkAuthStatus(); // Run once when page loads
 });

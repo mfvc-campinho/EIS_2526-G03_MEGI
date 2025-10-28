@@ -6,90 +6,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Main Menu</title>
 
-  <link rel="stylesheet" href="../css/general.css"> <!-- Elements specific to all pages -->
-  <link rel="stylesheet" href="../css/test_home_page_specific.css"> <!-- Elements specific only to this page -->
-  <script src="../js/home_page.js"></script>
+  <link rel="stylesheet" href="../css/general.css">
+  <link rel="stylesheet" href="../css/home_page.css">
+  <script src="home_page.js"></script>
   <script src="general.js"></script>
-
 </head>
 
 <body>
-
-  <!-- Indicator State User -->
   <div class="user-state-indicator">
     State: <span id="user-indicator"></span>
-    <button id='goto-change-state-button'>Change State</button>
+    <button id="goto-change-state-button">Change State</button>
   </div>
 
   <main>
-    <section class="ranking-section">
-
-      <h2>Nosso Top 5 Ranking</h2>
-      <!-- 🔹 FILTRO (por cima do #1) -->
-      <div class="ranking-filter">
-        <label for="category">Filtrar por:</label>
-        <select id="category">
-          <option value="all">Todas as Categorias</option>
-          <option value="livros">Livros</option>
-          <option value="música">Música</option>
-          <option value="filmes">Filmes</option>
+    <section class="filter-section">
+      <h2>Filtrar colecoes</h2>
+      <div class="filter-control">
+        <label for="rankingFilter">Mostrar Top 5 por</label>
+        <select id="rankingFilter">
+          <option value="lastAdded">Last added</option>
+          <option value="userChosen">Chosen by the user</option>
+          <option value="itemCount">Number of items</option>
         </select>
-
-        <input type="text" placeholder="Pesquisar..." class="filter-search">
       </div>
-      <div class="ranking-container">
-        <!-- Card #1 — destaque grande -->
-        <a class="ranking-card destaque" href="team_page.html">
-          <h3>#1</h3>
-          <h4>BooksLovedByCassandra</h4>
-          <p>@Cassandra</p>
-        </a>
+    </section>
 
+    <section class="ranking-section">
+      <h2>Nosso Top 5 Ranking</h2>
 
-        <!-- Linha dos 4 menores -->
-        <div class="ranking-linha">
-          <div class="ranking-card pequeno">
-            <h3>#2</h3>
-            <h4>Escolha do Cliente</h4>
-            <p>Melhor relação custo-benefício.</p>
-            <a href="#">Ver Detalhes</a>
+      <div class="collection-container">
+        <div class="collection-card" data-name="BooksLovedByCassandra" data-votes="120" data-added="2025-10-15"
+          data-items="42" data-user-chosen="true">
+          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
+          <div class="collection-content">
+            <h3 class="collection-title">BooksLovedByCassandra</h3>
+            <p class="collection-author">@Cassandra</p>
+            <button class="explore-btn">Explore more</button>
           </div>
+        </div>
 
-          <div class="ranking-card pequeno">
-            <h3>#3</h3>
-            <h4>Em Ascensão</h4>
-            <p>O produto que mais cresceu.</p>
-            <a href="#">Ver Detalhes</a>
+        <div class="collection-card" data-name="Escolha do Cliente" data-votes="95" data-added="2025-10-22"
+          data-items="35" data-user-chosen="true">
+          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
+          <div class="collection-content">
+            <h3 class="collection-title">Escolha do Cliente</h3>
+            <p class="collection-author">Melhor relacao custo-beneficio</p>
+            <button class="explore-btn">Explore more</button>
           </div>
-          <div class="ranking-card pequeno">
-            <h3>#4</h3>
-            <h4>Novidade</h4>
-            <p>Recentemente adicionado ao ranking.</p>
-            <a href="#">Ver Detalhes</a>
+        </div>
+
+        <div class="collection-card" data-name="Em Ascensao" data-votes="88" data-added="2025-10-10" data-items="28"
+          data-user-chosen="false">
+          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
+          <div class="collection-content">
+            <h3 class="collection-title">Em Ascensao</h3>
+            <p class="collection-author">O produto que mais cresceu</p>
+            <button class="explore-btn">Explore more</button>
           </div>
-          <div class="ranking-card pequeno">
-            <h3>#5</h3>
-            <h4>Destaque do Mês</h4>
-            <p>Excelente performance no mês atual.</p>
-            <a href="#">Ver Detalhes</a>
+        </div>
+
+        <div class="collection-card" data-name="Novidade" data-votes="67" data-added="2025-10-25" data-items="19"
+          data-user-chosen="false">
+          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
+          <div class="collection-content">
+            <h3 class="collection-title">Novidade</h3>
+            <p class="collection-author">Recentemente adicionado</p>
+            <button class="explore-btn">Explore more</button>
+          </div>
+        </div>
+
+        <div class="collection-card" data-name="Destaque do Mes" data-votes="105" data-added="2025-10-05"
+          data-items="50" data-user-chosen="true">
+          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
+          <div class="collection-content">
+            <h3 class="collection-title">Destaque do Mes</h3>
+            <p class="collection-author">Excelente performance</p>
+            <button class="explore-btn">Explore more</button>
           </div>
         </div>
       </div>
-      <!-- 🔹 BOTÕES DE GESTÃO DE COLEÇÕES -->
-      <div class="ranking-actions">
-        <button class="btn add">➕ Adicionar Coleção</button>
-        <button class="btn edit">✏️ Editar Coleções</button>
-        <button class="btn delete">🗑️ Apagar Coleções</button>
-        <button class="btn add"> Visitar outras Coleções</button>
-      </div>
-
     </section>
-    <!-- Indicator State User -->
 
-
-
+    <div class="ranking-actions">
+      <button class="other-btn" id="colectionAdd" onclick="alert('FALTA!')">+ Adicionar Colecoes</button>
+      <button class="other-btn" id="colectionEdit" onclick="alert('FALTA!')">Editar Colecoes</button>
+      <button class="other-btn" id="colectionDelete" onclick="alert('FALTA!')">Apagar Colecoes</button>
+      <button class="other-btn" onclick="window.location.href='collection_page.html'">
+        Explore all Collections
+      </button>
+    </div>
+  </main>
 </body>
-
-
 
 </html>

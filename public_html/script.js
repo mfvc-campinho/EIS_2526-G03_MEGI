@@ -22,57 +22,57 @@ document.addEventListener("DOMContentLoaded", function () {
   // 🔹 2) Página específica (specific_collection.html)
   // ===============================
   const collections = {
-    escudos: {
-      name: "Escudos Portugueses",
-      owner: "Valentim Moureiro",
-      ownerPhoto: "images/valentim.jpg",
-      created: "2018-04-10",
-      items: [
-        { title: "Escudo de 1950", description: "Moeda histórica de prata.", value: 120, dateAdded: "2020-03-15", rarity: "Raro", condition: "Muito Bom", image: "images/escudo1950.jpg" },
-        { title: "Escudo de 1960", description: "Moeda comemorativa rara.", value: 250, dateAdded: "2021-07-10", rarity: "Muito Raro", condition: "Excelente", image: "images/escudo1960.jpg" }
-      ]
-    },
-    playboys: {
-      name: "Playboys Portuguesas",
-      owner: "Rui Frio",
-      ownerPhoto: "images/rui.jpg",
-      created: "2019-01-05",
-      items: [
-        { title: "Edição 2011", description: "Capa Rita Pereira", value: 5, dateAdded: "2019-05-22", rarity: "Raro", condition: "Bom", image: "images/playboy1989.jpg" },
-        { title: "Edição 1995", description: "Capa Lenka da Silva", value: 12, dateAdded: "2020-11-05", rarity: "Muito Raro", condition: "Excelente", image: "images/playboy1995.jpg" },
-        { title: "Edição 2016", description: "Capa Fabiana Brito", value: 12, dateAdded: "2016-08-05", rarity: "Comum", condition: "Mau", image: "images/playboy1995.jpg" }
-      ]
-    },
-    retratos: {
-      name: "Retratos de Líderes Fascistas",
-      owner: "André Fartura",
-      ownerPhoto: "images/andre.jpg",
-      created: "2017-02-02",
-      items: [
-        { title: "Retrato de Salazar", description: "Pintura a óleo datada de 1940.", value: 300, dateAdded: "2018-09-10", rarity: "Raro", condition: "Bom", image: "images/salazar.jpg" }
-      ]
-    },
-    pokemon: {
-      name: "Cartas de Pokémon",
-      owner: "Cristina Sem Feira",
-      ownerPhoto: "images/cristina.jpg",
-      created: "2021-04-20",
-      items: [
-        { title: "Pikachu Base Set", description: "Carta clássica de 1999.", value: 150, dateAdded: "2021-06-18", rarity: "Comum", condition: "Excelente", image: "images/pikachu.jpg" },
-        { title: "Charizard Holo", description: "Edição rara de 1ª geração.", value: 2000, dateAdded: "2022-04-22", rarity: "Muito Raro", condition: "Excelente", image: "images/charizard.jpg" }
-      ]
-    },
-    camisolas: {
-      name: "Camisolas de Futebol Autografadas",
-      owner: "Rui Tosta",
-      ownerPhoto: "images/rui_tosta.jpg",
-      created: "2019-06-25",
-      items: [
-        { title: "Camisola FC Porto 2004", description: "Autografada por Deco e Ricardo Carvalho.", value: 450, dateAdded: "2020-03-12", rarity: "Raro", condition: "Excelente", image: "images/porto.jpg" },
-        { title: "Camisola Benfica 2010", description: "Autografada por Aimar e Cardozo.", value: 400, dateAdded: "2021-09-03", rarity: "Raro", condition: "Muito Bom", image: "images/benfica.jpg" }
-      ]
-    }
-  };
+  escudos: {
+    name: "Escudos Portugueses",
+    owner: "Valentim Moureiro",
+    ownerPhoto: "images/valentim.jpg",
+    created: "2018-04-10",
+    items: [
+      { title: "Escudo de 1950", description: "Moeda histórica de prata.", value: 120, dateAdded: "2020-03-15", rarity: "Raro", condition: "Muito Bom", image: "images/escudo1950.jpg" },
+      { title: "Escudo de 1960", description: "Moeda comemorativa rara.", value: 250, dateAdded: "2021-07-10", rarity: "Muito Raro", condition: "Excelente", image: "images/escudo1960.jpg" }
+    ]
+  },
+  playboys: {
+    name: "Playboys Portuguesas",
+    owner: "Rui Frio",
+    ownerPhoto: "../images/rui.jpg",
+    created: "2019-01-05",
+    items: [
+      { title: "Edição 2011", description: "Capa Rita Pereira", value: 5, dateAdded: "2019-05-22", rarity: "Raro", condition: "Bom", image: "../images/playboy.jpg" },
+      { title: "Edição 1995", description: "Capa Lenka da Silva", value: 12, dateAdded: "2020-11-05", rarity: "Muito Raro", condition: "Excelente", image: "../images/lenka.jpg" },
+      { title: "Edição 2016", description: "Capa Fabiana Brito", value: 12, dateAdded: "2016-08-05", rarity: "Comum", condition: "Mau", image: "../images/fabiana.jpg" }
+    ]
+  },
+  retratos: {
+    name: "Retratos de Líderes Fascistas",
+    owner: "André Fartura",
+    ownerPhoto: "images/coins.png",
+    created: "2017-02-02",
+    items: [
+      { title: "Retrato de Salazar", description: "Pintura a óleo datada de 1940.", value: 300, dateAdded: "2018-09-10", rarity: "Raro", condition: "Bom", image: "../images/salazar.jpg" }
+    ]
+  },
+  pokemon: {
+    name: "Cartas de Pokémon",
+    owner: "Cristina Sem Feira",
+    ownerPhoto: "images/cristina.jpg",
+    created: "2021-04-20",
+    items: [
+      { title: "Pikachu Base Set", description: "Carta clássica de 1999.", value: 150, dateAdded: "2021-06-18", rarity: "Comum", condition: "Excelente", image: "images/pikachu.jpg" },
+      { title: "Charizard Holo", description: "Edição rara de 1ª geração.", value: 2000, dateAdded: "2022-04-22", rarity: "Muito Raro", condition: "Excelente", image: "images/charizard.jpg" }
+    ]
+  },
+  camisolas: {
+    name: "Camisolas de Futebol Autografadas",
+    owner: "Rui Tosta",
+    ownerPhoto: "images/rui_tosta.jpg",
+    created: "2019-06-25",
+    items: [
+      { title: "Camisola FC Porto 2004", description: "Autografada por Deco e Ricardo Carvalho.", value: 450, dateAdded: "2020-03-12", rarity: "Raro", condition: "Excelente", image: "images/porto.jpg" },
+      { title: "Camisola Benfica 2010", description: "Autografada por Aimar e Cardozo.", value: 400, dateAdded: "2021-09-03", rarity: "Raro", condition: "Muito Bom", image: "images/benfica.jpg" }
+    ]
+  }
+};
 
   // ========== Obter ID da coleção ==========
   const params = new URLSearchParams(window.location.search);
@@ -128,30 +128,33 @@ document.addEventListener("DOMContentLoaded", function () {
     data.items.sort((a, b) => b.value - a.value);
     const topValue = data.items[0]?.value ?? 0;
 
-    data.items.forEach((item) => {
-      const card = document.createElement("div");
-      card.classList.add("item-card");
-      if (item.value === topValue) card.classList.add("premium-item");
+data.items.forEach((item) => {
+  const card = document.createElement("div");
+  card.classList.add("item-card");
+  if (item.value === topValue) card.classList.add("premium-item");
 
-      card.innerHTML = `
-        <img src="${item.image}" alt="${item.title}" class="item-image"/>
-        <div class="item-info">
-          <h4>${item.title}</h4>
-          <p>${item.description}</p>
-          <ul>
-            <li><strong>Valor:</strong> €${item.value}</li>
-            <li><strong>Data adicionada:</strong> ${item.dateAdded}</li>
-            <li><strong>Raridade:</strong> ${item.rarity}</li>
-            <li><strong>Condição:</strong> ${item.condition}</li>
-          </ul>
-          <div class="item-buttons">
-            <button class="edit-btn">Editar</button>
-            <button class="remove-btn">Remover</button>
-          </div>
-        </div>
-      `;
-      itemsContainer.appendChild(card);
-    });
+  card.innerHTML = `
+    <div class="item-image-wrapper">
+      <img src="${item.image || 'images/default.jpg'}" alt="${item.title}" class="item-image"/>
+    </div>
+    <div class="item-info">
+      <h4>${item.title}</h4>
+      <p>${item.description}</p>
+      <ul>
+        <li><strong>Valor:</strong> €${item.value}</li>
+        <li><strong>Data adicionada:</strong> ${item.dateAdded}</li>
+        <li><strong>Raridade:</strong> ${item.rarity}</li>
+        <li><strong>Condição:</strong> ${item.condition}</li>
+      </ul>
+      <div class="item-buttons">
+        <button class="edit-btn">Editar</button>
+        <button class="remove-btn">Remover</button>
+      </div>
+    </div>
+  `;
+  itemsContainer.appendChild(card);
+});
+
   }
 
   renderCollection();

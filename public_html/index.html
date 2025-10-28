@@ -22,15 +22,17 @@
   <div class="container">
     <!-- LOGIN SECTION (now on the left) -->
     <div class="left">
-      <form id="loginForm">
-        <input type="text" id="email" placeholder="Email address" />
-        <input type="password" id="password" placeholder="Password" />
-        <button type="submit" class="login-btn" id="login-collector">Log In</button>
+      <form id="loginForm" onsubmit="alert('Login successful! (Demo version)')">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required minlength="4">
+        <button type="submit" id="login-collector" class="other-btn">Entrar</button>
       </form>
+
 
       <button id="enter-collector-button" class="other-btn" style="display:none;">Enter as Collector</button>
       <hr>
-      <button class="other-btn" id="forgetBtn">Forgotten password?</button>
+      <button class="other-btn" id="forgetBtn"
+        onclick="alert('⚠️ SERVICE UNAVAILABLE.\nPlease contact your administrator.')">Forgotten password?</button>
       <button id="logout-collector-button" class="other-btn" style="display:none;">Logout Collector</button>
     </div>
 
@@ -39,7 +41,8 @@
       <button type="button" class="new-account">Create new account</button>
       <hr>
       <a href="home_page.html">
-        <button type="button" class="other-btn" id="guestBtn">Enter as Guest</button>
+        <button type="button" class="other-btn" id="guestBtn" onclick="alert('You’re browsing as a guest!')">Enter as
+          Guest</button>
       </a>
 
 

@@ -1,585 +1,731 @@
-/* =========================================================
-   🌊 NAVBAR
-========================================================= */
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  background-color: lightseagreen;
-  padding: 25px 60px;
-  border-radius: 50px;
-  border: 1px solid #2a2a2a;
-  width: 90%;
-  margin: 40px auto;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+/* =======================
+   🔹 BASE
+======================= */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-.navbar a {
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =======================
+   🔹 NAVBAR
+======================= */
+.navbar {
+  background-color: #111827;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 32px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 1.4rem;
   color: white;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 1.3rem;
-  letter-spacing: 0.5px;
-  transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.navbar a:hover {
-  color: lightcyan;
-  transform: scale(1.15);
-}
-
-/* Search box */
-.navbar input[type="search"] {
-  background-color: white;
-  color: lightseagreen;
-  border: 1px solid #444;
-  border-radius: 25px;
-  padding: 10px 20px;
-  outline: none;
-  width: 220px;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-}
-
-.navbar input[type="search"]:focus {
-  background-color: lightgray;
-  border-color: lightgray;
-  color: black;
-}
-
-/* Optional sticky navbar */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: whitesmoke;
-  padding-top: 10px;
-}
-
-/* =========================================================
-   🌐 GENERAL STYLES
-========================================================= */
-body {
-  margin: 0;
-  background-color: whitesmoke;
-  font-family: 'Poppins', 'Segoe UI', 'Roboto', sans-serif;
-  color: black;
-}
-
-h1 {
-  text-align: center;
-  margin-top: 30px;
-  color: #333;
-}
-
-/* =========================================================
-   🖼️ HOMEPAGE COLLECTION CARDS
-========================================================= */
-.collection-container {
+.nav-left, .nav-right {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 25px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px;
+  align-items: center;
+  gap: 20px;
 }
 
-.collection-card {
-  flex: 1 1 calc(25% - 25px);
-  max-width: calc(25% - 25px);
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.nav-link {
+  color: #e5e7eb;
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-.collection-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+.nav-link:hover {
+  color: white;
 }
 
-.collection-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.collection-content {
-  padding: 18px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.collection-title {
-  font-size: 1.1em;
-  margin: 0 0 8px;
-  color: #333;
-}
-
-.collection-author {
-  color: #777;
-  font-size: 0.9em;
-  margin-bottom: 15px;
-}
-
-.explore-btn {
-  background: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
+.search-bar {
+  padding: 8px 12px;
   border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9em;
-  align-self: start;
-  transition: background 0.3s ease;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
 }
 
-.explore-btn:hover {
-  background: #0056b3;
-}
-
-/* Responsiveness for homepage cards */
-@media (max-width: 900px) {
-  .collection-card {
-    flex: 1 1 calc(33.33% - 25px);
-  }
-}
-
-@media (max-width: 600px) {
-  .collection-card {
-    flex: 1 1 calc(50% - 25px);
-  }
-}
-
-@media (max-width: 400px) {
-  .collection-card {
-    flex: 1 1 100%;
-  }
-}
-
-/* =========================================================
-   🧭 DROPDOWN MENU (corrigido e estável)
-========================================================= */
+/* Dropdown */
 .dropdown {
   position: relative;
-  display: inline-block;
 }
 
-/* Botão principal */
 .dropbtn {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.2rem;
-  letter-spacing: 0.5px;
-  padding: 10px 16px;
-  border-radius: 10px;
-  transition: background 0.3s ease, color 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  background: none;
+  border: none;
+  color: #e5e7eb;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-/* Ícone de seta */
-.dropbtn::after {
-  content: "▾";
-  font-size: 0.8em;
-  transition: transform 0.3s ease;
-}
-
-/* Apenas gira a seta — sem alterar layout */
-.dropdown:hover .dropbtn::after {
-  transform: rotate(180deg);
-}
-
-/* Hover suave */
 .dropbtn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
+  color: #fff;
 }
 
-/* Menu dropdown */
 .dropdown-content {
   position: absolute;
-  top: calc(100% + 10px);
+  top: 40px;
   left: 0;
-  min-width: 230px;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  background-color: #1f2937;
+  min-width: 220px;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   overflow: hidden;
-  z-index: 100;
   opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px);
-  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.25s ease;
+  z-index: 10;
 }
 
-/* Triângulo indicador */
-.dropdown-content::before {
-  content: "";
-  position: absolute;
-  top: -8px;
-  left: 20px;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 8px solid rgba(255, 255, 255, 0.97);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-}
-
-/* Links do menu */
 .dropdown-content a {
-  color: #222;
-  padding: 12px 18px;
-  text-decoration: none;
+  color: #e5e7eb;
+  padding: 10px 16px;
   display: block;
-  font-size: 1rem;
-  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
 .dropdown-content a:hover {
-  background: #007bff;
-  color: white;
-  padding-left: 22px;
+  background-color: #374151;
 }
 
-/* Mostrar menu no hover */
 .dropdown:hover .dropdown-content {
   opacity: 1;
-  visibility: visible;
   transform: translateY(0);
+  pointer-events: auto;
 }
 
-/* Responsivo */
-@media (max-width: 600px) {
-  .dropdown-content {
-    position: static;
-    box-shadow: none;
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: 0;
-  }
-
-  .dropdown-content::before {
-    display: none;
-  }
-}
-
-/* =========================================================
-   💎 COLLECTION PAGE
-========================================================= */
-main.container {
-  background: none;
-  display: block;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-#collection-title {
+/* =======================
+   🔹 MAIN CONTENT
+======================= */
+main {
+  flex: 1;
+  padding: 50px 60px;
   text-align: center;
-  font-size: 2.2rem;
-  color: #222;
-  margin-bottom: 30px;
-  letter-spacing: 1px;
 }
 
-#collection-items {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 50px;
+  color: #111827;
+}
+
+/* =======================
+   🔹 COLLECTION CARDS
+======================= */
+.collections-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 30px;
-  overflow-x: hidden;
+  justify-items: center;
+  align-items: stretch;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* força 4 por linha em ecrãs grandes */
+@media (min-width: 1200px) {
+  .collections-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.collection-card {
+  background-color: white;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.collection-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.card-image {
+  width: 100%;
+  height: 240px;
+  background-color: #d1d5db;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-info {
   padding: 20px;
 }
 
-.collection-item {
-  position: relative;
-  flex: 0 1 260px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-  padding: 18px;
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.collection-item:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-.collection-item img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.collection-item h4 {
-  font-size: 1.2rem;
+.card-info h3 {
   margin-bottom: 6px;
-  color: #222;
+  font-size: 1.1rem;
+  color: #111827;
 }
 
-.collection-item p {
+.card-info p {
+  color: #6b7280;
   font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 10px;
-  min-height: 40px;
+  margin-bottom: 14px;
 }
 
-.collection-item ul {
-  list-style: none;
-  padding: 0;
-  font-size: 0.85rem;
-  text-align: left;
-  margin: 0 auto;
-  width: 90%;
-}
-
-.collection-item ul li {
-  margin: 4px 0;
-}
-
-/* Destaque do item mais valioso */
-.collection-item:first-child {
-  border: 3px solid gold;
-  background: linear-gradient(145deg, #fffdf3, #ffffff);
-  transform: scale(1.03);
-  box-shadow: 0 6px 12px rgba(255, 215, 0, 0.35);
-}
-
-/* Selo "Mais Valioso" */
-.collection-item:first-child::after {
-  content: "⭐ Mais Valioso";
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: gold;
+.explore-btn {
+  background-color: #2563eb;
   color: white;
-  font-weight: 600;
-  font-size: 0.8rem;
-  padding: 4px 8px;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-  #collection-items {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .collection-item {
-    width: 85%;
-  }
-}
-
-/* =========================================================
-   🔙 BOTÃO BACK
-========================================================= */
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #007bff, #00b4d8);
-  color: white;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 6px rgba(0, 123, 255, 0.25);
   border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.back-btn::before {
-  content: "←";
-  display: inline-block;
-  font-weight: bold;
-  transition: transform 0.3s ease;
+.explore-btn:hover {
+  background-color: #1d4ed8;
 }
 
-.back-btn:hover::before {
-  transform: translateX(-4px);
+/* =======================
+   🔹 FOOTER
+======================= */
+footer {
+  background-color: #111827;
+  color: #e5e7eb;
+  text-align: center;
+  padding: 24px 16px;
+  margin-top: 60px;
 }
 
-.back-btn:hover {
-  background: linear-gradient(135deg, #0056b3, #007bff);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.35);
+footer a {
+  color: #93c5fd;
+  text-decoration: none;
 }
 
-.back-btn:active {
-  transform: scale(0.97);
+footer a:hover {
+  text-decoration: underline;
 }
 
-/* =========================================================
-   ⚙️ GESTÃO DE ITENS + MODAL
-========================================================= */
 
-.management-bar {
+
+
+
+
+
+
+
+/* ====== COLLECTION INFO ====== */
+.collection-info-section {
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 20px;
-  margin: 30px 0 40px;
+  padding: 20px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.manage-btn {
-  background: linear-gradient(135deg, #00b4d8, #007bff);
-  color: white;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 8px;
+.owner-photo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #2563eb;
+}
+
+.collection-meta p {
+  margin: 4px 0;
+  color: #374151;
+}
+
+/* ====== ITEMS GRID ====== */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  padding: 40px;
+}
+
+.item-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.item-card:hover {
+  transform: translateY(-4px);
+}
+
+.item-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.item-info {
+  padding: 10px;
+  text-align: left;
+}
+
+.item-info h4 {
   font-size: 1rem;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s ease, transform 0.2s ease;
+  margin-bottom: 4px;
 }
 
-.manage-btn:hover {
-  transform: translateY(-2px);
+.item-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #4b5563;
 }
 
-.manage-btn.add {
-  background: linear-gradient(135deg, #28a745, #20c997);
+.item-info li {
+  margin-bottom: 3px;
 }
 
-.manage-btn.edit {
-  background: linear-gradient(135deg, #ffc107, #ffb300);
-  color: #222;
+/* item mais valioso */
+.premium-item {
+  border: 3px solid gold;
+  box-shadow: 0 0 12px rgba(255,215,0,0.5);
 }
 
-.manage-btn.remove {
-  background: linear-gradient(135deg, #dc3545, #b02a37);
-}
-
-/* Botões dentro de cada card */
-.item-action {
-  display: none;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-body.manage-mode .item-action {
+/* ====== BUTTONS ====== */
+.item-buttons {
   display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
 }
 
-.item-action button {
+.item-buttons button {
+  flex: 1;
+  margin: 2px;
   border: none;
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: white;
-  transition: transform 0.2s ease, background 0.3s ease;
+  color: #fff;
 }
 
-.item-action button:hover {
-  transform: translateY(-2px);
-}
+.edit-btn { background: #2563eb; }
+.remove-btn { background: #dc2626; }
 
-.item-action .edit-item {
-  background: linear-gradient(135deg, #ffc107, #ffb300);
-  color: #222;
-}
-
-.item-action .remove-item {
-  background: linear-gradient(135deg, #dc3545, #b02a37);
-}
-
-/* ======= Modal ======= */
+/* ====== MODAL ====== */
 .modal {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 100;
 }
 
 .modal-content {
   background: #fff;
-  border-radius: 12px;
-  padding: 25px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 500px;
   position: relative;
 }
 
-.modal-content h2 {
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.save-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.cancel-btn {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+
+/* ===============================
+   🔹 BASE
+=============================== */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f8fafc;
+  color: #1f2937;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ===============================
+   🔹 HEADER DA COLEÇÃO (melhorado)
+=============================== */
+.collection-header {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  color: white;
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  flex-wrap: wrap;
+}
+
+.collection-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  flex: 1 1 100%;
   text-align: center;
+}
+
+/* BLOCO DE INFORMAÇÃO DO DONO */
+.owner-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex: 1 1 auto;
+}
+
+.owner-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 4px solid white;
+  background-color: #e5e7eb;
+  background-image: url(""); /* espaço reservado */
+  background-size: cover;
+  background-position: center;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  font-weight: 500;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.owner-photo::before {
+  content: attr(data-placeholder);
+}
+
+.owner-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.owner-details strong {
+  font-weight: 600;
+}
+
+/* ===============================
+   🔹 BOTÕES PRINCIPAIS (ADD)
+=============================== */
+.top-buttons {
+  text-align: center;
+  margin: 25px 0;
+}
+
+#add-item {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.25s ease;
+}
+
+#add-item:hover {
+  background-color: #1d4ed8;
+}
+
+/* ===============================
+   🔹 GRID DE ITENS
+=============================== */
+.collection-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.item-card {
+  background-color: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.item-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background-color: #e5e7eb;
+}
+
+.item-info {
+  padding: 15px;
+}
+
+.item-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 1.05rem;
+  color: #111827;
+}
+
+.item-info p {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+.item-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  font-size: 0.85rem;
+}
+
+.item-info li {
+  margin-bottom: 4px;
+}
+
+.item-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.item-buttons button {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 0;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background-color: #facc15; /* amarelo */
+  color: #1f2937;
+}
+
+.edit-btn:hover {
+  background-color: #eab308;
+}
+
+.remove-btn {
+  background-color: #ef4444; /* vermelho */
+  color: white;
+}
+
+.remove-btn:hover {
+  background-color: #dc2626;
+}
+
+/* ===============================
+   🔹 ITEM MAIS VALIOSO
+=============================== */
+.premium-item {
+  border: 3px solid gold;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+/* ===============================
+   🔹 MODAL
+=============================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-top: 0;
   margin-bottom: 15px;
+  color: #1f2937;
 }
 
 .modal-content label {
   display: block;
   margin-top: 10px;
-  font-weight: 600;
+  font-size: 0.9rem;
+  color: #374151;
 }
 
 .modal-content input,
 .modal-content textarea {
   width: 100%;
   padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  margin-top: 4px;
 }
 
 .modal-actions {
-  display: flex;
-  justify-content: space-between;
   margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .save-btn {
-  flex: 1;
-  background: linear-gradient(135deg, #007bff, #00b4d8);
+  background-color: #16a34a;
   color: white;
   border: none;
-  padding: 10px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s ease;
+  transition: background 0.2s;
+}
+
+.save-btn:hover {
+  background-color: #15803d;
 }
 
 .cancel-btn {
-  flex: 1;
-  margin-left: 10px;
-  background: #ccc;
+  background-color: #9ca3af;
+  color: white;
   border: none;
-  padding: 10px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: #6b7280;
+}
+
+/* ===============================
+   🔹 RESPONSIVIDADE
+=============================== */
+@media (max-width: 900px) {
+  .collection-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .owner-info {
+    flex-direction: column;
+  }
+
+  .collection-items {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+/* BOTÃO DE VOLTAR (BACK) ANIMADO */
+.back-btn {
+  background: white;
+  color: #2563eb;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-size: 1rem;
   font-weight: 600;
-}
-
-.close-btn {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 1.4rem;
   cursor: pointer;
-  color: #333;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.close-btn:hover {
-  color: #007bff;
+.back-btn::before {
+  content: "←";
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #eff6ff;
+  transform: translateX(-3px);
+}
+
+.back-btn:hover::before {
+  transform: translateX(-4px);
 }

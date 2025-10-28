@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-
   // ===============================
-  // 🔹 Detecta se estamos na página principal (collection_page.html)
+  // 🔹 1) Página principal (collection_page.html)
   // ===============================
   const exploreButtons = document.querySelectorAll(".explore-btn");
 
@@ -13,20 +12,15 @@ document.addEventListener("DOMContentLoaded", function () {
           alert("Collection ID missing.");
           return;
         }
-
-        // Redireciona para a página específica com o parâmetro id
         window.location.href = `specific_collection.html?id=${id}`;
       });
     });
-
-    // Impede o restante código de correr nesta página
-    return;
+    return; // Interrompe aqui — o resto do código é só para a página específica
   }
 
   // ===============================
-  // 🔹 Caso contrário, estamos na página specific_collection.html
+  // 🔹 2) Página específica (specific_collection.html)
   // ===============================
-
   const collections = {
     escudos: {
       name: "Escudos Portugueses",
@@ -38,7 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
         { title: "Escudo de 1960", description: "Moeda comemorativa rara.", value: 250, dateAdded: "2021-07-10", rarity: "Muito Raro", condition: "Excelente", image: "images/escudo1960.jpg" }
       ]
     },
-
     playboys: {
       name: "Playboys Portuguesas",
       owner: "Rui Frio",
@@ -50,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function () {
         { title: "Edição 2016", description: "Capa Fabiana Brito", value: 12, dateAdded: "2016-08-05", rarity: "Comum", condition: "Mau", image: "images/playboy1995.jpg" }
       ]
     },
-
     retratos: {
       name: "Retratos de Líderes Fascistas",
       owner: "André Fartura",
@@ -60,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
         { title: "Retrato de Salazar", description: "Pintura a óleo datada de 1940.", value: 300, dateAdded: "2018-09-10", rarity: "Raro", condition: "Bom", image: "images/salazar.jpg" }
       ]
     },
-
     pokemon: {
       name: "Cartas de Pokémon",
       owner: "Cristina Sem Feira",
@@ -71,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
         { title: "Charizard Holo", description: "Edição rara de 1ª geração.", value: 2000, dateAdded: "2022-04-22", rarity: "Muito Raro", condition: "Excelente", image: "images/charizard.jpg" }
       ]
     },
-
     camisolas: {
       name: "Camisolas de Futebol Autografadas",
       owner: "Rui Tosta",
@@ -101,18 +91,42 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // ========== Preencher informações da coleção ==========
-  if (titleEl) titleEl.textContent = data.name;
-  if (ownerName) ownerName.textContent = data.owner;
-  if (creationDate) creationDate.textContent = data.created;
-  if (ownerPhoto) ownerPhoto.src = data.ownerPhoto;
+  titleEl.textContent = data.name;
+  ownerName.textContent = data.owner;
+  creationDate.textContent = data.created;
+  ownerPhoto.src = data.ownerPhoto;
 
-  // ========== Carregar itens ==========
+  // ===============================
+  // 🔹 Funções auxiliares
+  // ===============================
+  function saveToStorage() {
+    localStorage.setItem(`collection_${id}`, JSON.stringify(data.items));
+  }
+
+  function loadFromStorage() {
+    const saved = localStorage.getItem(`collection_${id}`);
+    if (saved) {
+      try {
+        data.items = JSON.parse(saved);
+      } catch (e) {
+        console.error("Erro ao carregar localStorage:", e);
+      }
+    }
+  }
+
+  // ===============================
+  // 🔹 Renderização dos itens
+  // ===============================
   function renderCollection() {
     if (!itemsContainer) return;
+
+    loadFromStorage(); // Carrega do localStorage primeiro
+
     itemsContainer.innerHTML = "";
 
-    // encontrar item mais valioso
-    const topValue = Math.max(...data.items.map(i => i.value));
+    // Ordena por valor decrescente
+    data.items.sort((a, b) => b.value - a.value);
+    const topValue = data.items[0]?.value ?? 0;
 
     data.items.forEach((item) => {
       const card = document.createElement("div");
@@ -142,7 +156,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   renderCollection();
 
-  // ========== Modal ==========
+  // ===============================
+  // 🔹 Modal
+  // ===============================
   const modal = document.getElementById("item-modal");
   const openBtn = document.getElementById("add-item");
   const closeBtn = document.getElementById("close-modal");
@@ -177,9 +193,13 @@ document.addEventListener("DOMContentLoaded", function () {
   openBtn.addEventListener("click", () => openModal());
   closeBtn.addEventListener("click", closeModal);
   cancelBtn.addEventListener("click", closeModal);
-  window.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
 
-  // ========== Submissão ==========
+  // ===============================
+  // 🔹 Submissão
+  // ===============================
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const newItem = {
@@ -198,11 +218,14 @@ document.addEventListener("DOMContentLoaded", function () {
       data.items.push(newItem);
     }
 
+    saveToStorage();
     renderCollection();
     closeModal();
   });
 
-  // ========== Editar / Remover ==========
+  // ===============================
+  // 🔹 Editar / Remover
+  // ===============================
   itemsContainer.addEventListener("click", (e) => {
     if (e.target.classList.contains("edit-btn")) {
       const index = [...itemsContainer.children].indexOf(e.target.closest(".item-card"));
@@ -212,6 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const index = [...itemsContainer.children].indexOf(e.target.closest(".item-card"));
       if (confirm("Remover este item?")) {
         data.items.splice(index, 1);
+        saveToStorage();
         renderCollection();
       }
     }

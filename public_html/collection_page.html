@@ -1,132 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Collections</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="collection.css" />
+    </head>
 
-<head>
-  <meta charset="utf-8">
-  <title>Collection Page</title>
-  <meta name="description"
-    content="Manage and explore multiple types of collections: books, vinyl, stamps, coins, and more. View items, events, rankings and community highlights.">
-  <meta name="keywords" content="collections, items, events, books, vinyl, stamps, coins, retro games, hobby">
-  <meta name="author" content="EIS_2526-G03_MEGI">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <body>
+        <!-- ===============================
+             🔹 NAVIGATION BAR
+        =============================== -->
+        <header>
+            <nav class="navbar">
+                <div class="nav-left">
+                    <a href="home_page.html" class="logo">Colectio</a>
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                    <div class="dropdown">
+                        <button class="dropbtn">Collections ▾</button>
+                        <div class="dropdown-content">
+                            <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
+                            <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
+                            <a href="#" data-id="pokemon" class="jump-to">Cartas de Pokémon</a>
+                            <a href="#" data-id="retratos" class="jump-to">Retratos de Líderes Fascistas</a>
+                            <a href="#" data-id="camisolas" class="jump-to">Camisolas Autografadas</a>
+                        </div>
+                    </div>
+                </div>
 
-  <!-- Project stylesheet (CSS) -->
-  <link rel="stylesheet" href="../css/general.css">
-  <link rel="stylesheet" href="../css/collection.css">
+                <div class="nav-right">
+                    <a href="aboutus.html" class="nav-link">About Us</a>
+                    <a href="user_page.html" class="nav-link">Profile</a>
+                    <input type="search" class="search-bar" placeholder="Search..." />
+                </div>
+            </nav>
+        </header>
 
+        <!-- ===============================
+             🔹 MAIN CONTENT
+        =============================== -->
+        <main>
+            <h1 class="page-title">Our Collections</h1>
 
-  <!-- Google Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
+            <section class="collections-row">
+                <!-- ESCUDOS -->
+                <article class="collection-card">
+                    <div class="card-image">
+                        <img src="images/escudos.jpg" alt="Escudos Portugueses" />
+                    </div>
+                    <div class="card-info">
+                        <h3>Escudos Portugueses</h3>
+                        <p>Valentim Moureiro</p>
+                        <button class="explore-btn" data-id="escudos">Explore More</button>
+                    </div>
+                </article>
 
-<body>
-  <header>
-    <nav class="navbar">
-      <a href="../public_html/home_page.html">Home</a>
-      <div class="dropdown">
-        <a href="../public_html/collection_page.html" class="dropbtn">Collections</a>
-        <div class="dropdown-content">
-          <a href="#">Playboy Portuguesas</a>
-          <a href="#">Escudos Portugueses</a>
-          <a href="#">Cartas de Pokemon</a>
-        </div>
-      </div>
-      <a href="/Aboutus">About us</a>
-      <a href="../public_html/user_page.html">Login / Profile</a>
-      <input type="search" placeholder="Search">
-    </nav>
-  </header>
+                <!-- PLAYBOYS -->
+                <article class="collection-card">
+                    <div class="card-image">
+                        <img src="images/playboy.jpg" alt="Playboys Portuguesas" />
+                    </div>
+                    <div class="card-info">
+                        <h3>Playboys Portuguesas</h3>
+                        <p>Rui Frio</p>
+                        <button class="explore-btn" data-id="playboys">Explore More</button>
+                    </div>
+                </article>
 
-  <h1>Our Collections</h1>
+                <!-- RETRATOS -->
+                <article class="collection-card">
+                    <div class="card-image">
+                        <img src="images/salazar.jpg" alt="Retratos de Líderes Fascistas" />
+                    </div>
+                    <div class="card-info">
+                        <h3>Retratos de Líderes Fascistas</h3>
+                        <p>André Fartura</p>
+                        <button class="explore-btn" data-id="retratos">Explore More</button>
+                    </div>
+                </article>
 
-  <div class="collection-container">
-    <div class="collection-card">
-      <img src="images/escudos.jpg" alt="Art Collection" class="collection-image">
-      <div class="collection-content">
-        <h3 class="collection-title">Escudos Portugueses</h3>
-        <p class="collection-author">Valentim Moureiro</p>
-        <button class="explore-btn">Explore more</button>
-      </div>
-    </div>
+                <!-- POKÉMON -->
+                <article class="collection-card">
+                    <div class="card-image">
+                        <img src="images/pikachu.jpg" alt="Cartas de Pokémon" />
+                    </div>
+                    <div class="card-info">
+                        <h3>Cartas de Pokémon</h3>
+                        <p>Cristina Sem Feira</p>
+                        <button class="explore-btn" data-id="pokemon">Explore More</button>
+                    </div>
+                </article>
 
-    <div class="collection-card">
-      <img src="images/playboy.jpg" alt="Nature Collection" class="collection-image">
-      <div class="collection-content">
-        <h3 class="collection-title">Playboys Portuguesas</h3>
-        <p class="collection-author">Rui Frio</p>
-        <button class="explore-btn">Explore More</button>
-      </div>
-    </div>
+                <!-- CAMISOLAS -->
+                <article class="collection-card">
+                    <div class="card-image">
+                        <img src="images/porto.jpg" alt="Camisolas Autografadas" />
+                    </div>
+                    <div class="card-info">
+                        <h3>Camisolas Autografadas</h3>
+                        <p>Rui Tosta</p>
+                        <button class="explore-btn" data-id="camisolas">Explore More</button>
+                    </div>
+                </article>
+            </section>
+        </main>
 
-    <div class="collection-card">
-      <img src="images/salazar.jpg" alt="Architecture Collection" class="collection-image">
-      <div class="collection-content">
-        <h3 class="collection-title">Retratos de Líderes Fascistas</h3>
-        <p class="collection-author">André Fartura</p>
-        <button class="explore-btn">Explore More</button>
-      </div>
-    </div>
+        <!-- ===============================
+             🔹 FOOTER
+        =============================== -->
+        <footer>
+            <p>
+                Made with ❤️ by
+                <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+                    EIS_2526-G03_MEGI
+                </a>
+            </p>
+        </footer>
 
-    <div class="collection-card">
-      <img src="images/pikachu.jpg" alt="Tech Collection" class="collection-image">
-      <div class="collection-content">
-        <h3 class="collection-title">Cartas de Pokemon</h3>
-        <p class="collection-author">Cristina Sem Feira</p>
-        <button class="explore-btn">Explore More</button>
-      </div>
-    </div>
-
-    <div class="collection-card">
-      <img src="images/porto.jpg" alt="Fashion Collection" class="collection-image">
-      <div class="collection-content">
-        <h3 class="collection-title">Camisolas de Futebol Autografas</h3>
-        <p class="collection-author">Rui Tosta</p>
-        <button class="explore-btn">Explore More</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- =============== GLOBAL RODAPÉ (FOOTER) =============== -->
-  <footer>
-    <div class="footer-content">
-      <div class="footer-left">
-        <span class="small">
-          Made with ❤️ by
-          <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer"
-            class="text-decoration-none text-light fw-semibold">
-            EIS_2526-G03_MEGI
-          </a>
-        </span>
-      </div>
-
-    </div>
-  </footer>
-</body>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const buttons = document.querySelectorAll(".explore-btn");
-
-    buttons.forEach(button => {
-      button.addEventListener("click", () => {
-        const title = button.closest(".collection-card").querySelector(".collection-title").textContent.trim();
-
-        let id = "";
-        if (title.includes("Escudos")) id = "escudos";
-        else if (title.includes("Playboys")) id = "playboys";
-        else if (title.includes("Pokemon")) id = "pokemon";
-        else if (title.includes("Retratos")) id = "retratos";
-        else if (title.includes("Futebol")) id = "camisolas";
-
-        if (id) {
-          window.location.href = `specific_collection.html?id=${id}`;
-        }
-      });
-    });
-  });
-</script>
-
+        <script src="script.js"></script>
+    </body>
 </html>

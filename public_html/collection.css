@@ -315,25 +315,62 @@ footer a:hover {
   box-shadow: 0 0 12px rgba(255,215,0,0.5);
 }
 
-/* ====== BUTTONS ====== */
+/* ====== BUTTONS (modernos e responsivos) ====== */
 .item-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: 10px;
+  gap: 8px;
+  flex-wrap: wrap; /* 🔹 permite reorganizar em ecrãs pequenos */
 }
 
 .item-buttons button {
   flex: 1;
-  margin: 2px;
   border: none;
-  border-radius: 6px;
-  padding: 6px;
+  border-radius: 8px;
+  padding: 8px 0;
   cursor: pointer;
   color: #fff;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.edit-btn { background: #2563eb; }
-.remove-btn { background: #dc2626; }
+/* 🔹 Edit Button */
+.edit-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.edit-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+/* 🔹 Remove Button */
+.remove-btn {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+.remove-btn:hover {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+}
+
+/* 🔹 Responsividade */
+@media (max-width: 600px) {
+  .item-buttons {
+    flex-direction: column; /* empilha os botões */
+  }
+
+  .item-buttons button {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 10px 0;
+  }
+}
 
 /* ====== MODAL ====== */
 .modal {
@@ -413,9 +450,9 @@ a {
    🔹 HEADER DA COLEÇÃO (melhorado)
 =============================== */
 .collection-header {
-  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  background: #111827;
   color: white;
-  padding: 40px 20px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -495,63 +532,113 @@ a {
   cursor: pointer;
   font-weight: 500;
   transition: background 0.25s ease;
-}
 
+  /* 🔹 Centralização */
+  display: block;
+  margin: 30px auto; /* centraliza horizontalmente */
+  text-align: center;
+}
 #add-item:hover {
   background-color: #1d4ed8;
 }
 
 /* ===============================
-   🔹 GRID DE ITENS
+   🔹 GRID DE ITENS MODERNA
 =============================== */
+.top-buttons {
+  text-align: center;
+  margin: 35px 0 25px;
+}
+
+#add-item {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+#add-item:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+/* ====== NOVOS CARDS ====== */
 .collection-items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 30px;
   margin-top: 20px;
+  padding: 0 20px;
 }
 
 .item-card {
-  background-color: white;
-  border-radius: 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
 }
 
 .item-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.item-image-wrapper {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
 }
 
 .item-image {
   width: 100%;
-  height: 160px;
+  height: 100%;
   object-fit: cover;
-  background-color: #e5e7eb;
+  transition: transform 0.4s ease;
+}
+
+.item-card:hover .item-image {
+  transform: scale(1.08);
 }
 
 .item-info {
-  padding: 15px;
+  padding: 18px 16px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .item-info h4 {
-  margin: 0 0 5px 0;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #111827;
+  margin-bottom: 4px;
 }
 
 .item-info p {
   font-size: 0.9rem;
   color: #4b5563;
-  margin-bottom: 8px;
+  margin: 0;
 }
 
 .item-info ul {
   list-style: none;
   padding: 0;
-  margin: 0 0 10px 0;
+  margin: 6px 0 0;
   font-size: 0.85rem;
+  color: #374151;
 }
 
 .item-info li {
@@ -561,6 +648,8 @@ a {
 .item-buttons {
   display: flex;
   gap: 10px;
+  padding: 12px 16px 16px;
+  margin-top: auto;
 }
 
 .item-buttons button {
@@ -569,26 +658,9 @@ a {
   border-radius: 8px;
   padding: 8px 0;
   font-size: 0.85rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.edit-btn {
-  background-color: #facc15; /* amarelo */
-  color: #1f2937;
-}
-
-.edit-btn:hover {
-  background-color: #eab308;
-}
-
-.remove-btn {
-  background-color: #ef4444; /* vermelho */
-  color: white;
-}
-
-.remove-btn:hover {
-  background-color: #dc2626;
+  transition: all 0.25s ease;
 }
 
 /* ===============================
@@ -596,7 +668,7 @@ a {
 =============================== */
 .premium-item {
   border: 3px solid gold;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
 }
 
 /* ===============================
@@ -681,21 +753,19 @@ a {
 }
 
 /* ===============================
-   🔹 RESPONSIVIDADE
+   🔹 RESPONSIVO
 =============================== */
 @media (max-width: 900px) {
-  .collection-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-  }
-
-  .owner-info {
-    flex-direction: column;
-  }
-
   .collection-items {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  .item-image-wrapper {
+    height: 160px;
+  }
+
+  .item-info h4 {
+    font-size: 1rem;
   }
 }
 /* BOTÃO DE VOLTAR (BACK) ANIMADO */
@@ -810,4 +880,58 @@ a {
 
 .item-card:hover .item-image {
   transform: scale(1.05);
+}
+
+
+
+
+
+
+
+
+
+
+/* ==========================
+   🔹 FULLSCREEN LOADER
+========================== */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a); /* dark blue gradient */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* ensure it’s above all cards/navbars */
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Hidden state (fade out) */
+#loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Spinner centered */
+.spinner {
+  width: 70px;
+  height: 70px;
+  border: 6px solid rgba(255, 255, 255, 0.2);
+  border-top: 6px solid #3b82f6; /* your main blue */
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Content fades in nicely */
+#content {
+  opacity: 0;
+  transition: opacity 0.6s ease;
 }

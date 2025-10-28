@@ -9,76 +9,124 @@
 
 <body>
   <!-- ===============================
-       🔹 HEADER
+       🔹 FULLSCREEN LOADER
   =============================== -->
-  <header class="collection-header">
-    <a href="collection_page.html" class="back-btn">Back</a>
-    <h1 id="collection-title">Loading...</h1>
-  </header>
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
 
   <!-- ===============================
-       🔹 INFORMAÇÕES DA COLEÇÃO
+       🔹 MAIN CONTENT
   =============================== -->
-  <section id="collection-info" class="collection-info-section">
-    <img id="owner-photo" src="" alt="Owner Photo" class="owner-photo" />
-    <div class="collection-meta">
-      <p><strong>Owner:</strong> <span id="owner-name"></span></p>
-      <p><strong>Created:</strong> <span id="creation-date"></span></p>
-    </div>
-  </section>
+  <div id="content">
+    <!-- ===============================
+         🔹 HEADER
+    =============================== -->
+    <header class="collection-header">
+      <a href="collection_page.html" class="back-btn">Back</a>
+      <h1 id="collection-title">Loading...</h1>
+    </header>
 
-  <!-- ===============================
-       🔹 BOTÕES DE AÇÃO
-  =============================== -->
-  <section class="collection-controls">
-    <button id="add-item" class="btn add-btn">Adicionar Item</button>
-  </section>
+    <!-- ===============================
+         🔹 COLLECTION INFO
+    =============================== -->
+    <section id="collection-info" class="collection-info-section">
+      <img id="owner-photo" src="" alt="Owner Photo" class="owner-photo" />
+      <div class="collection-meta">
+        <p><strong>Owner:</strong> <span id="owner-name"></span></p>
+        <p><strong>Created:</strong> <span id="creation-date"></span></p>
+      </div>
+    </section>
 
-  <!-- ===============================
-       🔹 ITENS DA COLEÇÃO
-  =============================== -->
-  <main class="container">
-    <div id="collection-items" class="items-grid"></div>
-  </main>
+    <!-- ===============================
+         🔹 ACTION BUTTONS
+    =============================== -->
+    <section class="collection-controls">
+      <button id="add-item" class="btn add-btn">Adicionar Item</button>
+    </section>
 
-  <!-- ===============================
-       🔹 MODAL DE EDIÇÃO/ADICIONAR
-  =============================== -->
-  <div id="item-modal" class="modal">
-    <div class="modal-content">
-      <span id="close-modal" class="close-btn">&times;</span>
-      <h2 id="modal-title">Adicionar Item</h2>
+    <!-- ===============================
+         🔹 ITEMS GRID
+    =============================== -->
+    <main class="container">
+      <div id="collection-items" class="items-grid"></div>
+    </main>
 
-      <form id="item-form">
-        <label>Título:</label>
-        <input type="text" id="item-title" required />
+    <!-- ===============================
+         🔹 MODAL
+    =============================== -->
+    <div id="item-modal" class="modal">
+      <div class="modal-content">
+        <span id="close-modal" class="close-btn">&times;</span>
+        <h2 id="modal-title">Adicionar Item</h2>
 
-        <label>Descrição:</label>
-        <textarea id="item-description" required></textarea>
+        <form id="item-form">
+          <label>Título:</label>
+          <input type="text" id="item-title" required />
 
-        <label>Imagem (URL):</label>
-        <input type="text" id="item-image" />
+          <label>Descrição:</label>
+          <textarea id="item-description" required></textarea>
 
-        <label>Valor (€):</label>
-        <input type="number" id="item-value" required />
+          <label>Imagem (URL):</label>
+          <input type="text" id="item-image" />
 
-        <label>Data adicionada:</label>
-        <input type="date" id="item-date" />
+          <label>Valor (€):</label>
+          <input type="number" id="item-value" required />
 
-        <label>Raridade:</label>
-        <input type="text" id="item-rarity" />
+          <label>Data adicionada:</label>
+          <input type="date" id="item-date" />
 
-        <label>Condição:</label>
-        <input type="text" id="item-condition" />
+          <label>Raridade:</label>
+          <input type="text" id="item-rarity" />
 
-        <div class="modal-actions">
-          <button type="submit" class="save-btn">Guardar</button>
-          <button type="button" id="cancel-modal" class="cancel-btn">Cancelar</button>
-        </div>
-      </form>
+          <label>Condição:</label>
+          <input type="text" id="item-condition" />
+
+          <div class="modal-actions">
+            <button type="submit" class="save-btn">Guardar</button>
+            <button type="button" id="cancel-modal" class="cancel-btn">Cancelar</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
+  <!-- ===============================
+       🔹 SCRIPTS
+  =============================== -->
   <script src="script.js"></script>
+
+  <script>
+    // ==========================
+    // 🔹 LOADER LOGIC
+    // ==========================
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("loader");
+      const content = document.getElementById("content");
+
+      // Smooth fade-out
+      setTimeout(() => {
+        loader.classList.add("hidden");
+        content.style.opacity = "1";
+      }, 400);
+    });
+
+    // 🔹 Show loader between page navigations
+    document.querySelectorAll("a[href]").forEach(link => {
+      link.addEventListener("click", e => {
+        const href = link.getAttribute("href");
+        if (href && !href.startsWith("#") && !link.target) {
+          e.preventDefault();
+          const loader = document.getElementById("loader");
+          const content = document.getElementById("content");
+          content.style.opacity = "0";
+          loader.classList.remove("hidden");
+          setTimeout(() => {
+            window.location.href = href;
+          }, 500);
+        }
+      });
+    });
+  </script>
 </body>
 </html>

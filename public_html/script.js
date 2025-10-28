@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
   pokemon: {
     name: "Cartas de Pokémon",
     owner: "Cristina Sem Feira",
-    ownerPhoto: "images/cristina.jpg",
+    ownerPhoto: "../images/cristina.jpg",
     created: "2021-04-20",
     items: [
       { title: "Pikachu Base Set", description: "Carta clássica de 1999.", value: 150, dateAdded: "2021-06-18", rarity: "Comum", condition: "Excelente", image: "images/pikachu.jpg" },
@@ -244,3 +244,9 @@ data.items.forEach((item) => {
     }
   });
 });
+
+
+
+
+
+

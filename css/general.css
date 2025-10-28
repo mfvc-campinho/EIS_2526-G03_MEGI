@@ -11,8 +11,11 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  overflow-x: hidden;
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: #f0f2f5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header fixo opcional */

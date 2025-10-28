@@ -1,16 +1,8 @@
-body {
-  margin: 0;
-  font-family: Helvetica, Arial, sans-serif;
-  background-color: #f0f2f5;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 /* ---- TOP BAR ---- */
 .top-bar {
   width: 100%;
   background-color: #1877f2;
+  /* Mudar para a cor do header */
   color: white;
   text-align: center;
   padding: 16px 0;
@@ -184,107 +176,4 @@ hr {
     flex-direction: column;
     gap: 25px;
   }
-}
-
-
-/* GUEST VS COLLECTOR /*
-
-/* ------------------------------------------- */
-/* VARIÁVEIS DE ESTADO NO BODY */
-/* O body pode ter: (nenhuma classe), .is-guest, ou .is-collector */
-/* ------------------------------------------- */
-
-/* 1. REGRAS PARA QUANDO O UTILIZADOR É 'GUEST' */
-.is-guest .hidden-for-guest,
-.is-guest .hidden-for-collector {
-  /* Guests não veem nada de exclusivo para registados ou collectors */
-  display: none !important;
-}
-
-.is-guest .visible-for-guest {
-  /* Guests veem as mensagens de Guest */
-  display: block !important;
-  border: 1px solid blue;
-  padding: 10px;
-}
-
-
-/* 2. REGRAS PARA QUANDO O UTILIZADOR É 'COLLECTOR' */
-.is-collector .hidden-for-guest,
-.is-collector .visible-for-guest {
-  /* Collectors não veem conteúdo de Guest, mas veem conteúdo normal de registado */
-  display: none !important;
-}
-
-/* ------------------------------------------- */
-/* REGRAS PADRÃO (APLICA-SE QUANDO NÃO HÁ CLASSE DE ESTADO NO BODY) */
-/* ------------------------------------------- */
-
-/* Esconde o conteúdo "apenas para guest" por padrão */
-.visible-for-guest {
-  display: none;
-}
-
-/* Estiliza o indicador de utilizador no cabeçalho */
-#user-indicator {
-  display: inline-block;
-  min-width: 25px;
-  /* Garante espaço para o G ou C */
-  text-align: center;
-  border-radius: 50%;
-  background-color: #333;
-  color: white;
-  font-size: 0.7em;
-  padding: 3px 6px;
-  margin-left: 10px;
-  vertical-align: top;
-}
-
-
-/* ------------------------------------------- */
-/* REGRAS PADRÃO (BODY SEM CLASSE: ESTADO GUEST) */
-/* ------------------------------------------- */
-
-/* Conteúdo de Collector é escondido por padrão (para Guests) */
-.visible-for-collector {
-  display: none !important;
-}
-
-/* Conteúdo de Guest é visível por padrão */
-.visible-for-guest {
-  display: block;
-  border: 1px solid gray;
-  padding: 10px;
-}
-
-
-/* ------------------------------------------- */
-/* REGRAS PARA QUANDO O UTILIZADOR É 'COLLECTOR' (body tem .is-collector) */
-/* ------------------------------------------- */
-
-.is-collector .visible-for-collector {
-  /* Collectors veem o seu conteúdo */
-  display: block !important;
-  border: 1px solid green;
-  padding: 10px;
-}
-
-.is-collector .visible-for-guest {
-  /* Collectors não veem a mensagem de Guest */
-  display: none !important;
-}
-
-
-/* Estiliza o indicador de utilizador no cabeçalho */
-#user-indicator {
-  display: inline-block;
-  min-width: 25px;
-  text-align: center;
-  border-radius: 50%;
-  background-color: #333;
-  color: white;
-  font-size: 0.7em;
-  padding: 3px 6px;
-  margin-left: 10px;
-  vertical-align: top;
 }

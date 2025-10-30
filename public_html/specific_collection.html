@@ -68,9 +68,12 @@
                  🔹 ACTION BUTTONS
             =============================== -->
             <section class="collection-controls">
-                <a href="collection_page.html" class="btn back-btn">Back</a>
-                <button id="add-item" class="btn add-btn">Adicionar Item</button>
+                <div class="control-buttons">
+                    <a href="collection_page.html" class="btn back-btn">Back</a>
+                    <button id="add-item" class="btn add-btn">Adicionar Item</button>
+                </div>
             </section>
+
 
             <!-- ===============================
                  🔹 ITEMS GRID
@@ -124,36 +127,36 @@
         <script src="script.js"></script>
 
         <script>
-      // ==========================
-      // 🔹 LOADER LOGIC
-      // ==========================
-      window.addEventListener("load", () => {
-          const loader = document.getElementById("loader");
-          const content = document.getElementById("content");
+            // ==========================
+            // 🔹 LOADER LOGIC
+            // ==========================
+            window.addEventListener("load", () => {
+                const loader = document.getElementById("loader");
+                const content = document.getElementById("content");
 
-          // Smooth fade-out
-          setTimeout(() => {
-              loader.classList.add("hidden");
-              content.style.opacity = "1";
-          }, 400);
-      });
+                // Smooth fade-out
+                setTimeout(() => {
+                    loader.classList.add("hidden");
+                    content.style.opacity = "1";
+                }, 400);
+            });
 
-      // 🔹 Show loader between page navigations
-      document.querySelectorAll("a[href]").forEach(link => {
-          link.addEventListener("click", e => {
-              const href = link.getAttribute("href");
-              if (href && !href.startsWith("#") && !link.target) {
-                  e.preventDefault();
-                  const loader = document.getElementById("loader");
-                  const content = document.getElementById("content");
-                  content.style.opacity = "0";
-                  loader.classList.remove("hidden");
-                  setTimeout(() => {
-                      window.location.href = href;
-                  }, 500);
-              }
-          });
-      });
+            // 🔹 Show loader between page navigations
+            document.querySelectorAll("a[href]").forEach(link => {
+                link.addEventListener("click", e => {
+                    const href = link.getAttribute("href");
+                    if (href && !href.startsWith("#") && !link.target) {
+                        e.preventDefault();
+                        const loader = document.getElementById("loader");
+                        const content = document.getElementById("content");
+                        content.style.opacity = "0";
+                        loader.classList.remove("hidden");
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 500);
+                    }
+                });
+            });
         </script>
     </body>
 </html>

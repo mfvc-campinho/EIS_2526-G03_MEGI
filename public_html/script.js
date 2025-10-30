@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
   },
   camisolas: {
     name: "Camisolas de Futebol Autografadas",
-    owner: "Rui Tosta",
+    owner: "André Vilas Todas Boas",
     ownerPhoto: "images/rui_tosta.jpg",
     created: "2019-06-25",
     items: [

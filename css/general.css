@@ -136,3 +136,19 @@ body {
 }
 
 /* caso exista CSS antigo */
+
+footer {
+  margin-top: auto;         /* anchors footer at page bottom when content is short */
+  border-top: 1px solid rgba(0,0,0,.06);
+  background: #f7f8fb;      /* optional background */
+  color: #64748b;
+}
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* center horizontally (change to space-between if you add right block) */
+}
+

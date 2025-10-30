@@ -58,32 +58,26 @@ main h1.title::after {
   box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
 }
 
-
+/* Grid that auto-wraps with spacing */
 .Team {
   display: grid;
-  grid-template-columns: repeat(4, minmax(200px, 1fr)); /* 4 columns */
-  justify-items: center;
-  align-items: start;
-  gap: 30px;
-  width: 90%;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;              /* space between cards */
+  max-width: 1200px;
   margin: 0 auto;
-  box-sizing: border-box;
+  padding: 0 16px;        /* small side gutter */
 }
 
+/* Cards fill their column (no extra margins) */
 .member {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 22px;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  width: 100%;
-  max-width: 320px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;          /* <- centra horizontalmente tudo */
-  text-align: center;           /* <- garante texto centrado */
-  padding: 22px;                /* <- espaço interno para não colar à borda */
-  transition: transform .3s, box-shadow .3s;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
 }
+
 
 .member:hover {
   transform: translateY(-6px);
@@ -122,4 +116,8 @@ main h1.title::after {
   color: #eee;
   line-height: 1.4;
   font-weight: 300;
+}
+
+@media (max-width: 520px) {
+  main { padding-top: 64px; }             /* a touch tighter on small screens */
 }

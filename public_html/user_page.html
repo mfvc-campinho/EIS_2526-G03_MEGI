@@ -10,18 +10,35 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
   <meta charset="utf-8">
   <title>Coleções - Perfil</title>
   <link rel="stylesheet" href="../css/general.css">
+  <link rel="stylesheet" href="nav.css">
 </head>
 
 <body>
   <header>
-    <nav>
-      <input type="search" placeholder="Search bar">
-      <a href="/colecoes">Coleções</a>
-      <a href="/blog">Blogs</a>
-      <a href="/eventos">Eventos</a>
-      <a href="/login">Login</a>
-    </nav>
-  </header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="home_page.html" class="logo">GoodCollections</a>
+
+                <div class="dropdown">
+                    <button class="dropbtn">Collections ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
+                        <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
+                        <a href="#" data-id="pokemon" class="jump-to">Cartas de Pokémon</a>
+                        <a href="#" data-id="retratos" class="jump-to">Retratos de Líderes Fascistas</a>
+                        <a href="#" data-id="camisolas" class="jump-to">Camisolas Autografadas</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <a href="home_page.html" class="nav-link">Homepage</a>
+                <a href="team_page.html" class="nav-link">About Us</a>
+                <a href="user_page.html" class="nav-link">Profile</a>
+                <input type="search" class="search-bar" placeholder="Search..." />
+            </div>
+        </nav>
+    </header>
 
   <main>
     <h1>Dados da Conta</h1>

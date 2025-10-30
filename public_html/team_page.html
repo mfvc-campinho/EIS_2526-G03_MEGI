@@ -8,34 +8,41 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 <head>
   <meta charset="utf-8">
   <title>Coleções — Equipa</title>
-  <link rel="stylesheet" href="../css/nav.css">
+  <link rel="stylesheet" href="nav.css">
+  <link rel="stylesheet" href="Test_style.css">
   
 </head>
 
 <body>
-  <header>
-    <nav class="navbar">
-      <a href="../public_html/home_page.html">Home</a>
+    <header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="home_page.html" class="logo">GoodCollections</a>
 
-      <!-- 🔽 Drop-down menu -->
-      <div class="dropdown">
-        <a href="../public_html/collection_page.html" class="dropbtn">Collections ▾</a>
-        <div class="dropdown-content">
-          <a href="#">Playboy Portuguesas</a>
-          <a href="#">Escudos Portugueses</a>
-          <a href="#">Cartas de Pokemon</a>
-        </div>
-      </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Collections ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
+                        <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
+                        <a href="#" data-id="pokemon" class="jump-to">Cartas de Pokémon</a>
+                        <a href="#" data-id="retratos" class="jump-to">Retratos de Líderes Fascistas</a>
+                        <a href="#" data-id="camisolas" class="jump-to">Camisolas Autografadas</a>
+                    </div>
+                </div>
+            </div>
 
-      <a href="/Aboutus">About us</a>
-      <a href="../public_html/user_page.html">Login / Profile</a>
-
-      <input type="search" placeholder="Search">
-    </nav>
-  </header>
+            <div class="nav-right">
+                <a href="home_page.html" class="nav-link">Homepage</a>
+                <a href="team_page.html" class="nav-link">About Us</a>
+                <a href="user_page.html" class="nav-link">Profile</a>
+                <input type="search" class="search-bar" placeholder="Search..." />
+            </div>
+        </nav>
+    </header>
 
   <main>
-    <h1>Our awesome team:</h1>
+    <h1 class = "title">OUR AWESOME TEAM</h1>
+    
     <section class="Team">
 
       <div class="member">

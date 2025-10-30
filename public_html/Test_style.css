@@ -1,0 +1,125 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this template
+*/
+/* 
+    Created on : 21 de out. de 2025, 21:02:59
+    Author     : anaamorim
+*/
+
+/* -----------------Navigation bar-------------------*/
+
+
+
+/* Optional: keep navbar fixed at top */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #000;
+  padding-top: 10px;
+}
+
+
+/* ===== TEAM SECTION ===== */
+main {
+  color: white;
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  padding: 40px 0;
+}
+
+h1 {
+  margin-bottom: 40px;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: #2563eb;
+  
+}
+main { text-align: center; }
+
+main h1.title {
+  display: inline-block;     /* allows centering + width based on text */
+  margin: 0 auto 28px;       /* space under the title */
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: #2563eb;
+}
+
+main h1.title::after {
+  content: "";
+  display: block;            /* <-- pushes content below */
+  width: clamp(80px, 20vw, 140px);
+  height: clamp(3px, 0.6vw, 6px);
+  margin: 12px auto 0;       /* spacing below the title */
+  background: #2563eb;
+  background-size: 300% 100%;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+}
+
+
+.Team {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr)); /* 4 columns */
+  justify-items: center;
+  align-items: start;
+  gap: 30px;
+  width: 90%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.member {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;          /* <- centra horizontalmente tudo */
+  text-align: center;           /* <- garante texto centrado */
+  padding: 22px;                /* <- espaço interno para não colar à borda */
+  transition: transform .3s, box-shadow .3s;
+}
+
+.member:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* Round photo */
+.member img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #2563eb;
+  margin-bottom: 15px;
+  display: block;               /* <- necessário para margin:auto funcionar */
+  margin: 6px auto 14px;        /* <- centra e dá espaço em cima/baixo */
+}
+
+/* Member name */
+.member h2 {
+  font-size: 1.2rem;
+  margin: 10px 0 5px;
+  color: #2563eb;
+}
+
+/* Student ID */
+.member .id {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+/* Personal description */
+.member .desc {
+  font-size: 0.95rem;
+  color: #eee;
+  line-height: 1.4;
+  font-weight: 300;
+}

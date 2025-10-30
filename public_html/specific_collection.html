@@ -1,132 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Specific Collection</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="collection.css" />
-</head>
+    <head>
+        <meta charset="utf-8" />
+        <title>Specific Collection</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<body>
-  <!-- ===============================
-       🔹 FULLSCREEN LOADER
-  =============================== -->
-  <div id="loader">
-    <div class="spinner"></div>
-  </div>
+        <!-- Google Font -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- ===============================
-       🔹 MAIN CONTENT
-  =============================== -->
-  <div id="content">
-    <!-- ===============================
-         🔹 HEADER
-    =============================== -->
-    <header class="collection-header">
-      <a href="collection_page.html" class="back-btn">Back</a>
-      <h1 id="collection-title">Loading...</h1>
-    </header>
+        <!-- Navigation Bar Styles -->
+        <link rel="stylesheet" href="nav.css" />
 
-    <!-- ===============================
-         🔹 COLLECTION INFO
-    =============================== -->
-    <section id="collection-info" class="collection-info-section">
-      <img id="owner-photo" src="" alt="Owner Photo" class="owner-photo" />
-      <div class="collection-meta">
-        <p><strong>Owner:</strong> <span id="owner-name"></span></p>
-        <p><strong>Created:</strong> <span id="creation-date"></span></p>
-      </div>
-    </section>
+        <!-- Page-Specific Styles -->
+        <link rel="stylesheet" href="collection.css" />
+    </head>
 
-    <!-- ===============================
-         🔹 ACTION BUTTONS
-    =============================== -->
-    <section class="collection-controls">
-      <button id="add-item" class="btn add-btn">Adicionar Item</button>
-    </section>
 
-    <!-- ===============================
-         🔹 ITEMS GRID
-    =============================== -->
-    <main class="container">
-      <div id="collection-items" class="items-grid"></div>
-    </main>
+    <body>
+        <!-- ===============================
+             🔹 FULLSCREEN LOADER
+        =============================== -->
+        <div id="loader">
+            <div class="spinner"></div>
+        </div>
 
-    <!-- ===============================
-         🔹 MODAL
-    =============================== -->
-    <div id="item-modal" class="modal">
-      <div class="modal-content">
-        <span id="close-modal" class="close-btn">&times;</span>
-        <h2 id="modal-title">Adicionar Item</h2>
+        <!-- ===============================
+             🔹 MAIN CONTENT
+        =============================== -->
+        <div id="content">
+            <!-- ===============================
+                 🔹 HEADER
+            =============================== -->
+            <header class="collection-header">
+                <nav class="navbar">
+                    <div class="nav-left">
+                        <a href="home_page.html" class="logo">GoodCollections</a>
 
-        <form id="item-form">
-          <label>Título:</label>
-          <input type="text" id="item-title" required />
+                        <div class="dropdown">
+                            <button class="dropbtn">Collections</button>
+                        </div>
+                    </div>
 
-          <label>Descrição:</label>
-          <textarea id="item-description" required></textarea>
+                    <div class="nav-right">
+                        <a href="home_page.html" class="nav-link">Homepage</a>
+                        <a href="team_page.html" class="nav-link">About Us</a>
+                        <a href="user_page.html" class="nav-link">Profile</a>
+                        <input type="search" class="search-bar" placeholder="Search..." />
+                    </div>
+                </nav>
 
-          <label>Imagem (URL):</label>
-          <input type="text" id="item-image" />
+            </header>
+            <h1 id="collection-title">Loading...</h1>
 
-          <label>Valor (€):</label>
-          <input type="number" id="item-value" required />
 
-          <label>Data adicionada:</label>
-          <input type="date" id="item-date" />
+            <!-- ===============================
+                 🔹 COLLECTION INFO
+            =============================== -->
+            <section id="collection-info" class="collection-info-section">
+                <img id="owner-photo" src="" alt="Owner Photo" class="owner-photo" />
+                <div class="collection-meta">
+                    <p><strong>Owner:</strong> <span id="owner-name"></span></p>
+                    <p><strong>Created:</strong> <span id="creation-date"></span></p>
+                </div>
+            </section>
 
-          <label>Raridade:</label>
-          <input type="text" id="item-rarity" />
+            <!-- ===============================
+                 🔹 ACTION BUTTONS
+            =============================== -->
+            <section class="collection-controls">
+                <a href="collection_page.html" class="btn back-btn">Back</a>
+                <button id="add-item" class="btn add-btn">Adicionar Item</button>
+            </section>
 
-          <label>Condição:</label>
-          <input type="text" id="item-condition" />
+            <!-- ===============================
+                 🔹 ITEMS GRID
+            =============================== -->
+            <main class="container">
+                <div id="collection-items" class="items-grid"></div>
+            </main>
 
-          <div class="modal-actions">
-            <button type="submit" class="save-btn">Guardar</button>
-            <button type="button" id="cancel-modal" class="cancel-btn">Cancelar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+            <!-- ===============================
+                 🔹 MODAL
+            =============================== -->
+            <div id="item-modal" class="modal">
+                <div class="modal-content">
+                    <span id="close-modal" class="close-btn">&times;</span>
+                    <h2 id="modal-title">Adicionar Item</h2>
 
-  <!-- ===============================
-       🔹 SCRIPTS
-  =============================== -->
-  <script src="script.js"></script>
+                    <form id="item-form">
+                        <label>Título:</label>
+                        <input type="text" id="item-title" required />
 
-  <script>
-    // ==========================
-    // 🔹 LOADER LOGIC
-    // ==========================
-    window.addEventListener("load", () => {
-      const loader = document.getElementById("loader");
-      const content = document.getElementById("content");
+                        <label>Descrição:</label>
+                        <textarea id="item-description" required></textarea>
 
-      // Smooth fade-out
-      setTimeout(() => {
-        loader.classList.add("hidden");
-        content.style.opacity = "1";
-      }, 400);
-    });
+                        <label>Imagem (URL):</label>
+                        <input type="text" id="item-image" />
 
-    // 🔹 Show loader between page navigations
-    document.querySelectorAll("a[href]").forEach(link => {
-      link.addEventListener("click", e => {
-        const href = link.getAttribute("href");
-        if (href && !href.startsWith("#") && !link.target) {
-          e.preventDefault();
+                        <label>Valor (€):</label>
+                        <input type="number" id="item-value" required />
+
+                        <label>Data adicionada:</label>
+                        <input type="date" id="item-date" />
+
+                        <label>Raridade:</label>
+                        <input type="text" id="item-rarity" />
+
+                        <label>Condição:</label>
+                        <input type="text" id="item-condition" />
+
+                        <div class="modal-actions">
+                            <button type="submit" class="save-btn">Guardar</button>
+                            <button type="button" id="cancel-modal" class="cancel-btn">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===============================
+             🔹 SCRIPTS
+        =============================== -->
+        <script src="script.js"></script>
+
+        <script>
+      // ==========================
+      // 🔹 LOADER LOGIC
+      // ==========================
+      window.addEventListener("load", () => {
           const loader = document.getElementById("loader");
           const content = document.getElementById("content");
-          content.style.opacity = "0";
-          loader.classList.remove("hidden");
+
+          // Smooth fade-out
           setTimeout(() => {
-            window.location.href = href;
-          }, 500);
-        }
+              loader.classList.add("hidden");
+              content.style.opacity = "1";
+          }, 400);
       });
-    });
-  </script>
-</body>
+
+      // 🔹 Show loader between page navigations
+      document.querySelectorAll("a[href]").forEach(link => {
+          link.addEventListener("click", e => {
+              const href = link.getAttribute("href");
+              if (href && !href.startsWith("#") && !link.target) {
+                  e.preventDefault();
+                  const loader = document.getElementById("loader");
+                  const content = document.getElementById("content");
+                  content.style.opacity = "0";
+                  loader.classList.remove("hidden");
+                  setTimeout(() => {
+                      window.location.href = href;
+                  }, 500);
+              }
+          });
+      });
+        </script>
+    </body>
 </html>

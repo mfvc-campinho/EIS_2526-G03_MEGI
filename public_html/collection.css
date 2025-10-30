@@ -16,100 +16,6 @@ body {
   flex-direction: column;
 }
 
-/* =======================
-   🔹 NAVBAR
-======================= */
-.navbar {
-  background-color: #111827;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 32px;
-  flex-wrap: wrap;
-}
-
-.logo {
-  font-weight: 600;
-  font-size: 1.4rem;
-  color: white;
-  text-decoration: none;
-}
-
-.nav-left, .nav-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.nav-link {
-  color: #e5e7eb;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.nav-link:hover {
-  color: white;
-}
-
-.search-bar {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-  font-size: 0.9rem;
-}
-
-/* Dropdown */
-.dropdown {
-  position: relative;
-}
-
-.dropbtn {
-  background: none;
-  border: none;
-  color: #e5e7eb;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.dropbtn:hover {
-  color: #fff;
-}
-
-.dropdown-content {
-  position: absolute;
-  top: 40px;
-  left: 0;
-  background-color: #1f2937;
-  min-width: 220px;
-  border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-10px);
-  pointer-events: none;
-  transition: all 0.25s ease;
-  z-index: 10;
-}
-
-.dropdown-content a {
-  color: #e5e7eb;
-  padding: 10px 16px;
-  display: block;
-  text-decoration: none;
-}
-
-.dropdown-content a:hover {
-  background-color: #374151;
-}
-
-.dropdown:hover .dropdown-content {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
 
 /* =======================
    🔹 MAIN CONTENT
@@ -118,13 +24,6 @@ main {
   flex: 1;
   padding: 50px 60px;
   text-align: center;
-}
-
-.page-title {
-  font-size: 2.2rem;
-  font-weight: 600;
-  margin-bottom: 50px;
-  color: #111827;
 }
 
 /* =======================
@@ -233,34 +132,6 @@ footer a:hover {
 
 
 
-
-
-
-
-/* ====== COLLECTION INFO ====== */
-.collection-info-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.owner-photo {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #2563eb;
-}
-
-.collection-meta p {
-  margin: 4px 0;
-  color: #374151;
-}
-
 /* ====== ITEMS GRID ====== */
 .items-grid {
   display: grid;
@@ -316,13 +187,6 @@ footer a:hover {
 }
 
 /* ====== BUTTONS (modernos e responsivos) ====== */
-.item-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  gap: 8px;
-  flex-wrap: wrap; /* 🔹 permite reorganizar em ecrãs pequenos */
-}
 
 .item-buttons button {
   flex: 1;
@@ -350,11 +214,11 @@ footer a:hover {
 
 /* 🔹 Remove Button */
 .remove-btn {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  background: linear-gradient(135deg, darkblue, blue);
 }
 
 .remove-btn:hover {
-  background: linear-gradient(135deg, #dc2626, #991b1b);
+  background: linear-gradient(135deg, cyan, #991b1b);
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
 }
@@ -427,13 +291,7 @@ footer a:hover {
 /* ===============================
    🔹 BASE
 =============================== */
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #f8fafc;
-  color: #1f2937;
-  margin: 0;
-  padding: 0;
-}
+
 
 a {
   text-decoration: none;
@@ -444,102 +302,6 @@ a {
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
-}
-
-/* ===============================
-   🔹 HEADER DA COLEÇÃO (melhorado)
-=============================== */
-.collection-header {
-  background: #111827;
-  color: white;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-  flex-wrap: wrap;
-}
-
-.collection-header h1 {
-  font-size: 2rem;
-  margin: 0;
-  flex: 1 1 100%;
-  text-align: center;
-}
-
-/* BLOCO DE INFORMAÇÃO DO DONO */
-.owner-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  flex: 1 1 auto;
-}
-
-.owner-photo {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: 4px solid white;
-  background-color: #e5e7eb;
-  background-image: url(""); /* espaço reservado */
-  background-size: cover;
-  background-position: center;
-  object-fit: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #9ca3af;
-  font-size: 0.8rem;
-  font-weight: 500;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-}
-
-.owner-photo::before {
-  content: attr(data-placeholder);
-}
-
-.owner-details {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: white;
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-
-.owner-details strong {
-  font-weight: 600;
-}
-
-/* ===============================
-   🔹 BOTÕES PRINCIPAIS (ADD)
-=============================== */
-.top-buttons {
-  text-align: center;
-  margin: 25px 0;
-}
-
-#add-item {
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 1rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.25s ease;
-
-  /* 🔹 Centralização */
-  display: block;
-  margin: 30px auto; /* centraliza horizontalmente */
-  text-align: center;
-}
-#add-item:hover {
-  background-color: #1d4ed8;
 }
 
 /* ===============================
@@ -768,38 +530,6 @@ a {
     font-size: 1rem;
   }
 }
-/* BOTÃO DE VOLTAR (BACK) ANIMADO */
-.back-btn {
-  background: white;
-  color: #2563eb;
-  border: none;
-  border-radius: 50px;
-  padding: 12px 28px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.25s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.back-btn::before {
-  content: "←";
-  font-weight: bold;
-  transition: transform 0.3s ease;
-}
-
-.back-btn:hover {
-  background: #eff6ff;
-  transform: translateX(-3px);
-}
-
-.back-btn:hover::before {
-  transform: translateX(-4px);
-}
-
 
 
 
@@ -934,4 +664,232 @@ a {
 #content {
   opacity: 0;
   transition: opacity 0.6s ease;
+}
+
+
+/* ===============================
+   🔹 COLLECTION TITLE & BACK BUTTON
+=============================== */
+
+/* 🔹 Secção de controlo (título + botão) */
+.collection-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 40px 60px 10px;
+  background: #f8fafc;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+
+/* 🔹 Botão Back (com estilo semelhante ao Add) */
+.back-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.back-btn::before {
+  content: "←";
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.back-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+.back-btn:hover::before {
+  transform: translateX(-4px);
+}
+
+/* 🔹 Responsivo */
+@media (max-width: 700px) {
+  .collection-controls {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+
+}
+
+
+#collection-title {
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: 'Poppins', sans-serif;
+  margin: 50px auto 60px;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  position: relative;
+  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 0.9s ease-out forwards;
+  transition: color 0.3s ease;
+}
+
+#collection-title:hover {
+  color: #1e40af; /* Azul mais profundo ao hover */
+}
+
+/* 🔹 Linha animada em gradiente */
+#collection-title::after {
+  content: "";
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 5px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
+  background-size: 300% 100%;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+  animation: gradientMove 3s infinite linear;
+}
+
+/* 🔹 Entrada suave */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🔹 Movimento subtil do gradiente */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* 🔹 Responsivo */
+@media (max-width: 768px) {
+  #collection-title {
+    font-size: 2.1rem;
+    margin: 40px auto 45px;
+  }
+
+  #collection-title::after {
+    width: 100px;
+    height: 4px;
+  }
+}
+
+
+/* ===============================
+   🔹 TÍTULO PRINCIPAL (OUR COLLECTIONS)
+=============================== */
+/* ===============================
+   🔹 TÍTULO PRINCIPAL (OUR COLLECTIONS)
+=============================== */
+main h1.page-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw + 0.5rem, 3.2rem);
+  line-height: 1.2;
+
+  /* Gradiente animado */
+  background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 8s ease-in-out infinite;
+
+  /* Espaçamento e posição */
+  margin: clamp(2rem, 5vw, 4rem) auto clamp(1.5rem, 4vw, 3rem);
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  position: relative;
+
+  /* Animação inicial */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 1s ease-out forwards, gradientShift 8s linear infinite;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* 🔹 Barra inferior animada e responsiva */
+main h1.page-title::after {
+  content: "";
+  position: absolute;
+  bottom: -0.8em;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(80px, 20vw, 140px);
+  height: clamp(3px, 0.6vw, 6px);
+  background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
+  background-size: 300% 100%;
+  border-radius: 4px;
+  animation: gradientShift 8s linear infinite;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+  transition: all 0.4s ease;
+}
+
+/* 🔹 Efeitos de hover (funcionais e visíveis) */
+main h1.page-title:hover {
+  transform: scale(1.06);
+  filter: brightness(1.2);
+}
+
+main h1.page-title:hover::after {
+  width: clamp(100px, 22vw, 160px);
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.6);
+  animation-direction: reverse; /* Inverte o gradiente no hover */
+}
+
+/* 🔹 Animação de entrada */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🔹 Gradiente em movimento contínuo */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 🔹 Responsivo */
+@media (max-width: 600px) {
+  main h1.page-title {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  main h1.page-title::after {
+    bottom: -0.6em;
+    width: 70px;
+  }
 }

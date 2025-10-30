@@ -11,18 +11,18 @@
 
 <body>
   <!-- ===============================
-         🔹 FULLSCREEN LOADER
+         FULLSCREEN LOADER
     =============================== -->
   <div id="loader">
     <div class="spinner"></div>
   </div>
 
   <!-- ===============================
-         🔹 PAGE CONTENT
+         PAGE CONTENT
     =============================== -->
   <div id="content">
     <!-- ===============================
-           🔹 NAVIGATION BAR
+           NAVIGATION BAR
       =============================== -->
     <header>
       <nav class="navbar">
@@ -30,14 +30,8 @@
           <a href="home_page.html" class="logo">GoodCollections</a>
 
           <div class="dropdown">
-            <button class="dropbtn">Collections ▾</button>
-            <div class="dropdown-content">
-              <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
-              <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
-              <a href="#" data-id="pokemon" class="jump-to">Cartas de Pokémon</a>
-              <a href="#" data-id="retratos" class="jump-to">Retratos de Líderes Fascistas</a>
-              <a href="#" data-id="camisolas" class="jump-to">Camisolas Autografadas</a>
-            </div>
+            <button class="dropbtn">Collections &#9662;</button>
+            <div class="dropdown-content" id="collectionsDropdown"></div>
           </div>
         </div>
 
@@ -51,80 +45,20 @@
     </header>
 
     <!-- ===============================
-           🔹 MAIN CONTENT
+           MAIN CONTENT
       =============================== -->
     <main>
       <h1 class="page-title">Our Collections</h1>
 
-      <section class="collections-row">
-        <!-- ESCUDOS -->
-        <article class="collection-card">
-          <div class="card-image">
-            <img src="../images/.jpeg" alt="Escudos Portugueses" />
-          </div>
-          <div class="card-info">
-            <h3>Escudos Portugueses</h3>
-            <p>Valentim Moureiro</p>
-            <button class="explore-btn" data-id="escudos">Explore More</button>
-          </div>
-        </article>
-
-        <!-- PLAYBOYS -->
-        <article class="collection-card">
-          <div class="card-image">
-            <img src="../images/playboy.jpg" alt="Playboys Portuguesas" />
-          </div>
-          <div class="card-info">
-            <h3>Playboys Portuguesas</h3>
-            <p>Rui Frio</p>
-            <button class="explore-btn" data-id="playboys">Explore More</button>
-          </div>
-        </article>
-
-        <!-- RETRATOS -->
-        <article class="collection-card">
-          <div class="card-image">
-            <img src="../images/salazar.jpg" alt="Retratos de Líderes Fascistas" />
-          </div>
-          <div class="card-info">
-            <h3>Retratos de Líderes Fascistas</h3>
-            <p>André Fartura</p>
-            <button class="explore-btn" data-id="retratos">Explore More</button>
-          </div>
-        </article>
-
-        <!-- POKÉMON -->
-        <article class="collection-card">
-          <div class="card-image">
-            <img src="images/pikachu.jpg" alt="Cartas de Pokémon" />
-          </div>
-          <div class="card-info">
-            <h3>Cartas de Pokémon</h3>
-            <p>Cristina Sem Feira</p>
-            <button class="explore-btn" data-id="pokemon">Explore More</button>
-          </div>
-        </article>
-
-        <!-- CAMISOLAS -->
-        <article class="collection-card">
-          <div class="card-image">
-            <img src="images/porto.jpg" alt="Camisolas Autografadas" />
-          </div>
-          <div class="card-info">
-            <h3>Camisolas Autografadas</h3>
-            <p>Rui Tosta</p>
-            <button class="explore-btn" data-id="camisolas">Explore More</button>
-          </div>
-        </article>
-      </section>
+      <section class="collections-row" id="collectionsRow"></section>
     </main>
 
     <!-- ===============================
-           🔹 FOOTER
+           FOOTER
       =============================== -->
     <footer>
       <p>
-        Made with ❤️ by
+        Made with love by
         <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
           EIS_2526-G03_MEGI
         </a>
@@ -133,26 +67,25 @@
   </div>
 
   <!-- ===============================
-         🔹 SCRIPTS
+         SCRIPTS
     =============================== -->
+  <script src="collectionsData.js"></script>
+  <script src="script_1.js"></script>
   <script src="script.js"></script>
 
   <script>
-    // ==========================
-    // 🔹 LOADER LOGIC
-    // ==========================
+    // Loader logic
     window.addEventListener("load", () => {
       const loader = document.getElementById("loader");
       const content = document.getElementById("content");
 
-      // Fade out the loader after everything loads
       setTimeout(() => {
         loader.classList.add("hidden");
         content.style.opacity = "1";
       }, 400);
     });
 
-    // 🔹 Show loader when navigating between pages
+    // Smooth loader on navigation
     document.querySelectorAll("a[href]").forEach(link => {
       link.addEventListener("click", e => {
         const href = link.getAttribute("href");

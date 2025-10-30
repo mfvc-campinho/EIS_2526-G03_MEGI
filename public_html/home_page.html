@@ -8,6 +8,7 @@
 
   <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/home_page.css">
+  <script src="collectionsData.js"></script>
   <script src="home_page.js"></script>
   <script src="general.js"></script>
 </head>
@@ -34,64 +35,14 @@
     <section class="ranking-section">
       <h2>Nosso Top 5 Ranking</h2>
 
-      <div class="collection-container">
-        <div class="collection-card" data-name="BooksLovedByCassandra" data-votes="120" data-added="2025-10-15"
-          data-items="42" data-user-chosen="true">
-          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
-          <div class="collection-content">
-            <h3 class="collection-title">BooksLovedByCassandra</h3>
-            <p class="collection-author">@Cassandra</p>
-            <button class="explore-btn">Explore more</button>
-          </div>
-        </div>
-
-        <div class="collection-card" data-name="Escolha do Cliente" data-votes="95" data-added="2025-10-22"
-          data-items="35" data-user-chosen="true">
-          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
-          <div class="collection-content">
-            <h3 class="collection-title">Escolha do Cliente</h3>
-            <p class="collection-author">Melhor relacao custo-beneficio</p>
-            <button class="explore-btn">Explore more</button>
-          </div>
-        </div>
-
-        <div class="collection-card" data-name="Em Ascensao" data-votes="88" data-added="2025-10-10" data-items="28"
-          data-user-chosen="false">
-          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
-          <div class="collection-content">
-            <h3 class="collection-title">Em Ascensao</h3>
-            <p class="collection-author">O produto que mais cresceu</p>
-            <button class="explore-btn">Explore more</button>
-          </div>
-        </div>
-
-        <div class="collection-card" data-name="Novidade" data-votes="67" data-added="2025-10-25" data-items="19"
-          data-user-chosen="false">
-          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
-          <div class="collection-content">
-            <h3 class="collection-title">Novidade</h3>
-            <p class="collection-author">Recentemente adicionado</p>
-            <button class="explore-btn">Explore more</button>
-          </div>
-        </div>
-
-        <div class="collection-card" data-name="Destaque do Mes" data-votes="105" data-added="2025-10-05"
-          data-items="50" data-user-chosen="true">
-          <img src="../images/coins.png" alt="Art Collection" class="collection-image">
-          <div class="collection-content">
-            <h3 class="collection-title">Destaque do Mes</h3>
-            <p class="collection-author">Excelente performance</p>
-            <button class="explore-btn">Explore more</button>
-          </div>
-        </div>
-      </div>
+      <div class="collection-container" id="homeCollections"></div>
     </section>
 
     <div class="ranking-actions">
-      <button class="other-btn" id="colectionAdd" onclick="alert('FALTA!')">+ Adicionar Colecoes</button>
+      <button class="other-btn" id="colectionAdd">+ Adicionar Colecoes</button>
       <button class="other-btn" id="colectionEdit" onclick="alert('FALTA!')">Editar Colecoes</button>
       <button class="other-btn" id="colectionDelete" onclick="alert('FALTA!')">Apagar Colecoes</button>
-      <button class="other-btn" onclick="window.location.href='collection_page.html'">
+      <button class="other-btn" onclick="window.location.href='collection_page_1.html'">
         Explore all Collections
       </button>
     </div>

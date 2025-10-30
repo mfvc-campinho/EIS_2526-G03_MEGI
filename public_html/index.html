@@ -22,7 +22,7 @@
   <div class="container">
     <!-- LOGIN SECTION (now on the left) -->
     <div class="left">
-      <form id="loginForm" onsubmit="alert('Login successful! (Demo version)')">
+      <form id="loginForm">
         <input type="email" id="email" placeholder="Email" required>
         <input type="password" id="password" placeholder="Password" required minlength="4">
         <button type="submit" id="login-collector" class="other-btn">Entrar</button>
@@ -40,12 +40,12 @@
     <div class="right" id="guestSection">
       <button type="button" class="new-account">Create new account</button>
       <hr>
-      <a href="home_page.html">
-        <button type="button" class="other-btn" id="guestBtn" onclick="alert('You’re browsing as a guest!')">Enter as
-          Guest</button>
+      <a href="home_page.html" id="guestLink">
+        <button type="button" class="other-btn" id="guestBtn">Enter as Guest</button>
       </a>
 
 
+      <script src="usersData.js"></script>
       <script src="index.js"></script>
     </div>
   </div>

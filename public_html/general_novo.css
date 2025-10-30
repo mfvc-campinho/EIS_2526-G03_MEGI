@@ -1,0 +1,222 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this template
+*/
+/* 
+    Created on : Oct 30, 2025, 9:45:12 PM
+    Author     : Utilizador
+*/
+
+/* ===============================
+   🔹 NAVIGATION BAR (GLOBAL)
+=============================== */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: whitesmoke;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.navbar {
+  background-color: #0d1320; /* dark navy */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 40px;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  flex-wrap: wrap;
+}
+
+/* === LOGO / BRAND === */
+.logo {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.logo:hover {
+  color: #d6d6d6;
+}
+
+/* === LEFT AND RIGHT SECTIONS === */
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* === NAVIGATION LINKS === */
+.nav-link {
+  color: #e5e7eb;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.25s ease;
+}
+
+.nav-link:hover {
+  color: white;
+}
+
+/* === SEARCH BAR === */
+.search-bar {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  background-color: #fff;
+  color: #111;
+}
+
+/* === DROPDOWN MENU === */
+.dropdown {
+  position: relative;
+}
+
+.dropbtn {
+  background: none;
+  border: none;
+  color: #e5e7eb;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.dropbtn:hover {
+  color: #fff;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 38px;
+  left: 0;
+  background-color: #1b2133;
+  min-width: 200px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 20;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px 14px;
+  color: #ddd;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.dropdown-content a:hover {
+  background-color: #2a3247;
+  color: white;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+
+/* ===============================
+   🔹 FOOTER — BARRA COMPLETA E VISÍVEL NO FUNDO
+=============================== */
+
+footer {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #0d1320;       /* mesma cor do cabeçalho */
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 120px;                   /* ⚡ aumenta visibilidade real */
+  z-index: 100;
+  margin-top: 80px;                /* separação natural do conteúdo */
+}
+
+/* Container interno */
+.footer-content {
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Texto e link */
+footer p {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+}
+
+footer a {
+  color: #00b3ff;
+  font-weight: 700;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+footer a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, #0078ff, #00b3ff);
+  border-radius: 4px;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+footer a:hover {
+  color: #00ccff;
+}
+
+footer a:hover::after {
+  width: 60%;
+}
+
+/* Ícone do coração */
+footer .heart {
+  color: #ff4d6d;
+  animation: pulse 1.5s infinite ease-in-out;
+  display: inline-block;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  footer {
+    height: 140px;
+  }
+
+  footer p {
+    font-size: 0.95rem;
+  }
+
+  .footer-content {
+    padding: 24px 16px;
+  }
+}

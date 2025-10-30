@@ -9,20 +9,14 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
         <!-- Navigation Bar Styles -->
-        <link rel="stylesheet" href="nav.css" />
+        <link rel="stylesheet" href="general_novo.css" />
 
         <!-- Page-Specific Styles -->
-        <link rel="stylesheet" href="collection.css" />
+        <link rel="stylesheet" href="IP_NOVO.css" />
     </head>
 
 
     <body>
-        <!-- ===============================
-             🔹 FULLSCREEN LOADER
-        =============================== -->
-        <div id="loader">
-            <div class="spinner"></div>
-        </div>
 
         <!-- ===============================
              🔹 MAIN CONTENT
@@ -37,7 +31,7 @@
                         <a href="home_page.html" class="logo">GoodCollections</a>
 
                         <div class="dropdown">
-                            <button class="dropbtn">Collections</button>
+                            <button onclick="window.location.href='collection_page.html'" class="dropbtn">Collections</button>
                         </div>
                     </div>
 
@@ -50,37 +44,23 @@
                 </nav>
 
             </header>
-            <h1 id="collection-title">Loading...</h1>
+            <main>
+                <h1 id="collection-title"></h1>
 
-
-            <!-- ===============================
-                 🔹 COLLECTION INFO
-            =============================== -->
-            <section id="collection-info" class="collection-info-section">
-                <img id="owner-photo" src="" alt="Owner Photo" class="owner-photo" />
-                <div class="collection-meta">
+                <div id="collection-meta">
+                    <img id="owner-photo" src="" alt="Owner photo" />
                     <p><strong>Owner:</strong> <span id="owner-name"></span></p>
                     <p><strong>Created:</strong> <span id="creation-date"></span></p>
                 </div>
-            </section>
 
-            <!-- ===============================
-                 🔹 ACTION BUTTONS
-            =============================== -->
-            <section class="collection-controls">
-                <div class="control-buttons">
-                    <a href="collection_page.html" class="btn back-btn">Back</a>
-                    <button id="add-item" class="btn add-btn">Adicionar Item</button>
+                <div id="buttons-bar">
+                    <a href="collection_page.html">Back</a>
+                    <button id="add-item">Adicionar Item</button>
                 </div>
-            </section>
 
-
-            <!-- ===============================
-                 🔹 ITEMS GRID
-            =============================== -->
-            <main class="container">
-                <div id="collection-items" class="items-grid"></div>
+                <section id="collection-items"></section>
             </main>
+
 
             <!-- ===============================
                  🔹 MODAL
@@ -119,44 +99,21 @@
                     </form>
                 </div>
             </div>
+
         </div>
+        <footer>
+            <p>
+                Made with ❤️ by
+                <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+                    EIS_2526-G03_MEGI
+                </a>
+            </p>
+        </footer>
 
         <!-- ===============================
              🔹 SCRIPTS
         =============================== -->
         <script src="script.js"></script>
 
-        <script>
-            // ==========================
-            // 🔹 LOADER LOGIC
-            // ==========================
-            window.addEventListener("load", () => {
-                const loader = document.getElementById("loader");
-                const content = document.getElementById("content");
-
-                // Smooth fade-out
-                setTimeout(() => {
-                    loader.classList.add("hidden");
-                    content.style.opacity = "1";
-                }, 400);
-            });
-
-            // 🔹 Show loader between page navigations
-            document.querySelectorAll("a[href]").forEach(link => {
-                link.addEventListener("click", e => {
-                    const href = link.getAttribute("href");
-                    if (href && !href.startsWith("#") && !link.target) {
-                        e.preventDefault();
-                        const loader = document.getElementById("loader");
-                        const content = document.getElementById("content");
-                        content.style.opacity = "0";
-                        loader.classList.remove("hidden");
-                        setTimeout(() => {
-                            window.location.href = href;
-                        }, 500);
-                    }
-                });
-            });
-        </script>
     </body>
 </html>

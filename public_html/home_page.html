@@ -6,8 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Main Menu</title>
 
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/home_page.css">
+        <link rel="stylesheet" href="general_novo.css">
+        <link rel="stylesheet" href="home_page.css">
         <script src="collectionsData.js"></script>
         <script src="home_page.js"></script>
         <script src="general.js"></script>
@@ -19,7 +19,7 @@
                 <a href="home_page.html" class="logo">GoodCollections</a>
 
                 <div class="dropdown">
-                    <button class="dropbtn">Collections ▾</button>
+                    <button onclick="window.location.href = 'collection_page.html'" class="dropbtn">Collections</button>
                     <div class="dropdown-content">
                         <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
                         <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
@@ -68,7 +68,16 @@
                 <button class="other-btn" onclick="window.location.href = 'collection_page_1.html'">
                     Explore all Collections
                 </button>
+
             </div>
+            <footer>
+                <p>
+                    Made with ❤️ by
+                    <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+                        EIS_2526-G03_MEGI
+                    </a>
+                </p>
+            </footer>
         </main>
     </body>
 

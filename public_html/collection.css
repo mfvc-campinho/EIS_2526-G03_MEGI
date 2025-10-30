@@ -1,882 +1,273 @@
-/* =======================
-   🔹 BASE
-======================= */
-* {
-  margin: 0;
-  padding: 0;
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this template
+*/
+/* 
+    Created on : Oct 25, 2025, 3:29:51 PM
+    Author     : Utilizador
+*/
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  /* evenly space all items */
+  background-color: lightseagreen;
+  padding: 25px 60px;
+  /* taller + wider */
+  border-radius: 50px;
+  border: 1px solid #2a2a2a;
+  width: 90%;
+  /* 👈 occupies more of the screen */
+  margin: 40px auto;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f3f4f6;
-  color: #1f2937;
-  min-height: 100vh;
+/* Navigation links */
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  /* thicker font */
+  font-size: 1.3rem;
+  /* 👈 larger text */
+  letter-spacing: 0.5px;
+  /* subtle spacing between letters */
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.navbar a:hover {
+  color: lightcyan;
+  transform: scale(1.5);
+  /* small grow on hover */
+}
+
+/* Search box styling */
+.navbar input[type="search"] {
+  background-color: white;
+  color: lightseagreen;
+  border: 1px solid #444;
+  border-radius: 25px;
+  padding: 10px 20px;
+  outline: none;
+  width: 220px;
+  /* slightly wider */
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.navbar input[type="search"]:focus {
+  background-color: lightgray;
+  border-color: lightgray;
+  color: black
+}
+
+/* Optional: keep navbar fixed at top */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: whitesmoke;
+  padding-top: 10px;
+}
+
+
+
+
+
+/*                    */
+
+
+
+.container {
   display: flex;
-  flex-direction: column;
+  background-color: DodgerBlue;
 }
 
+.container div {
+  background-color: #f1f1f1;
+  margin: 10px;
+  padding: 20px;
+  font-size: 30px;
+}
 
-/* =======================
-   🔹 MAIN CONTENT
-======================= */
-main {
-  flex: 1;
-  padding: 50px 60px;
+body {
+  margin: 0;
+  background-color: whitesmoke;
+  font-family: 'Poppins', 'Segoe UI', 'Roboto', sans-serif;
+  color: black
+}
+
+h1 {
   text-align: center;
+  margin-top: 30px;
+  color: #333;
 }
 
-/* =======================
-   🔹 COLLECTION CARDS
-======================= */
-.collections-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 30px;
-  justify-items: center;
-  align-items: stretch;
-  max-width: 1400px;
+.collection-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 25px;
+  max-width: 1200px;
+  /* keeps the layout centered */
   margin: 0 auto;
+  padding: 40px;
 }
 
-/* força 4 por linha em ecrãs grandes */
-@media (min-width: 1200px) {
-  .collections-row {
-    grid-template-columns: repeat(4, 1fr);
+.collection-card {
+  flex: 1 1 calc(25% - 25px);
+  /* 4 cards per row */
+  max-width: calc(25% - 25px);
+  box-sizing: border-box;
+}
+
+/* Responsiveness: fewer cards on smaller screens */
+@media (max-width: 900px) {
+  .collection-card {
+    flex: 1 1 calc(33.33% - 25px);
+    /* 3 per row */
+  }
+}
+
+@media (max-width: 600px) {
+  .collection-card {
+    flex: 1 1 calc(50% - 25px);
+    /* 2 per row */
+  }
+}
+
+@media (max-width: 400px) {
+  .collection-card {
+    flex: 1 1 100%;
+    /* 1 per row on mobile */
   }
 }
 
 .collection-card {
-  background-color: white;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  width: 100%;
-  max-width: 320px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 280px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .collection-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
-.card-image {
-  width: 100%;
-  height: 240px;
-  background-color: #d1d5db;
-  overflow: hidden;
+.collection-card {
+  flex: 1 1 calc(25% - 25px);
+  /* 4 cards per row */
+  max-width: calc(25% - 25px);
+  box-sizing: border-box;
 }
 
-.card-image img {
+.collection-image {
   width: 100%;
-  height: 100%;
+  height: 180px;
   object-fit: cover;
-  display: block;
 }
 
-.card-info {
-  padding: 20px;
+.collection-content {
+  padding: 18px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.card-info h3 {
-  margin-bottom: 6px;
-  font-size: 1.1rem;
-  color: #111827;
+.collection-title {
+  font-size: 1.1em;
+  margin: 0 0 8px;
+  color: #333;
 }
 
-.card-info p {
-  color: #6b7280;
-  font-size: 0.9rem;
-  margin-bottom: 14px;
+.collection-author {
+  color: #777;
+  font-size: 0.9em;
+  margin-bottom: 15px;
 }
 
 .explore-btn {
-  background-color: #2563eb;
-  color: white;
+  background: #007bff;
+  color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 0.9rem;
+  padding: 10px 15px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  font-size: 0.9em;
+  align-self: start;
+  transition: background 0.3s ease;
 }
 
 .explore-btn:hover {
-  background-color: #1d4ed8;
-}
-
-/* =======================
-   🔹 FOOTER
-======================= */
-footer {
-  background-color: #111827;
-  color: #e5e7eb;
-  text-align: center;
-  padding: 24px 16px;
-  margin-top: 60px;
-}
-
-footer a {
-  color: #93c5fd;
-  text-decoration: none;
-}
-
-footer a:hover {
-  text-decoration: underline;
+  background: #0056b3;
 }
 
 
 
 
 
-/* ====== ITEMS GRID ====== */
-.items-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
-  padding: 40px;
-}
 
-.item-card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-  overflow: hidden;
-  transition: transform 0.2s;
-}
 
-.item-card:hover {
-  transform: translateY(-4px);
-}
 
-.item-image {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-}
 
-.item-info {
-  padding: 10px;
-  text-align: left;
-}
 
-.item-info h4 {
-  font-size: 1rem;
-  margin-bottom: 4px;
-}
 
-.item-info ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-size: 0.85rem;
-  color: #4b5563;
-}
 
-.item-info li {
-  margin-bottom: 3px;
-}
-
-/* item mais valioso */
-.premium-item {
-  border: 3px solid gold;
-  box-shadow: 0 0 12px rgba(255,215,0,0.5);
-}
-
-/* ====== BUTTONS (modernos e responsivos) ====== */
-
-.item-buttons button {
-  flex: 1;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 0;
-  cursor: pointer;
-  color: #fff;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* 🔹 Edit Button */
-.edit-btn {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-}
-
-.edit-btn:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-}
-
-/* 🔹 Remove Button */
-.remove-btn {
-  background: linear-gradient(135deg, darkblue, blue);
-}
-
-.remove-btn:hover {
-  background: linear-gradient(135deg, cyan, #991b1b);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
-}
-
-/* 🔹 Responsividade */
-@media (max-width: 600px) {
-  .item-buttons {
-    flex-direction: column; /* empilha os botões */
-  }
-
-  .item-buttons button {
-    width: 100%;
-    font-size: 0.95rem;
-    padding: 10px 0;
-  }
-}
-
-/* ====== MODAL ====== */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-
-.modal-content {
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  width: 100%;
-  max-width: 500px;
+.dropdown {
   position: relative;
+  display: inline-block;
 }
 
-.close-btn {
+.dropbtn {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-content {
+  display: none;
+  /* escondido por padrão */
   position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.save-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-.cancel-btn {
-  background: #6b7280;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-}
-
-
-/* ===============================
-   🔹 BASE
-=============================== */
-
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* ===============================
-   🔹 GRID DE ITENS MODERNA
-=============================== */
-#add-item {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #fff;
-  border: none;
-  padding: 12px 26px;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-}
-
-#add-item:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
-}
-
-/* ====== NOVOS CARDS ====== */
-.collection-items {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 30px;
-  margin-top: 20px;
-  padding: 0 20px;
-}
-
-.item-card {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-}
-
-.item-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-}
-
-.item-image-wrapper {
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-  position: relative;
-}
-
-.item-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.item-card:hover .item-image {
-  transform: scale(1.08);
-}
-
-.item-info {
-  padding: 18px 16px;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.item-info h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 4px;
-}
-
-.item-info p {
-  font-size: 0.9rem;
-  color: #4b5563;
-  margin: 0;
-}
-
-.item-info ul {
-  list-style: none;
-  padding: 0;
-  margin: 6px 0 0;
-  font-size: 0.85rem;
-  color: #374151;
-}
-
-.item-info li {
-  margin-bottom: 4px;
-}
-
-.item-buttons {
-  display: flex;
-  gap: 10px;
-  padding: 12px 16px 16px;
-  margin-top: auto;
-}
-
-.item-buttons button {
-  flex: 1;
-  border: none;
+  background-color: white;
+  min-width: 220px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  padding: 8px 0;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-/* ===============================
-   🔹 ITEM MAIS VALIOSO
-=============================== */
-.premium-item {
-  border: 3px solid gold;
-  box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
-}
-
-/* ===============================
-   🔹 MODAL
-=============================== */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
+  z-index: 1;
+  top: 100%;
+  /* logo abaixo do botão */
   left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  justify-content: center;
-  align-items: center;
 }
 
-.modal-content {
-  background: white;
-  padding: 25px;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
-}
-
-.modal-content h2 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #1f2937;
-}
-
-.modal-content label {
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
   display: block;
-  margin-top: 10px;
-  font-size: 0.9rem;
-  color: #374151;
-}
-
-.modal-content input,
-.modal-content textarea {
-  width: 100%;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  margin-top: 4px;
-}
-
-.modal-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.save-btn {
-  background-color: #16a34a;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.save-btn:hover {
-  background-color: #15803d;
-}
-
-.cancel-btn {
-  background-color: #9ca3af;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.cancel-btn:hover {
-  background-color: #6b7280;
-}
-
-/* ===============================
-   🔹 RESPONSIVO
-=============================== */
-@media (max-width: 900px) {
-  .collection-items {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  }
-
-  .item-image-wrapper {
-    height: 160px;
-  }
-
-  .item-info h4 {
-    font-size: 1rem;
-  }
-}
-
-
-
-
-
-
-
-
-/* ====== COLLECTION INFO (corrigido e melhorado) ====== */
-.collection-info-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  padding: 40px 20px;
-  background: #f9fafb;
-  border-bottom: 2px solid #e5e7eb;
-  flex-wrap: wrap;
-}
-
-/* FOTO DO DONO (maior e com estilo de destaque) */
-.owner-photo {
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  border: 5px solid white;
-  background-color: #e5e7eb;
-  object-fit: cover;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.owner-photo:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
-}
-
-/* TEXTO DO DONO */
-.collection-meta {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #1f2937;
-  font-size: 1.1rem;
-  text-align: left;
-}
-
-.collection-meta p {
-  margin: 8px 0;
-  font-weight: 500;
-}
-
-.collection-meta strong {
-  color: #2563eb;
-}
-
-
-
-
-
-
-
-
-/* ====== IMAGEM DOS ITENS ====== */
-.item-image-wrapper {
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.item-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.item-card:hover .item-image {
-  transform: scale(1.05);
-}
-
-
-
-
-
-
-
-
-
-
-/* ==========================
-   🔹 FULLSCREEN LOADER
-========================== */
-#loader {
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, #0f172a, #1e3a8a); /* dark blue gradient */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; /* ensure it’s above all cards/navbars */
-  transition: opacity 0.6s ease, visibility 0.6s ease;
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Hidden state (fade out) */
-#loader.hidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-/* Spinner centered */
-.spinner {
-  width: 70px;
-  height: 70px;
-  border: 6px solid rgba(255, 255, 255, 0.2);
-  border-top: 6px solid #3b82f6; /* your main blue */
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Content fades in nicely */
-#content {
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-
-
-/* ===============================
-   🔹 COLLECTION TITLE & BACK BUTTON
-=============================== */
-
-/* 🔹 Secção de controlo (título + botão) */
-.collection-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 40px 60px 10px;
-  background: #f8fafc;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-
-/* 🔹 Botão Back (com estilo semelhante ao Add) */
-.back-btn {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 28px;
   font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transition: background 0.2s ease;
 }
 
-.back-btn::before {
-  content: "←";
-  font-weight: bold;
-  font-size: 1.2rem;
-  transition: transform 0.3s ease;
+.dropdown-content a:hover {
+  background-color: white;
+  color: black
 }
 
-.back-btn:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+/* Exibir o menu ao passar o mouse */
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 
-.back-btn:hover::before {
-  transform: translateX(-4px);
-}
-
-/* 🔹 Responsivo */
-@media (max-width: 700px) {
-  .collection-controls {
-    flex-direction: column;
-    text-align: center;
-    gap: 16px;
-  }
-
-}
-
-
-#collection-title {
-  text-align: center;
-  font-size: 2.8rem;
-  font-weight: 700;
-  color: #0f172a;
-  font-family: 'Poppins', sans-serif;
-  margin: 50px auto 60px;
-  letter-spacing: -0.5px;
-  text-transform: uppercase;
-  position: relative;
-  line-height: 1.2;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeSlideUp 0.9s ease-out forwards;
-  transition: color 0.3s ease;
-}
-
-#collection-title:hover {
-  color: #1e40af; /* Azul mais profundo ao hover */
-}
-
-/* 🔹 Linha animada em gradiente */
-#collection-title::after {
-  content: "";
-  position: absolute;
-  bottom: -14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140px;
-  height: 5px;
-  background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
-  background-size: 300% 100%;
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
-  animation: gradientMove 3s infinite linear;
-}
-
-/* 🔹 Entrada suave */
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 🔹 Movimento subtil do gradiente */
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
-
-/* 🔹 Responsivo */
-@media (max-width: 768px) {
-  #collection-title {
-    font-size: 2.1rem;
-    margin: 40px auto 45px;
-  }
-
-  #collection-title::after {
-    width: 100px;
-    height: 4px;
-  }
-}
-
-
-/* ===============================
-   🔹 TÍTULO PRINCIPAL (OUR COLLECTIONS)
-=============================== */
-main h1.page-title {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-
-  /* 🔹 Tamanho dinâmico e responsivo */
-  font-size: clamp(1.8rem, 4vw + 0.5rem, 3.2rem);
-  line-height: 1.2;
-
-  /* 🔹 Gradiente animado no texto */
-  background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
-  background-size: 300%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 8s ease-in-out infinite;
-
-  /* 🔹 Espaçamento adaptável */
-  margin: clamp(2rem, 5vw, 4rem) auto clamp(1.5rem, 4vw, 3rem);
-
-  letter-spacing: -0.5px;
-  text-transform: uppercase;
-  position: relative;
-
-  /* 🔹 Animação de entrada */
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeSlideUp 1s ease-out forwards, gradientShift 8s linear infinite;
-}
-
-/* 🔹 Barra inferior animada e responsiva */
-main h1.page-title::after {
-  content: "";
-  position: absolute;
-  bottom: -0.8em;
-  left: 50%;
-  transform: translateX(-50%);
-  width: clamp(80px, 20vw, 140px);
-  height: clamp(3px, 0.6vw, 6px);
-  background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
-  background-size: 300% 100%;
-  border-radius: 4px;
-  animation: gradientShift 8s linear infinite;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
-}
-
-/* 🔹 Animação de entrada */
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 🔹 Gradiente em movimento contínuo */
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* 🔹 Efeito hover subtil */
-main h1.page-title:hover {
-  transform: scale(1.02);
-  transition: transform 0.4s ease;
-}
-
-/* 🔹 Responsivo */
-@media (max-width: 600px) {
-  main h1.page-title {
-    text-transform: none;
-    letter-spacing: 0;
-  }
-
-  main h1.page-title::after {
-    bottom: -0.6em;
-    width: 70px;
-  }
+/* Efeito hover no botão principal */
+.dropdown:hover .dropbtn {
+  color: lightcyan;
+  transform: scale(1.1);
 }

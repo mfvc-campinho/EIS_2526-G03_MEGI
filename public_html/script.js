@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
   escudos: {
     name: "Escudos Portugueses",
     owner: "Valentim Moureiro",
-    ownerPhoto: "images/valentim.jpg",
+    ownerPhoto: "../images/valentim.jpg",
     created: "2018-04-10",
     items: [
       { title: "Escudo de 1950", description: "Moeda histórica de prata.", value: 120, dateAdded: "2020-03-15", rarity: "Raro", condition: "Muito Bom", image: "images/escudo1950.jpg" },

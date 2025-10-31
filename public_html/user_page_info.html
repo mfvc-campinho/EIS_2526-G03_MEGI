@@ -1,149 +1,83 @@
+
 <!DOCTYPE html>
 <!--
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/html.html to edit this template
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
 -->
 
-<html lang="en">
+<html lang="pt-PT">
+
 <head>
-  <meta charset="utf-8" />
-  <title>User page</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Your CSS -->
-  <link rel="stylesheet" href="general.css" />
-  <!-- Your dropdown JS (optional, if you use the navbar dropdown) -->
-  <script src="app.js" defer></script>
+  <meta charset="utf-8">
+  <title>Perfil</title>
+  <link rel="stylesheet" href="general.css">
+  
 </head>
+
 <body>
-  <!-- Header / Navbar -->
   <header>
-    <nav class="navbar">
-      <div class="nav-left">
-        <a href="home_page.html" class="logo">GoodCollections</a>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="home_page.html" class="logo">GoodCollections</a>
 
-        <div class="dropdown">
-          <button class="dropbtn">Collections ▾</button>
-          <div class="dropdown-content">
-            <a href="collection.html?id=escudos"  class="jump-to">Escudos Portugueses</a>
-            <a href="collection.html?id=pokemon"  class="jump-to">Cartas de Pokémon</a>
-            <a href="collection.html?id=selos"    class="jump-to">Selos</a>
-            <a href="collections_new.html"        class="jump-to">+ Create Collection</a>
-          </div>
-        </div>
-      </div>
+                <div class="dropdown">
+                    <button class="dropbtn">Collections ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
+                        <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
+                        <a href="#" data-id="pokemon" class="jump-to">Cartas de Pokémon</a>
+                        <a href="#" data-id="retratos" class="jump-to">Retratos de Líderes Fascistas</a>
+                        <a href="#" data-id="camisolas" class="jump-to">Camisolas Autografadas</a>
+                    </div>
+                </div>
+            </div>
 
-      <div class="nav-right">
-        <a href="home_page.html" class="nav-link">Homepage</a>
-        <a href="team_page.html" class="nav-link">About Us</a>
-        <a href="user_page.html" class="nav-link">Profile</a>
-        <input type="search" class="search-bar" placeholder="Search..." />
-      </div>
-    </nav>
-  </header>
+            <div class="nav-right">
+                <a href="home_page.html" class="nav-link">Homepage</a>
+                <a href="team_page.html" class="nav-link">About Us</a>
+                <a href="user_page.html" class="nav-link">Profile</a>
+                <input type="search" class="search-bar" placeholder="Search..." />
+            </div>
+        </nav>
+    </header>
 
   <main>
-    <!-- User header -->
+    <h1>Dados da Conta</h1>
     <section class="user-header" aria-labelledby="user-heading">
-      <img class="avatar" src="img/user-avatar.jpg" alt="User avatar" width="88" height="88" />
+      <img class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
       <div class="user-meta">
-        <h1 id="user-heading" class="title">Ana Amorim</h1>
-        <p class="user-sub">Collector since 2023 • 7 collections • 142 items</p>
+        <h1 id="user-name">Ana Amorim</h1>
       </div>
-      <a class="btn-primary" href="account.html">Manage account</a>
     </section>
+    <dl>
+      <dt>Nome</dt>
+      <dt>Nome de utilizador</dt>
+      <dt>Email</dt>
+      <dt>Palavra-passe</dt>
+      <dt>País</dt>
+      <dt>Bio</dt>
+      <dt>Membro desde</dt>
+      <dt>Visibilidade do perfil</dt>
+      
+    </dl>
 
-    <!-- Collections -->
-    <section class="user-section" aria-labelledby="collections-title">
-      <h2 id="collections-title" class="section-title">Your Collections</h2>
-
-      <!-- Grid uses your existing .Team + .member styles -->
-      <section class="Team" id="collectionsGrid">
-        <!-- Card 1 -->
-        <article class="member">
-          <img src="img/escudos.jpg" alt="Cover of Escudos Portugueses" />
-          <h3 class="card-title">Escudos Portugueses</h3>
-          <p class="id">23 items • Est. value €920</p>
-          <p class="desc">Notas e moedas históricas portuguesas.</p>
-          <a class="btn-primary" href="collection.html?id=escudos">Open collection</a>
-        </article>
-
-        <!-- Card 2 -->
-        <article class="member">
-          <img src="img/pokemon.jpg" alt="Cover of Cartas de Pokémon" />
-          <h3 class="card-title">Cartas de Pokémon</h3>
-          <p class="id">58 items • Est. value €1,560</p>
-          <p class="desc">Coleção vintage e sets recentes.</p>
-          <a class="btn-primary" href="collection.html?id=pokemon">Open collection</a>
-        </article>
-
-        <!-- Card 3 -->
-        <article class="member">
-          <img src="img/selos.jpg" alt="Cover of Selos" />
-          <h3 class="card-title">Selos</h3>
-          <p class="id">31 items • Est. value €280</p>
-          <p class="desc">Selos temáticos e edições especiais.</p>
-          <a class="btn-primary" href="collection.html?id=selos">Open collection</a>
-        </article>
-
-        <!-- Add more .member cards as needed -->
-      </section>
-
-      <!-- Create new -->
-      <p class="section-cta">
-        <a class="btn-secondary" href="collections_new.html">+ Create a new collection</a>
-      </p>
-    </section>
-
-    <!-- Upcoming Events -->
-    <section class="user-section" aria-labelledby="events-title">
-      <h2 id="events-title" class="section-title">Upcoming events</h2>
-
-      <ul class="events-list">
-        <li class="event">
-          <time datetime="2025-11-12">12 Nov 2025</time>
-          <div class="event-info">
-            <strong>Expo Miniaturas</strong>
-            <span class="tag">Escudos Portugueses</span>
-          </div>
-          <a class="event-link" href="events.html?collection=escudos">Details</a>
-        </li>
-
-        <li class="event">
-          <time datetime="2025-11-25">25 Nov 2025</time>
-          <div class="event-info">
-            <strong>Feira Filatélica</strong>
-            <span class="tag">Selos</span>
-          </div>
-          <a class="event-link" href="events.html?collection=selos">Details</a>
-        </li>
-
-        <li class="event">
-          <time datetime="2025-12-03">3 Dec 2025</time>
-          <div class="event-info">
-            <strong>Torneio TCG</strong>
-            <span class="tag">Pokémon</span>
-          </div>
-          <a class="event-link" href="events.html?collection=pokemon">Details</a>
-        </li>
-      </ul>
-
-      <p class="section-cta">
-        <a class="btn-secondary" href="events.html">View all events</a>
-      </p>
-    </section>
+    <p><a href="/terminar-sessao">Terminar sessão</a></p>
   </main>
 
-  <!-- Footer -->
-  <footer class="site-footer">
+  <footer>
     <div class="footer-content">
       <div class="footer-left">
         <span class="small">
           Made with ❤️ by
-          <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer" class="footer-link">EIS_2526-G03_MEGI</a>
+          <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer"
+            class="text-decoration-none text-light fw-semibold">
+            EIS_2526-G03_MEGI
+          </a>
         </span>
       </div>
+
     </div>
   </footer>
 </body>
-</html>
 
+</html>

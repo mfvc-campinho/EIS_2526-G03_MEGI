@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (collectionsRow && collectionsDropdown) {
     if (!store) {
-      console.error('collectionsStore indisponivel. Carrega collectionsData.js antes de script.js.');
+      console.error('collectionsStore indisponivel. Carrega collectionsData.js antes de collection_page.js.');
       collectionsRow.innerHTML = '';
       const empty = document.createElement('p');
       empty.className = 'empty-state';
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (!store) {
-    console.error('collectionsStore indisponivel. Carrega collectionsData.js antes de script.js.');
+    console.error('collectionsStore indisponivel. Carrega collectionsData.js antes de collection_page.js.');
     titleEl.textContent = 'Colecao nao encontrada.';
     return;
   }

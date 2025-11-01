@@ -4,8 +4,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const usersStore = window.usersStore;
+  const userStateUi = window.userStateUi;
   if (!usersStore) {
-    console.error('usersStore indisponivel. Carrega usersData.js antes de index.js.');
+    console.error('usersStore unavailable. Load usersData.js before index.js.');
   }
 
   const loginForm = document.getElementById('loginForm');
@@ -28,14 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getStoredUser() {
     const storedId = sessionStorage.getItem('userId');
-    if (!storedId || !usersStore) {
+    if (!storedId || !usersStore?.getById) {
       return null;
     }
-    const user = usersStore.getAll().find((entry) => entry.id === storedId) ?? null;
+
+    const user = usersStore.getById(storedId);
     if (!user) {
       sessionStorage.removeItem('userId');
     }
-    return user;
+    return user ?? null;
   }
 
   let currentUser = getStoredUser();
@@ -53,19 +55,29 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUi();
   }
 
+  function updateIndicatorFallback() {
+    if (!userIndicator) {
+      return;
+    }
+
+    const role = sessionStorage.getItem('userRole') ?? 'none';
+    if (currentUser?.name) {
+      userIndicator.textContent = currentUser.name;
+    } else if (role === 'C') {
+      userIndicator.textContent = 'Collector';
+    } else {
+      userIndicator.textContent = 'Guest';
+    }
+  }
+
   function updateUi() {
     const role = sessionStorage.getItem('userRole') ?? 'none';
-    const roleLabel = role === 'C' ? 'Collector' : 'Guest';
     const isLogged = Boolean(currentUser);
 
-    if (userIndicator) {
-      if (isLogged) {
-        userIndicator.textContent = `${currentUser.name} (${roleLabel})`;
-      } else if (role === 'none') {
-        userIndicator.textContent = 'Guest';
-      } else {
-        userIndicator.textContent = roleLabel;
-      }
+    if (userStateUi?.refresh) {
+      userStateUi.refresh();
+    } else {
+      updateIndicatorFallback();
     }
 
     if (loginForm) {
@@ -96,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', (event) => {
       event.preventDefault();
       if (!usersStore) {
-        alert('Nao foi possivel validar o login neste momento.');
+        alert('Unable to validate the login right now.');
         return;
       }
 
@@ -104,18 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = passwordInput?.value.trim() ?? '';
 
       if (!email || !password) {
-        alert('Preencha email e password.');
+        alert('Please enter your email and password.');
         return;
       }
 
       const account = usersStore.getByEmail(email);
       if (!account || account.password !== password) {
-        alert('Credenciais incorretas. Tente novamente.');
+        alert('Incorrect credentials. Please try again.');
         return;
       }
 
       setSessionForUser(account);
-      alert(`Bem-vindo, ${account.name}!`);
+      alert(`Welcome, ${account.name}!`);
 
       if (emailInput) emailInput.value = '';
       if (passwordInput) passwordInput.value = '';
@@ -136,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutCollectorButton.addEventListener('click', (event) => {
       event.preventDefault();
       setSessionForUser(null);
-      alert('Sessao terminada.');
+      alert('Session ended.');
       if (emailInput) emailInput.focus();
     });
   }
@@ -144,25 +156,25 @@ document.addEventListener('DOMContentLoaded', () => {
   if (createAccountBtn) {
     createAccountBtn.addEventListener('click', () => {
       if (!usersStore) {
-        alert('Nao foi possivel criar contas neste momento.');
+        alert('Unable to create accounts right now.');
         return;
       }
 
-      const name = prompt('Nome do utilizador:');
+      const name = prompt('User name:');
       if (name === null) return;
 
-      const email = prompt('Email do utilizador:');
+      const email = prompt('User email:');
       if (email === null) return;
 
-      const password = prompt('Password (minimo 4 caracteres):');
+      const password = prompt('Password (minimum 4 characters):');
       if (password === null) return;
 
       if (password.trim().length < 4) {
-        alert('A password deve ter pelo menos 4 caracteres.');
+        alert('Password must be at least 4 characters long.');
         return;
       }
 
-      const isCollector = confirm('Este utilizador deve ter perfil de Collector? (OK para Collector, Cancel para Guest)');
+      const isCollector = confirm('Should this user have Collector access? (OK for Collector, Cancel for Guest)');
       const role = isCollector ? 'C' : 'G';
 
       try {
@@ -172,9 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
           password,
           role
         });
-        alert(`Conta criada para ${newUser.name}. Pode iniciar sessao com o email ${newUser.email}.`);
+        alert(`Account created for ${newUser.name}. They can sign in with ${newUser.email}.`);
       } catch (error) {
-        alert(error.message || 'Nao foi possivel criar a conta.');
+        alert(error.message || 'Could not create the account.');
       }
     });
   }

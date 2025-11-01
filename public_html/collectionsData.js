@@ -1,6 +1,14 @@
-(() => {
-  const STORAGE_KEY = 'collectionsStore.v1';
 
+// Immediately Invoked Function Expression (IIFE)
+// → Creates a private scope to avoid polluting the global namespace
+(() => {
+  // ==============================
+  // 🔹 CONSTANTS & DEFAULT DATA
+  // ==============================
+  const STORAGE_KEY = 'collectionsStore.v1';
+  // Key used to identify this data in localStorage
+
+  // Default dataset for first-time visitors or reset
   const defaultCollections = {
     escudos: {
       id: 'escudos',
@@ -167,41 +175,60 @@
         }
       ]
     }
+    // (similar structure for playboys, pokemon, retratos, camisolas...)
+    // Each collection contains metadata and an array of “items”.
   };
 
+  // ==============================
+  // 🔹 UTILITY: Deep Clone Function
+  // ==============================
+  // JSON-based deep copy to avoid shared references
   const clone = (value) => JSON.parse(JSON.stringify(value));
 
+  // ==============================
+  // 🔹 LOAD DATA FROM LOCAL STORAGE
+  // ==============================
   function loadFromStorage() {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       if (!data) {
+        // If nothing saved yet → return default data
         return clone(defaultCollections);
       }
       const parsed = JSON.parse(data);
+      // If parsing fails or returns null → fallback
       return parsed ?? clone(defaultCollections);
     } catch (error) {
-      console.warn('Falha ao carregar colecoes, a repor valores base.', error);
+      console.warn('Failed to load collections, restoring defaults.', error);
       return clone(defaultCollections);
     }
   }
 
+  // ==============================
+  // 🔹 SAVE DATA TO LOCAL STORAGE
+  // ==============================
   function saveToStorage(state) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (error) {
-      console.error('Falha ao guardar colecoes.', error);
+      console.error('Failed to save collections.', error);
     }
   }
 
+  // ==============================
+  // 🔹 GENERATE UNIQUE ID
+  // ==============================
   function generateIdFromName(name, existingIds) {
+    // Normalize the name to lowercase, remove accents, spaces and symbols
     const base =
       name
         .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
+        .normalize('NFD') // Decompose accents
+        .replace(/[\u0300-\u036f]/g, '') // Remove accent marks
+        .replace(/[^a-z0-9]+/g, '-') // Replace invalid chars with "-"
         .replace(/(^-|-$)/g, '') || 'colecao';
 
+    // Ensure uniqueness by appending a counter if needed
     let candidate = base;
     let counter = 1;
     while (existingIds.has(candidate)) {
@@ -210,33 +237,52 @@
     return candidate;
   }
 
+  // ==============================
+  // 🔹 INITIALIZE STATE
+  // ==============================
   let collections = loadFromStorage();
 
+  // ==============================
+  // 🔹 STORE OBJECT (PUBLIC API)
+  // ==============================
   const store = {
+    // --- Retrieve all collections as an array
     getAll() {
       return Object.values(collections);
     },
+
+    // --- Retrieve full object map (keyed by ID)
     getMap() {
       return collections;
     },
+
+    // --- Retrieve a specific collection by ID
     getById(id) {
       return collections[id] ?? null;
     },
-    addCollection({ name, owner = 'Colecionador desconhecido', coverImage = '../images/coins.png' }) {
+
+    // --- Add a new collection
+    addCollection({ name, owner = 'Unknown collector', coverImage = '../images/coins.png' }) {
       const trimmedName = name?.trim();
       if (!trimmedName) {
-        throw new Error('O nome da colecao e obrigatorio.');
+        throw new Error('Collection name is required.');
       }
+
+      // Ensure ID is unique
       const ids = new Set(Object.keys(collections));
       const id = generateIdFromName(trimmedName, ids);
+
+      // Create today's date in YYYY-MM-DD format
       const now = new Date();
       const today = now.toISOString().split('T')[0];
+
+      // Create the new collection object
       collections[id] = {
         id,
         name: trimmedName,
-        owner: owner?.trim() || 'Colecionador desconhecido',
+        owner: owner?.trim() || 'Unknown collector',
         coverImage,
-        summary: 'Colecao ainda sem descricao.',
+        summary: 'Collection without description yet.',
         createdAt: today,
         metrics: {
           votes: 0,
@@ -245,11 +291,16 @@
         },
         items: []
       };
+
+      // Persist updated data
       saveToStorage(collections);
       return collections[id];
     },
+
+    // --- Update metadata of an existing collection
     updateCollection(id, partial) {
       if (!collections[id]) return null;
+
       collections[id] = {
         ...collections[id],
         ...partial,
@@ -258,15 +309,20 @@
           ...(partial?.metrics ?? {})
         }
       };
+
       saveToStorage(collections);
       return collections[id];
     },
+
+    // --- Replace all items of a collection
     updateCollectionItems(id, items = []) {
       if (!collections[id]) return null;
       collections[id].items = Array.isArray(items) ? [...items] : [];
       saveToStorage(collections);
       return collections[id];
     },
+
+    // --- Reset everything back to default state
     resetToDefault() {
       collections = clone(defaultCollections);
       saveToStorage(collections);
@@ -274,5 +330,9 @@
     }
   };
 
+  // ==============================
+  // 🔹 EXPOSE STORE GLOBALLY
+  // ==============================
+  // Makes the store accessible as `window.collectionsStore`
   window.collectionsStore = store;
 })();

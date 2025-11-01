@@ -1,179 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Collections</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Google Font -->
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<head>
+    <meta charset="utf-8" />
+    <title>Collections</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Navigation Bar Styles -->
-        <link rel="stylesheet" href="CP_NOVO.css" />
-        <link rel="stylesheet" href="general_novo.css" />
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <!-- Page-Specific Styles -->
-    </head>
+    <!-- Navigation Bar Styles -->
+    <link rel="stylesheet" href="CP_NOVO.css" />
+    <link rel="stylesheet" href="general_novo.css" />
 
-    <body>
-        <!-- ===============================
+    <!-- Page-Specific Styles -->
+</head>
+
+<body>
+    <!-- ===============================
              🔹 FULLSCREEN LOADER
         =============================== -->
-        <div id="loader">
-            <div class="spinner"></div>
-        </div>
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
 
-        <!-- ===============================
+    <!-- ===============================
              🔹 PAGE CONTENT
         =============================== -->
-        <div id="content">
-            <!-- ===============================
+    <div id="content">
+        <!-- ===============================
                  🔹 NAVIGATION BAR
             =============================== -->
-            <header>
-                <nav class="navbar">
-                    <div class="nav-left">
-                        <a href="home_page.html" class="logo">GoodCollections</a>
+        <header>
+            <nav class="navbar">
+                <div class="nav-left">
+                    <a href="home_page.html" class="logo">GoodCollections</a>
 
-                        <div class="dropdown">
-                            <button onclick="window.location.href='collection_page.html'" class="dropbtn">Collections</button>
-                            <div class="dropdown-content">
-                                <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
-                                <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
-                                <a href="#" data-id="pokemon" class="jump-to">Cartas de Pokémon</a>
-                                <a href="#" data-id="retratos" class="jump-to">Retratos de Líderes Fascistas</a>
-                                <a href="#" data-id="camisolas" class="jump-to">Camisolas Autografadas</a>
-                            </div>
+                    <div class="dropdown">
+                        <button onclick="window.location.href='collection_page.html'"
+                            class="dropbtn">Collections</button>
+                        <div class="dropdown-content" id="collectionsDropdown">
+                            <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
+                            <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
+                            <a href="#" data-id="pokemon" class="jump-to">Cartas de Pokémon</a>
+                            <a href="#" data-id="retratos" class="jump-to">Retratos de Líderes Fascistas</a>
+                            <a href="#" data-id="camisolas" class="jump-to">Camisolas Autografadas</a>
                         </div>
                     </div>
+                </div>
 
-                    <div class="nav-right">
-                        <a href="home_page.html" class="nav-link">Homepage</a>
-                        <a href="team_page.html" class="nav-link">About Us</a>
-                        <a href="user_page.html" class="nav-link">Profile</a>
-                        <input type="search" class="search-bar" placeholder="Search..." />
-                    </div>
-                </nav>
-            </header>
+                <div class="nav-right">
+                    <a href="home_page.html" class="nav-link">Homepage</a>
+                    <a href="team_page.html" class="nav-link">About Us</a>
+                    <a href="user_page.html" class="nav-link">Profile</a>
+                    <input type="search" class="search-bar" placeholder="Search..." />
+                </div>
+            </nav>
+        </header>
 
-            <!-- ===============================
-                 🔹 MAIN CONTENT
-            =============================== -->
-            <main>
-                <h1 class="page-title">Our Collections</h1>
-
-                <section class="collections-row">
-                    <!-- ESCUDOS -->
-                    <article class="collection-card">
-                        <div class="card-image">
-                            <img src="../images/.jpeg" alt="Escudos Portugueses" />
-                        </div>
-                        <div class="card-info">
-                            <h3>Escudos Portugueses</h3>
-                            <p>Valentim Moureiro</p>
-                            <button class="explore-btn" data-id="escudos">Explore More</button>
-                        </div>
-                    </article>
-
-                    <!-- PLAYBOYS -->
-                    <article class="collection-card">
-                        <div class="card-image">
-                            <img src="../images/playboy.jpg" alt="Playboys Portuguesas" />
-                        </div>
-                        <div class="card-info">
-                            <h3>Playboys Portuguesas</h3>
-                            <p>Rui Frio</p>
-                            <button class="explore-btn" data-id="playboys">Explore More</button>
-                        </div>
-                    </article>
-
-                    <!-- RETRATOS -->
-                    <article class="collection-card">
-                        <div class="card-image">
-                            <img src="../images/salazar.jpg" alt="Retratos de Líderes Fascistas" />
-                        </div>
-                        <div class="card-info">
-                            <h3>Retratos de Líderes Fascistas</h3>
-                            <p>André Fartura</p>
-                            <button class="explore-btn" data-id="retratos">Explore More</button>
-                        </div>
-                    </article>
-
-                    <!-- POKÉMON -->
-                    <article class="collection-card">
-                        <div class="card-image">
-                            <img src="images/pikachu.jpg" alt="Cartas de Pokémon" />
-                        </div>
-                        <div class="card-info">
-                            <h3>Cartas de Pokémon</h3>
-                            <p>Cristina Sem Feira</p>
-                            <button class="explore-btn" data-id="pokemon">Explore More</button>
-                        </div>
-                    </article>
-
-                    <!-- CAMISOLAS -->
-                    <article class="collection-card">
-                        <div class="card-image">
-                            <img src="images/porto.jpg" alt="Camisolas Autografadas" />
-                        </div>
-                        <div class="card-info">
-                            <h3>Camisolas Autografadas</h3>
-                            <p>Adnré Vilas Todas Boas</p>
-                            <button class="explore-btn" data-id="camisolas">Explore More</button>
-                        </div>
-                    </article>
-                </section>
-            </main>
-
-            <!-- ===============================
-                 🔹 FOOTER
-            =============================== -->
-            <footer>
-                <p>
-                    Made with ❤️ by
-                    <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
-                        EIS_2526-G03_MEGI
-                    </a>
-                </p>
-            </footer>
-        </div>
 
         <!-- ===============================
+         MAIN CONTENT
+    =============================== -->
+        <main>
+            <h1 class="page-title">Our Collections</h1>
+
+            <!-- Aqui o JS vai inserir as coleções -->
+            <section class="collections-row" id="collectionsRow"></section>
+
+        </main>
+        <!-- ===============================
+                 🔹 FOOTER
+            =============================== -->
+        <footer>
+            <p>
+                Made with ❤️ by
+                <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+                    EIS_2526-G03_MEGI
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- ===============================
              🔹 SCRIPTS
         =============================== -->
-        <script src="script.js"></script>
+    <script src="collectionsData.js"></script>
+    <script src="script.js"></script>
 
-        <script>
-            // ==========================
-            // 🔹 LOADER LOGIC
-            // ==========================
-            window.addEventListener("load", () => {
-                const loader = document.getElementById("loader");
-                const content = document.getElementById("content");
 
-                // Fade out the loader after everything loads
-                setTimeout(() => {
-                    loader.classList.add("hidden");
-                    content.style.opacity = "1";
-                }, 400);
+
+    <script>
+        // ==========================
+        // 🔹 LOADER LOGIC
+        // ==========================
+        window.addEventListener("load", () => {
+            const loader = document.getElementById("loader");
+            const content = document.getElementById("content");
+
+            // Fade out the loader after everything loads
+            setTimeout(() => {
+                loader.classList.add("hidden");
+                content.style.opacity = "1";
+            }, 400);
+        });
+
+        // 🔹 Show loader when navigating between pages
+        document.querySelectorAll("a[href]").forEach(link => {
+            link.addEventListener("click", e => {
+                const href = link.getAttribute("href");
+                if (href && !href.startsWith("#") && !link.target) {
+                    e.preventDefault();
+                    const loader = document.getElementById("loader");
+                    const content = document.getElementById("content");
+                    content.style.opacity = "0";
+                    loader.classList.remove("hidden");
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 500);
+                }
             });
+        });
+    </script>
+</body>
 
-            // 🔹 Show loader when navigating between pages
-            document.querySelectorAll("a[href]").forEach(link => {
-                link.addEventListener("click", e => {
-                    const href = link.getAttribute("href");
-                    if (href && !href.startsWith("#") && !link.target) {
-                        e.preventDefault();
-                        const loader = document.getElementById("loader");
-                        const content = document.getElementById("content");
-                        content.style.opacity = "0";
-                        loader.classList.remove("hidden");
-                        setTimeout(() => {
-                            window.location.href = href;
-                        }, 500);
-                    }
-                });
-            });
-        </script>
-    </body>
 </html>

@@ -1,30 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const gotoButton = document.getElementById('goto-change-state-button');
-  if (gotoButton) {
-    gotoButton.addEventListener('click', () => {
-      window.location.replace('index.html');
-    });
-  }
+  window.userStateUi?.refresh();
 
-  const userIndicator = document.getElementById('user-indicator');
   const userRole = sessionStorage.getItem('userRole');
-  if (userIndicator) {
-    userIndicator.textContent = userRole === 'C' ? 'Collector' : 'Guest';
-  }
-
   const addBtn = document.getElementById('colectionAdd');
   const editBtn = document.getElementById('colectionEdit');
   const deleteBtn = document.getElementById('colectionDelete');
+
   if (addBtn && editBtn && deleteBtn) {
-    if (userRole === 'C') {
-      addBtn.style.display = 'inline-block';
-      editBtn.style.display = 'inline-block';
-      deleteBtn.style.display = 'inline-block';
-    } else {
-      addBtn.style.display = 'none';
-      editBtn.style.display = 'none';
-      deleteBtn.style.display = 'none';
-    }
+    const isCollector = userRole === 'C';
+    addBtn.style.display = isCollector ? 'inline-block' : 'none';
+    editBtn.style.display = isCollector ? 'inline-block' : 'none';
+    deleteBtn.style.display = isCollector ? 'inline-block' : 'none';
   }
 
   const store = window.collectionsStore;
@@ -32,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('homeCollections');
 
   if (!store || !filter || !container) {
-    console.warn('Colections store indisponivel na homepage.');
+    console.warn('Collections store unavailable on the homepage.');
     return;
   }
 
@@ -108,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   filter.addEventListener('change', renderRanking);
 
   addBtn?.addEventListener('click', () => {
-    const name = prompt('Nome da nova colecao:');
+    const name = prompt('Name for the new collection:');
     if (!name) {
       return;
     }
@@ -117,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
       store.addCollection({ name });
       renderRanking();
     } catch (error) {
-      console.error('Falha ao adicionar colecao.', error);
-      alert('Nao foi possivel adicionar a colecao. Tente novamente.');
+      console.error('Failed to add collection.', error);
+      alert('Unable to add the collection. Please try again.');
     }
   });
 

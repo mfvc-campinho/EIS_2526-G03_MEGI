@@ -1,47 +1,51 @@
 (() => {
+  // Simple in-browser user store backed by localStorage.
   const STORAGE_KEY = 'usersStore.v1';
 
+  // Default collector accounts available on a fresh installation.
   const defaultUsers = [
     {
-      id: 'collector-demo',
-      name: 'Collector Demo',
+      id: 'collector1',
+      name: 'Ana',
       email: 'collector@goodcollections.test',
       password: 'collector123',
       role: 'C'
     },
     {
-      id: 'guest-demo',
-      name: 'Guest Demo',
-      email: 'guest@goodcollections.test',
-      password: 'guest1234',
-      role: 'G'
+      id: 'collector2',
+      name: 'Filipa',
+      email: 'collector1@goodcollections.test',
+      password: 'collector123',
+      role: 'C'
     }
   ];
 
   const clone = (value) => JSON.parse(JSON.stringify(value));
 
-  function loadFromStorage() {
+  function readUsers() {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
       if (!data) {
         return clone(defaultUsers);
       }
+
       const parsed = JSON.parse(data);
       if (!Array.isArray(parsed)) {
+        console.warn('usersStore: Stored users are invalid. Restoring defaults.');
         return clone(defaultUsers);
       }
       return parsed;
     } catch (error) {
-      console.warn('Falha ao carregar utilizadores, a repor valores base.', error);
+      console.warn('usersStore: Failed to load saved users. Restoring defaults.', error);
       return clone(defaultUsers);
     }
   }
 
-  function saveToStorage(users) {
+  function persistUsers(users) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
     } catch (error) {
-      console.error('Falha ao guardar utilizadores.', error);
+      console.error('usersStore: Failed to persist users.', error);
     }
   }
 
@@ -53,6 +57,7 @@
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
+
     if (!base) {
       base = `user-${Date.now()}`;
     }
@@ -62,17 +67,28 @@
     while (existingIds.has(candidate)) {
       candidate = `${base}-${counter++}`;
     }
+
     return candidate;
   }
 
-  let users = loadFromStorage();
+  let users = readUsers();
 
   const store = {
     getAll() {
+      // Return a new array so callers do not mutate the internal state.
       return [...users];
     },
     getByEmail(email) {
+      if (!email) {
+        return null;
+      }
       return users.find((user) => user.email.toLowerCase() === email.toLowerCase()) ?? null;
+    },
+    getById(id) {
+      if (!id) {
+        return null;
+      }
+      return users.find((user) => user.id === id) ?? null;
     },
     addUser({ name, email, password, role = 'C' }) {
       const trimmedEmail = email?.trim().toLowerCase();
@@ -80,10 +96,10 @@
       const trimmedPassword = password?.trim();
 
       if (!trimmedEmail || !trimmedPassword) {
-        throw new Error('Email e password sao obrigatorios.');
+        throw new Error('Email and password are required.');
       }
       if (this.getByEmail(trimmedEmail)) {
-        throw new Error('Ja existe uma conta com esse email.');
+        throw new Error('An account with this email already exists.');
       }
       if (!['C', 'G'].includes(role)) {
         role = 'C';
@@ -94,19 +110,19 @@
 
       const newUser = {
         id,
-        name: trimmedName || 'Utilizador sem nome',
+        name: trimmedName || 'Unnamed collector',
         email: trimmedEmail,
         password: trimmedPassword,
         role
       };
 
       users.push(newUser);
-      saveToStorage(users);
+      persistUsers(users);
       return newUser;
     },
     reset() {
       users = clone(defaultUsers);
-      saveToStorage(users);
+      persistUsers(users);
       return this.getAll();
     }
   };

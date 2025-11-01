@@ -1,17 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. LÓGICA DO INDICADOR DE UTILIZADOR
-  // O elemento é procurado (getElementById) DEPOIS de o DOM estar pronto.
-  const userIndicator = document.getElementById('user-indicator');
-  const userRole = sessionStorage.getItem('userRole');
-
-  if (userIndicator) {
-    if (userRole === 'C') {
-      userIndicator.textContent = 'Collector';
-    } else {
-      userIndicator.textContent = 'Guest';
-    }
+  const userStateUi = window.userStateUi;
+  if (userStateUi?.refresh) {
+    userStateUi.refresh();
+    return;
   }
 
+  const userIndicator = document.getElementById('user-indicator');
+  if (!userIndicator) {
+    return;
+  }
+
+  const userRole = sessionStorage.getItem('userRole');
+  userIndicator.textContent = userRole === 'C' ? 'Collector' : 'Guest';
 });
-
-

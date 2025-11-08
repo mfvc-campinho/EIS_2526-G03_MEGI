@@ -1,0 +1,167 @@
+{
+    escudos: {
+      id: 'escudos',
+      name: 'Escudos Portugueses',
+      owner: 'Valentim Moureiro',
+      coverImage: '../images/coins.png',
+      summary: 'Uma viagem as moedas historicas nacionais.',
+      createdAt: '2018-04-10',
+      metrics: {
+        votes: 120,
+        userChosen: true,
+        added: '2025-10-15'
+      },
+      items: [
+        {
+          title: 'Escudo de 1950',
+          description: 'Moeda historica de prata.',
+          value: 120,
+          dateAdded: '2020-03-15',
+          rarity: 'Raro',
+          condition: 'Muito Bom',
+          image: '../images/escudo1950.jpg'
+        },
+        {
+          title: 'Escudo de 1960',
+          description: 'Moeda comemorativa rara.',
+          value: 250,
+          dateAdded: '2021-07-10',
+          rarity: 'Muito Raro',
+          condition: 'Excelente',
+          image: '../images/escudo1960.jpg'
+        }
+      ]
+    },
+    playboys: {
+      id: 'playboys',
+      name: 'Playboys Portuguesas',
+      owner: 'Rui Frio',
+      coverImage: '../images/playboy.jpg',
+      summary: 'Colecao de edicoes iconicas portuguesas.',
+      createdAt: '2019-01-05',
+      metrics: {
+        votes: 95,
+        userChosen: true,
+        added: '2025-10-22'
+      },
+      items: [
+        {
+          title: 'Edicao 2011',
+          description: 'Capa Rita Pereira',
+          value: 5,
+          dateAdded: '2019-05-22',
+          rarity: 'Raro',
+          condition: 'Bom',
+          image: '../images/playboy.jpg'
+        },
+        {
+          title: 'Edicao 1995',
+          description: 'Capa Lenka da Silva',
+          value: 12,
+          dateAdded: '2020-11-05',
+          rarity: 'Muito Raro',
+          condition: 'Excelente',
+          image: '../images/lenka.jpg'
+        },
+        {
+          title: 'Edicao 2016',
+          description: 'Capa Fabiana Brito',
+          value: 12,
+          dateAdded: '2016-08-05',
+          rarity: 'Comum',
+          condition: 'Mau',
+          image: '../images/fabiana.jpg'
+        }
+      ]
+    },
+    pokemon: {
+      id: 'pokemon',
+      name: 'Cartas de Pokemon',
+      owner: 'Cristina Sem Feira',
+      coverImage: '../images/pikachu.jpg',
+      summary: 'Cartas raras e classicas da franquia.',
+      createdAt: '2021-04-20',
+      metrics: {
+        votes: 88,
+        userChosen: false,
+        added: '2025-10-10'
+      },
+      items: [
+        {
+          title: 'Pikachu Base Set',
+          description: 'Carta classica de 1999.',
+          value: 150,
+          dateAdded: '2021-06-18',
+          rarity: 'Comum',
+          condition: 'Excelente',
+          image: '../images/pikachu.jpg'
+        },
+        {
+          title: 'Charizard Holo',
+          description: 'Edicao rara de primeira geracao.',
+          value: 2000,
+          dateAdded: '2022-04-22',
+          rarity: 'Muito Raro',
+          condition: 'Excelente',
+          image: '../images/charizard.jpg'
+        }
+      ]
+    },
+    retratos: {
+      id: 'retratos',
+      name: 'Retratos de Lideres Fascistas',
+      owner: 'Andre Fartura',
+      coverImage: '../images/salazar.jpg',
+      summary: 'Registo historico de figuras controversas.',
+      createdAt: '2017-02-02',
+      metrics: {
+        votes: 67,
+        userChosen: false,
+        added: '2025-10-25'
+      },
+      items: [
+        {
+          title: 'Retrato de Salazar',
+          description: 'Pintura a oleo datada de 1940.',
+          value: 300,
+          dateAdded: '2018-09-10',
+          rarity: 'Raro',
+          condition: 'Bom',
+          image: '../images/salazar.jpg'
+        }
+      ]
+    },
+    camisolas: {
+      id: 'camisolas',
+      name: 'Camisolas Autografadas',
+      owner: 'Rui Tosta',
+      coverImage: '../images/porto.jpg',
+      summary: 'Reliquias assinadas por jogadores lendarios.',
+      createdAt: '2019-06-25',
+      metrics: {
+        votes: 105,
+        userChosen: true,
+        added: '2025-10-05'
+      },
+      items: [
+        {
+          title: 'Camisola FC Porto 2004',
+          description: 'Autografada por Deco e Ricardo Carvalho.',
+          value: 450,
+          dateAdded: '2020-03-12',
+          rarity: 'Raro',
+          condition: 'Excelente',
+          image: '../images/porto.jpg'
+        },
+        {
+          title: 'Camisola Benfica 2010',
+          description: 'Autografada por Aimar e Cardozo.',
+          value: 400,
+          dateAdded: '2021-09-03',
+          rarity: 'Raro',
+          condition: 'Muito Bom',
+          image: '../images/benfica.jpg'
+        }
+      ]
+    }
+  };

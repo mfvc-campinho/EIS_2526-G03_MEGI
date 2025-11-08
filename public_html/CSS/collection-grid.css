@@ -1,0 +1,226 @@
+/* ===============================================
+   🎨 COLLECTION GRID — Shared Styles
+   ------------------------------------------------
+   Usado tanto na collection_page.html quanto na
+   home_page.html (Top 5 Collections)
+   =============================================== */
+
+/* ===============================
+   🔹 PAGE TITLE
+=============================== */
+h1.page-title, h2.page-title {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 2.4rem;
+  color: #222;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+h1.page-title::after, h2.page-title::after {
+  content: "";
+  display: block;
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #0078ff, #00c6ff);
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* ===============================
+   🔹 COLLECTIONS GRID
+=============================== */
+.collection-container,
+.collections-row,
+#collections-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 50px;
+  max-width: 1400px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ===============================
+   🔹 COLLECTION CARD
+=============================== */
+.collection-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: calc(25% - 30px); /* 4 por linha */
+  min-width: 250px;
+  height: 420px; /* ligeiramente mais alto */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+}
+
+.collection-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* ===============================
+   🔹 CARD IMAGE
+=============================== */
+.card-image {
+  width: 100%;
+  height: 200px;
+  background-color: #eaeaea; /* fundo neutro */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+/* Placeholder se não houver imagem */
+.card-image:empty::after {
+  content: "No image available";
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* ===============================
+   🔹 CARD INFO
+=============================== */
+.card-info {
+  padding: 20px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.card-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: #222;
+  font-weight: 600;
+}
+
+.card-info p {
+  font-size: 0.95rem;
+  color: #777;
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   🔹 ITEM PREVIEW
+=============================== */
+.mini-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+}
+
+.mini-item-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.mini-item-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+
+.no-items {
+  font-size: 0.85rem;
+  color: #777;
+  font-style: italic;
+}
+
+
+/* ===============================
+   🔹 BUTTONS
+=============================== */
+.card-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: 20px;
+}
+
+.explore-btn {
+  background: linear-gradient(90deg, #0078ff, #00b3ff);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.explore-btn:hover {
+  background: linear-gradient(90deg, #0066dd, #009fe0);
+  transform: scale(1.05);
+}
+
+.explore-btn[style*="background:#ff5555"] {
+  background: #ff5555 !important;
+}
+
+.explore-btn[style*="background:#ff5555"]:hover {
+  background: #e04545 !important;
+  transform: scale(1.05);
+}
+
+/* ===============================
+   🔹 EXPLORE MORE DETAILS
+=============================== */
+.collection-details {
+  background: #f7f7f7;
+  border-top: 1px solid #ddd;
+  padding: 15px 20px;
+  text-align: left;
+  font-size: 0.95rem;
+  border-radius: 0 0 16px 16px;
+}
+
+.collection-details h4 {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* ===============================
+   🔹 RESPONSIVE FIXES
+=============================== */
+@media (max-width: 1200px) {
+  .collection-card {
+    width: calc(33.33% - 30px); /* 3 por linha */
+  }
+}
+
+@media (max-width: 900px) {
+  .collection-card {
+    width: calc(50% - 30px); /* 2 por linha */
+  }
+}
+
+@media (max-width: 600px) {
+  .collection-card {
+    width: 100%; /* 1 por linha */
+  }
+}

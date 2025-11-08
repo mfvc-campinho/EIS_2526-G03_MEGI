@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Main Menu - GoodCollections</title>
+
+    <!-- 🔹 CSS -->
+    <link rel="stylesheet" href="../CSS/general_novo.css" />
+    <link rel="stylesheet" href="../CSS/home_page.css" />
+    <link rel="stylesheet" href="../CSS/collection-grid.css" />
+    <style>
+        /* 🌟 Extra: estilo simples dos modais */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 400px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .crud-controls {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* ===============================
+   🔹 DETAILS LIST (EXPLORE MORE)
+    =============================== */
+        .details-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 20px 0;
+        }
+
+        .details-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+            padding: 6px 0;
+        }
+
+        .details-list img.mini-item-img {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* ===============================
+   🔹 CLEANER CARD LAYOUT
+    =============================== */
+
+        .mini-item-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+        }
+
+        .mini-item-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #444;
+            margin-bottom: 4px;
+        }
+
+        .mini-item-img {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #eee;
+            border: 1px solid #ddd;
+        }
+
+        .card-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .explore-btn {
+            background: linear-gradient(90deg, #0078ff, #00b3ff);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .explore-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #0066dd, #00a1e6);
+        }
+
+        .delete-btn {
+            background: linear-gradient(90deg, #ff4d4d, #ff6666);
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(90deg, #e63b3b, #ff4d4d);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 180px;
+            /* altura fixa para a capa */
+            background-color: #eaeaea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* ocupa toda a área, recortando se necessário */
+        }
+
+        .mini-item-img {
+            width: 28px;
+            height: 28px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+    </style>
+
+    <body>
+    <!-- 🔹 NAVIGATION -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="home_page.html" class="logo">GoodCollections</a>
+
+            <div class="dropdown">
+                <button onclick="window.location.href='collection_page.html'" class="dropbtn">Collections</button>
+                <div class="dropdown-content" id="collectionsDropdown">
+                    <!-- Este menu é populado dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <a href="home_page.html" class="nav-link">Homepage</a>
+            <a href="team_page.html" class="nav-link">About Us</a>
+            <a href="user_page.html" class="nav-link">Profile</a>
+            <input type="search" class="search-bar" placeholder="Search..." />
+        </div>
+    </nav>
+
+    <!-- 🔹 USER STATE -->
+    <div class="user-state-indicator">
+        State: <span id="user-indicator"></span>
+        <button id="goto-change-state-button">Change State</button>
+    </div>
+
+    <!-- 🔹 MAIN CONTENT -->
+    <main>
+        <section class="filter-section">
+            <h2>Filtrar coleções</h2>
+            <div class="filter-control">
+                <label for="rankingFilter">Mostrar Top 5 por:</label>
+                <select id="rankingFilter">
+                    <option value="lastAdded">Last Added</option>
+                    <option value="userChosen">Chosen by User</option>
+                    <option value="itemCount">Number of Items</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="ranking-section">
+            <h2>Nosso Top 5 Ranking</h2>
+            <div class="collection-container" id="homeCollections"></div>
+        </section>
+
+        <div class="ranking-actions">
+            <button class="other-btn" onclick="window.location.href='collection_page.html'">
+                Explore All Collections
+            </button>
+        </div>
+    </main>
+
+    <footer>
+        <p>
+            Made with ❤️ by
+            <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+                EIS_2526-G03_MEGI
+            </a>
+        </p>
+    </footer>
+
+    <!-- ✅ 🔹 SCRIPTS -->
+    <script src="../JS/app-data.js"></script>
+    <script src="../JS/app-collections.js"></script>
+    <script src="../JS/app-userstate.js"></script>
+</body>
+
+</html>

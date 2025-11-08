@@ -68,22 +68,19 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
     <div class="card-info">
       <h3>${col.name}</h3>
-      <p>${col.summary || ""}</p>
+      
 
       <!-- Container dos itens, inicialmente escondido -->
       <div class="items-preview" id="preview-${col.id}" style="display: none;">
-        ${itemsHTML}
+      <p>${col.summary || ""}</p>  
+      ${itemsHTML}
       </div>
 
       <div class="card-buttons">
         <button class="explore-btn" onclick="togglePreview('${col.id}', this)">👁️ Show Preview</button>
-        <button class="explore-btn" onclick="window.location.href='collection_page.html?id=${col.id}'">
+        <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'">
           🔍 Explore More
         </button>
-        ${!isHomePage ? `
-          <button class="explore-btn" onclick="editCollection('${col.id}')">✏️ Edit</button>
-          <button class="explore-btn" style="background:#ff5555" onclick="deleteCollection('${col.id}')">🗑️ Delete</button>
-        ` : ""}
       </div>
     </div>
   `;
@@ -93,24 +90,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
     // ===============================================
-// 🔹 Função para alternar entre capa e preview
-// ===============================================
-window.togglePreview = (collectionId, button) => {
-  const imageDiv = document.getElementById(`img-${collectionId}`);
-  const previewDiv = document.getElementById(`preview-${collectionId}`);
+    // 🔹 Função para alternar entre capa e preview
+    // ===============================================
+    window.togglePreview = (collectionId, button) => {
+        const imageDiv = document.getElementById(`img-${collectionId}`);
+        const previewDiv = document.getElementById(`preview-${collectionId}`);
 
-  const isShowingPreview = previewDiv.style.display === "block";
+        const isShowingPreview = previewDiv.style.display === "block";
 
-  if (isShowingPreview) {
-    previewDiv.style.display = "none";
-    imageDiv.style.display = "block";
-    button.textContent = "👁️ Show Preview";
-  } else {
-    previewDiv.style.display = "block";
-    imageDiv.style.display = "none";
-    button.textContent = "🙈 Hide Preview";
-  }
-};
+        if (isShowingPreview) {
+            previewDiv.style.display = "none";
+            imageDiv.style.display = "block";
+            button.textContent = "👁️ Show Preview";
+        } else {
+            previewDiv.style.display = "block";
+            imageDiv.style.display = "none";
+            button.textContent = "🙈 Hide Preview";
+        }
+    };
 
 
     // ============================================================

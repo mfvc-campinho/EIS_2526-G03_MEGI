@@ -1,14 +1,7 @@
-/* ===============================================
-   🎨 COLLECTION GRID — Shared Styles
-   ------------------------------------------------
-   Usado tanto na collection_page.html quanto na
-   home_page.html (Top 5 Collections)
-   =============================================== */
-
 /* ===============================
-   🔹 PAGE TITLE
+   🔹 SECTION TITLE (Our Collections)
 =============================== */
-h1.page-title, h2.page-title {
+h1.page-title {
   text-align: center;
   margin-top: 50px;
   font-size: 2.4rem;
@@ -16,24 +9,30 @@ h1.page-title, h2.page-title {
   position: relative;
   text-transform: uppercase;
   letter-spacing: 1.5px;
+  font-weight: 700;
 }
 
-h1.page-title::after, h2.page-title::after {
+h1.page-title::after {
   content: "";
   display: block;
   width: 100px;
-  height: 4px;
+  height: 3px;
   background: linear-gradient(90deg, #0078ff, #00c6ff);
   margin: 10px auto 0;
   border-radius: 2px;
 }
 
+/* ==========================================
+   🌟 COLLECTION GRID STYLES (FINAL)
+   Combina estética atual (moderna e suave)
+   com consistência em todos os cartões.
+   ========================================== */
+
 /* ===============================
-   🔹 COLLECTIONS GRID
+   🔹 GRID CONTAINER
 =============================== */
-.collection-container,
 .collections-row,
-#collections-list {
+.collection-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -45,21 +44,20 @@ h1.page-title::after, h2.page-title::after {
 }
 
 /* ===============================
-   🔹 COLLECTION CARD
+   🔹 CARD BASE
 =============================== */
 .collection-card {
-  background: #fff;
+  background: white;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   width: calc(25% - 30px); /* 4 por linha */
   min-width: 250px;
-  height: 420px; /* ligeiramente mais alto */
+  height: 420px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  position: relative;
 }
 
 .collection-card:hover {
@@ -72,28 +70,28 @@ h1.page-title::after, h2.page-title::after {
 =============================== */
 .card-image {
   width: 100%;
-  height: 200px;
-  background-color: #eaeaea; /* fundo neutro */
+  height: 180px; /* altura fixa */
+  background-color: #eaeaea;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  /* recorta proporcionalmente */
 }
 
-/* Placeholder se não houver imagem */
 .card-image:empty::after {
   content: "No image available";
-  font-size: 0.9rem;
   color: #666;
   font-style: italic;
+  font-size: 0.9rem;
 }
 
 /* ===============================
@@ -119,12 +117,16 @@ h1.page-title::after, h2.page-title::after {
 }
 
 /* ===============================
-   🔹 ITEM PREVIEW
+   🔹 ITEMS PREVIEW
 =============================== */
+.items-preview {
+  margin: 8px 0 0 0;
+}
+
 .mini-item-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 16px;
+  margin: 10px 0 0 0;
 }
 
 .mini-item-list li {
@@ -132,40 +134,35 @@ h1.page-title::after, h2.page-title::after {
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: #555;
+  color: #444;
+  margin-bottom: 4px;
 }
 
 .mini-item-img {
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
   object-fit: cover;
-  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #eee;
+  border: 1px solid #ddd;
 }
-
-.no-items {
-  font-size: 0.85rem;
-  color: #777;
-  font-style: italic;
-}
-
 
 /* ===============================
-   🔹 BUTTONS
+   🔹 CARD BUTTONS
 =============================== */
 .card-buttons {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  padding-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
 }
 
 .explore-btn {
   background: linear-gradient(90deg, #0078ff, #00b3ff);
-  color: white;
+  color: #fff;
   border: none;
-  padding: 10px 18px;
+  padding: 8px 14px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
@@ -173,35 +170,89 @@ h1.page-title::after, h2.page-title::after {
 }
 
 .explore-btn:hover {
-  background: linear-gradient(90deg, #0066dd, #009fe0);
   transform: scale(1.05);
+  background: linear-gradient(90deg, #0066dd, #00a1e6);
 }
 
-.explore-btn[style*="background:#ff5555"] {
-  background: #ff5555 !important;
+.btn-preview {
+  background: linear-gradient(90deg, #4a00e0, #8e2de2);
 }
 
-.explore-btn[style*="background:#ff5555"]:hover {
-  background: #e04545 !important;
-  transform: scale(1.05);
+.btn-preview:hover {
+  background: linear-gradient(90deg, #3b00c9, #7a25c4);
+}
+
+.delete-btn {
+  background: linear-gradient(90deg, #ff4d4d, #ff6666);
+}
+
+.delete-btn:hover {
+  background: linear-gradient(90deg, #e63b3b, #ff4d4d);
 }
 
 /* ===============================
-   🔹 EXPLORE MORE DETAILS
+   🔹 MODALS (CRUD)
 =============================== */
-.collection-details {
-  background: #f7f7f7;
-  border-top: 1px solid #ddd;
-  padding: 15px 20px;
-  text-align: left;
-  font-size: 0.95rem;
-  border-radius: 0 0 16px 16px;
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
 }
 
-.collection-details h4 {
-  margin-top: 10px;
-  font-size: 1rem;
-  color: #333;
+.modal-content {
+  background: white;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.crud-controls {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ===============================
+   🔹 DETAILS LIST (EXPLORE MORE)
+=============================== */
+.details-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 20px 0;
+}
+
+.details-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #eee;
+  padding: 6px 0;
+}
+
+.details-list img.mini-item-img {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 /* ===============================
@@ -209,18 +260,18 @@ h1.page-title::after, h2.page-title::after {
 =============================== */
 @media (max-width: 1200px) {
   .collection-card {
-    width: calc(33.33% - 30px); /* 3 por linha */
+    width: calc(33.33% - 30px);
   }
 }
 
 @media (max-width: 900px) {
   .collection-card {
-    width: calc(50% - 30px); /* 2 por linha */
+    width: calc(50% - 30px);
   }
 }
 
 @media (max-width: 600px) {
   .collection-card {
-    width: 100%; /* 1 por linha */
+    width: 100%;
   }
 }

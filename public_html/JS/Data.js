@@ -18,7 +18,7 @@ const collectionsData = {
       id: "escudos",
       name: "Portuguese Escudos",
       type: "Coins",
-      owner: "Valentim Moureiro",
+      owner: "collector",
       coverImage: "../images/coins.png",
       summary: "A journey through Portugal’s historical coins.",
       createdAt: "2018-04-10",

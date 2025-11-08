@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dropdown.innerHTML = "";
     data.collections.forEach(col => {
       const a = document.createElement("a");
-      a.href = `collection_page.html?id=${col.id}`;
+      a.href = `all_collections.html?id=${col.id}`;
       a.textContent = col.name;
       dropdown.appendChild(a);
     });
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div class="card-buttons">
             <button class="explore-btn"
-              onclick="window.location.href='collection_page.html?id=${col.id}'">
+              onclick="window.location.href='all_collections.html?id=${col.id}'">
               🔍 Explore More
             </button>
           </div>

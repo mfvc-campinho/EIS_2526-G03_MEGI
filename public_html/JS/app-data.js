@@ -1,21 +1,28 @@
 // ===============================================
-// app-data.js — núcleo da aplicação
+// app-data.js — Gestão de dados para GoodCollections
 // ===============================================
-// Gere todos os dados do localStorage (coleções, itens, eventos)
-// e as relações muitos-para-muitos.
+// Lê e grava os dados das coleções, itens e eventos,
+// seguindo exatamente a estrutura do ficheiro Data.js.
 // ===============================================
 
 document.addEventListener("DOMContentLoaded", () => {
-
-  // 1️⃣ Inicializar dados (caso não existam)
+  // ============================================================
+  // 1️⃣ Inicialização
+  // ============================================================
   if (!localStorage.getItem("collectionsData")) {
-    localStorage.setItem("collectionsData", JSON.stringify(collectionsData));
-    console.log("✅ Dados iniciais guardados no localStorage.");
+    if (typeof collectionsData !== "undefined") {
+      localStorage.setItem("collectionsData", JSON.stringify(collectionsData));
+      console.log("✅ Dados iniciais importados do Data.js");
+    } else {
+      console.error("❌ ERRO: O ficheiro Data.js não foi carregado.");
+    }
   } else {
     console.log("📦 Dados carregados do localStorage.");
   }
 
-  // 2️⃣ Funções base
+  // ============================================================
+  // 2️⃣ Funções utilitárias
+  // ============================================================
   function loadData() {
     return JSON.parse(localStorage.getItem("collectionsData"));
   }
@@ -24,38 +31,67 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("collectionsData", JSON.stringify(data));
   }
 
-  // 3️⃣ Ligações (coleção ↔ itens / eventos)
+  // ============================================================
+  // 3️⃣ Ligações N:N
+  // ============================================================
+
+  // Itens associados a uma coleção
   function getItemsByCollection(collectionId) {
     const data = loadData();
-    const rel = data.collectionItems.filter(r => r.collectionId === collectionId);
-    return data.items.filter(i => rel.some(r => r.itemId === i.id));
+    if (!data || !data.collectionItems) return [];
+
+    const linkedIds = data.collectionItems
+      .filter(link => link.collectionId === collectionId)
+      .map(link => link.itemId);
+
+    return data.items.filter(item => linkedIds.includes(item.id));
   }
 
+  // Eventos associados a uma coleção
   function getEventsByCollection(collectionId) {
     const data = loadData();
-    const rel = data.collectionEvents.filter(r => r.collectionId === collectionId);
-    return data.events.filter(e => rel.some(r => r.eventId === e.id));
+    if (!data || !data.collectionEvents) return [];
+
+    const linkedIds = data.collectionEvents
+      .filter(link => link.collectionId === collectionId)
+      .map(link => link.eventId);
+
+    return data.events.filter(event => linkedIds.includes(event.id));
   }
 
+  // Criar uma nova ligação item ↔ coleção
   function linkItemToCollection(itemId, collectionId) {
     const data = loadData();
-    const exists = data.collectionItems.some(r => r.itemId === itemId && r.collectionId === collectionId);
+    if (!data.collectionItems) data.collectionItems = [];
+
+    const exists = data.collectionItems.some(
+      l => l.itemId === itemId && l.collectionId === collectionId
+    );
     if (!exists) {
       data.collectionItems.push({ itemId, collectionId });
       saveData(data);
+      console.log(`🔗 Item ${itemId} ligado à coleção ${collectionId}`);
     }
   }
 
+  // Criar uma nova ligação evento ↔ coleção
   function linkEventToCollection(eventId, collectionId) {
     const data = loadData();
-    const exists = data.collectionEvents.some(r => r.eventId === eventId && r.collectionId === collectionId);
+    if (!data.collectionEvents) data.collectionEvents = [];
+
+    const exists = data.collectionEvents.some(
+      l => l.eventId === eventId && l.collectionId === collectionId
+    );
     if (!exists) {
       data.collectionEvents.push({ eventId, collectionId });
       saveData(data);
+      console.log(`🔗 Evento ${eventId} ligado à coleção ${collectionId}`);
     }
   }
 
-  // 4️⃣ CRUD genérico
+  // ============================================================
+  // 4️⃣ CRUD básico
+  // ============================================================
   function addEntity(type, entity) {
     const data = loadData();
     data[type].push(entity);
@@ -64,9 +100,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateEntity(type, id, newValues) {
     const data = loadData();
-    const i = data[type].findIndex(e => e.id === id);
-    if (i !== -1) {
-      data[type][i] = { ...data[type][i], ...newValues };
+    const index = data[type].findIndex(e => e.id === id);
+    if (index !== -1) {
+      data[type][index] = { ...data[type][index], ...newValues };
       saveData(data);
     }
   }
@@ -74,18 +110,36 @@ document.addEventListener("DOMContentLoaded", () => {
   function deleteEntity(type, id) {
     const data = loadData();
     data[type] = data[type].filter(e => e.id !== id);
-    if (type === "items")
+
+    // Se apagar coleção, remove as relações associadas
+    if (type === "collections") {
+      data.collectionItems = data.collectionItems.filter(r => r.collectionId !== id);
+      data.collectionEvents = data.collectionEvents.filter(r => r.collectionId !== id);
+    }
+
+    // Se apagar item/evento, remove as ligações também
+    if (type === "items") {
       data.collectionItems = data.collectionItems.filter(r => r.itemId !== id);
-    if (type === "events")
+    }
+    if (type === "events") {
       data.collectionEvents = data.collectionEvents.filter(r => r.eventId !== id);
+    }
+
     saveData(data);
   }
 
-  // 5️⃣ Tornar global
+  // ============================================================
+  // 5️⃣ Exportar API global
+  // ============================================================
   window.appData = {
-    loadData, saveData,
-    getItemsByCollection, getEventsByCollection,
-    linkItemToCollection, linkEventToCollection,
-    addEntity, updateEntity, deleteEntity
+    loadData,
+    saveData,
+    getItemsByCollection,
+    getEventsByCollection,
+    linkItemToCollection,
+    linkEventToCollection,
+    addEntity,
+    updateEntity,
+    deleteEntity
   };
 });

@@ -2,81 +2,143 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Main Menu - GoodCollections</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Menu - GoodCollections</title>
 
-    <!-- 🔹 CSS -->
-    <link rel="stylesheet" href="../CSS/general_novo.css" />
-    <link rel="stylesheet" href="../CSS/collection-grid.css" />
-
+  <!-- 🔹 CSS -->
+  <link rel="stylesheet" href="../CSS/general.css" />
+  <link rel="stylesheet" href="../CSS/collection_grid.css" />
+  <link rel="stylesheet" href="../CSS/modal.css" />
+</head>
 
 <body>
-    <!-- 🔹 NAVIGATION -->
-    <nav class="navbar">
-        <div class="nav-left">
-            <a href="home_page.html" class="logo">GoodCollections</a>
+  <!-- 🔹 NAVIGATION -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="home_page.html" class="logo">GoodCollections</a>
 
-            <div class="dropdown">
-                <button onclick="window.location.href='collection_page.html'" class="dropbtn">Collections</button>
-                <div class="dropdown-content" id="collectionsDropdown">
-                    <!-- Este menu é populado dinamicamente -->
-                </div>
-            </div>
+      <div class="dropdown">
+        <button onclick="window.location.href='collection_page.html'" class="dropbtn">Collections</button>
+        <div class="dropdown-content" id="collectionsDropdown">
+          <!-- Populado dinamicamente -->
         </div>
-
-        <div class="nav-right">
-            <a href="home_page.html" class="nav-link">Homepage</a>
-            <a href="team_page.html" class="nav-link">About Us</a>
-            <a href="user_page.html" class="nav-link">Profile</a>
-            <input type="search" class="search-bar" placeholder="Search..." />
-        </div>
-    </nav>
-
-    <!-- 🔹 USER STATE -->
-    <div class="user-state-indicator">
-        State: <span id="user-indicator"></span>
-        <button id="goto-change-state-button">Change State</button>
+      </div>
     </div>
 
-    <!-- 🔹 MAIN CONTENT -->
-    <main>
-        <h1 class="page-title">Top 5 Collections</h1>
-        <section class="filter-section">
-            <h2>Filter Collections</h2>
-            <div class="filter-control">
-                <select id="rankingFilter">
-                    <option value="lastAdded">Last Added</option>
-                    <option value="userChosen">Chosen by User</option>
-                    <option value="itemCount">Number of Items</option>
-                </select>
-            </div>
-        </section>
+    <div class="nav-right">
+      <a href="home_page.html" class="nav-link">Homepage</a>
+      <a href="team_page.html" class="nav-link">About Us</a>
+      <a href="user_page.html" class="nav-link">Profile</a>
+      <input type="search" class="search-bar" placeholder="Search..." />
+    </div>
+  </nav>
 
-        <section class="ranking-section">
-            <div class="collection-container" id="homeCollections"></div>
-        </section>
+  <!-- 🔹 USER STATE -->
+  <div class="user-state-indicator">
+    State: <span id="user-indicator"></span>
+    <button id="goto-change-state-button">Change State</button>
+  </div>
 
-        <div class="ranking-actions">
-            <button class="other-btn" onclick="window.location.href='collection_page.html'">
-                Explore All Collections
-            </button>
-        </div>
+  <!-- 🔹 MAIN CONTENT -->
+  <main>
+    <h1 class="page-title">Top 5 Collections</h1>
+
+    <!-- 🔹 Filter -->
+    <section class="filter-section">
+      <h2>Filter Collections</h2>
+      <div class="filter-control">
+        <select id="rankingFilter">
+          <option value="lastAdded">Last Added</option>
+          <option value="userChosen">Chosen by User</option>
+          <option value="itemCount">Number of Items</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- 🔹 Collections Container -->
+    <section class="ranking-section">
+      <div class="collection-container" id="homeCollections"></div>
+    </section>
+
+<!-- 🔹 Actions -->
+<div class="collection-actions">
+  <button id="open-collection-modal" class="explore-btn">➕ Nova Coleção</button>
+  <button id="editCollectionBtn" class="explore-btn">✏️ Editar Coleção</button>
+  <button id="deleteCollectionBtn" class="explore-btn danger">🗑️ Apagar Coleção</button>
+  <button id="restoreDataBtn" class="explore-btn warning">🔄 Restaurar Dados Iniciais</button>
+</div>
     </main>
 
-    <footer>
-        <p>
-            Made with ❤️ by
-            <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
-                EIS_2526-G03_MEGI
-            </a>
-        </p>
-    </footer>
+  <!-- 🔹 FOOTER -->
+  <footer>
+    <p>
+      Made with ❤️ by
+      <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+        EIS_2526-G03_MEGI
+      </a>
+    </p>
+  </footer>
 
-    <!-- ✅ 🔹 SCRIPTS -->
-    <script src="../JS/app-data.js"></script>
-    <script src="../JS/app-collections.js"></script>
-    <script src="../JS/app-userstate.js"></script>
+  <!-- ===============================
+       🔹 COLLECTION MODAL
+  =============================== -->
+  <div id="collection-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-collection-modal">&times;</span>
+      <h2 id="collection-modal-title">Nova Coleção</h2>
+
+      <form id="form-collection">
+        <input type="hidden" id="collection-id" />
+
+        <label for="col-name">Nome da Coleção:</label>
+        <input type="text" id="col-name" name="col-name" required />
+
+        <input type="hidden" id="col-owner" name="col-owner" value="collector" />
+
+        <label for="col-summary">Descrição:</label>
+        <textarea id="col-summary" name="col-summary" required></textarea>
+
+        <label for="col-image">Imagem (URL):</label>
+        <input type="text" id="col-image" name="col-image" placeholder="Ex: ../images/default.jpg" />
+
+        <label for="col-type">Tipo:</label>
+        <input type="text" id="col-type" name="col-type" required />
+
+        <div class="modal-actions">
+          <button type="submit" class="save-btn">Guardar</button>
+          <button type="button" id="cancel-collection-modal" class="cancel-btn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===============================
+       🔹 SCRIPTS (ordem obrigatória)
+  =============================== -->
+  <script src="../JS/Data.js"></script>
+  <script src="../JS/app-data.js"></script>
+  <script src="../JS/app-userstate.js"></script>
+  <script src="../JS/app-collections.js"></script>
+
+  <!-- 🔹 Modal fallback para segurança -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const modal = document.getElementById("collection-modal");
+      const openBtn = document.getElementById("open-collection-modal");
+      const closeBtn = document.getElementById("close-collection-modal");
+      const cancelBtn = document.getElementById("cancel-collection-modal");
+
+      const openModal = () => modal.style.display = "flex";
+      const closeModal = () => modal.style.display = "none";
+
+      openBtn?.addEventListener("click", openModal);
+      closeBtn?.addEventListener("click", closeModal);
+      cancelBtn?.addEventListener("click", closeModal);
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+    });
+  </script>
 </body>
-
 </html>

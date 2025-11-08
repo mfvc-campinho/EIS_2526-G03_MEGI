@@ -1,126 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Specific Collection</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Google Font -->
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<head>
+    <meta charset="utf-8" />
+    <title>Specific Collection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Navigation Bar Styles -->
-        <link rel="stylesheet" href="../CSS/general_novo.css" />
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <!-- Page-Specific Styles -->
-        <link rel="stylesheet" href="../CSS/IP_NOVO.css" />
-    </head>
+    <!-- 🔹 Global & Page Styles -->
+    <link rel="stylesheet" href="../CSS/general.css" />
+    <link rel="stylesheet" href="../CSS/item_grid.css" />
+    <link rel="stylesheet" href="../CSS/modal.css" />
 
+</head>
 
-    <body>
-        <div class="user-state-indicator">
-            State: <span id="user-indicator"></span>
-            <button id="goto-change-state-button">Change State</button>
-        </div>
+<body>
+    <!-- 🔹 USER STATE INDICATOR -->
+    <div class="user-state-indicator">
+        State: <span id="user-indicator"></span>
+        <button id="goto-change-state-button">Change State</button>
+    </div>
 
-        <!-- ===============================
-             🔹 MAIN CONTENT
-        =============================== -->
-        <div id="content">
-            <!-- ===============================
-                 🔹 HEADER
-            =============================== -->
-            <header class="collection-header">
-                <nav class="navbar">
-                    <div class="nav-left">
-                        <a href="home_page.html" class="logo">GoodCollections</a>
-
-                        <div class="dropdown">
-                            <button onclick="window.location.href='collection_page.html'" class="dropbtn">Collections</button>
-                        </div>
-                    </div>
-
-                    <div class="nav-right">
-                        <a href="home_page.html" class="nav-link">Homepage</a>
-                        <a href="team_page.html" class="nav-link">About Us</a>
-                        <a href="user_page.html" class="nav-link">Profile</a>
-                        <input type="search" class="search-bar" placeholder="Search..." />
-                    </div>
-                </nav>
-
-            </header>
-            <main>
-                <h1 id="collection-title"></h1>
-
-                <div id="collection-meta">
-                    <img id="owner-photo" src="" alt="Owner photo" />
-                    <p><strong>Owner:</strong> <span id="owner-name"></span></p>
-                    <p><strong>Created:</strong> <span id="creation-date"></span></p>
-                </div>
-
-                <div id="buttons-bar">
-                    <a href="collection_page.html">Back</a>
-                    <button id="add-item">Adicionar Item</button>
-                </div>
-
-                <section id="collection-items"></section>
-            </main>
-
-
-            <!-- ===============================
-                 🔹 MODAL
-            =============================== -->
-            <div id="item-modal" class="modal">
-                <div class="modal-content">
-                    <span id="close-modal" class="close-btn">&times;</span>
-                    <h2 id="modal-title">Adicionar Item</h2>
-
-                    <form id="item-form">
-                        <label>Título:</label>
-                        <input type="text" id="item-title" required />
-
-                        <label>Descrição:</label>
-                        <textarea id="item-description" required></textarea>
-
-                        <label>Imagem (URL):</label>
-                        <input type="text" id="item-image" />
-
-                        <label>Valor (€):</label>
-                        <input type="number" id="item-value" required />
-
-                        <label>Data adicionada:</label>
-                        <input type="date" id="item-date" />
-
-                        <label>Raridade:</label>
-                        <input type="text" id="item-rarity" />
-
-                        <label>Condição:</label>
-                        <input type="text" id="item-condition" />
-
-                        <div class="modal-actions">
-                            <button type="submit" class="save-btn">Guardar</button>
-                            <button type="button" id="cancel-modal" class="cancel-btn">Cancelar</button>
-                        </div>
-                    </form>
+    <!-- 🔹 NAVIGATION BAR -->
+    <header class="collection-header">
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="home_page.html" class="logo">GoodCollections</a>
+                <div class="dropdown">
+                    <button onclick="window.location.href='collection_page.html'" class="dropbtn">Collections</button>
                 </div>
             </div>
 
+            <div class="nav-right">
+                <a href="home_page.html" class="nav-link">Homepage</a>
+                <a href="team_page.html" class="nav-link">About Us</a>
+
+                <!-- 🔹 Dropdown Profile -->
+
+<div class="dropdown profile-dropdown">
+  <button class="dropbtn profile-btn">👤 Profile ▾</button>
+  <div class="dropdown-content profile-menu"></div>
+</div>
+
+
+                <input type="search" class="search-bar" placeholder="Search..." />
+            </div>
+        </nav>
+    </header>
+
+    <!-- 🔹 MAIN CONTENT -->
+    <main>
+        <h1 id="collection-title" class="page-title">Collection</h1>
+
+        <div id="collection-meta">
+            <p><strong>Owner:</strong> <span id="owner-name"></span></p>
+            <p><strong>Created:</strong> <span id="creation-date"></span></p>
         </div>
-        <footer>
-            <p>
-                Made with ❤️ by
-                <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
-                    EIS_2526-G03_MEGI
-                </a>
-            </p>
-        </footer>
 
-        <!-- ===============================
-             🔹 SCRIPTS
-        =============================== -->
-        <script src="../JS/usersData.js"></script>
-        <script src="../JS/userState.js"></script>
-        <script src="../JS/collectionsData.js"></script>
-        <script src="../JS/collection_page.js"></script>
+        <div id="buttons-bar">
+            <a href="all_collections.html" class="explore-btn">⬅ Back</a>
+            <button id="add-item" class="explore-btn" data-requires-login>➕ Add Item</button>
+        </div>
 
-    </body>
+        <!-- 🔹 ITEMS GRID -->
+        <section class="collection-container" id="collection-items"></section>
+    </main>
+
+    <!-- 🔹 MODAL: ADD / EDIT ITEM -->
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <h2 id="modal-title">Add Item</h2>
+
+            <form id="item-form">
+                <input type="hidden" id="item-id">
+
+                <label>Name:</label>
+                <input type="text" id="item-name" required>
+
+                <label>Importance:</label>
+                <input type="text" id="item-importance" required>
+
+                <label>Weight (g):</label>
+                <input type="number" id="item-weight" step="0.01">
+
+                <label>Price (€):</label>
+                <input type="number" id="item-price" step="0.01" required>
+
+                <label>Acquisition Date:</label>
+                <input type="date" id="item-date">
+
+                <label>Image (URL):</label>
+                <input type="text" id="item-image">
+                <label for="item-collections">Collections:</label>
+                <select id="item-collections" name="item-collections" multiple required></select>
+                <small>Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.</small>
+
+                <div class="modal-actions crud-controls">
+                    <button type="submit" class="explore-btn">💾 Save</button>
+                    <button type="button" id="cancel-modal" class="delete-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🔹 FOOTER -->
+    <footer>
+        <p>
+            Made with ❤️ by
+            <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+                EIS_2526-G03_MEGI
+            </a>
+        </p>
+    </footer>
+    <script src="../JS/app-data.js"></script>
+      <script src="..\JS\app-users.js"></script>
+
+    <script src="../JS/app-users.js"></script>
+    <script src="../JS/app-items.js"></script>
+
+
+
+</body>
+
 </html>

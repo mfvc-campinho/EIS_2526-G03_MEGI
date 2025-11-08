@@ -1,168 +1,39 @@
-/* Base */
-:root {
-  --pill-bg: #20b2aa;
-  /* lightseagreen */
-  --pill-text: #ffffff;
-  --pill-border: #2a2a2a;
-  --shadow: 0 6px 24px rgba(0, 0, 0, .25);
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Helvetica, Arial, sans-serif;
-  background-color: #f0f2f5;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Header fixo opcional */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: linear-gradient(#eee, #eee);
-  /* evita “vazios” nas bordas */
-  padding: 12px 0;
-  /* respiro ao redor da pílula */
-}
-
-/* NAV “pílula” */
-.navbar-pill {
-  width: min(1280px, 94%);
-  /* ocupa a tela sem colar nas laterais */
-  margin: 0 auto;
-  padding: 22px 32px;
-  background: var(--pill-bg);
-  color: var(--pill-text);
-  border: 1px solid var(--pill-border);
-  border-radius: 9999px;
-  /* pílula perfeita */
-  box-shadow: var(--shadow);
-
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-/* Menu central */
-.menu {
-  list-style: none;
-  display: flex;
-  gap: clamp(24px, 6vw, 68px);
-  /* distância fluida entre itens */
-  margin: 0;
-  padding: 0;
-  flex: 1;
-  /* ocupa o centro e “empurra” a busca à direita */
-  justify-content: center;
-  /* centraliza itens */
-}
-
-.menu a {
-  color: var(--pill-text);
-  text-decoration: none;
+/* ===============================
+   🔹 SECTION TITLE (Our Collections)
+=============================== */
+h1.page-title {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 2.4rem;
+  color: #222;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   font-weight: 700;
-  font-size: clamp(1rem, 1.6vw, 1.6rem);
-  /* responsivo sem exagero */
-  letter-spacing: .3px;
-  line-height: 1;
-  display: inline-block;
-  padding: 6px 4px;
-  /* área de clique */
-  transition: opacity .2s ease, transform .15s ease;
 }
 
-.menu a:hover {
-  opacity: .9;
-  transform: translateY(-1px);
-  /* micro-efeito (evita “pulos” do layout) */
+h1.page-title::after {
+  content: "";
+  display: block;
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, #0078ff, #00c6ff);
+  margin: 10px auto 0;
+  border-radius: 2px;
 }
-
-/* Triângulo do “Collections ▾” */
-.menu .has-caret::after {
-  content: " ▾";
-  font-weight: 600;
-}
-
-/* Busca à direita */
-.nav-search {
-  flex: 0 0 auto;
-  /* não estica demais */
-}
-
-.nav-search input[type="search"] {
-  width: clamp(160px, 22vw, 320px);
-  /* tamanho ideal e responsivo */
-  height: 44px;
-  padding: 0 18px;
-  border-radius: 9999px;
-  border: 1px solid rgba(0, 0, 0, .25);
-  outline: none;
-  font-size: 1rem;
-  color: #333;
-  background: #fff;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .06);
-  transition: border-color .2s ease, background .2s ease;
-}
-
-.nav-search input[type="search"]::placeholder {
-  color: #7a7a7a;
-}
-
-.nav-search input[type="search"]:focus {
-  border-color: #ddd;
-  background: #f7f7f7;
-}
-
-/* Acessibilidade: label invisível e legível por leitores de ecrã */
-.sr-only {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Hover dos links anterior: remover “scale(1.5)” que quebrava o layout */
-.navbar a:hover {
-  transform: none;
-}
-
-/* caso exista CSS antigo */
-
-footer {
-  margin-top: auto;         /* anchors footer at page bottom when content is short */
-  border-top: 1px solid rgba(0,0,0,.06);
-  background: #f7f8fb;      /* optional background */
-  color: #64748b;
-}
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;   /* center horizontally (change to space-between if you add right block) */
-}
-
-
-
-
-
-
-
 
 
 /* ===============================
    🔹 NAVIGATION BAR (GLOBAL)
 =============================== */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: whitesmoke;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
 
 .navbar {
   background-color: #0d1320; /* dark navy */
@@ -236,6 +107,7 @@ footer {
 .dropbtn:hover {
   color: #fff;
 }
+
 .dropdown-content {
   display: none;
   position: absolute;
@@ -266,3 +138,205 @@ footer {
   display: block;
 }
 
+
+/* ===============================
+   🔹 FOOTER — BARRA COMPLETA E VISÍVEL NO FUNDO
+=============================== */
+
+footer {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #0d1320;       /* mesma cor do cabeçalho */
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 120px;                   /* ⚡ aumenta visibilidade real */
+  z-index: 100;
+  margin-top: 80px;                /* separação natural do conteúdo */
+}
+
+/* Container interno */
+.footer-content {
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Texto e link */
+footer p {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+}
+
+footer a {
+  color: #00b3ff;
+  font-weight: 700;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+footer a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, #0078ff, #00b3ff);
+  border-radius: 4px;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+footer a:hover {
+  color: #00ccff;
+}
+
+footer a:hover::after {
+  width: 60%;
+}
+
+/* Ícone do coração */
+footer .heart {
+  color: #ff4d6d;
+  animation: pulse 1.5s infinite ease-in-out;
+  display: inline-block;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  footer {
+    height: 140px;
+  }
+
+  footer p {
+    font-size: 0.95rem;
+  }
+
+  .footer-content {
+    padding: 24px 16px;
+  }
+}
+
+/* ==========================================
+   👤 PROFILE DROPDOWN
+   ========================================== */
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-btn {
+  background: linear-gradient(90deg, #0078ff, #00b3ff);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.profile-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(90deg, #0066dd, #00a1e6);
+}
+
+.profile-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: #fff;
+  min-width: 160px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.profile-menu a {
+  color: #333;
+  padding: 10px 14px;
+  text-decoration: none;
+  display: block;
+  font-size: 0.9rem;
+  transition: background 0.25s ease;
+}
+
+.profile-menu a:hover {
+  background: rgba(0, 120, 255, 0.1);
+}
+
+/* Mostrar dropdown ao passar o rato */
+.profile-dropdown:hover .profile-menu {
+  display: block;
+}
+
+/* Ajuste para ícone */
+.profile-btn::before {
+  content: "👤 ";
+}
+
+/* ==========================================
+   👤 LOGIN FORM (Dropdown)
+   ========================================== */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+.login-form label {
+  font-weight: 500;
+  color: #333;
+}
+
+.login-form input {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #0078ff;
+  box-shadow: 0 0 4px rgba(0, 120, 255, 0.3);
+}
+
+.login-btn {
+  margin-top: 6px;
+  background: linear-gradient(90deg, #0078ff, #00b3ff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.25s;
+}
+
+.login-btn:hover {
+  background: linear-gradient(90deg, #0066dd, #00a1e6);
+}

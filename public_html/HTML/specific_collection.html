@@ -1,123 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8" />
-    <title>Specific Collection</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <head>
+        <meta charset="utf-8" />
+        <title>Specific Collection</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <!-- Google Font -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- 🔹 Global & Page Styles -->
-    <link rel="stylesheet" href="../CSS/general.css" />
-    <link rel="stylesheet" href="../CSS/grid.css" />
-    <link rel="stylesheet" href="../CSS/modal.css" />
+        <!-- 🔹 Global & Page Styles -->
+        <link rel="stylesheet" href="../CSS/general.css" />
+        <link rel="stylesheet" href="../CSS/grid.css" />
+        <link rel="stylesheet" href="../CSS/modal.css" />
 
-</head>
+    </head>
 
-<body>
-    <!-- 🔹 LOADER -->
-    <div id="loader">
-        <div class="spinner"></div>
-    </div>
-
-    <div id="content">
-        <!-- 🔹 NAVIGATION BAR -->
-        <header>
-            <nav class="navbar">
-                <div class="nav-left">
-                    <a href="home_page.html" class="logo">GoodCollections</a>
-                </div>
-                <div class="nav-right">
-                    <a href="all_collections.html" class="nav-link">Collections</a>
-                    <a href="home_page.html" class="nav-link">Homepage</a>
-                    <a href="team_page.html" class="nav-link">About Us</a>
-                    <div class="dropdown profile-dropdown">
-                        <button class="dropbtn profile-btn">👤 Profile ▾</button>
-                        <div class="dropdown-content profile-menu"></div>
-                    </div>
-                    <input type="search" class="search-bar" placeholder="Search..." />
-                </div>
-            </nav>
-        </header>
-
-        <!-- 🔹 MAIN CONTENT -->
-        <main>
-            <h1 id="collection-title" class="page-title">Collection</h1>
-
-            <div id="collection-meta">
-                <p><strong>Owner:</strong> <span id="owner-name"></span></p>
-                <p><strong>Created:</strong> <span id="creation-date"></span></p>
-            </div>
-
-            <div id="buttons-bar">
-                <a href="javascript:history.back()" class="explore-btn">⬅ Back</a>
-                <button id="add-item" class="explore-btn" data-requires-login>➕ Add Item</button>
-            </div>
-
-            <!-- 🔹 ITEMS GRID -->
-            <section class="collection-container" id="collection-items"></section>
-        </main>
-    </div>
-
-    <!-- 🔹 MODAL: ADD / EDIT ITEM -->
-    <div id="item-modal" class="modal">
-        <div class="modal-content">
-            <span id="close-modal" class="close">&times;</span>
-            <h2 id="modal-title">Add Item</h2>
-
-            <form id="item-form">
-                <input type="hidden" id="item-id">
-
-                <label>Name:</label>
-                <input type="text" id="item-name" required>
-
-                <label>Importance:</label>
-                <input type="text" id="item-importance" required>
-
-                <label>Weight (g):</label>
-                <input type="number" id="item-weight" step="0.01">
-
-                <label>Price (€):</label>
-                <input type="number" id="item-price" step="0.01" required>
-
-                <label>Acquisition Date:</label>
-                <input type="date" id="item-date">
-
-                <label>Image (URL):</label>
-                <input type="text" id="item-image" placeholder="../images/default.jpg">
-                <label for="item-collections">Collections:</label>
-                <select id="item-collections" name="item-collections" multiple required></select>
-                <small class="form-hint">Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.</small>
-
-                <div class="modal-actions crud-controls">
-                    <button type="submit" class="explore-btn">💾 Save</button>
-                    <button type="button" id="cancel-modal" class="delete-btn">Cancel</button>
-                </div>
-            </form>
+    <body>
+        <!-- 🔹 LOADER -->
+        <div id="loader">
+            <div class="spinner"></div>
         </div>
-    </div>
 
-    <!-- 🔹 FOOTER -->
-    <footer>
-        <p>
-            Made with ❤️ by
-            <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
-                EIS_2526-G03_MEGI
-            </a>
-        </p>
-    </footer>
+        <div id="content">
+            <!-- 🔹 NAVIGATION BAR -->
+            <header>
+                <nav class="navbar">
+                    <div class="nav-left">
+                        <a href="home_page.html" class="logo">GoodCollections</a>
+                    </div>
+                    <div class="nav-right">
+                        <a href="all_collections.html" class="nav-link">Collections</a>
+                        <a href="home_page.html" class="nav-link">Homepage</a>
+                        <a href="team_page.html" class="nav-link">About Us</a>
+                        <div class="dropdown profile-dropdown">
+                            <button class="dropbtn profile-btn">👤 Profile ▾</button>
+                            <div class="dropdown-content profile-menu"></div>
+                        </div>
+                        <input type="search" class="search-bar" placeholder="Search..." />
+                    </div>
+                </nav>
+            </header>
 
-    <!-- 🔹 MODALS PLACEHOLDER (não tem modais de conta, mas pode ter no futuro) -->
-    <div id="modals-placeholder"></div>
+            <!-- 🔹 MAIN CONTENT -->
+            <main>
+                <h1 id="collection-title" class="page-title">Collection</h1>
 
+<<<<<<< HEAD
+    <script src="../JS/Data.js"></script>
     <script src="../JS/app-data.js"></script>
-    <script src="../JS/app-users.js"></script> 
+    <script src="../JS/app-users.js"></script>
     <script src="../JS/app-items.js"></script>
     <script src="../JS/app-loader.js"></script>
+=======
+                <div id="collection-meta">
+                    <p><strong>Owner:</strong> <span id="owner-name"></span></p>
+                    <p><strong>Created:</strong> <span id="creation-date"></span></p>
+                    <p><strong>Type</strong> <span id="type"></span></p>
+                    <p><strong>Description</strong> <span id="description"></span></p>
+>>>>>>> 6d6532912ec4f15a026c0dd7141fc39a6de58958
 
 
-</body>
+
+                </div>
+
+                <div id="buttons-bar">
+                    <a href="javascript:history.back()" class="explore-btn">⬅ Back</a>
+                    <button id="add-item" class="explore-btn" data-requires-login>➕ Add Item</button>
+                </div>
+
+                <!-- 🔹 ITEMS GRID -->
+                <section class="collection-container" id="collection-items"></section>
+            </main>
+        </div>
+
+        <!-- 🔹 MODAL: ADD / EDIT ITEM -->
+        <div id="item-modal" class="modal">
+            <div class="modal-content">
+                <span id="close-modal" class="close">&times;</span>
+                <h2 id="modal-title">Add Item</h2>
+
+                <form id="item-form">
+                    <input type="hidden" id="item-id">
+
+                    <label>Name:</label>
+                    <input type="text" id="item-name" required>
+
+                    <label>Importance:</label>
+                    <input type="text" id="item-importance" required>
+
+                    <label>Weight (g):</label>
+                    <input type="number" id="item-weight" step="0.01">
+
+                    <label>Price (€):</label>
+                    <input type="number" id="item-price" step="0.01" required>
+
+                    <label>Acquisition Date:</label>
+                    <input type="date" id="item-date">
+
+                    <label>Image (URL):</label>
+                    <input type="text" id="item-image" placeholder="../images/default.jpg">
+                    <label for="item-collections">Collections:</label>
+                    <select id="item-collections" name="item-collections" multiple required></select>
+                    <small class="form-hint">Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.</small>
+
+                    <div class="modal-actions crud-controls">
+                        <button type="submit" class="explore-btn">💾 Save</button>
+                        <button type="button" id="cancel-modal" class="delete-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 🔹 FOOTER -->
+        <footer>
+            <p>
+                Made with ❤️ by
+                <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+                    EIS_2526-G03_MEGI
+                </a>
+            </p>
+        </footer>
+
+        <!-- 🔹 MODALS PLACEHOLDER (não tem modais de conta, mas pode ter no futuro) -->
+        <div id="modals-placeholder"></div>
+
+        <script src="../JS/app-data.js"></script>
+        <script src="../JS/app-users.js"></script> 
+        <script src="../JS/app-items.js"></script>
+        <script src="../JS/app-loader.js"></script>
+
+
+    </body>
 
 </html>

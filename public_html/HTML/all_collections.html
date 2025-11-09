@@ -18,13 +18,6 @@
 </head>
 
 <body>
-  <!-- ===============================
-       🔹 LOADER
-  =============================== -->
-  <div id="loader">
-    <div class="spinner"></div>
-  </div>
-
   <div id="content">
     <!-- ===============================
          🔹 NAVIGATION BAR
@@ -80,15 +73,17 @@
       <span class="close-btn" id="close-collection-modal">&times;</span>
       <h2 id="collection-modal-title">Nova Coleção</h2>
       <form id="form-collection">
-        <input type="hidden" id="collection-id" />
-        <label for="col-name">Nome da Coleção:</label>
-        <input type="text" id="col-name" name="col-name" required />
-        <label for="col-summary">Descrição:</label>
+        <input type="hidden" id="collection-id" name="collection-id" />
+        <label for="col-name">Name:</label>
+        <input type="text" id="col-name" name="col-name" required>
+        <label for="col-summary">Summary:</label>
         <textarea id="col-summary" name="col-summary" required></textarea>
-        <label for="col-image">Imagem (URL):</label>
-        <input type="text" id="col-image" name="col-image" placeholder="Ex: ../images/default.jpg" />
-        <label for="col-type">Tipo:</label>
-        <input type="text" id="col-type" name="col-type" required />
+        <label for="col-description">Full Description:</label>
+        <textarea id="col-description" name="col-description"></textarea>
+        <label for="col-image">Image (URL):</label>
+        <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg">
+        <label for="col-type">Type:</label>
+        <input type="text" id="col-type" name="col-type" required>
         <div class="modal-actions">
           <button type="submit" class="save-btn">Guardar</button>
           <button type="button" id="cancel-collection-modal" class="cancel-btn">Cancelar</button>
@@ -134,7 +129,6 @@
        🔹 SCRIPTS
   =============================== -->
 
-  <script src="../JS/Data.js"></script>
   <script src="../JS/app-data.js"></script>
   <script src="../JS/app-users.js"></script>
   <script src="../JS/app-collections.js"></script>

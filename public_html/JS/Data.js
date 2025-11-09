@@ -74,6 +74,7 @@ const collectionsData = {
       weight: 4.5,
       price: 120,
       acquisitionDate: "2020-03-15",
+      owner: "collector",
       image: "../images/escudo1950.jpg"
     },
     {
@@ -83,6 +84,7 @@ const collectionsData = {
       weight: 5.1,
       price: 250,
       acquisitionDate: "2021-07-10",
+      owner: "collector",
       image: "../images/escudo1960.jpg"
     },
 
@@ -94,6 +96,7 @@ const collectionsData = {
       weight: 0.3,
       price: 5,
       acquisitionDate: "2019-05-22",
+      owner: "other",
       image: "../images/playboy.jpg"
     },
     {
@@ -103,6 +106,7 @@ const collectionsData = {
       weight: 0.3,
       price: 12,
       acquisitionDate: "2020-11-05",
+      owner: "other",
       image: "../images/lenka.jpg"
     },
     {
@@ -112,6 +116,7 @@ const collectionsData = {
       weight: 0.3,
       price: 12,
       acquisitionDate: "2016-08-05",
+      owner: "other",
       image: "../images/fabiana.jpg"
     },
 
@@ -123,6 +128,7 @@ const collectionsData = {
       weight: 0.005,
       price: 150,
       acquisitionDate: "2021-06-18",
+      owner: "other",
       image: "../images/pikachu.jpg"
     },
     {
@@ -132,6 +138,7 @@ const collectionsData = {
       weight: 0.005,
       price: 2000,
       acquisitionDate: "2022-04-22",
+      owner: "other",
       image: "../images/charizard.jpg"
     },
 
@@ -143,6 +150,7 @@ const collectionsData = {
       weight: 2.4,
       price: 300,
       acquisitionDate: "2018-09-10",
+      owner: "other",
       image: "../images/salazar.jpg"
     },
 
@@ -154,6 +162,7 @@ const collectionsData = {
       weight: 0.4,
       price: 450,
       acquisitionDate: "2020-03-12",
+      owner: "other",
       image: "../images/porto.jpg"
     },
     {
@@ -163,6 +172,7 @@ const collectionsData = {
       weight: 0.4,
       price: 400,
       acquisitionDate: "2021-09-03",
+      owner: "other",
       image: "../images/benfica.jpg"
     }
   ],

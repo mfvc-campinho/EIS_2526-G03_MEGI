@@ -1,15 +1,6 @@
 // ======================================================
 // NEW collectionsData (Relational N ↔ N version)
-// ======================================================
-// Agora temos:
-//
-// collections[]       → só metadados
-// items[]             → todos os itens soltos
-// events[]            → todos os eventos soltos
-// collectionItems[]   → relações N:N coleção ↔ item
-// collectionEvents[]  → relações N:N coleção ↔ evento
-//
-// Baseado totalmente nos teus dados originais.
+// With "type" and new "description" fields for collections
 // ======================================================
 
 const collectionsData = {
@@ -21,46 +12,51 @@ const collectionsData = {
       owner: "collector",
       coverImage: "../images/coins.png",
       summary: "A journey through Portugal’s historical coins.",
+      description: "This collection showcases Portugal’s numismatic legacy, featuring original Escudo coins minted before the euro era. It highlights their unique designs, materials, and historical significance in the country’s economy.",
       createdAt: "2018-04-10",
       metrics: { votes: 120, userChosen: true, addedAt: "2025-10-15" }
     },
     {
       id: "playboys",
       name: "Portuguese Playboy Editions",
-      type: "Coins",
+      type: "Magazines",
       owner: "Rui Frio",
       coverImage: "../images/playboy.jpg",
       summary: "A collection of iconic Portuguese magazine editions.",
+      description: "A curated archive of Portuguese Playboy issues spanning several decades, capturing evolving trends in media, design, and culture. Each edition represents a snapshot of its era’s aesthetics and editorial vision.",
       createdAt: "2019-01-05",
       metrics: { votes: 95, userChosen: true, addedAt: "2025-10-22" }
     },
     {
       id: "pokemon",
       name: "Pokémon Trading Cards",
-      type: "Coins",
+      type: "Collectible Cards",
       owner: "Cristina Sem Feira",
       coverImage: "../images/pikachu.jpg",
       summary: "Rare and classic cards from the Pokémon universe.",
+      description: "A comprehensive Pokémon TCG collection featuring rare holographic cards, first editions, and limited releases from various generations. It celebrates both the nostalgic and competitive sides of Pokémon collecting.",
       createdAt: "2021-04-20",
       metrics: { votes: 88, userChosen: false, addedAt: "2025-10-10" }
     },
     {
       id: "portraits",
       name: "Portraits of Historical Leaders",
-      type: "Coins",
+      type: "Art & History",
       owner: "Andre Fartura",
       coverImage: "../images/salazar.jpg",
       summary: "Historical register of controversial figures.",
+      description: "An artistic and historical exploration through portraits of world leaders who shaped the 20th century. The collection invites reflection on power, influence, and the legacy of leadership in visual art.",
       createdAt: "2017-02-02",
       metrics: { votes: 67, userChosen: false, addedAt: "2025-10-25" }
     },
     {
       id: "jerseys",
       name: "Autographed Football Jerseys",
-      type: "Coins",
+      type: "Sports Memorabilia",
       owner: "Rui Tosta",
       coverImage: "../images/benfica.jpg",
       summary: "Signed memorabilia from legendary players.",
+      description: "An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.",
       createdAt: "2019-06-25",
       metrics: { votes: 105, userChosen: true, addedAt: "2025-10-05" }
     }

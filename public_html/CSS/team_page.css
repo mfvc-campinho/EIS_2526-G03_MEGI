@@ -9,34 +9,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
 
 /* -----------------Navigation bar-------------------*/
 
-
-
-/* Optional: keep navbar fixed at top */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: #000;
-  padding-top: 10px;
-}
-
-
 /* ===== TEAM SECTION ===== */
 main {
-  color: white;
   text-align: center;
   font-family: 'Outfit', sans-serif;
   padding: 40px 0;
 }
-
-h1 {
-  margin-bottom: 40px;
-  font-size: 2rem;
-  letter-spacing: 1px;
-  color: #2563eb;
-  
-}
-main { text-align: center; }
 
 main h1.title {
   display: inline-block;     /* allows centering + width based on text */
@@ -105,7 +83,7 @@ main h1.title::after {
 
 /* Student ID */
 .member .id {
-  color: #ccc;
+  color: #6b7280; /* Cinzento escuro para contraste */
   font-size: 0.9rem;
   margin-bottom: 10px;
 }
@@ -113,7 +91,7 @@ main h1.title::after {
 /* Personal description */
 .member .desc {
   font-size: 0.95rem;
-  color: #eee;
+  color: #374151; /* Cinzento mais escuro */
   line-height: 1.4;
   font-weight: 300;
 }

@@ -1,35 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8" />
-  <title>Main Menu - GoodCollections</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <title>User Profile — GoodCollections</title>
 
-  <!-- Google Font -->
+  <!-- 🔹 Fonts & CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- 🔹 CSS (ordem igual à all_collections) -->
-  <link rel="stylesheet" href="../CSS/general.css" />
-  <link rel="stylesheet" href="../CSS/modal.css" />
+  <link rel="stylesheet" href="../CSS/general.css">
   <link rel="stylesheet" href="../CSS/grid.css" />
+  <link rel="stylesheet" href="../CSS/user_page.css">
 </head>
 
 <body>
-  <!-- ===============================
-       🔹 LOADER
-  =============================== -->
+  <!-- 🔹 LOADER -->
   <div id="loader">
     <div class="spinner"></div>
   </div>
 
-  <!-- ===============================
-       🔹 PAGE CONTENT
-  =============================== -->
   <div id="content">
-    <!-- ===============================
-         🔹 NAVIGATION BAR
-    =============================== -->
+    <!-- 🔹 NAVIGATION BAR -->
     <header>
       <nav class="navbar">
         <div class="nav-left">
@@ -48,56 +37,37 @@
       </nav>
     </header>
 
-    <!-- ===============================
-         🔹 MAIN CONTENT
-    =============================== -->
+    <!-- ========================================================= -->
+    <!-- 🔹 MAIN CONTENT -->
+    <!-- ========================================================= -->
     <main>
-      <h1 class="page-title">Top 5 Collections</h1>
+      <!-- 🔹 Welcome Banner -->
+      <div class="welcome-banner">
+        Welcome back, <span id="username-banner">Collector</span> 👋
+      </div>
 
-      <!-- 🔹 Filter -->
-      <section class="filter-section">
-        <div class="filter-control">
-          <label for="rankingFilter">Sort by:</label>
-          <select id="rankingFilter">
-            <option value="lastAdded">Last Added</option>
-            <option value="userChosen">Chosen by User</option>
-            <option value="itemCount">Number of Items</option>
-          </select>
+      <!-- 🔹 User Header -->
+      <section class="user-header">
+        <img class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
+        <div class="user-meta">
+          <h1 id="user-name">Collector</h1>
         </div>
       </section>
 
-      <!-- 🔹 Collections Container -->
-      <section class="ranking-section">
-        <div class="collection-container" id="homeCollections"></div>
-      </section>
+      <!-- 🔹 User Actions -->
+      <div class="user-actions">
+        <button id="open-collection-modal" class="explore-btn" data-requires-login>➕ Add Collection</button>
+        <button id="editCollectionBtn" class="explore-btn" data-requires-login>✏️ Edit Collection</button>
+        <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>🗑️ Delete Collection</button>
+      </div>
 
-      <!-- 🔹 Global Actions -->
-      <section class="actions-section">
-        <div class="collection-actions">
-          <button id="open-collection-modal" class="explore-btn" data-requires-login>➕ New Collection</button>
-          <button id="editCollectionBtn" class="explore-btn" data-requires-login>✏️ Edit Collection</button>
-          <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>🗑️ Delete Collection</button>
-          <button id="restoreDataBtn" class="explore-btn warning">🔄 Restore Data</button>
-        </div>
-      </section>
+      <!-- 🔹 User Collections -->
+      <h2 id="my-collections-title">My Collections</h2>
+      <section id="user-collections" class="collection-container"></section>
     </main>
-
-    <!-- ===============================
-         🔹 FOOTER
-    =============================== -->
-    <footer>
-      <p>
-        Made with ❤️ by
-        <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
-          EIS_2526-G03_MEGI
-        </a>
-      </p>
-    </footer>
   </div>
 
-  <!-- ===============================
-       🔹 MODALS
-  =============================== -->
+  <!-- 🔹 MODALS PLACEHOLDER -->
   <div id="collection-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-collection-modal">&times;</span>
@@ -119,7 +89,6 @@
       </form>
     </div>
   </div>
-
   <div id="forgot-password-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-forgot-modal">&times;</span>
@@ -134,7 +103,6 @@
       </form>
     </div>
   </div>
-
   <div id="add-account-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-account-modal">&times;</span>
@@ -155,16 +123,25 @@
     </div>
   </div>
 
-  <!-- ===============================
-       🔹 SCRIPTS (ordem obrigatória)
-  =============================== -->
-  <script src="../JS/Data.js"></script>
+  <!-- ========================================================= -->
+  <!-- 🔹 FOOTER -->
+  <!-- ========================================================= -->
+  <footer>
+    <p>
+      Made with ❤️ by
+      <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
+        EIS_2526-G03_MEGI
+      </a>
+    </p>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- 🔹 SCRIPTS -->
+  <!-- ========================================================= -->
   <script src="../JS/app-data.js"></script>
   <script src="../JS/app-users.js"></script>
   <script src="../JS/app-collections.js"></script>
-
-  <!-- 🔹 Script do Loader -->
+  <script src="../JS/app-userpage.js"></script>
   <script src="../JS/app-loader.js"></script>
 </body>
-
 </html>

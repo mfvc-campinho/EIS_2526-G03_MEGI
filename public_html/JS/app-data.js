@@ -36,8 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
 
   // Itens associados a uma coleção
-  function getItemsByCollection(collectionId) {
-    const data = loadData();
+  function getItemsByCollection(collectionId, data) {
+    if (!data) data = loadData(); // Carrega os dados se não forem passados como argumento
     if (!data || !data.collectionItems) return [];
 
     const linkedIds = data.collectionItems

@@ -1,6 +1,22 @@
 /* ========= Page spacing under sticky navbar ========= */
 main { padding: 96px 16px 56px; }
 
+/* Estilos movidos do HTML para uniformizar */
+.welcome-banner {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.user-actions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+#my-collections-title {
+  text-align: center;
+  margin-top: 40px;
+}
+
 /* ========= User header (uses your classes/ids) ========= */
 .user-header{
   display:flex;
@@ -27,122 +43,6 @@ main { padding: 96px 16px 56px; }
   .user-header{ flex-direction:column; text-align:center; }
   .btn-primary{ margin-left:0; }
 }
-
-/* =======================================================
-   Your Collections: ONE horizontal row that scrolls
-   (works for BOTH .uc-card and your .collection-card)
-   ======================================================= */
-.uc-section{ max-width:none; margin:0 0; }
-.uc-head{
-  display:flex; align-items:center; justify-content:space-between;
-  margin: 0 ;
-}
-.uc-head h2{ margin:0; }
-
-/* Row scroller */
-.uc-strip{
-  display:flex;
-  gap:20px;
-  overflow-x:auto;                 /* horizontal scroll */
-  scroll-snap-type:x mandatory;    /* snap per card */
-  padding-bottom:8px;
-  -ms-overflow-style:none;         /* hide scrollbar (IE/Edge) */
-  scrollbar-width:none;            /* hide scrollbar (Firefox) */
-}
-.uc-strip::-webkit-scrollbar{ display:none; } /* hide scrollbar (Chrome/Safari) */
-
-/* Card base (applies to both card types inside the strip) */
-.uc-strip > .uc-card,
-.uc-strip > .collection-card{
-  flex:0 0 290px;                  /* fixed card width -> stays in one line */
-  background:#fff;
-  border-radius:16px;
-  box-shadow:0 8px 22px rgba(0,0,0,.10);
-  overflow:hidden;
-  scroll-snap-align:start;
-}
-/* base uc-card already exists; we only tweak the “add” one */
-.uc-card.add-card{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:2px dashed #cbd5e1;          /* dashed outline */
-  background:#f8fafc;                  /* subtle bg */
-  color:#0f172a;
-  user-select:none;
-}
-
-.uc-card.add-card .add-inner{
-  width:100%;
-  height:100%;
-  border:0;
-  background:transparent;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  cursor:pointer;
-}
-
-.uc-card.add-card .add-plus{
-  font-size:36px;
-  line-height:1;
-  color:#2563eb;
-}
-
-.uc-card.add-card .add-text{
-  font-weight:700;
-  font-size:14px;
-  color:#1f2937;
-}
-
-.uc-card.add-card:hover{
-  border-color:#93c5fd;
-  background:#f1f5ff;
-}
-
-/* IMAGES */
-.uc-card .uc-thumb{
-  width:100%; height:160px; object-fit:cover; display:block;
-}
-.collection-card .card-image{ height:160px; background:#e5e7eb; }
-.collection-card .card-image img{
-  width:100%; height:100%; object-fit:cover; display:block;
-}
-
-/* BODY (text/buttons) */
-.uc-card .uc-body,
-.collection-card .card-info{
-  padding:16px; text-align:center;
-}
-.uc-card .uc-body h3,
-.collection-card .card-info h3{
-  margin:6px 0; font-size:18px; font-weight:800;
-}
-.uc-author,
-.collection-card .card-info p{
-  margin:0 0 12px; color:#6b7280; font-size:14px;
-}
-.uc-btn,
-.explore-btn{
-  display:inline-block; padding:8px 14px; border-radius:10px;
-  background:#2563eb; color:#fff; text-decoration:none; font-weight:600;
-  border:0; cursor:pointer;
-}
-
-/* Arrows */
-.uc-arrows{ display:flex; gap:8px; }
-.uc-arrows button{
-  border:0; padding:6px 10px; border-radius:8px;
-  background:#eef2ff; color:#1e3a8a; font-weight:700; cursor:pointer;
-}
-
-
-
-
-
-
 
 /* ===== Mini-calendar list ===== */
 .user-section { margin-top: 28px; }

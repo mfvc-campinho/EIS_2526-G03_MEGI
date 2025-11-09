@@ -1,14 +1,14 @@
 /* ==========================================
-   🌟 COLLECTION GRID STYLES (FINAL)
-   Combina estética atual (moderna e suave)
-   com consistência em todos os cartões.
+   🌟 GRID UNIFICADO (Coleções e Itens)
+   Controla o layout de todas as grelhas de cartões do site.
    ========================================== */
 
 /* ===============================
    🔹 GRID CONTAINER
 =============================== */
 .collections-row,
-.collection-container {
+.collection-container,
+.item-container { /* Adicionado para abranger ambos */
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -21,13 +21,14 @@
 
 /* ===============================
    🔹 CARD BASE
+   (Estilo comum para .collection-card e .item-card)
 =============================== */
-.collection-card {
+.card {
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: calc(10% - 16px); /* Ajusta o cálculo para o novo gap */
+  width: calc(20% - 16px); /* 5 por linha */
   min-width: 240px; /* Reduz a largura mínima para permitir que encolham */
   height: 420px;
   display: flex;
@@ -36,15 +37,25 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.collection-card:hover {
+.card:hover {
   transform: translateY(-6px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Ajustes específicos para cada tipo de cartão */
+.collection-card {
+  justify-content: flex-start; /* Alinha conteúdo ao topo */
+}
+
+.item-card {
+  justify-content: space-between; /* Estica o conteúdo para preencher a altura */
 }
 
 /* ===============================
    🔹 CARD IMAGE
 =============================== */
-.card-image {
+.card-image,
+.item-image-wrapper {
   width: 100%;
   height: 180px; /* altura fixa */
   background-color: #eaeaea;
@@ -56,14 +67,15 @@
   border-top-right-radius: 16px;
 }
 
-.card-image img {
+.card-image img,
+.item-image-wrapper .item-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* recorta proporcionalmente */
 }
 
-.card-image:empty::after {
+.card-image:empty::after,
+.item-image-wrapper:empty::after {
   content: "No image available";
   color: #666;
   font-style: italic;
@@ -235,20 +247,18 @@ button {
    🔹 RESPONSIVE FIXES
 =============================== */
 
-/* Destaque especial dourado para as coleções do 'collector' */
-.collection-card.collector-owned {
-  border: 3px solid #ffd700; /* Dourado */
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+@media (max-width: 1300px) {
+  .card { width: calc(25% - 16px); } /* 4 por linha */
 }
 
-.collection-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+@media (max-width: 900px) {
+  .card { width: calc(33.33% - 16px); } /* 3 por linha */
 }
 
-/* Mantém o brilho rosa mesmo no hover */
-.collection-card.collector-special:hover {
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15), 0 0 15px rgba(255, 215, 0, 0.4);
+@media (max-width: 600px) {
+  .card { width: calc(50% - 16px); } /* 2 por linha */
 }
 
-/* ===============================
+@media (max-width: 480px) {
+  .card { width: 100%; } /* 1 por linha */
+}

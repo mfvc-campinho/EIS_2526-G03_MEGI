@@ -1,26 +1,25 @@
 // ===============================================
 // app-items.js — Manage items within a collection
 // ===============================================
+document.addEventListener("DOMContentLoaded", () => {
+  // ===============================================
+  // 🔹 User State Management
+  // ===============================================
+  let currentUser;
+  let isActiveUser;
 
-// 🔹 Ouvir o evento de login/logout e atualizar interface globalmente
-window.addEventListener("userStateChange", (e) => {
-  const user = e.detail;
-  const isActiveUser = user && user.active;
+  function updateUserState() {
+    const userData = JSON.parse(localStorage.getItem("currentUser"));
+    currentUser = userData ? userData.name : null;
+    isActiveUser = userData && userData.active;
 
-  const addItemBtn = document.getElementById("add-item");
-  if (addItemBtn) {
-    addItemBtn.style.display = isActiveUser ? "inline-block" : "none";
+    // Esconde/mostra botões que requerem login
+    document.querySelectorAll("[data-requires-login]").forEach(btn => {
+      btn.style.display = isActiveUser ? "inline-block" : "none";
+    });
   }
 
-  // Atualiza os itens (mostra/esconde botões de edição)
-  if (typeof renderItems === "function") renderItems();
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  // 🔹 Ler utilizador atual (vindo do app-users.js)
-  const userData = JSON.parse(localStorage.getItem("currentUser"));
-  const currentUser = userData ? userData.name : "guest";
-  const isActiveUser = userData && userData.active;
+  updateUserState(); // Define o estado inicial
 
   // Seletores principais
   const itemsContainer = document.getElementById("collection-items");
@@ -32,39 +31,48 @@ document.addEventListener("DOMContentLoaded", () => {
   const title = document.getElementById("modal-title");
   const idField = document.getElementById("item-id");
 
-  // 🔹 Esconde o botão Add Item se o perfil não estiver ativo
-  if (!isActiveUser && addItemBtn) addItemBtn.style.display = "none";
-
   // Obtém o ID da coleção a partir da URL
   const params = new URLSearchParams(window.location.search);
   const collectionId = params.get("id");
 
   // ===============================================
+  // 🔹 Destacar secção se for do utilizador
+  // ===============================================
+  function highlightOwnedSection() {
+    const data = appData.loadData();
+    const collection = data.collections.find(c => c.id === collectionId);
+
+    if (isActiveUser && collection && collection.owner?.toLowerCase() === currentUser.toLowerCase()) {
+      itemsContainer.classList.add("owned-section");
+    } else {
+      itemsContainer.classList.remove("owned-section");
+    }
+  }
+
+  // ===============================================
   // 🔹 Renderizar itens da coleção atual (usando relação N:N)
   // ===============================================
   window.renderItems = function renderItems() {
+    const data = appData.loadData();
+    const collection = data.collections.find(c => c.id === collectionId);
     const items = appData.getItemsByCollection(collectionId);
+
     itemsContainer.innerHTML = "";
 
     if (!items || items.length === 0) {
-      itemsContainer.innerHTML = `<p>No items yet.</p>`;
+      itemsContainer.innerHTML = `<p class="no-items-message">This collection has no items yet.</p>`;
       return;
     }
 
-    items.forEach(item => {
+    const isCollectionOwner = isActiveUser && collection && (collection.owner?.toLowerCase() === currentUser?.toLowerCase());
+    let cardsHTML = "";
+
+    for (const item of items) {
       const card = document.createElement("div");
       card.className = "item-card";
 
-      // 🔹 Dono do item
-      const isOwner = isActiveUser && (item.owner === "collector" || item.owner === currentUser);
-      const ownerTag = `
-        <p style="font-size:0.85rem;color:#555;margin-top:6px;">
-          👤 <strong>${item.owner || "Unknown"}</strong>
-        </p>
-      `;
-
       // 🔹 Botões (edit/delete só aparecem se perfil ativo)
-      const buttons = isOwner
+      const buttons = isCollectionOwner
         ? `
           <div class="item-buttons">
             <button class="explore-btn" onclick="editItem('${item.id}')">✏️ Edit</button>
@@ -73,23 +81,25 @@ document.addEventListener("DOMContentLoaded", () => {
         : "";
 
       // 🔹 Template
-      card.innerHTML = `
-        <div class="item-image-wrapper">
-          <img src="${item.image}" alt="${item.name}" class="item-image">
+      cardsHTML += `
+        <div class="card item-card">
+          <div class="item-image-wrapper">
+            <img src="${item.image}" alt="${item.name}" class="item-image">
+          </div>
+          <div class="item-info">
+            <h3>${item.name}</h3>
+            <ul class="item-details">
+              <li><strong>Importance:</strong> ${item.importance}</li>
+              <li><strong>Weight:</strong> ${item.weight || "N/A"} g</li>
+              <li><strong>Price:</strong> €${item.price || "0.00"}</li>
+              <li><strong>Date:</strong> ${item.date || "-"}</li>
+            </ul>
+            ${buttons}
+          </div>
         </div>
-        <div class="item-info">
-          <h3>${item.name}</h3>
-          <ul class="item-details">
-            <li><strong>Importance:</strong> ${item.importance}</li>
-            <li><strong>Weight:</strong> ${item.weight || "N/A"} g</li>
-            <li><strong>Price:</strong> €${item.price || "0.00"}</li>
-            <li><strong>Date:</strong> ${item.date || "-"}</li>
-          </ul>
-          ${ownerTag}
-          ${buttons}
-        </div>`;
-      itemsContainer.appendChild(card);
-    });
+      `;
+    }
+    itemsContainer.innerHTML = cardsHTML;
   };
 
   // ===============================================
@@ -194,7 +204,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
   window.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 
+  // Ouve o evento de login/logout e atualiza a página
+  window.addEventListener("userStateChange", () => {
+    updateUserState();
+    renderItems();
+  });
+
   // Inicialização
   populateCollectionsSelect();
   renderItems();
+  highlightOwnedSection(); // Chama a nova função
 });

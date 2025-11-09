@@ -12,7 +12,7 @@
   <!-- CSS existente -->
   <link rel="stylesheet" href="../CSS/general.css" />
   <link rel="stylesheet" href="../CSS/modal.css" />
-  <link rel="stylesheet" href="../CSS/collection_grid.css" />
+  <link rel="stylesheet" href="../CSS/grid.css" />
 
 
 </head>
@@ -33,31 +33,19 @@
       <nav class="navbar">
         <div class="nav-left">
           <a href="home_page.html" class="logo">GoodCollections</a>
-
-          <div class="dropdown">
-            <button onclick="window.location.href='all_collection.html'" class="dropbtn">Collections</button>
-            <div class="dropdown-content" id="collectionsDropdown"></div>
-          </div>
         </div>
-
         <div class="nav-right">
+          <a href="all_collections.html" class="nav-link">Collections</a>
           <a href="home_page.html" class="nav-link">Homepage</a>
           <a href="team_page.html" class="nav-link">About Us</a>
-                          <!-- 🔹 Dropdown Profile -->
-
-<div class="dropdown profile-dropdown">
-  <button class="dropbtn profile-btn">👤 Profile ▾</button>
-  <div class="dropdown-content profile-menu"></div>
-</div>
+          <div class="dropdown profile-dropdown">
+            <button class="dropbtn profile-btn">👤 Profile ▾</button>
+            <div class="dropdown-content profile-menu"></div>
+          </div>
           <input type="search" class="search-bar" placeholder="Search..." />
         </div>
       </nav>
     </header>
-
-    <div class="user-state-indicator">
-      State: <span id="user-indicator"></span>
-      <button id="goto-change-state-button">Change State</button>
-    </div>
 
     <!-- ===============================
          🔹 MAIN CONTENT
@@ -68,8 +56,8 @@
       <!-- Botões CRUD -->
       <div class="crud-controls">
         <button id="open-collection-modal" data-requires-login>➕ Add Collection</button>
-        <button id="open-item-modal" data-requires-login>➕ Add Item</button>
-        <button id="open-event-modal" data-requires-login>➕ Add Event</button>
+        <button id="editCollectionBtn" class="explore-btn" data-requires-login>✏️ Edit Collection</button>
+        <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>🗑️ Delete Collection</button>
       </div>
 
       <!-- Listas -->
@@ -86,32 +74,21 @@
     </footer>
   </div>
 
-  <!-- ===============================
-       🔹 MODALS
-  =============================== -->
-  <!-- =======================================
-     🔹 MODAL: COLEÇÃO
-======================================= -->
+  <!-- 🔹 MODALS PLACEHOLDER -->
   <div id="collection-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-collection-modal">&times;</span>
       <h2 id="collection-modal-title">Nova Coleção</h2>
-
       <form id="form-collection">
         <input type="hidden" id="collection-id" />
-
         <label for="col-name">Nome da Coleção:</label>
         <input type="text" id="col-name" name="col-name" required />
-
-        <label for="col-type">Tipo:</label>
-        <input type="text" id="col-type" name="col-type" />
-
-        <label for="col-image">Imagem (URL):</label>
-        <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg" />
-
         <label for="col-summary">Descrição:</label>
-        <textarea id="col-summary" name="col-summary"></textarea>
-
+        <textarea id="col-summary" name="col-summary" required></textarea>
+        <label for="col-image">Imagem (URL):</label>
+        <input type="text" id="col-image" name="col-image" placeholder="Ex: ../images/default.jpg" />
+        <label for="col-type">Tipo:</label>
+        <input type="text" id="col-type" name="col-type" required />
         <div class="modal-actions">
           <button type="submit" class="save-btn">Guardar</button>
           <button type="button" id="cancel-collection-modal" class="cancel-btn">Cancelar</button>
@@ -119,104 +96,51 @@
       </form>
     </div>
   </div>
-  <!-- =======================================
-     🔹 MODAL: ITEM
-======================================= -->
-  <div id="item-modal" class="modal">
+  <div id="forgot-password-modal" class="modal">
     <div class="modal-content">
-      <span class="close-btn" id="close-item-modal">&times;</span>
-      <h2 id="item-modal-title">Novo Item</h2>
-
-      <form id="form-item">
-        <input type="hidden" id="item-id" />
-
-        <label for="item-name">Nome:</label>
-        <input type="text" id="item-name" name="item-name" required />
-
-        <label for="item-price">Preço (€):</label>
-        <input type="number" id="item-price" name="item-price" />
-
-        <label for="item-importance">Importância:</label>
-        <select id="item-importance" name="item-importance">
-          <option>Low</option>
-          <option>Medium</option>
-          <option>High</option>
-          <option>Very High</option>
-        </select>
-
-        <label for="item-image">Imagem (URL):</label>
-        <input type="text" id="item-image" name="item-image" />
-
-        <fieldset>
-          <legend>Associar às Coleções:</legend>
-          <div id="collections-checkboxes"></div>
-        </fieldset>
-
+      <span class="close-btn" id="close-forgot-modal">&times;</span>
+      <h2>Forgot Password</h2>
+      <form id="form-forgot-password">
+        <p>Enter your email address and we'll send you a link to reset your password.</p>
+        <label for="forgot-email">Email:</label>
+        <input type="email" id="forgot-email" name="forgot-email" required />
         <div class="modal-actions">
-          <button type="submit" class="save-btn">Guardar</button>
-          <button type="button" id="cancel-item-modal" class="cancel-btn">Cancelar</button>
+          <button type="submit" class="save-btn">Send Reset Link</button>
         </div>
       </form>
     </div>
   </div>
-  <!-- =======================================
-     🔹 MODAL: EVENTO
-======================================= -->
-  <div id="event-modal" class="modal">
+  <div id="add-account-modal" class="modal">
     <div class="modal-content">
-      <span class="close-btn" id="close-event-modal">&times;</span>
-      <h2 id="event-modal-title">Novo Evento</h2>
-
-      <form id="form-event">
-        <input type="hidden" id="event-id" />
-
-        <label for="event-name">Nome do Evento:</label>
-        <input type="text" id="event-name" name="event-name" required />
-
-        <label for="event-location">Localização:</label>
-        <input type="text" id="event-location" name="event-location" />
-
-        <label for="event-date">Data:</label>
-        <input type="date" id="event-date" name="event-date" />
-
-        <fieldset>
-          <legend>Associar às Coleções:</legend>
-          <div id="collections-checkboxes-event"></div>
-        </fieldset>
-
+      <span class="close-btn" id="close-account-modal">&times;</span>
+      <h2>Create New Account</h2>
+      <form id="form-add-account">
+        <label for="acc-name">Username:</label>
+        <input type="text" id="acc-name" name="acc-name" required />
+        <label for="acc-email">Email:</label>
+        <input type="email" id="acc-email" name="acc-email" required />
+        <label for="acc-password">Password:</label>
+        <input type="password" id="acc-password" name="acc-password" required />
+        <label for="acc-password-confirm">Confirm Password:</label>
+        <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
         <div class="modal-actions">
-          <button type="submit" class="save-btn">Guardar</button>
-          <button type="button" id="cancel-event-modal" class="cancel-btn">Cancelar</button>
+          <button type="submit" class="save-btn">Create Account</button>
         </div>
       </form>
     </div>
   </div>
-
-
 
   <!-- ===============================
        🔹 SCRIPTS
   =============================== -->
 
-  <script src="..\JS\Data.js"></script>
+  <script src="../JS/Data.js"></script>
+  <script src="../JS/app-data.js"></script>
+  <script src="../JS/app-users.js"></script>
+  <script src="../JS/app-collections.js"></script>
 
-  <script src="..\JS\app-data.js"></script>
-  <script src="..\JS\app-users.js"></script>
-  <script src="..\JS\app-collections.js"></script>
-  <script src="..\JS\app-items.js"></script>
-  <script src="..\JS\app-events.js"></script>
-
-  <script>
-    // Loader fade logic (mantido)
-    window.addEventListener("load", () => {
-      const loader = document.getElementById("loader");
-      const content = document.getElementById("content");
-      setTimeout(() => {
-        loader.classList.add("hidden");
-        content.style.opacity = "1";
-      }, 400);
-    });
-  </script>
+  <!-- 🔹 Script do Loader -->
+  <script src="../JS/app-loader.js"></script>
 </body>
 
 </html>

@@ -14,71 +14,67 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     </head>
 
     <body>
-        <div class="user-state-indicator">
-            State: <span id="user-indicator"></span>
-            <button id="goto-change-state-button">Change State</button>
+        <!-- 🔹 LOADER -->
+        <div id="loader">
+            <div class="spinner"></div>
         </div>
-        <header>
-            <nav class="navbar">
-                <div class="nav-left">
-                    <a href="home_page.html" class="logo">GoodCollections</a>
 
-                    <div class="dropdown">
-                        <button onclick="window.location.href = 'collection_page.html'" class="dropbtn">Collections</button>                    <div class="dropdown-content">
-                            <a href="#" data-id="escudos" class="jump-to">Escudos Portugueses</a>
-                            <a href="#" data-id="playboys" class="jump-to">Playboys Portuguesas</a>
-                            <a href="#" data-id="pokemon" class="jump-to">Cartas de Pokémon</a>
-                            <a href="#" data-id="retratos" class="jump-to">Retratos de Líderes Fascistas</a>
-                            <a href="#" data-id="camisolas" class="jump-to">Camisolas Autografadas</a>
-                        </div>
+        <div id="content">
+            <header>
+                <nav class="navbar">
+                    <div class="nav-left">
+                        <a href="home_page.html" class="logo">GoodCollections</a>
                     </div>
-                </div>
+                    <div class="nav-right">
+                        <a href="all_collections.html" class="nav-link">Collections</a>
+                        <a href="home_page.html" class="nav-link">Homepage</a>
+                        <a href="team_page.html" class="nav-link">About Us</a>
+                        <div class="dropdown profile-dropdown">
+                            <button class="dropbtn profile-btn">👤 Profile ▾</button>
+                            <div class="dropdown-content profile-menu"></div>
+                        </div>
+                        <input type="search" class="search-bar" placeholder="Search..." />
+                    </div>
+                </nav>
+            </header>
 
-                <div class="nav-right">
-                    <a href="home_page.html" class="nav-link">Homepage</a>
-                    <a href="team_page.html" class="nav-link">About Us</a>
-                    <a href="user_page.html" class="nav-link">Profile</a>
-                    <input type="search" class="search-bar" placeholder="Search..." />
-                </div>
-            </nav>
-        </header>
+            <main>
+                <h1 class = "title">OUR AWESOME TEAM</h1>
 
-        <main>
-            <h1 class = "title">OUR AWESOME TEAM</h1>
+                <section class="Team">
 
-            <section class="Team">
+                    <div class="member">
+                        <img src="../images/Afonso.jpeg" alt="Afonso Ramos" width="104" height="142">
+                        <h2>Afonso Dias Fachada Ramos</h2>
+                        <p class="id">up202108474</p>
+                        <p class="desc">If I used this site, I’d collect limited edition porn movie posters.</p>
 
-                <div class="member">
-                    <img src="../images/Afonso.jpeg" alt="Afonso Ramos" width="104" height="142">
-                    <h2>Afonso Dias Fachada Ramos</h2>
-                    <p class="id">up202108474</p>
-                    <p class="desc">If I used this site, I’d collect limited edition porn movie posters.</p>
+                    </div>
 
-                </div>
+                    <div class="member">
+                        <img src="../images/Ana.jpg" alt="Ana Amorim" width="104" height="142">
+                        <h2>Ana Isabel Dias Cunha Amorim</h2>
+                        <p class="id">up202107329</p>
+                        <p class="desc">If I used this site, I’d collect airplane miniatures.</p>
+                    </div>
 
-                <div class="member">
-                    <img src="../images/Ana.jpg" alt="Ana Amorim" width="104" height="142">
-                    <h2>Ana Isabel Dias Cunha Amorim</h2>
-                    <p class="id">up202107329</p>
-                    <p class="desc">If I used this site, I’d collect airplane miniatures.</p>
-                </div>
+                    <div class="member">
+                        <img src="../images/Filipa.jpg" alt="Filipa Mota" width="104" height="142">
+                        <h2>Filipa Marisa Duarte Mota</h2>
+                        <p class="id">up202402072</p>
+                        <p class="desc">If I used this site, I’d collect airplane miniatures.</p>
+                    </div>
 
-                <div class="member">
-                    <img src="../images/Filipa.jpg" alt="Filipa Mota" width="104" height="142">
-                    <h2>Filipa Marisa Duarte Mota</h2>
-                    <p class="id">up202402072</p>
-                    <p class="desc">If I used this site, I’d collect airplane miniatures.</p>
-                </div>
+                    <div class="member">
+                        <img src="../images/Matheus.jpeg" alt="Matheus Campinho" width="104" height="142">
 
-                <div class="member">
-                    <img src="../images/Matheus.jpeg" alt="Matheus Campinho" width="104" height="142">
-
-                    <h2>Matheus Fernandes Vilhena Campinho</h2>
-                    <p class="id">up202202004</p>
-                    <p class="desc">If I used this site, I’d collect airplane miniatures.</p>
-                </div>
-            </section>
-        </main>
+                        <h2>Matheus Fernandes Vilhena Campinho</h2>
+                        <p class="id">up202202004</p>
+                        <p class="desc">If I used this site, I’d collect airplane miniatures.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
         <footer>
             <p>
                 Made with ❤️ by
@@ -88,6 +84,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </p>
         </footer>
 
+        <!-- 🔹 MODALS PLACEHOLDER -->
+        <div id="modals-placeholder"></div>
+
+        <script src="../JS/app-data.js"></script>
+        <script src="../JS/app-users.js"></script>
+        <script src="../JS/app-collections.js"></script>
+        <script src="../JS/app-loader.js"></script>
     </body>
 
 </html>

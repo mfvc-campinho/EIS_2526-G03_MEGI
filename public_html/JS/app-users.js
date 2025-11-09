@@ -3,7 +3,7 @@
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
   let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  const profileMenu = document.querySelector(".profile-menu");
+  const profileMenu = document.querySelector(".profile-dropdown .dropdown-content");
   const profileButton = document.querySelector(".profile-btn");
 
   // =======================================================
@@ -26,11 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
       profileMenu.innerHTML = `
         <form id="login-form" class="login-form">
           <label>Username:</label>
-          <input type="text" id="login-user" placeholder="Enter username" required>
+          <input type="text" id="login-user" placeholder="Enter username">
           <label>Password:</label>
-          <input type="password" id="login-pass" placeholder="Enter password" required>
+          <input type="password" id="login-pass" placeholder="Enter password">
           <button type="submit" class="login-btn">Enter</button>
         </form>
+        <div class="profile-links">
+          <a href="#" id="forgot-password-btn">Forgot Password?</a>
+          <a href="#" id="add-account-btn">Create New Account</a>
+        </div>
       `;
     }
 
@@ -38,12 +42,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
-  // 2️⃣ Login simulado (sem base de dados)
+  // 2️⃣ Login simulado (sempre como 'collector')
   // =======================================================
-  function loginUser(username) {
+  function loginUser() {
     currentUser = {
-      id: "user-" + Date.now(),
-      name: username || "collector",
+      id: "collector-main",
+      name: "collector", // 🔹 sempre o mesmo utilizador
       active: true
     };
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -56,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // =======================================================
   function logoutUser() {
     if (confirm("Sign out?")) {
-      localStorage.removeItem("currentUser");
+      localStorage.setItem("currentUser", JSON.stringify({ active: false }));
       currentUser = null;
       notifyUserStateChange();
       renderProfileMenu();
@@ -64,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
-  // 4️⃣ Emitir evento global
+  // 4️⃣ Notificação global
   // =======================================================
   function notifyUserStateChange() {
     const event = new CustomEvent("userStateChange", {
@@ -75,19 +79,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
-  // 5️⃣ Eventos dinâmicos (login/logout)
+  // 5️⃣ Eventos dinâmicos
   // =======================================================
   function attachEvents() {
     const form = document.getElementById("login-form");
     const signoutBtn = document.getElementById("signout-btn");
 
+    // Links para os novos modais
+    const forgotPasswordBtn = document.getElementById("forgot-password-btn");
+    const addAccountBtn = document.getElementById("add-account-btn");
+
     if (form) {
       form.addEventListener("submit", (e) => {
         e.preventDefault();
-        const username = document.getElementById("login-user").value.trim();
-        const password = document.getElementById("login-pass").value.trim();
-        if (!username || !password) return alert("Fill in both fields");
-        loginUser(username);
+        // 🔹 ignora qualquer input e entra sempre como collector
+        loginUser();
       });
     }
 
@@ -95,6 +101,53 @@ document.addEventListener("DOMContentLoaded", () => {
       signoutBtn.addEventListener("click", (e) => {
         e.preventDefault();
         logoutUser();
+      });
+    }
+
+    // Eventos para os novos modais
+    if (forgotPasswordBtn) {
+      const forgotModal = document.getElementById("forgot-password-modal");
+      const closeForgot = document.getElementById("close-forgot-modal");
+      forgotPasswordBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (forgotModal) forgotModal.style.display = "flex";
+      });
+      closeForgot?.addEventListener("click", () => forgotModal.style.display = "none");
+      document.getElementById("form-forgot-password")?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        alert("✅ Password reset link sent!\n\n(This is a simulation. No data was saved.)");
+        forgotModal.style.display = "none";
+      });
+    }
+
+    if (addAccountBtn) {
+      const accountModal = document.getElementById("add-account-modal");
+      const closeAccount = document.getElementById("close-account-modal");
+      addAccountBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (accountModal) accountModal.style.display = "flex";
+      });
+      closeAccount?.addEventListener("click", () => accountModal.style.display = "none");
+      document.getElementById("form-add-account")?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const pass1 = document.getElementById("acc-password").value;
+        const pass2 = document.getElementById("acc-password-confirm").value;
+        if (pass1 !== pass2) {
+          return alert("Passwords do not match!");
+        }
+        alert("✅ Account created successfully!\n\n(This is a simulation. No data was saved.)");
+        accountModal.style.display = "none";
+      });
+    }
+
+    // 🔹 Alerta para a barra de pesquisa
+    const searchBar = document.querySelector(".search-bar");
+    if (searchBar) {
+      searchBar.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault(); // Previne qualquer ação padrão do 'Enter'
+          alert("Search functionality is under construction!");
+        }
       });
     }
   }
@@ -105,13 +158,13 @@ document.addEventListener("DOMContentLoaded", () => {
   renderProfileMenu();
   window.appUsers = { currentUser };
 
-  // 🔹 Força a atualização global logo ao carregar a página
+  // 🔹 Dispara o estado inicial logo ao abrir a página
   const initialEvent = new CustomEvent("userStateChange", { detail: currentUser });
   window.dispatchEvent(initialEvent);
 });
 
 // =======================================================
-// 7️⃣ 🔹 Atualizar interface global em todas as páginas
+// 7️⃣ Atualização global em todas as páginas
 // =======================================================
 window.addEventListener("userStateChange", (e) => {
   const user = e.detail;
@@ -119,7 +172,7 @@ window.addEventListener("userStateChange", (e) => {
 
   console.log("👂 userStateChange received:", user);
 
-  // Seleciona todos os botões que dependem de login
+  // Esconde/mostra botões com base no login
   document.querySelectorAll("[data-requires-login]").forEach(btn => {
     btn.style.display = isActiveUser ? "inline-block" : "none";
   });

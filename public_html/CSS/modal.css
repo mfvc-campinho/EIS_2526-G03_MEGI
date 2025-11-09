@@ -1,248 +1,129 @@
-/* ================================
-   🔹 MODAL — versão compacta e elegante
-   ================================ */
+/* ===============================================
+   MODAL — ESTILO UNIFICADO E MODERNO
+=============================================== */
 
+/* 🔹 Fundo escurecido (overlay) */
 .modal {
-  display: none;
+  display: none; /* Escondido por defeito, JS controla a visibilidade */
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background: #fff;
-  border-radius: 14px;
-  padding: 24px 26px;
-  width: 360px;              /* 🔹 caixa mais pequena */
-  max-width: 90%;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2),
-              0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-  font-family: 'Poppins', sans-serif;
-  animation: fadeIn 0.25s ease, slideUp 0.25s ease;
-  position: relative;
-}
-
-/* 🔹 Animações suaves */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes slideUp {
-  from { transform: translateY(15px); }
-  to { transform: translateY(0); }
-}
-
-/* 🔹 Título e botão de fechar */
-#modal-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 14px;
-  text-align: center;
-  color: #222;
-}
-
-.close {
-  position: absolute;
-  right: 20px;
-  top: 14px;
-  font-size: 1.4rem;
-  color: #666;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.close:hover {
-  color: #000;
-}
-
-/* 🔹 Form mais compacto */
-#item-form {
+  background-color: rgba(17, 24, 39, 0.6); /* Fundo semi-transparente */
+  z-index: 1000;
   display: flex;
-  flex-direction: column;
-  gap: 8px;                  /* menos espaço entre campos */
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(3px);
 }
 
-#item-form label {
-  font-weight: 500;
-  color: #333;
-  margin-top: 2px;
-  font-size: 0.9rem;
-}
-
-#item-form input,
-#item-form select {
+/* 🔹 Conteúdo do modal */
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   width: 100%;
-  padding: 7px 9px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+  max-width: 550px; /* Aumentado para dar mais espaço */
+  padding: 28px 32px;
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+  font-family: 'Poppins', sans-serif;
 }
 
-#item-form input:focus,
-#item-form select:focus {
+/* Animação de entrada */
+.modal[style*="display: flex"] {
+  opacity: 1;
+}
+
+.modal[style*="display: flex"] .modal-content {
+  transform: scale(1);
+}
+
+/* 🔹 Título do modal */
+#collection-modal-title,
+#modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+/* 🔹 Formulário e campos */
+#form-collection,
+#item-form {
+  display: grid;
+  gap: 16px;
+}
+
+/* Labels */
+.modal-content label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Inputs e Textareas */
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content input[type="date"],
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box; /* Garante que o padding não aumenta a largura total */
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
   outline: none;
   border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
-/* 🔹 Texto auxiliar */
-#item-form small {
+/* Estilo específico para a área de texto (descrição) */
+.modal-content textarea {
+  min-height: 120px; /* Altura mínima equivalente a ~4-5 linhas */
+  resize: vertical;   /* Permite redimensionar apenas na vertical */
+}
+
+/* 🔹 Botões de Ação (Guardar, Cancelar) */
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Texto de ajuda dentro dos formulários do modal */
+.form-hint {
   font-size: 0.8rem;
   color: #666;
-  margin-bottom: 4px;
 }
 
-/* 🔹 Dropdown Collections ajustado */
-#item-collections {
-  height: auto;
-  min-height: 34px;          /* 🔹 altura mínima agradável */
-  max-height: 80px;          /* impede de ficar gigante */
-  overflow-y: auto;
-  border-radius: 8px;
-  background-color: #fff;
-}
-
-/* 🔹 Botões refinados */
-.modal-actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.modal-actions .explore-btn,
-.modal-actions .delete-btn {
-  font-size: 0.9rem;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 500;
+/* 🔹 Botão de fechar (X) */
+.close-btn,
+.close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: #9ca3af;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease;
 }
 
-.modal-actions .explore-btn {
-  background: #007bff;
-  color: #fff;
-}
-.modal-actions .explore-btn:hover {
-  background: #0069d9;
-}
-
-.modal-actions .delete-btn {
-  background: #e9ecef;
-  color: #333;
-}
-.modal-actions .delete-btn:hover {
-  background: #d6d8db;
-}
-
-/* ================================
-   🔹 Modal Responsivo e com Scroll Interno
-   ================================ */
-
-.modal-content {
-  background: #fff;
-  border-radius: 14px;
-  padding: 24px 26px;
-  width: 360px;
-  max-width: 90%;
-  max-height: 90vh;           /* ✅ altura máxima: 90% da viewport */
-  overflow-y: auto;           /* ✅ scroll interno se o conteúdo ultrapassar */
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2),
-              0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-  font-family: 'Poppins', sans-serif;
-  animation: fadeIn 0.25s ease, slideUp 0.25s ease;
-  position: relative;
-}
-
-/* 🔹 Animações suaves */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes slideUp {
-  from { transform: translateY(15px); }
-  to { transform: translateY(0); }
-}
-
-/* 🔹 Scroll interno com barra discreta */
-.modal-content::-webkit-scrollbar {
-  width: 6px;
-}
-.modal-content::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 10px;
-}
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
-}
-
-/* 🔹 Melhor proporção dos campos */
-#item-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#item-form input,
-#item-form select {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-#item-form input:focus,
-#item-form select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
-}
-
-/* 🔹 Dropdown Collections — tamanho confortável */
-#item-collections {
-  height: 42px;               /* 🔹 Altura média fixa */
-  max-height: 90px;           /* evita esticar demais */
-  overflow-y: auto;
-}
-
-/* 🔹 Botões refinados */
-.modal-actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.modal-actions .explore-btn,
-.modal-actions .delete-btn {
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.modal-actions .explore-btn {
-  background: #007bff;
-  color: #fff;
-}
-.modal-actions .explore-btn:hover {
-  background: #0069d9;
-}
-
-.modal-actions .delete-btn {
-  background: #e9ecef;
-  color: #333;
-}
-.modal-actions .delete-btn:hover {
-  background: #d6d8db;
+.close-btn:hover,
+.close:hover {
+  color: #1f2937;
 }

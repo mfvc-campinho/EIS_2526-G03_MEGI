@@ -8,8 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Seletores de Elementos e Contexto da Página
     // ==========================================================
     const list = document.getElementById("collections-list") ||
-            document.getElementById("homeCollections") ||
-            document.getElementById("user-collections");
+        document.getElementById("homeCollections") ||
+        document.getElementById("user-collections");
     // Se não houver um contentor de coleções nesta página, o script não faz mais nada.
     if (!list)
         return;
@@ -63,11 +63,15 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (criteria === "userChosen") {
             collections = collections.filter(c => c.metrics.userChosen);
         } else if (criteria === "itemCount") {
-            collections.sort((a, b) => {
-                const countB = (data.collectionItems.filter(link => link.collectionId === b.id)).length;
-                const countA = (data.collectionItems.filter(link => link.collectionId === a.id)).length;
-                return countB - countA;
-            });
+            // Otimização de Performance: Pré-calcular a contagem de itens
+            // Em vez de recalcular em cada comparação do sort, calculamos uma vez para cada coleção.
+            const itemCounts = data.collectionItems.reduce((acc, link) => {
+                acc[link.collectionId] = (acc[link.collectionId] || 0) + 1;
+                return acc;
+            }, {});
+
+            // Ordena usando a contagem pré-calculada.
+            collections.sort((a, b) => (itemCounts[b.id] || 0) - (itemCounts[a.id] || 0));
         }
 
         // Aplica o limite (para a homepage)
@@ -81,13 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Gera o HTML dos cartões
+        let allCardsHTML = ""; // 1. Acumulador de HTML
+
         for (const col of collections) {
             const items = (appData.getItemsByCollection(col.id, data) || []).slice(0, 2);
             const itemsHTML = items.length
-                    ? `<ul class="mini-item-list">${items.map(it =>
-                            `<li><img src="${it.image}" alt="${it.name}" class="mini-item-img"><span>${it.name}</span></li>`
-                    ).join("")}</ul>`
-                    : `<p class="no-items">No items yet.</p>`;
+                ? `<ul class="mini-item-list">${items.map(it =>
+                    `<li><img src="${it.image}" alt="${it.name}" class="mini-item-img" loading="lazy"><span>${it.name}</span></li>`
+                ).join("")}</ul>`
+                : `<p class="no-items">No items yet.</p>`;
 
             const isOwnerLoggedIn = isActiveUser && col.owner?.toLowerCase() === currentUser.toLowerCase();
             const specialClass = isOwnerLoggedIn ? 'collector-owned' : '';
@@ -100,9 +106,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')">🗑️ Delete</button>` : ""}
       `;
 
-            list.insertAdjacentHTML("beforeend", `
+            // 2. Adiciona o HTML do cartão ao acumulador em vez de ao DOM
+            allCardsHTML += `
         <div class="card collection-card ${specialClass}">
-          <div class="card-image" id="img-${col.id}"><img src="${col.coverImage || '../images/default.jpg'}" alt="${col.name}"></div>
+          <div class="card-image" id="img-${col.id}"><img src="${col.coverImage || '../images/default.jpg'}" alt="${col.name}" loading="lazy"></div>
           <div class="card-info">
             <h3>${col.name}</h3>
             <p>${col.summary || ""}</p>
@@ -110,8 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="card-buttons">${buttons}</div>
           </div>
         </div>
-      `);
-    }
+      `;
+        }
+
+        // 3. Insere todo o HTML no DOM de uma só vez, após o loop
+        list.innerHTML = allCardsHTML;
     }
 
     // ==========================================================
@@ -196,22 +206,26 @@ document.addEventListener("DOMContentLoaded", () => {
         form.addEventListener("submit", e => {
             e.preventDefault();
             const id = idField.value.trim();
-            const newCol = {
-                id: id || "col-" + Date.now(),
+
+            const updatedFields = {
                 name: form["col-name"].value,
-                owner: currentUser,
                 summary: form["col-summary"].value,
                 coverImage: form["col-image"].value || "../images/default.jpg",
                 type: form["col-type"].value,
-                description: form["col-description"].value, // ✅ NEW
-                createdAt: new Date().toISOString().split("T")[0],
-                metrics: {votes: 0, userChosen: false, addedAt: new Date().toISOString()}
+                description: form["col-description"].value,
             };
 
-            if (id)
-                appData.updateEntity("collections", id, newCol);
-            else
+            if (id) { // Estamos a editar uma coleção existente
+                appData.updateEntity("collections", id, updatedFields);
+            } else { // Estamos a criar uma nova coleção
+                const newCol = {
+                    id: "col-" + Date.now(),
+                    owner: currentUser,
+                    createdAt: new Date().toISOString().split("T")[0],
+                    metrics: { votes: 0, userChosen: false, addedAt: new Date().toISOString() }, ...updatedFields // Adiciona os campos do formulário
+                };
                 appData.addEntity("collections", newCol);
+            }
 
             closeModal();
             renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
@@ -260,15 +274,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Botão de Restaurar Dados
     if (restoreBtn) {
         restoreBtn.addEventListener("click", () => {
-            if (!isActiveUser)
-                return alert("🚫 You must be logged in to restore data.");
-            if (confirm("⚠️ Restore initial data? This will delete all current collections.")) {
+            if (confirm("⚠️ Restore initial data? This will delete all current collections and log you out.")) {
                 if (typeof collectionsData !== "undefined" && window.appData) {
-                    window.appData.saveData(collectionsData);
+                    localStorage.removeItem("collectionsData");
+                    localStorage.removeItem("currentUser");
                     alert("✅ Data restored successfully! The page will now reload.");
                     location.reload();
-                } else {
-                    alert("❌ Data.js not loaded or collectionsData missing.");
                 }
             }
         });

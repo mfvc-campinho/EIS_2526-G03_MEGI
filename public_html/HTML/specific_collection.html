@@ -17,11 +17,6 @@
 </head>
 
 <body>
-    <!-- 🔹 LOADER -->
-    <div id="loader">
-        <div class="spinner"></div>
-    </div>
-
     <div id="content">
         <!-- 🔹 NAVIGATION BAR -->
         <header>
@@ -46,8 +41,6 @@
         <main>
             <h1 id="collection-title" class="page-title">Collection</h1>
 
-            <script src="../JS/Data.js">
-            </script>
             <script src="../JS/app-data.js"></script>
             <script src="../JS/app-users.js"></script>
             <script src="../JS/app-items.js"></script>
@@ -66,6 +59,7 @@
 
             <div id="buttons-bar">
                 <a href="javascript:history.back()" class="explore-btn">⬅ Back</a>
+                <button id="edit-collection" class="explore-btn" data-requires-login>✏️ Edit Collection</button>
                 <button id="add-item" class="explore-btn" data-requires-login>➕ Add Item</button>
             </div>
 
@@ -107,6 +101,31 @@
                 <div class="modal-actions crud-controls">
                     <button type="submit" class="explore-btn">💾 Save</button>
                     <button type="button" id="cancel-modal" class="delete-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🔹 MODAL: EDIT COLLECTION -->
+    <div id="collection-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-collection-modal">&times;</span>
+            <h2 id="collection-modal-title">Edit Collection</h2>
+            <form id="form-collection">
+                <input type="hidden" id="collection-id" />
+                <label for="col-name">Name:</label>
+                <input type="text" id="col-name" name="col-name" required />
+                <label for="col-summary">Summary:</label>
+                <textarea id="col-summary" name="col-summary" required></textarea>
+                <label for="col-description">Full Description:</label>
+                <textarea id="col-description" name="col-description"></textarea>
+                <label for="col-image">Image (URL):</label>
+                <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg" />
+                <label for="col-type">Type:</label>
+                <input type="text" id="col-type" name="col-type" required />
+                <div class="modal-actions">
+                    <button type="submit" class="explore-btn">💾 Save</button>
+                    <button type="button" id="cancel-collection-modal" class="explore-btn danger">Cancel</button>
                 </div>
             </form>
         </div>

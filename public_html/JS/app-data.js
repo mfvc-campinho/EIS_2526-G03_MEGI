@@ -40,11 +40,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!data) data = loadData(); // Carrega os dados se não forem passados como argumento
     if (!data || !data.collectionItems) return [];
 
-    const linkedIds = data.collectionItems
-      .filter(link => link.collectionId === collectionId)
-      .map(link => link.itemId);
+    // Otimização: Usar um Set para pesquisa O(1) em vez de Array.includes() que é O(n).
+    const linkedItemIds = new Set(
+      data.collectionItems
+        .filter(link => link.collectionId === collectionId)
+        .map(link => link.itemId)
+    );
 
-    return data.items.filter(item => linkedIds.includes(item.id));
+    return data.items.filter(item => linkedItemIds.has(item.id));
   }
 
   // Eventos associados a uma coleção

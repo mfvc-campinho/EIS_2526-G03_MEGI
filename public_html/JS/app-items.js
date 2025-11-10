@@ -1,19 +1,22 @@
-// ===============================================
-// app-items.js — Manage items within a collection
+﻿// ===============================================
+// app-items.js â€” Manage items within a collection
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
   // ===============================================
-  // 🔹 User State Management
+  // ðŸ”¹ User State Management
   // ===============================================
-  let currentUser;
+  const DEFAULT_OWNER_ID = "collector-main";
+  let currentUserId;
+  let currentUserName;
   let isActiveUser;
 
   function updateUserState() {
     const userData = JSON.parse(localStorage.getItem("currentUser"));
-    currentUser = userData ? userData.name : null;
-    isActiveUser = userData && userData.active;
+    currentUserId = userData ? userData.id : null;
+    currentUserName = userData ? userData.name : null;
+    isActiveUser = Boolean(userData && userData.active);
 
-    // Esconde/mostra botões que requerem login
+    // Esconde/mostra botÃµes que requerem login
     document.querySelectorAll("[data-requires-login]").forEach(btn => {
       btn.style.display = isActiveUser ? "inline-block" : "none";
     });
@@ -31,66 +34,88 @@ document.addEventListener("DOMContentLoaded", () => {
   const title = document.getElementById("modal-title");
   const idField = document.getElementById("item-id");
 
-  // Seletores para o modal da coleção
+  // Seletores para o modal da coleÃ§Ã£o
   const collectionModal = document.getElementById("collection-modal");
   const collectionForm = document.getElementById("form-collection");
   const editCollectionBtn = document.getElementById("edit-collection");
   const closeCollectionModalBtn = document.getElementById("close-collection-modal");
   const cancelCollectionModalBtn = document.getElementById("cancel-collection-modal");
 
-  // Obtém o ID da coleção a partir da URL
+  // ObtÃ©m o ID da coleÃ§Ã£o a partir da URL
   const params = new URLSearchParams(window.location.search);
   const collectionId = params.get("id");
 
+  function getCurrentCollection(data = appData.loadData()) {
+    return data.collections.find(c => c.id === collectionId);
+  }
+
+  function isCollectionOwnedByCurrentUser(collection) {
+    return Boolean(
+      isActiveUser &&
+      currentUserId &&
+      collection &&
+      collection.ownerId === currentUserId
+    );
+  }
+
   // ===============================================
-  // 🔹 Renderizar detalhes da coleção (título, dono, etc.)
+  // ðŸ”¹ Renderizar detalhes da coleÃ§Ã£o (tÃ­tulo, dono, etc.)
   // ===============================================
   function renderCollectionDetails() {
     const data = appData.loadData();
-    const collection = data.collections.find(c => c.id === collectionId);
+    const collection = getCurrentCollection(data);
 
     if (collection) {
       document.getElementById("collection-title").textContent = collection.name;
-      document.getElementById("owner-name").textContent = collection.owner;
+      document.getElementById("owner-name").textContent = collection.ownerName || collection.ownerId;
       document.getElementById("creation-date").textContent = collection.createdAt;
       document.getElementById("type").textContent = collection.type || "N/A";
       document.getElementById("description").textContent = collection.description || "No description provided.";
+      const ownerPhotoEl = document.getElementById("owner-photo");
+      if (ownerPhotoEl) {
+        const collectorDefault = "../images/rui.jpg";
+        const guestDefault = "../images/user.jpg";
+        const fallback = collection.ownerId === DEFAULT_OWNER_ID ? collectorDefault : guestDefault;
+        ownerPhotoEl.src = collection.ownerPhoto || fallback;
+        ownerPhotoEl.alt = `${collection.ownerName || "Collection"} owner`;
+      }
     } else {
-      // Se a coleção não for encontrada, mostra uma mensagem de erro
+      // Se a coleÃ§Ã£o nÃ£o for encontrada, mostra uma mensagem de erro
       document.getElementById("collection-title").textContent = "Collection Not Found";
-      // Esconde os botões de ação se a coleção não existir
+      // Esconde os botÃµes de aÃ§Ã£o se a coleÃ§Ã£o nÃ£o existir
       if (addItemBtn) addItemBtn.style.display = 'none';
       if (editCollectionBtn) editCollectionBtn.style.display = 'none';
     }
   }
 
   // ===============================================
-  // 🔹 Destacar secção se for do utilizador
+  // ðŸ”¹ Destacar secÃ§Ã£o se for do utilizador
   // ===============================================
   function highlightOwnedSection() {
     const data = appData.loadData();
-    const collection = data.collections.find(c => c.id === collectionId);
+    const collection = getCurrentCollection(data);
 
-    if (isActiveUser && collection && collection.owner?.toLowerCase() === currentUser.toLowerCase()) {
+    if (isCollectionOwnedByCurrentUser(collection)) {
       itemsContainer.classList.add("owned-section");
-      // Mostra o botão de editar coleção se for o dono
+      // Mostra o botÃ£o de editar coleÃ§Ã£o se for o dono
       if (editCollectionBtn) editCollectionBtn.style.display = "inline-block";
       if (addItemBtn) addItemBtn.style.display = "inline-block";
     } else {
       itemsContainer.classList.remove("owned-section");
-      // Esconde o botão se não for o dono
+      // Esconde o botÃ£o se nÃ£o for o dono
       if (editCollectionBtn) editCollectionBtn.style.display = "none";
       if (addItemBtn) addItemBtn.style.display = "none";
     }
   }
 
   // ===============================================
-  // 🔹 Renderizar itens da coleção atual (usando relação N:N)
+  // ðŸ”¹ Renderizar itens da coleÃ§Ã£o atual (usando relaÃ§Ã£o N:N)
   // ===============================================
-  window.renderItems = function renderItems() {
+  window.renderItems = function renderItems() { // Tornada global para ser chamada por outros scripts
     const data = appData.loadData();
-    const collection = data.collections.find(c => c.id === collectionId);
-    const items = appData.getItemsByCollection(collectionId);
+    const collection = getCurrentCollection(data);
+    const ownsCollection = isCollectionOwnedByCurrentUser(collection);
+    const items = appData.getItemsByCollection(collectionId, data);
 
     itemsContainer.innerHTML = "";
 
@@ -99,47 +124,61 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    let cardsHTML = "";
+    // Adiciona uma mensagem de carregamento inicial
+    itemsContainer.innerHTML = `<p class="notice-message">Loading items...</p>`;
 
-    for (const item of items) {
-      const isItemOwner = isActiveUser && item.owner && (item.owner.toLowerCase() === currentUser?.toLowerCase());
+    // FunÃ§Ã£o para renderizar itens em lotes (chunks)
+    function renderChunk(index = 0) {
+      const chunkSize = 50; // Renderiza 50 itens de cada vez
+      const fragment = document.createDocumentFragment(); // Usa um fragmento para performance
 
-      const card = document.createElement("div");
-      card.className = "item-card";
+      const chunk = items.slice(index, index + chunkSize);
 
-      // 🔹 Botões (edit/delete só aparecem se perfil ativo)
-      const buttons = isItemOwner
-        ? `
-          <div class="item-buttons">
-            <button class="explore-btn" onclick="editItem('${item.id}')">✏️ Edit</button>
-            <button class="explore-btn danger" onclick="deleteItem('${item.id}')">🗑️ Delete</button>
-          </div>`
-        : "";
+      for (const item of chunk) {
+        const isItemOwner = ownsCollection;
+        const card = document.createElement("div");
+        card.className = "card item-card";
 
-      // 🔹 Template
-      cardsHTML += `
-        <div class="card item-card">
-          <div class="item-image-wrapper">
-            <img src="${item.image}" alt="${item.name}" class="item-image" loading="lazy">
-          </div>
-          <div class="item-info">
-            <h3>${item.name}</h3>
-            <ul class="item-details">
-              <li><strong>Importance:</strong> ${item.importance}</li>
-              <li><strong>Weight:</strong> ${item.weight || "N/A"} g</li>
-              <li><strong>Price:</strong> €${item.price || "0.00"}</li>
-              <li><strong>Date:</strong> ${item.acquisitionDate || "-"}</li>
-            </ul>
-            ${buttons}
-          </div>
-        </div>
-      `;
+        const buttons = isItemOwner
+          ? `
+            <div class="item-buttons">
+              <button class="explore-btn" onclick="editItem('${item.id}')">âœï¸ Edit</button>
+              <button class="explore-btn danger" onclick="deleteItem('${item.id}')">ðŸ—‘ï¸ Delete</button>
+            </div>`
+          : "";
+
+        card.innerHTML = `
+            <div class="item-image-wrapper">
+              <img src="${item.image}" alt="${item.name}" class="item-image" loading="lazy">
+            </div>
+            <div class="item-info">
+              <h3>${item.name}</h3>
+              <ul class="item-details">
+                <li><strong>Importance:</strong> ${item.importance}</li>
+                <li><strong>Weight:</strong> ${item.weight || "N/A"} g</li>
+                <li><strong>Price:</strong> â‚¬${item.price || "0.00"}</li>
+                <li><strong>Date:</strong> ${item.acquisitionDate || "-"}</li>
+              </ul>
+              ${buttons}
+            </div>`;
+        fragment.appendChild(card);
+      }
+
+      if (index === 0) itemsContainer.innerHTML = ""; // Limpa a mensagem "Loading..."
+      itemsContainer.appendChild(fragment);
+
+      if (index + chunkSize < items.length) {
+        // Agenda o prÃ³ximo lote sem bloquear o browser
+        setTimeout(() => renderChunk(index + chunkSize), 0);
+      }
     }
-    itemsContainer.innerHTML = cardsHTML;
+
+    // Inicia o processo de renderizaÃ§Ã£o
+    renderChunk();
   };
 
   // ===============================================
-  // 🔹 Preencher lista de coleções do utilizador atual
+  // ðŸ”¹ Preencher lista de coleÃ§Ãµes do utilizador atual
   // ===============================================
   function populateCollectionsSelect() {
     const select = document.getElementById("item-collections");
@@ -148,7 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!data || !data.collections) return;
 
     select.innerHTML = "";
-    const userCollections = data.collections.filter(c => c.owner === "collector" || c.owner === currentUser);
+    const userCollections = data.collections.filter(c =>
+      c.ownerId === DEFAULT_OWNER_ID || (currentUserId && c.ownerId === currentUserId)
+    );
 
     userCollections.forEach(col => {
       const option = document.createElement("option");
@@ -159,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================================
-  // 🔹 Modal helpers
+  // ðŸ”¹ Modal helpers
   // ===============================================
   function openModal(edit = false) {
     title.textContent = edit ? "Edit Item" : "Add Item";
@@ -173,16 +214,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================================
-  // 🔹 Criar / Editar / Apagar / Guardar
+  // ðŸ”¹ Criar / Editar / Apagar / Guardar
   // ===============================================
   window.editItem = (id) => {
-    if (!isActiveUser) return alert("🚫 You must be logged in to edit items.");
+    if (!isActiveUser) return alert("ðŸš« You must be logged in to edit items.");
 
     const data = appData.loadData();
     const item = data.items.find(i => i.id === id);
     if (!item) return alert("Item not found");
-    if (item.owner !== currentUser && item.owner !== "collector")
-      return alert("🚫 You cannot edit this item.");
+    const collection = getCurrentCollection(data);
+    if (!isCollectionOwnedByCurrentUser(collection))
+      return alert("ðŸš« You cannot edit this item.");
 
     idField.value = item.id;
     form["item-name"].value = item.name;
@@ -195,31 +237,32 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.deleteItem = (id) => {
-    if (!isActiveUser) return alert("🚫 You must be logged in to delete items.");
+    if (!isActiveUser) return alert("ðŸš« You must be logged in to delete items.");
 
     const data = appData.loadData();
     const item = data.items.find(i => i.id === id);
-    if (item.owner !== currentUser && item.owner !== "collector")
-      return alert("🚫 You can only delete your own items.");
+    const collection = getCurrentCollection(data);
+    if (!isCollectionOwnedByCurrentUser(collection))
+      return alert("ðŸš« You can only delete your own items.");
 
-    if (!confirm("Delete this item?")) return;
-    appData.deleteEntity("items", id);
-    renderItems();
+    if (confirm("Delete this item?\n\n(This is a demonstration. No data will be changed.)")) {
+      alert("âœ… Simulation successful. No data was deleted.");
+    }
   };
 
   // ===============================================
-  // 🔹 Lógica para Editar a Coleção
+  // ðŸ”¹ LÃ³gica para Editar a ColeÃ§Ã£o
   // ===============================================
   function openCollectionModal() {
     const data = appData.loadData();
     const collection = data.collections.find(c => c.id === collectionId);
 
     if (!collection) return alert("Collection not found!");
-    if (!isActiveUser || collection.owner?.toLowerCase() !== currentUser.toLowerCase()) {
-      return alert("🚫 You can only edit your own collections.");
+    if (!isActiveUser || collection.ownerId !== currentUserId) {
+      return alert("ðŸš« You can only edit your own collections.");
     }
 
-    // Preenche o formulário do modal da coleção
+    // Preenche o formulÃ¡rio do modal da coleÃ§Ã£o
     collectionForm.querySelector("#collection-id").value = collection.id;
     collectionForm.querySelector("#col-name").value = collection.name;
     collectionForm.querySelector("#col-summary").value = collection.summary || "";
@@ -246,48 +289,28 @@ document.addEventListener("DOMContentLoaded", () => {
   if (collectionForm) {
     collectionForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const id = collectionForm.querySelector("#collection-id").value;
-      const updatedFields = {
-        name: collectionForm.querySelector("#col-name").value,
-        summary: collectionForm.querySelector("#col-summary").value,
-        description: collectionForm.querySelector("#col-description").value,
-        coverImage: collectionForm.querySelector("#col-image").value,
-        type: collectionForm.querySelector("#col-type").value,
-      };
 
-      appData.updateEntity("collections", id, updatedFields);
+      alert("âœ… Simulation successful. Collection would have been updated.\n\n(This is a demonstration. No data was saved.)");
+
       closeCollectionModal();
-      renderCollectionDetails(); // Re-renderiza os detalhes para mostrar as alterações
-      alert("✅ Collection updated successfully!");
+      // NÃ£o renderiza novamente para nÃ£o dar a falsa impressÃ£o de que os dados mudaram.
+      // renderCollectionDetails(); 
     });
   }
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (!isActiveUser) return alert("🚫 You must be logged in to add items.");
+    if (!isActiveUser) return alert("ðŸš« You must be logged in to add items.");
 
     const id = idField.value.trim();
     const selectedCollections = Array.from(form["item-collections"].selectedOptions).map(opt => opt.value);
+    const action = id ? "updated" : "created";
 
-    const newItem = {
-      id: id || "item-" + Date.now(),
-      owner: "collector",
-      name: form["item-name"].value,
-      importance: form["item-importance"].value,
-      weight: parseFloat(form["item-weight"].value) || null,
-      price: parseFloat(form["item-price"].value) || 0,
-      acquisitionDate: form["item-date"].value,
-      image: form["item-image"].value || "../images/default.jpg"
-    };
-
-    if (id) appData.updateEntity("items", id, newItem);
-    else { // Ao criar um novo item
-      appData.addEntity("items", newItem);
-      selectedCollections.forEach(cid => appData.linkItemToCollection(newItem.id, cid));
-    }
+    alert(`âœ… Simulation successful. Item would have been ${action}.\n\n(This is a demonstration. No data was saved.)`);
 
     closeModal();
-    renderItems();
+    // A renderizaÃ§Ã£o Ã© removida para nÃ£o mostrar alteraÃ§Ãµes que nÃ£o aconteceram
+    // renderItems();
   });
 
   if (addItemBtn) addItemBtn.addEventListener("click", () => openModal(false));
@@ -298,15 +321,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === collectionModal) closeCollectionModal();
   });
 
-  // Ouve o evento de login/logout e atualiza a página
-  window.addEventListener("userStateChange", () => {
+  // Ouve o evento de login/logout e atualiza a pÃ¡gina
+  window.addEventListener("userStateChange", (e) => {
+    const newUserData = e.detail;
+    const newIsActiveUser = newUserData && newUserData.active;
+
+    // ðŸ”¹ CORREÃ‡ÃƒO CRÃTICA: SÃ³ renderiza de novo se o estado de login MUDOU.
+    // Isto previne o ciclo infinito de renderizaÃ§Ã£o.
+    if (newIsActiveUser === isActiveUser) return;
+
     updateUserState();
-    highlightOwnedSection(); // Atualiza a visibilidade dos botões
+    highlightOwnedSection(); // Atualiza a visibilidade dos botÃµes
     renderItems();
   });
 
-  // Inicialização
-  renderCollectionDetails(); // Preenche os detalhes da coleção
+  // InicializaÃ§Ã£o
+  renderCollectionDetails(); // Preenche os detalhes da coleÃ§Ã£o
   populateCollectionsSelect();
   renderItems();
   highlightOwnedSection();

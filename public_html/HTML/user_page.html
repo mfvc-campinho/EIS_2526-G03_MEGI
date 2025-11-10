@@ -44,14 +44,17 @@
 
       <!-- 🔹 User Header -->
       <section class="user-header">
-        <img class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
+        <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
         <div class="user-meta">
           <h1 id="user-name">Collector</h1>
+          <p class="user-detail"><strong>Email:</strong> <span id="user-email"></span></p>
+          <p class="user-detail"><strong>Date of Birth:</strong> <span id="user-dob"></span></p>
         </div>
       </section>
 
       <!-- 🔹 User Actions -->
       <div class="user-actions">
+        <button id="edit-profile-btn" class="explore-btn">✏️ Edit Profile</button>
         <button id="open-collection-modal" class="explore-btn" data-requires-login>➕ Add Collection</button>
         <button id="editCollectionBtn" class="explore-btn" data-requires-login>✏️ Edit Collection</button>
         <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>🗑️ Delete Collection</button>
@@ -88,6 +91,29 @@
       </form>
     </div>
   </div>
+
+  <!-- 🔹 MODAL: EDIT USER PROFILE -->
+  <div id="user-profile-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-user-modal">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="form-user-profile">
+        <label for="user-form-name">Username:</label>
+        <input type="text" id="user-form-name" name="user-form-name" required />
+        <label for="user-form-email">Email:</label>
+        <input type="email" id="user-form-email" name="user-form-email" required />
+        <label for="user-form-dob">Date of Birth:</label>
+        <input type="date" id="user-form-dob" name="user-form-dob" />
+        <label for="user-form-photo">Photo URL:</label>
+        <input type="text" id="user-form-photo" name="user-form-photo" />
+        <div class="modal-actions">
+          <button type="submit" class="save-btn">Save Changes</button>
+          <button type="button" id="cancel-user-modal" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="forgot-password-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-forgot-modal">&times;</span>

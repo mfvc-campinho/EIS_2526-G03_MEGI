@@ -29,13 +29,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================
     // 2. Gestão do Estado do Utilizador
     // ==========================================================
-    let currentUser;
+    const DEFAULT_OWNER_ID = "collector-main";
+    let currentUserId;
+    let currentUserName;
     let isActiveUser;
 
     function updateUserState() {
         const userData = JSON.parse(localStorage.getItem("currentUser"));
-        currentUser = userData ? userData.name : null;
-        isActiveUser = userData && userData.active;
+        currentUserId = userData ? userData.id : null;
+        currentUserName = userData ? userData.name : null;
+        isActiveUser = Boolean(userData && userData.active);
+    }
+
+    function isCollectionOwnedByCurrentUser(collection) {
+        return Boolean(
+            isActiveUser &&
+            currentUserId &&
+            collection &&
+            collection.ownerId === currentUserId
+        );
     }
 
     // ==========================================================
@@ -54,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>`;
                 return;
             }
-            collections = collections.filter(c => c.owner?.toLowerCase() === currentUser.toLowerCase());
+            collections = collections.filter(c => currentUserId && c.ownerId === currentUserId);
         }
 
         // Ordena conforme o critério
@@ -95,9 +107,108 @@ document.addEventListener("DOMContentLoaded", () => {
                 ).join("")}</ul>`
                 : `<p class="no-items">No items yet.</p>`;
 
-            const isOwnerLoggedIn = isActiveUser && col.owner?.toLowerCase() === currentUser.toLowerCase();
+            const isOwnerLoggedIn = isCollectionOwnedByCurrentUser(col);
             const specialClass = isOwnerLoggedIn ? 'collector-owned' : '';
-            const canEdit = isActiveUser && (col.owner?.toLowerCase() === currentUser.toLowerCase());
+            const canEdit = isOwnerLoggedIn;
+
+            const buttons = `
+        <button class="explore-btn" onclick="togglePreview('${col.id}', this)">👁️ Show Preview</button>
+        <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'">🔍 Explore More</button>
+        ${canEdit ? `<button class="explore-btn" onclick="editCollection('${col.id}')">✏️ Edit</button>` : ""}
+        ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')">🗑️ Delete</button>` : ""}
+      `;
+
+            // 2. Adiciona o HTML do cartão ao acumulador em vez de ao DOM
+            allCardsHTML += `
+        <div class="card collection-card ${specialClass}">
+          <div class="card-image" id="img-${col.id}"><img src="${col.coverImage || '../images/default.jpg'}" alt="${col.name}" loading="lazy"></div>
+          <div class="card-info">
+            <h3>${col.name}</h3>
+            <p>${col.summary || ""}</p>
+            <div class="items-preview" id="preview-${col.id}" style="display:none;">${itemsHTML}</div>
+            <div class="card-buttons">${buttons}</div>
+          </div>
+        </div>
+      `;
+        }
+
+        // 3. Insere todo o HTML no DOM de uma só vez, após o loop
+        list.innerHTML = allCardsHTML;
+    }
+    function renderCollections(criteria = "lastAdded", limit = null) {
+        const data = appData.loadData();
+        let collections = data.collections || [];
+
+        // Filtra para a página de utilizador
+        if (isUserPage) {
+            if (!isActiveUser) {
+                list.innerHTML = `
+          <div class="notice-message">
+            <p>Please sign in to view your collections.</p>
+          </div>`;
+                return;
+            }
+            collections = collections.filter(c => currentUserId && c.ownerId === currentUserId);
+        }
+
+        // Ordena conforme o critério
+        if (criteria === "lastAdded") {
+            collections.sort((a, b) => new Date(b.metrics.addedAt) - new Date(a.metrics.addedAt));
+        } else if (criteria === "userChosen") {
+            collections = collections.filter(c => c.metrics.userChosen);
+        } else if (criteria === "itemCount") {
+            // Otimização de Performance: Pré-calcular a contagem de itens
+            // Em vez de recalcular em cada comparação do sort, calculamos uma vez para cada coleção.
+            const itemCounts = data.collectionItems.reduce((acc, link) => {
+                acc[link.collectionId] = (acc[link.collectionId] || 0) + 1;
+                return acc;
+            }, {});
+
+            // Ordena usando a contagem pré-calculada.
+            collections.sort((a, b) => (itemCounts[b.id] || 0) - (itemCounts[a.id] || 0));
+        }
+
+        // Aplica o limite (para a homepage)
+        if (limit)
+            collections = collections.slice(0, limit);
+
+        list.innerHTML = "";
+        if (collections.length === 0) {
+            list.innerHTML = `<p class="notice-message">No collections found.</p>`;
+            return;
+        }
+
+        // 🔹 OTIMIZAÇÃO CRÍTICA: Pré-processar todos os itens uma única vez
+        const itemsByCollectionId = data.collectionItems.reduce((acc, link) => {
+            if (!acc[link.collectionId]) {
+                acc[link.collectionId] = [];
+            }
+            acc[link.collectionId].push(link.itemId);
+            return acc;
+        }, {});
+
+        const allItemsById = data.items.reduce((acc, item) => {
+            acc[item.id] = item;
+            return acc;
+        }, {});
+
+        // Gera o HTML dos cartões
+        let allCardsHTML = ""; // 1. Acumulador de HTML
+
+        for (const col of collections) {
+            // Usa o mapa pré-calculado para obter os itens instantaneamente
+            const itemIds = itemsByCollectionId[col.id] || [];
+            const items = itemIds.slice(0, 2).map(id => allItemsById[id]).filter(Boolean);
+
+            const itemsHTML = items.length
+                ? `<ul class="mini-item-list">${items.map(it =>
+                    `<li><img src="${it.image}" alt="${it.name}" class="mini-item-img" loading="lazy"><span>${it.name}</span></li>`
+                ).join("")}</ul>`
+                : `<p class="no-items">No items yet.</p>`;
+
+            const isOwnerLoggedIn = isCollectionOwnedByCurrentUser(col);
+            const specialClass = isOwnerLoggedIn ? 'collector-owned' : '';
+            const canEdit = isOwnerLoggedIn;
 
             const buttons = `
         <button class="explore-btn" onclick="togglePreview('${col.id}', this)">👁️ Show Preview</button>
@@ -139,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.editCollection = id => {
         const data = appData.loadData();
         const col = data.collections.find(c => c.id === id);
-        if (!col || !isActiveUser || col.owner.toLowerCase() !== currentUser.toLowerCase())
+        if (!col || !isCollectionOwnedByCurrentUser(col))
             return alert("❌ You can only edit your own collections.");
 
         if (form) {
@@ -157,13 +268,14 @@ document.addEventListener("DOMContentLoaded", () => {
     window.deleteCollection = id => {
         const data = appData.loadData();
         const col = data.collections.find(c => c.id === id);
-        if (!col || !isActiveUser || col.owner.toLowerCase() !== currentUser.toLowerCase())
+        if (!col || !isCollectionOwnedByCurrentUser(col))
             return alert("❌ You can only delete your own collections.");
 
-        if (confirm(`⚠️ Delete "${col.name}"?`)) {
-            appData.deleteEntity("collections", id);
-            alert(`🗑️ Collection "${col.name}" deleted.`);
-            renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
+        if (confirm(`⚠️ Delete "${col.name}"?\n\n(This is a demonstration. No data will be changed.)`)) {
+            alert("✅ Simulation successful. No data was deleted.");
+            // appData.deleteEntity("collections", id);
+            // alert(`🗑️ Collection "${col.name}" deleted.`);
+            // renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
         }
     };
 
@@ -206,29 +318,13 @@ document.addEventListener("DOMContentLoaded", () => {
         form.addEventListener("submit", e => {
             e.preventDefault();
             const id = idField.value.trim();
+            const action = id ? "updated" : "created";
 
-            const updatedFields = {
-                name: form["col-name"].value,
-                summary: form["col-summary"].value,
-                coverImage: form["col-image"].value || "../images/default.jpg",
-                type: form["col-type"].value,
-                description: form["col-description"].value,
-            };
-
-            if (id) { // Estamos a editar uma coleção existente
-                appData.updateEntity("collections", id, updatedFields);
-            } else { // Estamos a criar uma nova coleção
-                const newCol = {
-                    id: "col-" + Date.now(),
-                    owner: currentUser,
-                    createdAt: new Date().toISOString().split("T")[0],
-                    metrics: { votes: 0, userChosen: false, addedAt: new Date().toISOString() }, ...updatedFields // Adiciona os campos do formulário
-                };
-                appData.addEntity("collections", newCol);
-            }
+            alert(`✅ Simulation successful. Collection would have been ${action}.\n\n(This is a demonstration. No data was saved.)`);
 
             closeModal();
-            renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
+            // A renderização é removida para não mostrar alterações que não aconteceram
+            // renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
         });
 
         document.getElementById("close-collection-modal")?.addEventListener("click", closeModal);
@@ -247,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!isActiveUser)
                 return alert(`🚫 You must be logged in to ${action} collections.`);
             const data = appData.loadData();
-            const myCollections = data.collections.filter(c => c.owner?.toLowerCase() === currentUser.toLowerCase());
+            const myCollections = data.collections.filter(c => currentUserId && c.ownerId === currentUserId);
             if (myCollections.length === 0)
                 return alert(`⚠️ You don't own any collections to ${action}.`);
 

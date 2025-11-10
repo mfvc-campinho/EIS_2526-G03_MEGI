@@ -55,37 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const id = idField.value.trim();
-    const newEvent = {
-      id: id || "event-" + Date.now(),
-      name: form["event-name"].value,
-      localization: form["event-location"].value,
-      date: form["event-date"].value
-    };
-    if (id) appData.updateEntity("events", id, newEvent);
-    else {
-      appData.addEntity("events", newEvent);
-      const selected = [...form.querySelectorAll("input[type='checkbox']:checked")].map(cb => cb.value);
-      selected.forEach(colId => appData.linkEventToCollection(newEvent.id, colId));
-    }
+    const action = id ? "updated" : "created";
+
+    alert(`✅ Simulation successful. Event would have been ${action}.\n\n(This is a demonstration. No data was saved.)`);
+
     closeModal();
-    renderEvents();
-  });
-
-  window.editEvent = (id) => {
-    const data = appData.loadData();
-    const ev = data.events.find(e => e.id === id);
-    idField.value = ev.id;
-    form["event-name"].value = ev.name;
-    form["event-location"].value = ev.localization;
-    form["event-date"].value = ev.date;
-    openModal(true);
-  };
-
-  window.deleteEvent = (id) => {
-    if (confirm("Remover este evento?")) {
-      appData.deleteEntity("events", id);
-      renderEvents();
-    }
+    // A renderização é removida para não mostrar alterações que não aconteceram
+    // renderEvents();
   };
 
   renderEvents();

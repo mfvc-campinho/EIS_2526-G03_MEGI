@@ -9,7 +9,9 @@ const collectionsData = {
       id: "escudos",
       name: "Portuguese Escudos",
       type: "Coins",
-      owner: "collector",
+      ownerId: "collector-main",
+      ownerName: "Collector",
+      ownerPhoto: "../images/rui.jpg",
       coverImage: "../images/coins.png",
       summary: "A journey through Portugal’s historical coins.",
       description: "This collection showcases Portugal’s numismatic legacy, featuring original Escudo coins minted before the euro era. It highlights their unique designs, materials, and historical significance in the country’s economy.",
@@ -20,7 +22,9 @@ const collectionsData = {
       id: "playboys",
       name: "Portuguese Playboy Editions",
       type: "Magazines",
-      owner: "Rui Frio",
+      ownerId: "rui-frio",
+      ownerName: "Rui Frio",
+      ownerPhoto: "../images/user.jpg",
       coverImage: "../images/playboy.jpg",
       summary: "A collection of iconic Portuguese magazine editions.",
       description: "A curated archive of Portuguese Playboy issues spanning several decades, capturing evolving trends in media, design, and culture. Each edition represents a snapshot of its era’s aesthetics and editorial vision.",
@@ -31,7 +35,9 @@ const collectionsData = {
       id: "pokemon",
       name: "Pokémon Trading Cards",
       type: "Collectible Cards",
-      owner: "Cristina Sem Feira",
+      ownerId: "rui-frio",
+      ownerName: "Rui Frio",
+      ownerPhoto: "../images/user.jpg",
       coverImage: "../images/pikachu.jpg",
       summary: "Rare and classic cards from the Pokémon universe.",
       description: "A comprehensive Pokémon TCG collection featuring rare holographic cards, first editions, and limited releases from various generations. It celebrates both the nostalgic and competitive sides of Pokémon collecting.",
@@ -42,7 +48,9 @@ const collectionsData = {
       id: "portraits",
       name: "Portraits of Historical Leaders",
       type: "Art & History",
-      owner: "Andre Fartura",
+      ownerId: "rui-frio",
+      ownerName: "Rui Frio",
+      ownerPhoto: "../images/user.jpg",
       coverImage: "../images/salazar.jpg",
       summary: "Historical register of controversial figures.",
       description: "An artistic and historical exploration through portraits of world leaders who shaped the 20th century. The collection invites reflection on power, influence, and the legacy of leadership in visual art.",
@@ -53,7 +61,9 @@ const collectionsData = {
       id: "jerseys",
       name: "Autographed Football Jerseys",
       type: "Sports Memorabilia",
-      owner: "Rui Tosta",
+      ownerId: "rui-frio",
+      ownerName: "Rui Frio",
+      ownerPhoto: "../images/user.jpg",
       coverImage: "../images/benfica.jpg",
       summary: "Signed memorabilia from legendary players.",
       description: "An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.",
@@ -61,6 +71,29 @@ const collectionsData = {
       metrics: { votes: 105, userChosen: true, addedAt: "2025-10-05" }
     }
   ],
+
+  // ======================================================
+  // 👤 UTILIZADORES
+  // ======================================================
+  users: [
+    {
+      "owner-id": "collector-main",
+      "owner-name": "Collector",
+      "name": "collector",
+      "owner-photo": "../images/rui.jpg",
+      "date-of-birth": "1985-05-20",
+      "email": "collector.main@email.com"
+    },
+    {
+      "owner-id": "rui-frio",
+      "owner-name": "Rui Frio",
+      "name": "rui_frio",
+      "owner-photo": "../images/user.jpg",
+      "date-of-birth": "1982-07-14",
+      "email": "rui.frio@email.com"
+    }
+  ],
+
 
   // ======================================================
   // 🔶 ITENS (cada um agora tem ID único)
@@ -74,7 +107,6 @@ const collectionsData = {
       weight: 4.5,
       price: 120,
       acquisitionDate: "2020-03-15",
-      owner: "collector",
       image: "../images/escudo1950.jpg"
     },
     {
@@ -84,7 +116,6 @@ const collectionsData = {
       weight: 5.1,
       price: 250,
       acquisitionDate: "2021-07-10",
-      owner: "collector",
       image: "../images/escudo1960.jpg"
     },
 
@@ -96,7 +127,6 @@ const collectionsData = {
       weight: 0.3,
       price: 5,
       acquisitionDate: "2019-05-22",
-      owner: "other",
       image: "../images/playboy.jpg"
     },
     {
@@ -106,7 +136,6 @@ const collectionsData = {
       weight: 0.3,
       price: 12,
       acquisitionDate: "2020-11-05",
-      owner: "other",
       image: "../images/lenka.jpg"
     },
     {
@@ -116,7 +145,6 @@ const collectionsData = {
       weight: 0.3,
       price: 12,
       acquisitionDate: "2016-08-05",
-      owner: "other",
       image: "../images/fabiana.jpg"
     },
 
@@ -128,7 +156,6 @@ const collectionsData = {
       weight: 0.005,
       price: 150,
       acquisitionDate: "2021-06-18",
-      owner: "other",
       image: "../images/pikachu.jpg"
     },
     {
@@ -138,7 +165,6 @@ const collectionsData = {
       weight: 0.005,
       price: 2000,
       acquisitionDate: "2022-04-22",
-      owner: "other",
       image: "../images/charizard.jpg"
     },
 
@@ -150,7 +176,6 @@ const collectionsData = {
       weight: 2.4,
       price: 300,
       acquisitionDate: "2018-09-10",
-      owner: "other",
       image: "../images/salazar.jpg"
     },
 
@@ -162,7 +187,6 @@ const collectionsData = {
       weight: 0.4,
       price: 450,
       acquisitionDate: "2020-03-12",
-      owner: "other",
       image: "../images/porto.jpg"
     },
     {
@@ -172,7 +196,6 @@ const collectionsData = {
       weight: 0.4,
       price: 400,
       acquisitionDate: "2021-09-03",
-      owner: "other",
       image: "../images/benfica.jpg"
     }
   ],

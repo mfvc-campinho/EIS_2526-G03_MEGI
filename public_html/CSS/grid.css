@@ -8,13 +8,16 @@
 =============================== */
 .collections-row,
 .collection-container,
-.item-container { /* Adicionado para abranger ambos */
+.item-container {
+  /* Adicionado para abranger ambos */
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px; /* Reduz o espaço para ajudar a caber */
+  gap: 10px;
+  /* Reduz o espaço para ajudar a caber */
   padding: 10px;
-  max-width: 2000px; /* Reduz a largura máxima para "apertar" o layout */
+  max-width: 2000px;
+  /* Reduz a largura máxima para "apertar" o layout */
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -28,8 +31,10 @@
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: calc(20% - 16px); /* 5 por linha */
-  min-width: 240px; /* Reduz a largura mínima para permitir que encolham */
+  width: calc(20% - 16px);
+  /* 5 por linha */
+  min-width: 280px;
+  /* Aumentar um pouco para melhor visualização */
   height: 420px;
   display: flex;
   flex-direction: column;
@@ -44,11 +49,13 @@
 
 /* Ajustes específicos para cada tipo de cartão */
 .collection-card {
-  justify-content: flex-start; /* Alinha conteúdo ao topo */
+  justify-content: flex-start;
+  /* Alinha conteúdo ao topo */
 }
 
 .item-card {
-  justify-content: space-between; /* Estica o conteúdo para preencher a altura */
+  justify-content: space-between;
+  /* Estica o conteúdo para preencher a altura */
 }
 
 /* ===============================
@@ -57,7 +64,8 @@
 .card-image,
 .item-image-wrapper {
   width: 100%;
-  height: 180px; /* altura fixa */
+  height: 180px;
+  /* altura fixa */
   background-color: #eaeaea;
   display: flex;
   align-items: center;
@@ -248,17 +256,33 @@ button {
 =============================== */
 
 @media (max-width: 1300px) {
-  .card { width: calc(25% - 16px); } /* 4 por linha */
+  .card {
+    width: calc(25% - 16px);
+  }
+
+  /* 4 por linha */
 }
 
 @media (max-width: 900px) {
-  .card { width: calc(33.33% - 16px); } /* 3 por linha */
+  .card {
+    width: calc(33.33% - 16px);
+  }
+
+  /* 3 por linha */
 }
 
 @media (max-width: 600px) {
-  .card { width: calc(50% - 16px); } /* 2 por linha */
+  .card {
+    width: calc(50% - 16px);
+  }
+
+  /* 2 por linha */
 }
 
 @media (max-width: 480px) {
-  .card { width: 100%; } /* 1 por linha */
+  .card {
+    width: 100%;
+  }
+
+  /* 1 por linha */
 }

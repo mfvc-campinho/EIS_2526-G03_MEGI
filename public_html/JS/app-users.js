@@ -92,7 +92,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (form) {
       form.addEventListener("submit", (e) => {
         e.preventDefault();
-        // 🔹 ignora qualquer input e entra sempre como collector
+        const usernameInput = document.getElementById("login-user");
+        const passwordInput = document.getElementById("login-pass");
+        const username = usernameInput?.value?.trim() || "";
+        const password = passwordInput?.value?.trim() || "";
+        const hasLetter = (value) => /[A-Za-z]/.test(value);
+
+        if (!hasLetter(username) || !hasLetter(password)) {
+          alert("Please enter a username and password (at least one letter each).");
+          return;
+        }
+
         loginUser();
       });
     }

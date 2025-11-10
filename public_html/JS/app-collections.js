@@ -41,13 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
         isActiveUser = Boolean(userData && userData.active);
     }
 
+    function getEffectiveOwnerId() {
+        if (!isActiveUser)
+            return null;
+        return currentUserId || DEFAULT_OWNER_ID;
+    }
+
     function isCollectionOwnedByCurrentUser(collection) {
-        return Boolean(
-            isActiveUser &&
-            currentUserId &&
-            collection &&
-            collection.ownerId === currentUserId
-        );
+        const ownerId = getEffectiveOwnerId();
+        return Boolean(ownerId && collection && collection.ownerId === ownerId);
     }
 
     // ==========================================================
@@ -66,7 +68,15 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>`;
                 return;
             }
-            collections = collections.filter(c => currentUserId && c.ownerId === currentUserId);
+            const ownerId = getEffectiveOwnerId();
+            if (!ownerId) {
+                list.innerHTML = `
+          <div class="notice-message">
+            <p>Unable to determine your collections. Please sign in again.</p>
+          </div>`;
+                return;
+            }
+            collections = collections.filter(c => c.ownerId === ownerId);
         }
 
         // Ordena conforme o critério
@@ -148,7 +158,15 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>`;
                 return;
             }
-            collections = collections.filter(c => currentUserId && c.ownerId === currentUserId);
+            const ownerId = getEffectiveOwnerId();
+            if (!ownerId) {
+                list.innerHTML = `
+          <div class="notice-message">
+            <p>Unable to determine your collections. Please sign in again.</p>
+          </div>`;
+                return;
+            }
+            collections = collections.filter(c => c.ownerId === ownerId);
         }
 
         // Ordena conforme o critério
@@ -343,7 +361,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!isActiveUser)
                 return alert(`🚫 You must be logged in to ${action} collections.`);
             const data = appData.loadData();
-            const myCollections = data.collections.filter(c => currentUserId && c.ownerId === currentUserId);
+            const ownerId = getEffectiveOwnerId();
+            const myCollections = ownerId ? data.collections.filter(c => c.ownerId === ownerId) : [];
             if (myCollections.length === 0)
                 return alert(`⚠️ You don't own any collections to ${action}.`);
 

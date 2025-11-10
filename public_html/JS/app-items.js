@@ -1,4 +1,4 @@
-﻿// ===============================================
+// ===============================================
 // app-items.js â€” Manage items within a collection
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -49,13 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return data.collections.find(c => c.id === collectionId);
   }
 
+  function getEffectiveOwnerId() {
+    if (!isActiveUser) return null;
+    return currentUserId || DEFAULT_OWNER_ID;
+  }
+
   function isCollectionOwnedByCurrentUser(collection) {
-    return Boolean(
-      isActiveUser &&
-      currentUserId &&
-      collection &&
-      collection.ownerId === currentUserId
-    );
+    const ownerId = getEffectiveOwnerId();
+    return Boolean(ownerId && collection && collection.ownerId === ownerId);
   }
 
   // ===============================================
@@ -187,8 +188,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!data || !data.collections) return;
 
     select.innerHTML = "";
+    const ownerId = getEffectiveOwnerId();
     const userCollections = data.collections.filter(c =>
-      c.ownerId === DEFAULT_OWNER_ID || (currentUserId && c.ownerId === currentUserId)
+      c.ownerId === DEFAULT_OWNER_ID || (ownerId && c.ownerId === ownerId)
     );
 
     userCollections.forEach(col => {
@@ -258,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const collection = data.collections.find(c => c.id === collectionId);
 
     if (!collection) return alert("Collection not found!");
-    if (!isActiveUser || collection.ownerId !== currentUserId) {
+    if (!isCollectionOwnedByCurrentUser(collection)) {
       return alert("ðŸš« You can only edit your own collections.");
     }
 
@@ -341,3 +343,4 @@ document.addEventListener("DOMContentLoaded", () => {
   renderItems();
   highlightOwnedSection();
 });
+

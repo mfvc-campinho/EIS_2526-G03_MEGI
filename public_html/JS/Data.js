@@ -9,9 +9,6 @@ const collectionsData = {
       id: "escudos",
       name: "Portuguese Escudos",
       type: "Coins",
-      ownerId: "collector-main",
-      ownerName: "Collector",
-      ownerPhoto: "../images/rui.jpg",
       coverImage: "../images/coins.png",
       summary: "A journey through Portugal’s historical coins.",
       description: "This collection showcases Portugal’s numismatic legacy, featuring original Escudo coins minted before the euro era. It highlights their unique designs, materials, and historical significance in the country’s economy.",
@@ -22,9 +19,6 @@ const collectionsData = {
       id: "playboys",
       name: "Portuguese Playboy Editions",
       type: "Magazines",
-      ownerId: "rui-frio",
-      ownerName: "Rui Frio",
-      ownerPhoto: "../images/user.jpg",
       coverImage: "../images/playboy.jpg",
       summary: "A collection of iconic Portuguese magazine editions.",
       description: "A curated archive of Portuguese Playboy issues spanning several decades, capturing evolving trends in media, design, and culture. Each edition represents a snapshot of its era’s aesthetics and editorial vision.",
@@ -35,9 +29,6 @@ const collectionsData = {
       id: "pokemon",
       name: "Pokémon Trading Cards",
       type: "Collectible Cards",
-      ownerId: "rui-frio",
-      ownerName: "Rui Frio",
-      ownerPhoto: "../images/user.jpg",
       coverImage: "../images/pikachu.jpg",
       summary: "Rare and classic cards from the Pokémon universe.",
       description: "A comprehensive Pokémon TCG collection featuring rare holographic cards, first editions, and limited releases from various generations. It celebrates both the nostalgic and competitive sides of Pokémon collecting.",
@@ -48,9 +39,6 @@ const collectionsData = {
       id: "portraits",
       name: "Portraits of Historical Leaders",
       type: "Art & History",
-      ownerId: "rui-frio",
-      ownerName: "Rui Frio",
-      ownerPhoto: "../images/user.jpg",
       coverImage: "../images/salazar.jpg",
       summary: "Historical register of controversial figures.",
       description: "An artistic and historical exploration through portraits of world leaders who shaped the 20th century. The collection invites reflection on power, influence, and the legacy of leadership in visual art.",
@@ -61,9 +49,6 @@ const collectionsData = {
       id: "jerseys",
       name: "Autographed Football Jerseys",
       type: "Sports Memorabilia",
-      ownerId: "rui-frio",
-      ownerName: "Rui Frio",
-      ownerPhoto: "../images/user.jpg",
       coverImage: "../images/benfica.jpg",
       summary: "Signed memorabilia from legendary players.",
       description: "An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.",
@@ -73,7 +58,16 @@ const collectionsData = {
   ],
 
   // ======================================================
-  // 👤 UTILIZADORES
+  // RELAÇÃO coleções -> utilizadores
+  // ======================================================
+  collectionsUsers: [
+    { collectionId: "escudos", ownerId: "collector-main" },
+    { collectionId: "playboys", ownerId: "rui-frio" },
+    { collectionId: "pokemon", ownerId: "rui-frio" },
+    { collectionId: "portraits", ownerId: "rui-frio" },
+    { collectionId: "jerseys", ownerId: "rui-frio" }
+  ],
+
   // ======================================================
   users: [
     {
@@ -204,7 +198,7 @@ const collectionsData = {
   // EVENTOS (cada um com ID único)
   // ======================================================
   events: [
-    { id: "escudos-event-1", name: "Lisbon Numismatic Fair", localization: "Lisbon", date: "2025-03-22" },
+    { id: "escudos-event-1", name: "Lisbon Numismatic Fair", localization: "Lisbon", date: "2025-12-12" },
     { id: "escudos-event-2", name: "Coin Acquisition Meetup", localization: "Porto", date: "2025-05-10" },
 
     { id: "playboys-event-1", name: "Vintage Magazine Exhibition", localization: "Lisbon", date: "2025-02-10" },

@@ -12,6 +12,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ---------- ELEMENTS ----------
 
+  const DEFAULT_OWNER_ID = "collector-main";
   const eventsList = document.getElementById("eventsList");
   const newEventBtn = document.getElementById("newEventBtn");
 
@@ -164,6 +165,35 @@ document.addEventListener("DOMContentLoaded", () => {
     return !!(u && u.active);
   }
 
+  function getActiveOwnerId(user = getCurrentUser()) {
+    if (!user || !user.active) return null;
+    return user.id || DEFAULT_OWNER_ID;
+  }
+
+  function getEventOwnerIds(eventId, data) {
+    if (!eventId || !data) return [];
+    const collectionLinks = data.collectionEvents || [];
+    if (!collectionLinks.length) return [];
+
+    const collectionIds = collectionLinks
+      .filter(link => link.eventId === eventId)
+      .map(link => link.collectionId);
+
+    if (!collectionIds.length) return [];
+
+    return collectionIds
+      .map(colId => appData.getCollectionOwnerId(colId, data))
+      .filter(Boolean);
+  }
+
+  function canCurrentUserManageEvent(eventId, data, user = getCurrentUser()) {
+    const ownerId = getActiveOwnerId(user);
+    if (!ownerId) return false;
+    const owners = getEventOwnerIds(eventId, data);
+    if (!owners.length) return false;
+    return owners.includes(ownerId);
+  }
+
   // ---------- RENDERING ----------
 
   function renderEvents() {
@@ -173,6 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
     eventsList.innerHTML = "";
 
     const allEvents = (data.events || []).slice();
+    const currentUser = getCurrentUser();
 
     // Count upcoming/past for tabs
     let upcomingCount = 0;
@@ -220,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
         : null;
 
-      const currentUser = getCurrentUser();
+      const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
 
       // Build stars markup for card. For past events show stars (clickable if signed in).
       let ratingHtml = "";
@@ -271,14 +302,16 @@ document.addEventListener("DOMContentLoaded", () => {
           <button class="rsvp-btn" data-id="${ev.id}" data-requires-login>
             <i class="bi bi-calendar-check" aria-hidden="true"></i> RSVP
           </button>
-          ${currentUser && currentUser.active ? `
+          ${canManage ? `
             <button class="edit-btn" data-id="${ev.id}" data-requires-login>
               <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
             </button>
           ` : ``}
-          <button class="delete-btn" data-id="${ev.id}" data-requires-login>
-            <i class="bi bi-trash3" aria-hidden="true"></i> Delete
-          </button>
+          ${canManage ? `
+            <button class="delete-btn" data-id="${ev.id}" data-requires-login>
+              <i class="bi bi-trash3" aria-hidden="true"></i> Delete
+            </button>
+          ` : ``}
         </div>
       `;
 
@@ -287,10 +320,14 @@ document.addEventListener("DOMContentLoaded", () => {
         .addEventListener("click", () => openEventDetail(ev.id));
       card.querySelector(".rsvp-btn")
         .addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
-      card.querySelector(".edit-btn")
-        .addEventListener("click", () => openEditModal(ev.id));
-      card.querySelector(".delete-btn")
-        .addEventListener("click", () => deleteEventHandler(ev.id));
+      const editBtn = card.querySelector(".edit-btn");
+      if (editBtn) {
+        editBtn.addEventListener("click", () => openEditModal(ev.id));
+      }
+      const deleteBtn = card.querySelector(".delete-btn");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
+      }
 
       // Attach star click + hover handlers for card stars (if present)
       const starsContainer = card.querySelector(`.rating-stars[data-event-id="${ev.id}"]`);
@@ -475,10 +512,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function openEditModal(id) {
     const data = loadData();
+    const currentUser = getCurrentUser();
 
     if (id) {
       const ev = (data.events || []).find(x => x.id === id);
       if (!ev) return alert("Event not found.");
+      if (!canCurrentUserManageEvent(ev.id, data, currentUser)) {
+        alert("You can only edit events that belong to your collections.");
+        return;
+      }
 
       fieldId.value = ev.id;
       fieldName.value = ev.name || "";
@@ -568,6 +610,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function deleteEventHandler(id) {
+    const data = loadData();
+    if (!canCurrentUserManageEvent(id, data)) {
+      alert("You can only delete events that belong to your collections.");
+      return;
+    }
+
     if (!confirm("Delete this event? This action cannot be undone.")) return;
     deleteEntity(id);
     renderEvents();

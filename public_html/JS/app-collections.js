@@ -33,6 +33,33 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentUserId;
     let currentUserName;
     let isActiveUser;
+    let collectionOwnerMap = {};
+
+    function hydrateCollectionOwnerMap(data) {
+        collectionOwnerMap = (data?.collectionsUsers || []).reduce((acc, link) => {
+            acc[link.collectionId] = link.ownerId;
+            return acc;
+        }, {});
+    }
+
+    function getCollectionOwnerIdCached(collectionId, data) {
+        if (!collectionId)
+            return null;
+        if (collectionOwnerMap[collectionId])
+            return collectionOwnerMap[collectionId];
+        if (data?.collectionsUsers) {
+            const link = data.collectionsUsers.find(entry => entry.collectionId === collectionId);
+            if (link) {
+                collectionOwnerMap[collectionId] = link.ownerId;
+                return link.ownerId;
+            }
+        }
+        const ownerId = appData.getCollectionOwnerId(collectionId, data);
+        if (ownerId) {
+            collectionOwnerMap[collectionId] = ownerId;
+        }
+        return ownerId;
+    }
 
     function updateUserState() {
         const userData = JSON.parse(localStorage.getItem("currentUser"));
@@ -47,9 +74,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return currentUserId || DEFAULT_OWNER_ID;
     }
 
-    function isCollectionOwnedByCurrentUser(collection) {
+    function isCollectionOwnedByCurrentUser(collection, data) {
         const ownerId = getEffectiveOwnerId();
-        return Boolean(ownerId && collection && collection.ownerId === ownerId);
+        if (!ownerId || !collection)
+            return false;
+        const collectionOwnerId = getCollectionOwnerIdCached(collection.id, data);
+        return Boolean(collectionOwnerId && collectionOwnerId === ownerId);
     }
 
     // ==========================================================
@@ -57,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================
     function renderCollections(criteria = "lastAdded", limit = null) {
         const data = appData.loadData();
+        hydrateCollectionOwnerMap(data);
         let collections = data.collections || [];
 
         // Filtra para a página de utilizador
@@ -76,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>`;
                 return;
             }
-            collections = collections.filter(c => c.ownerId === ownerId);
+            collections = collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId);
         }
 
         // Ordena conforme o critério
@@ -120,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ).join("")}</ul>`
                 : `<p class="no-items">No items yet.</p>`;
 
-            const isOwnerLoggedIn = isCollectionOwnedByCurrentUser(col);
+            const isOwnerLoggedIn = isCollectionOwnedByCurrentUser(col, data);
             const specialClass = isOwnerLoggedIn ? 'collector-owned' : '';
             const canEdit = isOwnerLoggedIn;
 
@@ -150,6 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     function renderCollections(criteria = "lastAdded", limit = null) {
         const data = appData.loadData();
+        hydrateCollectionOwnerMap(data);
         let collections = data.collections || [];
 
         // Filtra para a página de utilizador
@@ -169,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>`;
                 return;
             }
-            collections = collections.filter(c => c.ownerId === ownerId);
+            collections = collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId);
         }
 
         // Ordena conforme o critério
@@ -230,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ).join("")}</ul>`
                 : `<p class="no-items">No items yet.</p>`;
 
-            const isOwnerLoggedIn = isCollectionOwnedByCurrentUser(col);
+            const isOwnerLoggedIn = isCollectionOwnedByCurrentUser(col, data);
             const specialClass = isOwnerLoggedIn ? 'collector-owned' : '';
             const canEdit = isOwnerLoggedIn;
 
@@ -276,8 +308,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.editCollection = id => {
         const data = appData.loadData();
+        hydrateCollectionOwnerMap(data);
         const col = data.collections.find(c => c.id === id);
-        if (!col || !isCollectionOwnedByCurrentUser(col))
+        if (!col || !isCollectionOwnedByCurrentUser(col, data))
             return alert("❌ You can only edit your own collections.");
 
         if (form) {
@@ -294,8 +327,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.deleteCollection = id => {
         const data = appData.loadData();
+        hydrateCollectionOwnerMap(data);
         const col = data.collections.find(c => c.id === id);
-        if (!col || !isCollectionOwnedByCurrentUser(col))
+        if (!col || !isCollectionOwnedByCurrentUser(col, data))
             return alert("❌ You can only delete your own collections.");
 
         if (confirm(`⚠️ Delete "${col.name}"?\n\n(This is a demonstration. No data will be changed.)`)) {
@@ -370,8 +404,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!isActiveUser)
                 return alert(`🚫 You must be logged in to ${action} collections.`);
             const data = appData.loadData();
+            hydrateCollectionOwnerMap(data);
             const ownerId = getEffectiveOwnerId();
-            const myCollections = ownerId ? data.collections.filter(c => c.ownerId === ownerId) : [];
+            const myCollections = ownerId
+                ? data.collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId)
+                : [];
             if (myCollections.length === 0)
                 return alert(`⚠️ You don't own any collections to ${action}.`);
 

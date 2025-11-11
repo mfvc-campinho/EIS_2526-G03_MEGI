@@ -92,6 +92,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Dono associado a uma coleção
+  function getCollectionOwnerId(collectionId, data) {
+    if (!collectionId) return null;
+    if (!data) data = loadData();
+    const link = (data.collectionsUsers || []).find(entry => entry.collectionId === collectionId);
+    return link ? link.ownerId : null;
+  }
+
+  function getCollectionOwner(collectionId, data) {
+    if (!collectionId) return null;
+    if (!data) data = loadData();
+    const ownerId = getCollectionOwnerId(collectionId, data);
+    if (!ownerId) return null;
+    const users = data.users || [];
+    return users.find(user =>
+      user["owner-id"] === ownerId ||
+      user.id === ownerId
+    ) || null;
+  }
+
   // ============================================================
   // 4. CRUD básico
   // ============================================================
@@ -118,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (type === "collections") {
       data.collectionItems = data.collectionItems.filter(r => r.collectionId !== id);
       data.collectionEvents = data.collectionEvents.filter(r => r.collectionId !== id);
+      data.collectionsUsers = data.collectionsUsers?.filter(r => r.collectionId !== id) || [];
     }
 
     // Se apagar item/evento, remove as ligações também
@@ -126,6 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (type === "events") {
       data.collectionEvents = data.collectionEvents.filter(r => r.eventId !== id);
+    }
+    if (type === "users") {
+      data.collectionsUsers = data.collectionsUsers?.filter(r => r.ownerId !== id) || [];
     }
 
     saveData(data);
@@ -139,6 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
     saveData,
     getItemsByCollection,
     getEventsByCollection,
+    getCollectionOwnerId,
+    getCollectionOwner,
     linkItemToCollection,
     linkEventToCollection,
     addEntity,

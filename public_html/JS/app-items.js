@@ -45,6 +45,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const collectionId = params.get("id");
 
+  function getOwnerIdForCollection(target, data = appData.loadData()) {
+    const id = typeof target === "string" ? target : target?.id;
+    if (!id) return null;
+    return appData.getCollectionOwnerId(id, data);
+  }
+
+  function getOwnerProfileForCollection(target, data = appData.loadData()) {
+    const id = typeof target === "string" ? target : target?.id;
+    if (!id) return null;
+    return appData.getCollectionOwner(id, data);
+  }
+
   function getCurrentCollection(data = appData.loadData()) {
     return data.collections.find(c => c.id === collectionId);
   }
@@ -54,9 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return currentUserId || DEFAULT_OWNER_ID;
   }
 
-  function isCollectionOwnedByCurrentUser(collection) {
+  function isCollectionOwnedByCurrentUser(collection, data) {
     const ownerId = getEffectiveOwnerId();
-    return Boolean(ownerId && collection && collection.ownerId === ownerId);
+    if (!ownerId || !collection) return false;
+    const collectionOwnerId = getOwnerIdForCollection(collection, data);
+    return Boolean(collectionOwnerId && collectionOwnerId === ownerId);
   }
 
   // ===============================================
@@ -68,7 +82,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (collection) {
       document.getElementById("collection-title").textContent = collection.name;
-      document.getElementById("owner-name").textContent = collection.ownerName || collection.ownerId;
+      const ownerProfile = getOwnerProfileForCollection(collection, data) || {};
+      const collectionOwnerId = getOwnerIdForCollection(collection, data);
+      const ownerDisplayName =
+        ownerProfile["owner-name"] ||
+        ownerProfile.name ||
+        collectionOwnerId ||
+        "Unknown Owner";
+
+      document.getElementById("owner-name").textContent = ownerDisplayName;
       document.getElementById("creation-date").textContent = collection.createdAt;
       document.getElementById("type").textContent = collection.type || "N/A";
       document.getElementById("description").textContent =
@@ -79,9 +101,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const collectorDefault = "../images/rui.jpg";
         const guestDefault = "../images/user.jpg";
         const fallback =
-          collection.ownerId === DEFAULT_OWNER_ID ? collectorDefault : guestDefault;
-        ownerPhotoEl.src = collection.ownerPhoto || fallback;
-        ownerPhotoEl.alt = `${collection.ownerName || "Collection"} owner`;
+          collectionOwnerId === DEFAULT_OWNER_ID ? collectorDefault : guestDefault;
+        ownerPhotoEl.src = ownerProfile["owner-photo"] || ownerProfile.photo || fallback;
+        ownerPhotoEl.alt = `${ownerDisplayName} owner`;
       }
     } else {
       // Se a coleção não for encontrada, mostra uma mensagem de erro
@@ -99,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = appData.loadData();
     const collection = getCurrentCollection(data);
 
-    if (isCollectionOwnedByCurrentUser(collection)) {
+    if (isCollectionOwnedByCurrentUser(collection, data)) {
       itemsContainer.classList.add("owned-section");
       // Mostra os botões se for o dono
       if (editCollectionBtn) editCollectionBtn.style.display = "inline-block";
@@ -119,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.renderItems = function renderItems() {
     const data = appData.loadData();
     const collection = getCurrentCollection(data);
-    const ownsCollection = isCollectionOwnedByCurrentUser(collection);
+    const ownsCollection = isCollectionOwnedByCurrentUser(collection, data);
     const items = appData.getItemsByCollection(collectionId, data);
 
     itemsContainer.innerHTML = "";
@@ -205,9 +227,10 @@ document.addEventListener("DOMContentLoaded", () => {
     select.innerHTML = "";
     const ownerId = getEffectiveOwnerId();
 
-    const userCollections = data.collections.filter(c =>
-      c.ownerId === DEFAULT_OWNER_ID || (ownerId && c.ownerId === ownerId)
-    );
+    const userCollections = data.collections.filter(c => {
+      const colOwnerId = getOwnerIdForCollection(c, data);
+      return colOwnerId === DEFAULT_OWNER_ID || (ownerId && colOwnerId === ownerId);
+    });
 
     userCollections.forEach(col => {
       const option = document.createElement("option");
@@ -241,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const item = data.items.find(i => i.id === id);
     if (!item) return alert("Item not found");
     const collection = getCurrentCollection(data);
-    if (!isCollectionOwnedByCurrentUser(collection)) {
+    if (!isCollectionOwnedByCurrentUser(collection, data)) {
       return alert("🚫 You cannot edit this item.");
     }
 
@@ -263,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const item = data.items.find(i => i.id === id);
     const collection = getCurrentCollection(data);
 
-    if (!isCollectionOwnedByCurrentUser(collection)) {
+    if (!isCollectionOwnedByCurrentUser(collection, data)) {
       return alert("🚫 You can only delete your own items.");
     }
 
@@ -280,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const collection = data.collections.find(c => c.id === collectionId);
 
     if (!collection) return alert("Collection not found!");
-    if (!isCollectionOwnedByCurrentUser(collection)) {
+    if (!isCollectionOwnedByCurrentUser(collection, data)) {
       return alert("🚫 You can only edit your own collections.");
     }
 

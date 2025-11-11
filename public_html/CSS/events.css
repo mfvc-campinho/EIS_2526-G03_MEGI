@@ -1,8 +1,6 @@
-/* events.css — Lightweight styles for Events page
-   Integrates with existing general/grid styles. Keeps selectors specific to avoid collisions.
-*/
+/* events.css — Lightweight, page-specific styles for Events */
 
-/* Container/grid for event cards */
+/* Grid for event cards list */
 .events-section .collection-container,
 #eventsList {
   display: grid;
@@ -12,11 +10,11 @@
   padding: 0.5rem 0;
 }
 
-/* Card base (uses project's existing 'collection-card' where available) */
+/* Card */
 .collection-card {
   background: var(--card-bg, #ffffff);
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 6px rgba(10, 10, 10, 0.04);
+  box-shadow: 0 4px 12px rgba(10, 10, 10, 0.06);
   border-radius: 10px;
   overflow: hidden;
   transition: transform 160ms ease, box-shadow 160ms ease;
@@ -94,19 +92,35 @@
   border-color: rgba(170, 20, 20, 0.12);
 }
 
-/* Make small buttons consistent with explore/save classes where possible */
+/* Harmonize small buttons */
 .save-btn,
 .explore-btn {
   border-radius: 6px;
 }
 
-/* Modal tweaks (visual only; layout handled by modal.css) */
+.save-btn {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.18);
+}
+
+/* Modal width tweaks */
 #event-modal .modal-content,
 #event-edit-modal .modal-content {
   max-width: 740px;
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 480px) {
   .card-title {
     font-size: 1rem;
@@ -117,3 +131,4 @@
     font-size: 0.85rem;
   }
 }
+

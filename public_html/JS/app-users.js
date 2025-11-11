@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     } else {
       // 🚪 Não autenticado → mostra formulário inline
-      profileButton.innerHTML = `👤 Enter ▾`;
+      profileButton.innerHTML = `👤 Log In ▾`;
       profileMenu.innerHTML = `
         <form id="login-form" class="login-form">
           <label>Username:</label>

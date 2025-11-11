@@ -2,19 +2,26 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <title>User Profile — GoodCollections</title>
+  <meta charset="utf-8" />
+  <title>Collections</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- 🔹 Fonts & CSS -->
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../CSS/general.css">
+
+  <!-- CSS existente -->
+  <link rel="stylesheet" href="../CSS/general.css" />
+  <link rel="stylesheet" href="../CSS/modal.css" />
   <link rel="stylesheet" href="../CSS/grid.css" />
-  <link rel="stylesheet" href="../CSS/user_page.css">
+
+
 </head>
 
 <body>
   <div id="content">
-    <!-- 🔹 NAVIGATION BAR -->
+    <!-- ===============================
+         🔹 NAVIGATION BAR
+    =============================== -->
     <header>
       <nav class="navbar">
         <div class="nav-left">
@@ -22,7 +29,7 @@
         </div>
         <div class="nav-right">
           <a href="all_collections.html" class="nav-link">Collections</a>
-          <a href="event_page.html" class="nav-link">Events</a>
+          <a href="home_page.html" class="nav-link">Homepage</a>
           <a href="team_page.html" class="nav-link">About Us</a>
           <div class="dropdown profile-dropdown">
             <button class="dropbtn profile-btn">👤 Profile ▾</button>
@@ -33,37 +40,31 @@
       </nav>
     </header>
 
-    <!-- ========================================================= -->
-    <!-- 🔹 MAIN CONTENT -->
-    <!-- ========================================================= -->
+    <!-- ===============================
+         🔹 MAIN CONTENT
+    =============================== -->
     <main>
-      <!-- 🔹 Welcome Banner -->
-      <div class="welcome-banner">
-        Welcome back, <span id="username-banner">Collector</span> 👋
-      </div>
+      <h1 class="page-title">All Collections</h1>
 
-      <!-- 🔹 User Header -->
-      <section class="user-header">
-        <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
-        <div class="user-meta">
-          <h1 id="user-name">Collector</h1>
-          <p class="user-detail"><strong>Email:</strong> <span id="user-email"></span></p>
-          <p class="user-detail"><strong>Date of Birth:</strong> <span id="user-dob"></span></p>
-        </div>
-      </section>
-
-      <!-- 🔹 User Actions -->
-      <div class="user-actions">
-        <button id="edit-profile-btn" class="explore-btn">✏️ Edit Profile</button>
-        <button id="open-collection-modal" class="explore-btn" data-requires-login>➕ Add Collection</button>
+      <!-- Botões CRUD -->
+      <div class="crud-controls">
+        <button id="open-collection-modal" data-requires-login>➕ Add Collection</button>
         <button id="editCollectionBtn" class="explore-btn" data-requires-login>✏️ Edit Collection</button>
         <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>🗑️ Delete Collection</button>
       </div>
 
-      <!-- 🔹 User Collections -->
-      <h2 id="my-collections-title">My Collections</h2>
-      <section id="user-collections" class="collection-container"></section>
+      <!-- Listas -->
+      <section class="collection-container" id="collections-list"></section>
     </main>
+
+    <!-- ===============================
+         🔹 FOOTER
+    =============================== -->
+    <footer>
+      <p>Made with ❤️ by
+        <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">EIS_2526-G03_MEGI</a>
+      </p>
+    </footer>
   </div>
 
   <!-- 🔹 MODALS PLACEHOLDER -->
@@ -83,7 +84,6 @@
         <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg">
         <label for="col-type">Type:</label>
         <input type="text" id="col-type" name="col-type" required>
-
         <div class="modal-actions">
           <button type="submit" class="save-btn">Guardar</button>
           <button type="button" id="cancel-collection-modal" class="cancel-btn">Cancelar</button>
@@ -91,29 +91,6 @@
       </form>
     </div>
   </div>
-
-  <!-- 🔹 MODAL: EDIT USER PROFILE -->
-  <div id="user-profile-modal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="close-user-modal">&times;</span>
-      <h2>Edit Profile</h2>
-      <form id="form-user-profile">
-        <label for="user-form-name">Username:</label>
-        <input type="text" id="user-form-name" name="user-form-name" required />
-        <label for="user-form-email">Email:</label>
-        <input type="email" id="user-form-email" name="user-form-email" required />
-        <label for="user-form-dob">Date of Birth:</label>
-        <input type="date" id="user-form-dob" name="user-form-dob" />
-        <label for="user-form-photo">Photo URL:</label>
-        <input type="text" id="user-form-photo" name="user-form-photo" />
-        <div class="modal-actions">
-          <button type="submit" class="save-btn">Save Changes</button>
-          <button type="button" id="cancel-user-modal" class="cancel-btn">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <div id="forgot-password-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-forgot-modal">&times;</span>
@@ -148,30 +125,15 @@
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- 🔹 FOOTER -->
-  <!-- ========================================================= -->
-  <footer>
-    <p>
-      Made with ❤️ by
-      <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"
-          style="vertical-align:middle;margin-right:6px;">
-          <path
-            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-        </svg>
-        EIS_2526-G03_MEGI
-      </a>
-    </p>
-  </footer>
+  <!-- ===============================
+       🔹 SCRIPTS
+  =============================== -->
 
-  <!-- ========================================================= -->
-  <!-- 🔹 SCRIPTS -->
-  <!-- ========================================================= -->
   <script src="../JS/app-data.js"></script>
   <script src="../JS/app-users.js"></script>
   <script src="../JS/app-collections.js"></script>
-  <script src="../JS/app-userpage.js"></script>
+
+  <!-- 🔹 Script do Loader -->
   <script src="../JS/app-loader.js"></script>
 </body>
 

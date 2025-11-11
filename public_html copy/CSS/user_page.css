@@ -1,0 +1,159 @@
+/* ========= Page spacing under sticky navbar ========= */
+main { padding: 96px 16px 56px; }
+
+/* Estilos movidos do HTML para uniformizar */
+.welcome-banner {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.user-actions {
+  text-align: center;
+  margin-top: 30px;
+}
+
+#my-collections-title {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* ========= User header (uses your classes/ids) ========= */
+.user-header{
+  display:flex;
+  align-items:center;
+  gap:24px;
+  
+  margin:0 0 32px;
+}
+.avatar{
+  width:132px; height:132px; object-fit:cover;
+  border-radius:50%; border:4px solid #2563eb;
+}
+.user-meta{ display:flex; flex-direction:column; }
+#user-name{ margin:0; font-size:32px; font-weight:800; color:#0f172a; }
+.user-sub{ margin:6px 0 0; color:#64748b; font-size:.95rem; }
+.btn-primary{
+  margin-left:auto;                      /* pushes the button to the right */
+  padding:8px 14px; border-radius:10px;
+  background:#2563eb; color:#fff; text-decoration:none; font-weight:600;
+}
+
+/* Mobile */
+@media (max-width:600px){
+  .user-header{ flex-direction:column; text-align:center; }
+  .btn-primary{ margin-left:0; }
+}
+
+/* ===== Mini-calendar list ===== */
+.user-section { margin-top: 28px; }
+.section-title { margin: 0 0 10px; font-size: 20px; }
+.events-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+/* One event row */
+.event {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;  /* calendar badge | info | link */
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  padding: 10px 12px;
+}
+
+/* The calendar badge (we’ll inject month/day via JS) */
+.event time {
+  display: grid;
+  grid-template-rows: 24px 1fr;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  background: #1e3a8a;        /* dark blue header */
+  color: #fff;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+/* Inner parts we inject: .cal-mon on top (small), .cal-day big */
+.event time .cal-mon {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 24px;
+  background: #3b82f6;        /* lighter blue strip */
+  font-size: 12px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.event time .cal-day {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: calc(64px - 24px);
+  font-size: 20px;
+  color: #0f172a;
+  background: #fff;
+}
+
+/* Event info */
+.event .event-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.event .event-info strong {
+  font-size: 16px;
+  color: #0f172a;
+}
+.event .tag {
+  display: inline-block;
+  font-size: 12px;
+  color: #1e3a8a;
+  background: #eef2ff;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* Right-side link */
+.event .event-link {
+  text-decoration: none;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+/* Mobile */
+@media (max-width: 560px){
+  .event {
+    grid-template-columns: 52px 1fr;
+    grid-auto-rows: auto;
+    padding: 10px;
+  }
+  .event .event-link {
+    grid-column: 2 / -1;
+    justify-self: start;
+    margin-top: 6px;
+  }
+  .event time { width: 52px; height: 60px; }
+  .event time .cal-day { height: calc(60px - 24px); }
+}
+/* Limit the width of the Upcoming events area, left-aligned */
+.user-section{
+  --events-max: 820px;                  /* <- adjust to taste (700–960px usually looks great) */
+}
+
+.user-section .events-list,
+.user-section .section-cta{
+  width: min(100%, var(--events-max));  /* not full width */
+}
+
+/* If your events card itself is stretching, also cap it */
+.user-section .event{
+  width: 100%;
+}

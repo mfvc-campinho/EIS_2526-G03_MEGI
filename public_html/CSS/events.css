@@ -1,0 +1,119 @@
+/* events.css — Lightweight styles for Events page
+   Integrates with existing general/grid styles. Keeps selectors specific to avoid collisions.
+*/
+
+/* Container/grid for event cards */
+.events-section .collection-container,
+#eventsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  align-items: start;
+  padding: 0.5rem 0;
+}
+
+/* Card base (uses project's existing 'collection-card' where available) */
+.collection-card {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 6px rgba(10, 10, 10, 0.04);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.08);
+}
+
+.collection-card .card-body {
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card-title {
+  font-size: 1.05rem;
+  margin: 0 0 0.15rem 0;
+  line-height: 1.25;
+}
+
+.collection-card .muted {
+  color: var(--muted-color, #666);
+  font-size: 0.9rem;
+}
+
+.collection-card p {
+  margin: 0;
+  color: var(--text-color, #222);
+}
+
+/* Actions */
+.card-actions {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.card-actions button {
+  padding: 0.38rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #f7f7f8;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.card-actions button:hover {
+  transform: translateY(-1px);
+}
+
+/* Specific buttons */
+.view-btn {
+  background: linear-gradient(180deg, #fff, #f3f6ff);
+}
+
+.rsvp-btn {
+  background: linear-gradient(180deg, #e6fff2, #d3ffe0);
+  border-color: rgba(0, 120, 72, 0.12);
+}
+
+.edit-btn {
+  background: linear-gradient(180deg, #fff8e6, #fff1d6);
+  border-color: rgba(170, 120, 20, 0.12);
+}
+
+.delete-btn {
+  background: linear-gradient(180deg, #ffecec, #ffdede);
+  border-color: rgba(170, 20, 20, 0.12);
+}
+
+/* Make small buttons consistent with explore/save classes where possible */
+.save-btn,
+.explore-btn {
+  border-radius: 6px;
+}
+
+/* Modal tweaks (visual only; layout handled by modal.css) */
+#event-modal .modal-content,
+#event-edit-modal .modal-content {
+  max-width: 740px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .card-actions button {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,102 @@
+/* features.css — Hero features section for home page */
+
+.features-hero {
+  padding: 36px 20px 60px;
+  background: linear-gradient(180deg, #f8fbff 0%, #f3f9ff 100%);
+
+}
+
+.features-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.features-title {
+  font-size: 2.2rem;
+  margin: 0 0 8px;
+  color: #0b1220;
+  font-weight: 800;
+}
+
+.features-title .accent {
+  color: #0078ff;
+}
+
+.features-sub {
+  color: #6b7280;
+  margin-bottom: 24px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.feature-card {
+  background: #eaf6ff;
+  /* subtle blue panel */
+  border-radius: 12px;
+  padding: 22px;
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.04);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(10, 10, 10, 0.08);
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  background: white;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  font-size: 22px;
+}
+
+.feature-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #0b1220;
+}
+
+.feature-card p {
+  margin: 0;
+  color: #374151;
+  font-size: 0.96rem;
+  line-height: 1.45;
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .features-title {
+    font-size: 1.6rem;
+  }
+
+  .feature-card {
+    padding: 18px;
+  }
+}

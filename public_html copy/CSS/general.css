@@ -28,16 +28,15 @@ h1.page-title::after {
 =============================== */
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background-color: whitesmoke;
-  margin: 0;
-  padding: 0;
-  color: #333;
+    font-family: 'Poppins', sans-serif;
+    background-color: whitesmoke;
+    margin: 0;
+    padding: 0;
+    color: #333;
 }
 
 .navbar {
-  background-color: #0d1320;
-  /* dark navy */
+  background-color: #0d1320; /* dark navy */
   color: white;
   display: flex;
   align-items: center;
@@ -74,32 +73,10 @@ body {
   text-decoration: none;
   font-size: 1rem;
   transition: color 0.25s ease;
-  position: relative;
-  /* required for underline pseudo-element */
-  padding-bottom: 6px;
-  /* space for animated underline */
 }
 
 .nav-link:hover {
   color: white;
-}
-
-/* Animated underline similar to footer links (blue bar expands from center) */
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  width: 0%;
-  height: 3px;
-  background: linear-gradient(90deg, #0078ff, #00b3ff);
-  border-radius: 4px;
-  transform: translateX(-50%);
-  transition: width 0.28s ease;
-}
-
-.nav-link:hover::after {
-  width: 60%;
 }
 
 /* === SEARCH BAR === */
@@ -171,8 +148,7 @@ footer {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #0d1320;
-  /* mesma cor do cabeçalho */
+  background-color: #0d1320;       /* mesma cor do cabeçalho */
   color: #ffffff;
   font-family: 'Poppins', sans-serif;
   box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25);
@@ -180,11 +156,9 @@ footer {
   align-items: center;
   justify-content: center;
   text-align: center;
-  height: 120px;
-  /* ⚡ aumenta visibilidade real */
+  height: 120px;                   /* ⚡ aumenta visibilidade real */
   z-index: 100;
-  margin-top: 80px;
-  /* separação natural do conteúdo */
+  margin-top: 80px;                /* separação natural do conteúdo */
 }
 
 /* Container interno */
@@ -244,17 +218,8 @@ footer .heart {
 }
 
 @keyframes pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.9;
-  }
-
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 1; }
 }
 
 /* Responsivo */

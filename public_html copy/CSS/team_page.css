@@ -1,0 +1,100 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this template
+*/
+/* 
+    Created on : 21 de out. de 2025, 21:02:59
+    Author     : anaamorim
+*/
+
+/* -----------------Navigation bar-------------------*/
+
+/* ===== TEAM SECTION ===== */
+main {
+  text-align: center;
+  padding: 40px 0;
+}
+
+main h1.title {
+  display: inline-block;     /* allows centering + width based on text */
+  margin: 0 auto 28px;       /* space under the title */
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: #2563eb;
+}
+
+main h1.title::after {
+  content: "";
+  display: block;            /* <-- pushes content below */
+  width: clamp(80px, 20vw, 140px);
+  height: clamp(3px, 0.6vw, 6px);
+  margin: 12px auto 0;       /* spacing below the title */
+  background: #2563eb;
+  background-size: 300% 100%;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+}
+
+/* Grid that auto-wraps with spacing */
+.Team {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;              /* space between cards */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;        /* small side gutter */
+}
+
+/* Cards fill their column (no extra margins) */
+.member {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 22px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+
+.member:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* Round photo */
+.member img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #2563eb;
+  margin-bottom: 15px;
+  display: block;               /* <- necessário para margin:auto funcionar */
+  margin: 6px auto 14px;        /* <- centra e dá espaço em cima/baixo */
+}
+
+/* Member name */
+.member h2 {
+  font-size: 1.2rem;
+  margin: 10px 0 5px;
+  color: #2563eb;
+}
+
+/* Student ID */
+.member .id {
+  color: #6b7280; /* Cinzento escuro para contraste */
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+/* Personal description */
+.member .desc {
+  font-size: 0.95rem;
+  color: #374151; /* Cinzento mais escuro */
+  line-height: 1.4;
+  font-weight: 300;
+}
+
+@media (max-width: 520px) {
+  main { padding-top: 64px; }             /* a touch tighter on small screens */
+}

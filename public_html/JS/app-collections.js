@@ -122,11 +122,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const canEdit = isOwnerLoggedIn;
 
             const buttons = `
-        <button class="explore-btn" onclick="togglePreview('${col.id}', this)">👁️ Show Preview</button>
-        <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'">🔍 Explore More</button>
-        ${canEdit ? `<button class="explore-btn" onclick="editCollection('${col.id}')">✏️ Edit</button>` : ""}
-        ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')">🗑️ Delete</button>` : ""}
-      `;
+                <button class="explore-btn" onclick="togglePreview('${col.id}', this)"><i class="bi bi-eye"></i> Show Preview</button>
+                <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'"><i class="bi bi-search"></i> Explore More</button>
+                ${canEdit ? `<button class="explore-btn" onclick="editCollection('${col.id}')"><i class="bi bi-pencil"></i> Edit</button>` : ""}
+                ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')"><i class="bi bi-trash"></i> Delete</button>` : ""}
+            `;
 
             // 2. Adiciona o HTML do cartão ao acumulador em vez de ao DOM
             allCardsHTML += `
@@ -229,11 +229,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const canEdit = isOwnerLoggedIn;
 
             const buttons = `
-        <button class="explore-btn" onclick="togglePreview('${col.id}', this)">👁️ Show Preview</button>
-        <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'">🔍 Explore More</button>
-        ${canEdit ? `<button class="explore-btn" onclick="editCollection('${col.id}')">✏️ Edit</button>` : ""}
-        ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')">🗑️ Delete</button>` : ""}
-      `;
+                <button class="explore-btn" onclick="togglePreview('${col.id}', this)"><i class="bi bi-eye"></i> Show Preview</button>
+                <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'"><i class="bi bi-search"></i> Explore More</button>
+                ${canEdit ? `<button class="explore-btn" onclick="editCollection('${col.id}')"><i class="bi bi-pencil"></i> Edit</button>` : ""}
+                ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')"><i class="bi bi-trash"></i> Delete</button>` : ""}
+            `;
 
             // 2. Adiciona o HTML do cartão ao acumulador em vez de ao DOM
             allCardsHTML += `
@@ -262,7 +262,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const isShowingPreview = prev.style.display === "block";
         prev.style.display = isShowingPreview ? "none" : "block";
         img.style.display = isShowingPreview ? "block" : "none";
-        btn.textContent = isShowingPreview ? "👁️ Show Preview" : "🙈 Hide Preview";
+        // Use innerHTML to include Bootstrap Icon markup and readable text
+        btn.innerHTML = isShowingPreview
+            ? '<i class="bi bi-eye"></i> Show Preview'
+            : '<i class="bi bi-eye-slash"></i> Hide Preview';
     };
 
     window.editCollection = id => {

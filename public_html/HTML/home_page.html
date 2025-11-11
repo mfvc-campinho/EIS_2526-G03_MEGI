@@ -65,6 +65,66 @@
          🔹 MAIN CONTENT
     =============================== -->
     <main>
+
+      <!-- ===============================
+     🔹 WELCOME HERO
+      =============================== -->
+      <section class="welcome-hero">
+        <div class="welcome-inner">
+          <div class="welcome-text">
+            <h2 class="welcome-title">
+              <i class="bi bi-stars me-2" aria-hidden="true"></i>
+              Welcome to GoodCollections
+            </h2>
+            <p class="welcome-subtitle">
+              Manage all your collections effortlessly — from books and vinyl records to coins, stamps, and miniatures.
+            </p>
+          </div>
+
+          <!-- 🔹 Small Stats -->
+          <div class="welcome-stats">
+            <div class="stat">
+              <span class="stat-label">Manage</span>
+              <span class="stat-value">Multiple Collections</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Track</span>
+              <span class="stat-value">Items &amp; Events</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Focus</span>
+              <span class="stat-value">Collectors Experience</span>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- 🔹 Global Actions Buttons (merged here) -->
+        <div class="collection-actions">
+          <button id="open-collection-modal" class="explore-btn success" data-requires-login>
+            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> New Collection
+          </button>
+
+
+          <button id="editCollectionBtn" class="explore-btn" data-requires-login>
+            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Edit Collection
+          </button>
+
+          <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>
+            <i class="bi bi-trash3 me-1" aria-hidden="true"></i> Delete Collection
+          </button>
+
+          <button id="restoreDataBtn" class="explore-btn warning"
+            title="Deletes all current data and restores the original data from Data.js">
+            <i class="bi bi-arrow-repeat me-1" aria-hidden="true"></i> Restore Data
+          </button>
+        </div>
+      </section>
+
+      <!-- ===============================
+      🔹 RANKING SECTION
+      =============================== -->
+
       <h1 class="page-title">Top 5 Collections</h1>
 
       <!-- 🔹 Filter -->
@@ -84,7 +144,7 @@
         <div class="collection-container" id="homeCollections"></div>
       </section>
 
-      <!-- 🔹 Global Actions -->
+      <!-- 🔹 Global Actions 
       <section class="actions-section">
         <div class="collection-actions">
           <button id="open-collection-modal" class="explore-btn" data-requires-login>➕ New Collection</button>
@@ -93,7 +153,7 @@
           <button id="restoreDataBtn" class="explore-btn warning"
             title="Deletes all current data and restores the original data from Data.js">🔄 Restore Data</button>
         </div>
-      </section>
+      </section>-->
     </main>
 
     <!-- 🔹 FEATURES HERO (added) -->
@@ -105,42 +165,42 @@
 
         <div class="features-grid">
           <article class="feature-card">
-            <div class="feature-icon">📁</div>
+            <div class="feature-icon"><i class="bi bi-folder me-1" aria-hidden="true"></i></div>
             <h3>Multiple Collections</h3>
             <p>Create unlimited collections for different item types. Keep coins separate from trading cards, all in
               one place.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon">ℹ️</div>
+            <div class="feature-icon"><i class="bi bi-info-circle me-1" aria-hidden="true"></i></div>
             <h3>Detailed Item Tracking</h3>
             <p>Record every detail — name, importance rating, acquisition date, weight, and price. Never forget what
               you paid or when you got it.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon">📅</div>
+            <div class="feature-icon"><i class="bi bi-calendar-event me-1" aria-hidden="true"></i></div>
             <h3>Event Management</h3>
             <p>Track exhibitions and collector events. Add descriptions, dates, and rate your experience after
               attending each event.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon">✏️</div>
+            <div class="feature-icon"><i class="bi bi-pencil me-1" aria-hidden="true"></i></div>
             <h3>Easy Editing</h3>
             <p>Update collection details, add or remove items, and modify information anytime. Your catalog evolves
               with your collection.</p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon">👁️</div>
+            <div class="feature-icon"><i class="bi bi-eye me-1" aria-hidden="true"></i></div>
             <h3>Intuitive Interface</h3>
             <p>Clean, modern design that's easy to navigate. View your top collections at a glance on the homepage.
             </p>
           </article>
 
           <article class="feature-card">
-            <div class="feature-icon">👤</div>
+            <div class="feature-icon"><i class="bi bi-person-circle me-1" aria-hidden="true"></i></div>
             <h3>Personal Profile</h3>
             <p>Your collector profile keeps track of your personal information and preferences in one central
               location.</p>

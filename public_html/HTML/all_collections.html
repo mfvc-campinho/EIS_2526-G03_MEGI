@@ -68,12 +68,21 @@
     <main>
       <h1 class="page-title">All Collections</h1>
 
-      <!-- Botões CRUD -->
-      <div class="crud-controls">
-        <button id="open-collection-modal" data-requires-login>➕ Add Collection</button>
-        <button id="editCollectionBtn" class="explore-btn" data-requires-login>✏️ Edit Collection</button>
-        <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>🗑️ Delete Collection</button>
+      <!-- Botões CRUD (same style as Home) -->
+      <div class="crud-controls collection-actions">
+        <button id="open-collection-modal" class="explore-btn success" data-requires-login>
+          <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Add Collection
+        </button>
+
+        <button id="editCollectionBtn" class="explore-btn" data-requires-login>
+          <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Edit Collection
+        </button>
+
+        <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>
+          <i class="bi bi-trash3 me-1" aria-hidden="true"></i> Delete Collection
+        </button>
       </div>
+
 
       <!-- Listas -->
       <section class="collection-container" id="collections-list"></section>

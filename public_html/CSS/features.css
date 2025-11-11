@@ -1,3 +1,152 @@
+/* ===== WELCOME HERO (Home) ===== */
+
+.welcome-hero {
+  padding: 32px 20px 20px;
+  max-width: 1200px;
+  margin: 24px auto 10px;
+}
+
+.welcome-inner {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.welcome-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+}
+
+.welcome-title i {
+  color: #0078ff;
+  font-size: 1.4rem;
+}
+
+.welcome-subtitle {
+  margin: 0;
+  font-size: 0.98rem;
+  color: #6b7280;
+}
+
+/* Buttons */
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.welcome-inner {
+  max-width: 950px;
+  margin: 0 auto;
+}
+
+
+/* Center the action buttons inside the Welcome section */
+.welcome-hero .collection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* ⬅ centers buttons horizontally */
+  align-items: center;
+  /* ⬅ vertically aligns if wrapped */
+  gap: 12px;
+  margin-top: 14px;
+}
+
+
+.welcome-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.welcome-btn.primary {
+  background: linear-gradient(90deg, #0078ff, #00b3ff);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.welcome-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 120, 255, 0.25);
+}
+
+.welcome-btn.ghost {
+  background: transparent;
+  color: #0078ff;
+  border-color: #cfe4ff;
+}
+
+.welcome-btn.ghost:hover {
+  background: #eff6ff;
+  color: #005fcc;
+}
+
+/* Small stats row */
+.welcome-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.stat {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background-color: #f3f4ff;
+  display: inline-flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.stat-label {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.stat-value {
+  font-weight: 400;
+  color: #111827;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .welcome-inner {
+    padding: 18px 16px 14px;
+  }
+
+  .welcome-title {
+    font-size: 1.4rem;
+  }
+
+  .welcome-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 /* features.css — Hero features section for home page */
 
 .features-hero {

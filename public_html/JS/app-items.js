@@ -153,21 +153,17 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>`
           : "";
 
-        card.innerHTML = `
-          <div class="item-image-wrapper">
-            <img src="${item.image}" alt="${item.name}" class="item-image" loading="lazy">
-          </div>
-          <div class="item-info">
-            <h3>${item.name}</h3>
-            <ul class="item-details">
-              <li><strong>Importance:</strong> ${item.importance}</li>
-              <li><strong>Weight:</strong> ${item.weight || "N/A"} g</li>
-              <li><strong>Price:</strong> €${item.price || "0.00"}</li>
-              <li><strong>Date:</strong> ${item.acquisitionDate || "-"}</li>
-            </ul>
-            ${buttons}
-          </div>
-        `;
+    card.innerHTML = `
+    <div class="item-image-wrapper">
+    <img src="${item.image}" alt="${item.name}" class="item-image" loading="lazy">
+    </div>
+    <div class="item-info simple-item">
+    <h3>${item.name}</h3>
+    <button class="explore-btn view-item-btn" onclick="viewItem('${item.id}')">
+    <i class="bi bi-eye"></i> View
+    </button>
+    </div>
+    `;
         fragment.appendChild(card);
       }
 
@@ -362,3 +358,12 @@ document.addEventListener("DOMContentLoaded", () => {
   renderItems();                // Renderiza itens da coleção
   highlightOwnedSection();      // Destaca se for dono
 });
+
+
+window.viewItem = function viewItem(itemId) {
+  // Save the current item ID to localStorage so the detail page can load it
+  localStorage.setItem("currentItemId", itemId);
+
+  // Redirect to the item page
+  window.location.href = `item_page.html?id=${encodeURIComponent(itemId)}`;
+};

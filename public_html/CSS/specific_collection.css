@@ -121,32 +121,6 @@
    🔹 ITEMS GRID
    =============================== */
 
-/* Container for items inserted by JS */
-.collection-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
-  margin-bottom: 40px;
-}
-
-/* If your JS creates elements with a specific class (e.g., .item-card),
-   you can style them here. Example (safe & generic): */
-.collection-container>div {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 12px 12px 10px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e5e7eb;
-  box-sizing: border-box;
-}
-
-/* Simple hover feedback for item cards */
-.collection-container>div:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  transition: all 0.18s ease;
-}
-
 /* ===============================
    🔹 MODALS (local tweaks only)
    =============================== */

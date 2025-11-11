@@ -95,6 +95,21 @@
   margin-right: 6px;
 }
 
+.owner-link {
+  color: #1d4ed8;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.owner-link:hover,
+.owner-link:focus-visible {
+  color: #0f172a;
+  text-decoration-color: #0f172a;
+  outline: none;
+}
+
 /* Description full width with subtle top border */
 #meta-text p#description-line {
   flex-basis: 100%;

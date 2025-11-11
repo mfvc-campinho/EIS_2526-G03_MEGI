@@ -61,6 +61,21 @@ document.addEventListener("DOMContentLoaded", () => {
         return ownerId;
     }
 
+    function resolveUserPageOwnerId() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const ownerFromQuery = params.get("owner");
+            if (ownerFromQuery)
+                return ownerFromQuery;
+        }
+        catch (_a) {
+            // Ignore malformed query strings
+        }
+        if (currentUserId)
+            return currentUserId;
+        return DEFAULT_OWNER_ID;
+    }
+
     function updateUserState() {
         const userData = JSON.parse(localStorage.getItem("currentUser"));
         currentUserId = userData ? userData.id : null;
@@ -92,19 +107,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Filtra para a página de utilizador
         if (isUserPage) {
-            if (!isActiveUser) {
-                list.innerHTML = `
-          <div class="notice-message">
-            <p>Please sign in to view your collections.</p>
-          </div>`;
-                return;
-            }
-            const ownerId = getEffectiveOwnerId();
+            const ownerId = resolveUserPageOwnerId();
             if (!ownerId) {
-                list.innerHTML = `
-          <div class="notice-message">
-            <p>Unable to determine your collections. Please sign in again.</p>
-          </div>`;
+                list.innerHTML = `<p class="notice-message">No collections found for this user.</p>`;
                 return;
             }
             collections = collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId);
@@ -186,19 +191,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Filtra para a página de utilizador
         if (isUserPage) {
-            if (!isActiveUser) {
-                list.innerHTML = `
-          <div class="notice-message">
-            <p>Please sign in to view your collections.</p>
-          </div>`;
-                return;
-            }
-            const ownerId = getEffectiveOwnerId();
+            const ownerId = resolveUserPageOwnerId();
             if (!ownerId) {
-                list.innerHTML = `
-          <div class="notice-message">
-            <p>Unable to determine your collections. Please sign in again.</p>
-          </div>`;
+                list.innerHTML = `<p class="notice-message">No collections found for this user.</p>`;
                 return;
             }
             collections = collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId);

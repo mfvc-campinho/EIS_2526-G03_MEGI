@@ -208,6 +208,16 @@
   object-fit: cover;
   border-radius: 50%;
   border: 3px solid #2563eb;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  background: #f9fafb;
+}
+
+.avatar:hover {
+  transform: scale(1.08) rotate(2deg);
+  border-color: #bfdbfe;
+  box-shadow: 0 0 22px rgba(37, 99, 235, 0.2);
+  filter: brightness(1.05) contrast(1.05);
 }
 
 .profile-heading h1 {

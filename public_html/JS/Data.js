@@ -76,7 +76,8 @@ const collectionsData = {
       "name": "collector",
       "owner-photo": "../images/rui.jpg",
       "date-of-birth": "1985-05-20",
-      "email": "collector.main@email.com"
+      "email": "collector.main@email.com",
+      "member-since": "2015"
     },
     {
       "owner-id": "rui-frio",
@@ -84,7 +85,8 @@ const collectionsData = {
       "name": "rui_frio",
       "owner-photo": "../images/user.jpg",
       "date-of-birth": "1982-07-14",
-      "email": "rui.frio@email.com"
+      "email": "rui.frio@email.com",
+      "member-since": "2018"
     }
   ],
 

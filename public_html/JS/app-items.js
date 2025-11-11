@@ -90,7 +90,31 @@ document.addEventListener("DOMContentLoaded", () => {
         collectionOwnerId ||
         "Unknown Owner";
 
-      document.getElementById("owner-name").textContent = ownerDisplayName;
+      const ownerNameEl = document.getElementById("owner-name");
+      if (ownerNameEl) {
+        ownerNameEl.textContent = ownerDisplayName;
+        ownerNameEl.dataset.ownerId = collectionOwnerId || "";
+        ownerNameEl.classList.toggle("owner-link", Boolean(collectionOwnerId));
+        if (collectionOwnerId) {
+          ownerNameEl.setAttribute("role", "link");
+          ownerNameEl.tabIndex = 0;
+          const goToProfile = () => {
+            window.location.href = `user_page.html?owner=${encodeURIComponent(collectionOwnerId)}`;
+          };
+          ownerNameEl.onclick = goToProfile;
+          ownerNameEl.onkeydown = (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              goToProfile();
+            }
+          };
+        } else {
+          ownerNameEl.removeAttribute("role");
+          ownerNameEl.removeAttribute("tabindex");
+          ownerNameEl.onclick = null;
+          ownerNameEl.onkeydown = null;
+        }
+      }
       document.getElementById("creation-date").textContent = collection.createdAt;
       document.getElementById("type").textContent = collection.type || "N/A";
       document.getElementById("description").textContent =

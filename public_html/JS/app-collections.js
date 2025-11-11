@@ -113,7 +113,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const items = (appData.getItemsByCollection(col.id, data) || []).slice(0, 2);
             const itemsHTML = items.length
                 ? `<ul class="mini-item-list">${items.map(it =>
-                    `<li><img src="${it.image}" alt="${it.name}" class="mini-item-img" loading="lazy"><span>${it.name}</span></li>`
+                    `<li><a class="mini-item-link" href="item_page.html?id=${encodeURIComponent(it.id || "")}">
+                        <img src="${it.image}" alt="${it.name}" class="mini-item-img" loading="lazy">
+                        <span>${it.name}</span>
+                      </a></li>`
                 ).join("")}</ul>`
                 : `<p class="no-items">No items yet.</p>`;
 
@@ -220,7 +223,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const itemsHTML = items.length
                 ? `<ul class="mini-item-list">${items.map(it =>
-                    `<li><img src="${it.image}" alt="${it.name}" class="mini-item-img" loading="lazy"><span>${it.name}</span></li>`
+                    `<li><a class="mini-item-link" href="item_page.html?id=${encodeURIComponent(it.id || "")}">
+                        <img src="${it.image}" alt="${it.name}" class="mini-item-img" loading="lazy">
+                        <span>${it.name}</span>
+                      </a></li>`
                 ).join("")}</ul>`
                 : `<p class="no-items">No items yet.</p>`;
 

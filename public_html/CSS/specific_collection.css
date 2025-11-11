@@ -4,11 +4,11 @@
    ============================================ */
 
 /* ===============================
-   🔹 COLLECTION OVERVIEW CARD
+   🔹 COLLECTION OVERVIEW CARD — Modern Photo Hover
    =============================== */
 
 .collection-hero {
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
 
 /* Card with owner + metadata */
@@ -16,60 +16,99 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 24px 32px;
-  padding: 20px 26px;
+  gap: 28px 36px;
+  padding: 28px 32px;
   background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-/* Owner avatar */
+#collection-meta:hover {
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.08);
+  transform: translateY(-3px);
+  border-color: #dbeafe;
+}
+
+/* Owner avatar — modernized hover */
 #owner-photo {
   width: 110px;
   height: 110px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #e5e7eb;
-  box-shadow: 0 0 18px rgba(0, 120, 255, 0.12);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 3px solid #e5e7eb;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08);
+  transition: all 0.4s ease;
+  transform-origin: center;
+  background: #f9fafb;
 }
 
 #owner-photo:hover {
-  transform: scale(1.04);
-  box-shadow: 0 0 30px rgba(0, 120, 255, 0.16);
+  transform: scale(1.08) rotate(2deg);
+  border-color: #bfdbfe;
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.18);
+  filter: brightness(1.05) contrast(1.05);
+}
+
+/* Subtle pulse glow when hovered */
+#owner-photo:hover::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(37, 99, 235, 0.1), transparent 70%);
+  animation: pulseGlow 1.4s ease-out;
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
 }
 
 /* Text block */
 #meta-text {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 26px;
+  gap: 10px 32px;
   align-items: center;
   flex: 1;
 }
 
 #meta-text p {
   margin: 0;
-  font-size: 0.96rem;
+  font-size: 1rem;
   color: #374151;
+  transition: color 0.2s ease;
 }
 
 #meta-text strong {
   font-weight: 600;
   color: #2563eb;
-  margin-right: 4px;
+  margin-right: 6px;
 }
 
 /* Description full width with subtle top border */
 #meta-text p#description-line {
   flex-basis: 100%;
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid #e5e7eb;
-  font-size: 0.95rem;
+  font-size: 0.96rem;
   color: #4b5563;
-  line-height: 1.5;
+  line-height: 1.6;
+  transition: color 0.2s ease;
+}
+
+#meta-text p#description-line:hover {
+  color: #1e3a8a;
 }
 
 /* Responsive behavior */
@@ -77,7 +116,7 @@
   #collection-meta {
     flex-direction: column;
     text-align: center;
-    padding: 18px 16px;
+    padding: 20px 18px;
   }
 
   #meta-text {

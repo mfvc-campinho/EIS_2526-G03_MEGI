@@ -1,5 +1,14 @@
 # [M.EGI017] Teamwork 03 - Project Information System
 
+**Author(s):**  
+
+Afonso Dias Fachada Ramos | up202108474  
+Ana Isabel Dias Cunha Amorim | up202107329  
+Filipa Marisa Duarte Mota | up202402072  
+Matheus Fernandes Vilhena Campinho | 202202004  
+
+---------------------------------------------------
+
 The objective of this teamwork is to develop an information system for collectors. The development of this medium-sized web application has the goal to support hobbyists and collectors by providing an interactive, easy-to-use system for managing collections, their items, and related events.
 All information about the collections are stored persistently in a relational database. 
 

@@ -1,26 +1,25 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/html.html to edit this template
--->
-<html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Item Details — GoodCollections</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
-    <title>TODO supply a title</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../CSS/general.css" />
-    <link rel="stylesheet" href="../CSS/grid.css" />
-    <link rel="stylesheet" href="../CSS/modal.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <!-- Google Font -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-</head>
+        <!-- Styles -->
+        <link rel="stylesheet" href="../CSS/general.css" />
+        <link rel="stylesheet" href="../CSS/grid.css" />
+        <link rel="stylesheet" href="../CSS/modal.css" />
+        <link rel="stylesheet" href="../CSS/item_page.css" />
 
-<body>
-    <div>
-        <!-- ===============================
-        🔹 NAVIGATION BAR (Enhanced)
-        =============================== -->
+        <!-- Icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    </head>
+
+    <body>
+        <!-- NAVIGATION -->
         <header>
             <nav class="navbar">
                 <div class="nav-left">
@@ -28,46 +27,33 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/html.html to edit this
                         <i class="bi bi-collection me-2"></i> GoodCollections
                     </a>
                 </div>
-
-                <div class="nav-right">
-                    <a href="all_collections.html" class="nav-link">
-                        <i class="bi bi-box-seam-fill me-1"></i> Collections
-                    </a>
-
-                    <a href="event_page.html" class="nav-link">
-                        <i class="bi bi-calendar-event-fill me-1"></i> Events
-                    </a>
-
-                    <a href="team_page.html" class="nav-link">
-                        <i class="bi bi-people-fill me-1"></i> About Us
-                    </a>
-
-                    <!-- Login dropdown -->
-                    <div class="dropdown profile-dropdown">
-                        <button class="dropbtn profile-btn">
-                            <i class="bi bi-person-circle me-1"></i> Log In ▾
-                        </button>
-                        <div class="dropdown-content profile-menu"></div>
-                    </div>
-
-                    <!-- Search -->
-                    <div class="search-wrapper">
-                        <i class="bi bi-search search-icon"></i>
-                        <input type="search" class="search-bar" placeholder="Search..." />
-                    </div>
-                </div>
             </nav>
         </header>
 
-        <!-- ===============================
-        🔹 FOOTER
-        =============================== -->
+        <!-- MAIN CONTENT -->
+        <main>
+            <section id="item-details" class="item-details-card">
+                <img id="item-image" src="../images/default.jpg" alt="Item image">
+                <div class="item-details-text">
+                    <h1 id="item-name">Item Name</h1>
+                    <p><strong>Importance:</strong> <span id="item-importance">—</span></p>
+                    <p><strong>Weight:</strong> <span id="item-weight">—</span> g</p>
+                    <p><strong>Price:</strong> €<span id="item-price">—</span></p>
+                    <p><strong>Acquisition Date:</strong> <span id="item-date">—</span></p>
+                </div>
+            </section>
+
+            <div class="back-section">
+                <a href="javascript:history.back()" class="explore-btn ghost">
+                    <i class="bi bi-arrow-left"></i> Back to Collection
+                </a>
+            </div>
+        </main>
         <footer>
             <div class="footer-content">
                 <p>
                     Made with <span class="heart">❤️</span> by
-                    <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank"
-                        rel="noopener noreferrer">
+                    <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
                         <i class="bi bi-github" aria-hidden="true"></i>
                         EIS_2526-G03_MEGI
                     </a>
@@ -83,6 +69,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/html.html to edit this
             </div>
         </footer>
 
-</body>
-
+        <!-- SCRIPTS -->
+        <script src="../JS/app-data.js"></script>
+        <script src="../JS/item_page.js"></script>
+    </body>
 </html>

@@ -121,6 +121,8 @@
    🔹 ITEMS GRID
    =============================== */
 
+<<<<<<< HEAD
+=======
 /* Container for items inserted by JS */
 .collection-container {
   display: grid;
@@ -151,6 +153,7 @@
   transition: all 0.18s ease;
 }
 
+>>>>>>> 5217222d3f51627f17e9f7f3c8875bfcde5c7af9
 /* ===============================
    🔹 MODALS (local tweaks only)
    =============================== */

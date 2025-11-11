@@ -3,107 +3,27 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Specific Collection</title>
+    <title>Specific Collection — GoodCollections</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- ðŸ”¹ Global & Page Styles -->
+    <!-- Global & Page Styles -->
     <link rel="stylesheet" href="../CSS/general.css" />
     <link rel="stylesheet" href="../CSS/grid.css" />
     <link rel="stylesheet" href="../CSS/modal.css" />
+    <link rel="stylesheet" href="../CSS/specific_collection.css" />
+
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        /* ===============================
-   META SECTION â€” Clean Modern Look
-=============================== */
-        /* ===============================
-   META SECTION â€” Clean Modern Look + Photo
-=============================== */
-        #collection-meta {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 24px 32px;
-            padding: 20px 26px;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
-            margin-bottom: 32px;
-        }
-
-        /* ðŸ”¹ Owner photo */
-        #owner-photo {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #e5e7eb;
-            box-shadow: 0 0 18px rgba(0, 120, 255, 0.25);
-            transition: transform .3s ease, box-shadow .3s ease;
-        }
-
-        #owner-photo:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(0, 120, 255, 0.35);
-        }
-
-        /* ðŸ”¹ Meta info */
-        #meta-text {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px 32px;
-            align-items: center;
-            flex: 1;
-        }
-
-        #meta-text p {
-            margin: 0;
-            font-size: 1rem;
-            color: #333;
-        }
-
-        #meta-text strong {
-            font-weight: 800;
-            color: #0a58ff;
-            margin-right: 6px;
-        }
-
-        /* descriÃ§Ã£o com separador sutil */
-        #meta-text p#description-line {
-            flex-basis: 100%;
-            margin-top: 10px;
-            font-size: 0.98rem;
-            color: #444;
-            line-height: 1.5;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 10px;
-        }
-
-        /* responsivo */
-        @media (max-width: 700px) {
-            #collection-meta {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            #owner-photo {
-                width: 90px;
-                height: 90px;
-            }
-
-            #meta-text {
-                justify-content: center;
-            }
-        }
-    </style>
 </head>
 
 <body>
     <div id="content">
         <!-- ===============================
-    🔹 NAVIGATION BAR (Enhanced)
-    =============================== -->
+        🔹 NAVIGATION BAR (kept consistent)
+        =============================== -->
         <header>
             <nav class="navbar">
                 <div class="nav-left">
@@ -142,41 +62,85 @@
             </nav>
         </header>
 
-        <!-- ðŸ”¹ MAIN CONTENT -->
+        <!-- ===============================
+         🔹 MAIN CONTENT
+    =============================== -->
         <main>
+            <!-- 🔹 Breadcrumb (no JS change; optional visual context) -->
+            <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+                <a href="home_page.html">Home</a>
+                <span>/</span>
+                <a href="all_collections.html">Collections</a>
+                <span>/</span>
+                <span id="collection-breadcrumb-name">Collection</span>
+            </nav>
+
+            <!-- 🔹 Page Title (filled by JS) -->
             <h1 id="collection-title" class="page-title">Collection</h1>
 
-            <script src="../JS/app-data.js"></script>
-            <script src="../JS/app-users.js"></script>
-            <script src="../JS/app-items.js"></script>
-            <script src="../JS/app-loader.js"></script>
+            <!-- ===============================
+           🔹 COLLECTION OVERVIEW CARD
+      =============================== -->
+            <section class="collection-hero">
+                <div id="collection-meta">
+                    <!-- Owner photo -->
+                    <img id="owner-photo" src="../images/user.jpg" alt="Owner photo">
 
-            <div id="collection-meta">
-                <img id="owner-photo" src="../images/user.jpg" alt="Owner photo">
-
-                <div id="meta-text">
-                    <p><strong>Owner:</strong> <span id="owner-name"></span></p>
-                    <p><strong>Created:</strong> <span id="creation-date"></span></p>
-                    <p><strong>Type:</strong> <span id="type"></span></p>
-                    <p id="description-line"><strong>Description:</strong>
-                        <span id="description"></span>
-                    </p>
+                    <!-- Main metadata (populated by JS) -->
+                    <div id="meta-text">
+                        <p>
+                            <strong>Owner:</strong>
+                            <span id="owner-name">—</span>
+                        </p>
+                        <p>
+                            <strong>Created:</strong>
+                            <span id="creation-date">—</span>
+                        </p>
+                        <p>
+                            <strong>Type:</strong>
+                            <span id="type">—</span>
+                        </p>
+                        <p id="description-line">
+                            <strong>Description:</strong>
+                            <span id="description">—</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </section>
 
+            <!-- ===============================
+           🔹 ACTION BUTTONS
+      =============================== -->
+            <section id="buttons-bar">
+                <!-- Back button (history-based, no extra JS) -->
+                <a href="javascript:history.back()" class="explore-btn ghost">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                    Back
+                </a>
 
-            <div id="buttons-bar">
-                <a href="javascript:history.back()" class="explore-btn">â¬… Back</a>
-                <button id="edit-collection" class="explore-btn" data-requires-login>âœï¸ Edit Collection</button>
-                <button id="add-item" class="explore-btn" data-requires-login>âž• Add Item</button>
-            </div>
+                <!-- Edit current collection -->
+                <button id="edit-collection" class="explore-btn" data-requires-login>
+                    <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+                    Edit Collection
+                </button>
 
-            <!-- ðŸ”¹ ITEMS GRID -->
+                <!-- Add item to this collection -->
+                <button id="add-item" class="explore-btn success" data-requires-login>
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                    Add Item
+                </button>
+            </section>
+
+            <!-- ===============================
+           🔹 ITEMS GRID (filled by JS)
+      =============================== -->
             <section class="collection-container" id="collection-items"></section>
         </main>
     </div>
 
-    <!-- ðŸ”¹ MODAL: ADD / EDIT ITEM -->
+    <!-- ===============================
+       🔹 MODAL: ADD / EDIT ITEM
+       =============================== -->
     <div id="item-modal" class="modal">
         <div class="modal-content">
             <span id="close-modal" class="close">&times;</span>
@@ -185,63 +149,83 @@
             <form id="item-form">
                 <input type="hidden" id="item-id">
 
-                <label>Name:</label>
+                <label for="item-name">Name:</label>
                 <input type="text" id="item-name" required>
 
-                <label>Importance:</label>
+                <label for="item-importance">Importance:</label>
                 <input type="text" id="item-importance" required>
 
-                <label>Weight (g):</label>
+                <label for="item-weight">Weight (g):</label>
                 <input type="number" id="item-weight" step="0.01">
 
-                <label>Price (â‚¬):</label>
+                <label for="item-price">Price (€):</label>
                 <input type="number" id="item-price" step="0.01" required>
 
-                <label>Acquisition Date:</label>
+                <label for="item-date">Acquisition Date:</label>
                 <input type="date" id="item-date">
 
-                <label>Image (URL):</label>
+                <label for="item-image">Image (URL):</label>
                 <input type="text" id="item-image" placeholder="../images/default.jpg">
+
                 <label for="item-collections">Collections:</label>
                 <select id="item-collections" name="item-collections" multiple required></select>
-                <small class="form-hint">Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.</small>
+                <small class="form-hint">
+                    Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.
+                </small>
 
                 <div class="modal-actions crud-controls">
-                    <button type="submit" class="explore-btn">ðŸ’¾ Save</button>
-                    <button type="button" id="cancel-modal" class="delete-btn">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ðŸ”¹ MODAL: EDIT COLLECTION -->
-    <div id="collection-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" id="close-collection-modal">&times;</span>
-            <h2 id="collection-modal-title">Edit Collection</h2>
-            <form id="form-collection">
-                <input type="hidden" id="collection-id" />
-                <label for="col-name">Name:</label>
-                <input type="text" id="col-name" name="col-name" required />
-                <label for="col-summary">Summary:</label>
-                <textarea id="col-summary" name="col-summary" required></textarea>
-                <label for="col-description">Full Description:</label>
-                <textarea id="col-description" name="col-description"></textarea>
-                <label for="col-image">Image (URL):</label>
-                <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg" />
-                <label for="col-type">Type:</label>
-                <input type="text" id="col-type" name="col-type" required />
-                <div class="modal-actions">
-                    <button type="submit" class="explore-btn">ðŸ’¾ Save</button>
-                    <button type="button" id="cancel-collection-modal" class="explore-btn danger">Cancel</button>
+                    <button type="submit" class="explore-btn">
+                        <i class="bi bi-save me-1" aria-hidden="true"></i> Save
+                    </button>
+                    <button type="button" id="cancel-modal" class="explore-btn danger delete-btn">
+                        Cancel
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- ===============================
-         🔹 FOOTER
-    =============================== -->
+       🔹 MODAL: EDIT COLLECTION
+       =============================== -->
+    <div id="collection-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-collection-modal">&times;</span>
+            <h2 id="collection-modal-title">Edit Collection</h2>
+
+            <form id="form-collection">
+                <input type="hidden" id="collection-id" />
+
+                <label for="col-name">Name:</label>
+                <input type="text" id="col-name" name="col-name" required />
+
+                <label for="col-summary">Summary:</label>
+                <textarea id="col-summary" name="col-summary" required></textarea>
+
+                <label for="col-description">Full Description:</label>
+                <textarea id="col-description" name="col-description"></textarea>
+
+                <label for="col-image">Image (URL):</label>
+                <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg" />
+
+                <label for="col-type">Type:</label>
+                <input type="text" id="col-type" name="col-type" required />
+
+                <div class="modal-actions">
+                    <button type="submit" class="explore-btn">
+                        <i class="bi bi-save me-1" aria-hidden="true"></i> Save
+                    </button>
+                    <button type="button" id="cancel-collection-modal" class="explore-btn danger">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===============================
+       🔹 FOOTER (unchanged)
+       =============================== -->
     <footer>
         <div class="footer-content">
             <p>
@@ -262,6 +246,13 @@
         </div>
     </footer>
 
+    <!-- ===============================
+       🔹 SCRIPTS (same IDs, same behavior)
+       =============================== -->
+    <script src="../JS/app-data.js"></script>
+    <script src="../JS/app-users.js"></script>
+    <script src="../JS/app-items.js"></script>
+    <script src="../JS/app-loader.js"></script>
 </body>
 
 </html>

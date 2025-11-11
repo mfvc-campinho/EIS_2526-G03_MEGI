@@ -1,0 +1,221 @@
+/* ============================================
+   SPECIFIC COLLECTION PAGE
+   Consistent with GoodCollections design system
+   ============================================ */
+
+/* Base layout: same spacing logic as other pages */
+main {
+  padding: 96px 16px 56px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ===============================
+   🔹 Breadcrumb
+   =============================== */
+
+.breadcrumb-nav {
+  font-size: 0.82rem;
+  color: #9ca3af;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb-nav a {
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.breadcrumb-nav a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.breadcrumb-nav span:last-child {
+  color: #111827;
+  font-weight: 500;
+}
+
+/* Page title spacing */
+.page-title {
+  margin: 0 0 18px;
+}
+
+/* ===============================
+   🔹 COLLECTION OVERVIEW CARD
+   =============================== */
+
+.collection-hero {
+  margin-bottom: 18px;
+}
+
+/* Card with owner + metadata */
+#collection-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px 32px;
+  padding: 20px 26px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+/* Owner avatar */
+#owner-photo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #e5e7eb;
+  box-shadow: 0 0 18px rgba(0, 120, 255, 0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+#owner-photo:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 30px rgba(0, 120, 255, 0.16);
+}
+
+/* Text block */
+#meta-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  align-items: center;
+  flex: 1;
+}
+
+#meta-text p {
+  margin: 0;
+  font-size: 0.96rem;
+  color: #374151;
+}
+
+#meta-text strong {
+  font-weight: 600;
+  color: #2563eb;
+  margin-right: 4px;
+}
+
+/* Description full width with subtle top border */
+#meta-text p#description-line {
+  flex-basis: 100%;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Responsive behavior */
+@media (max-width: 700px) {
+  #collection-meta {
+    flex-direction: column;
+    text-align: center;
+    padding: 18px 16px;
+  }
+
+  #meta-text {
+    justify-content: center;
+  }
+
+  #owner-photo {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+/* ===============================
+   🔹 ACTION BUTTONS
+   =============================== */
+
+#buttons-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px auto 26px;
+}
+
+/* Ghost variant for Back (using your explore-btn base) */
+.explore-btn.ghost {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.explore-btn.ghost:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* Success (green) already defined globally; used on Add Item */
+
+/* ===============================
+   🔹 ITEMS GRID
+   =============================== */
+
+/* Container for items inserted by JS */
+.collection-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 40px;
+}
+
+/* If your JS creates elements with a specific class (e.g., .item-card),
+   you can style them here. Example (safe & generic): */
+.collection-container>div {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px 12px 10px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+/* Simple hover feedback for item cards */
+.collection-container>div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transition: all 0.18s ease;
+}
+
+/* ===============================
+   🔹 MODALS (local tweaks only)
+   =============================== */
+
+.modal .modal-content {
+  max-width: 720px;
+}
+
+.modal-actions.crud-controls {
+  justify-content: center;
+}
+
+/* Cancel inside item modal (delete-btn is JS hook, we only style) */
+.delete-btn {
+  border: none;
+}
+
+/* ===============================
+   🔹 SMALL SCREENS
+   =============================== */
+
+@media (max-width: 480px) {
+  #buttons-bar {
+    margin-top: 14px;
+    gap: 8px;
+  }
+
+  .collection-container {
+    gap: 14px;
+  }
+}

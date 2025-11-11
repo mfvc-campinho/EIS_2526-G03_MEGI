@@ -460,6 +460,10 @@ footer .heart {
   display: block;
 }
 
+.profile-dropdown.open .profile-menu {
+  display: block;
+}
+
 /* ==========================================
    👤 LOGIN FORM (Dropdown)
    ========================================== */

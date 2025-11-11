@@ -393,14 +393,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // ===============================================
 // 🔹 Voting Logic (Upvote / Downvote)
 // ===============================================
-function loadVotes() {
-  return JSON.parse(localStorage.getItem("itemVotes")) || {};
-}
-
-function saveVotes(votes) {
-  localStorage.setItem("itemVotes", JSON.stringify(votes));
-}
-
 function setupVotingListeners() {
   const votes = loadVotes();
 

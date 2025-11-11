@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const profileMenu = document.querySelector(".profile-dropdown .dropdown-content");
   const profileButton = document.querySelector(".profile-btn");
+  const profileDropdown = document.querySelector(".profile-dropdown");
+  let dropdownToggleReady = false;
 
   // =======================================================
   // 1. Renderizar menu (consoante o estado)
@@ -12,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderProfileMenu() {
     if (!profileMenu) return;
     profileMenu.innerHTML = "";
+    profileDropdown?.classList.remove("open");
 
     if (currentUser && currentUser.active) {
       // Utilizador autenticado
@@ -39,6 +42,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     attachEvents();
+    setupDropdownToggle();
+    profileMenu.onclick = (e) => e.stopPropagation();
+  }
+
+  function setupDropdownToggle() {
+    if (dropdownToggleReady || !profileButton) return;
+    dropdownToggleReady = true;
+
+    profileButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      profileDropdown?.classList.toggle("open");
+    });
+
+    document.addEventListener("click", () => {
+      profileDropdown?.classList.remove("open");
+    });
   }
 
   // =======================================================

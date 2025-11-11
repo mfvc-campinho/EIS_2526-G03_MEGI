@@ -1,76 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Item Details — GoodCollections</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Google Font -->
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<head>
+    <meta charset="utf-8" />
+    <title>Item Details — GoodCollections</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Styles -->
-        <link rel="stylesheet" href="../CSS/general.css" />
-        <link rel="stylesheet" href="../CSS/grid.css" />
-        <link rel="stylesheet" href="../CSS/modal.css" />
-        <link rel="stylesheet" href="../CSS/item_page.css" />
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <!-- Icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    </head>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../CSS/general.css" />
+    <link rel="stylesheet" href="../CSS/grid.css" />
+    <link rel="stylesheet" href="../CSS/modal.css" />
+    <link rel="stylesheet" href="../CSS/item_page.css" />
 
-    <body>
-        <!-- NAVIGATION -->
-        <header>
-            <nav class="navbar">
-                <div class="nav-left">
-                    <a href="home_page.html" class="logo">
-                        <i class="bi bi-collection me-2"></i> GoodCollections
-                    </a>
-                </div>
-            </nav>
-        </header>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
 
-        <!-- MAIN CONTENT -->
-        <main>
-            <section id="item-details" class="item-details-card">
-                <img id="item-image" src="../images/default.jpg" alt="Item image">
-                <div class="item-details-text">
-                    <h1 id="item-name">Item Name</h1>
-                    <p><strong>Importance:</strong> <span id="item-importance">—</span></p>
-                    <p><strong>Weight:</strong> <span id="item-weight">—</span> g</p>
-                    <p><strong>Price:</strong> €<span id="item-price">—</span></p>
-                    <p><strong>Acquisition Date:</strong> <span id="item-date">—</span></p>
-                </div>
-            </section>
-
-            <div class="back-section">
-                <a href="javascript:history.back()" class="explore-btn ghost">
-                    <i class="bi bi-arrow-left"></i> Back to Collection
+<body>
+    <!-- NAVIGATION -->
+    <header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="home_page.html" class="logo">
+                    <i class="bi bi-collection me-2"></i> GoodCollections
                 </a>
             </div>
-        </main>
-        <footer>
-            <div class="footer-content">
-                <p>
-                    Made with <span class="heart">❤️</span> by
-                    <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
-                        <i class="bi bi-github" aria-hidden="true"></i>
-                        EIS_2526-G03_MEGI
-                    </a>
-                </p>
 
-                <div class="footer-links">
-                    <a href="home_page.html">Home Page</a>
-                    <a href="all_collections.html">Collections</a>
-                    <a href="event_page.html">Events</a>
-                    <a href="team_page.html">About Us</a>
-                    <a href="user_page.html">User Profile</a>
+            <div class="nav-right">
+                <a href="all_collections.html" class="nav-link">
+                    <i class="bi bi-box-seam-fill me-1"></i> Collections
+                </a>
+
+                <a href="event_page.html" class="nav-link">
+                    <i class="bi bi-calendar-event-fill me-1"></i> Events
+                </a>
+
+                <a href="team_page.html" class="nav-link">
+                    <i class="bi bi-people-fill me-1"></i> About Us
+                </a>
+
+                <!-- Login dropdown -->
+                <div class="dropdown profile-dropdown">
+                    <button class="dropbtn profile-btn">
+                        <i class="bi bi-person-circle me-1"></i> Log In ▾
+                    </button>
+                    <div class="dropdown-content profile-menu"></div>
+                </div>
+
+                <!-- Search -->
+                <div class="search-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="search" class="search-bar" placeholder="Search events..." />
                 </div>
             </div>
-        </footer>
+        </nav>
+    </header>
 
-        <!-- SCRIPTS -->
-        <script src="../JS/app-data.js"></script>
-        <script src="../JS/item_page.js"></script>
-    </body>
+    <!-- MAIN CONTENT -->
+    <main>
+        <section id="item-details" class="item-details-card">
+            <img id="item-image" src="../images/default.jpg" alt="Item image">
+            <div class="item-details-text">
+                <h1 id="item-name">Item Name</h1>
+                <p><strong>Importance:</strong> <span id="item-importance">—</span></p>
+                <p><strong>Weight:</strong> <span id="item-weight">—</span> g</p>
+                <p><strong>Price:</strong> €<span id="item-price">—</span></p>
+                <p><strong>Acquisition Date:</strong> <span id="item-date">—</span></p>
+            </div>
+        </section>
+
+        <div class="back-section">
+            <a href="javascript:history.back()" class="explore-btn ghost">
+                <i class="bi bi-arrow-left"></i> Back to Collection
+            </a>
+        </div>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <p>
+                Made with <span class="heart">❤️</span> by
+                <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-github" aria-hidden="true"></i>
+                    EIS_2526-G03_MEGI
+                </a>
+            </p>
+
+            <div class="footer-links">
+                <a href="home_page.html">Home Page</a>
+                <a href="all_collections.html">Collections</a>
+                <a href="event_page.html">Events</a>
+                <a href="team_page.html">About Us</a>
+                <a href="user_page.html">User Profile</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="../JS/app-data.js"></script>
+    <script src="../JS/item_page.js"></script>
+    <script src="../JS/app-users.js"></script>
+</body>
+
 </html>

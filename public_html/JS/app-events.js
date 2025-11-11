@@ -499,13 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const ratings = ev.ratings || {};
-    ratings[user.id] = value;
-    saveEntityUpdate(eventId, { ratings });
-
-    // Refresh UI
-    openEventDetail(eventId);
-    renderEvents();
+    alert("Demo only: rating is not saved.");
   }
 
   // ---------- EDIT / CREATE EVENT ----------
@@ -634,22 +628,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ev = (data.events || []).find(x => x.id === id);
     if (!ev) return alert("Event not found.");
 
-    const attendees = ev.attendees || [];
-    if (attendees.includes(user.id)) {
-      alert("You have already RSVPed to this event.");
-      return;
-    }
-
-    attendees.push(user.id);
-    saveEntityUpdate(id, { attendees });
-
-    // If modal is open for this event, update count
-    if (modalTitleEl && modalTitleEl.textContent === ev.name) {
-      modalAttendeesCountEl.textContent = attendees.length;
-    }
-
-    renderEvents();
-    alert("✅ RSVP recorded (prototype).");
+    alert("Demo only: RSVP is not saved.");
   }
 
   // ---------- TABS / FILTER HOOKUP ----------

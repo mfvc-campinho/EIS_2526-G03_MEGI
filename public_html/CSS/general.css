@@ -326,11 +326,6 @@ footer .heart {
   display: block;
 }
 
-/* Ajuste para ícone */
-.profile-btn::before {
-  content: "👤 ";
-}
-
 /* ==========================================
    👤 LOGIN FORM (Dropdown)
    ========================================== */

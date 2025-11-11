@@ -1,4 +1,4 @@
-﻿// ===============================================
+// ===============================================
 // app-items.js ├óÔé¼ÔÇØ Manage items within a collection
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -35,19 +35,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const title = document.getElementById("modal-title");
   const idField = document.getElementById("item-id");
 
-  // Seletores para o modal da cole├â┬º├â┬úo
-  if (!itemsContainer)
-    return;
-
+  // Seletores para o modal da cole��o
   const collectionModal = document.getElementById("collection-modal");
   const collectionForm = document.getElementById("form-collection");
   const editCollectionBtn = document.getElementById("edit-collection");
   const closeCollectionModalBtn = document.getElementById("close-collection-modal");
   const cancelCollectionModalBtn = document.getElementById("cancel-collection-modal");
-
-  // Obt├â┬®m o ID da cole├â┬º├â┬úo a partir da URL
+  const hasCollectionPage = Boolean(itemsContainer);
+  // Obt�m o ID da cole��o a partir da URL
   const params = new URLSearchParams(window.location.search);
-  const collectionId = params.get("id");
+  let collectionId = params.get("id");
 
   function getOwnerIdForCollection(target, data = appData.loadData()) {
     const id = typeof target === "string" ? target : target?.id;
@@ -56,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (linkOwner) return linkOwner;
     const direct = (data.collections || []).find(c => c.id === id);
     return direct?.ownerId || null;
+
   }
 
   function getOwnerProfileForCollection(target, data = appData.loadData()) {
@@ -97,6 +95,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return data.collections.find(c => c.id === collectionId);
   }
 
+  window.setCurrentCollectionId = (newId) => {
+    collectionId = newId;
+  };
+
   function getEffectiveOwnerId() {
     if (!isActiveUser) return null;
     return currentUserId || DEFAULT_OWNER_ID;
@@ -113,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Renderizar detalhes da cole├â┬º├â┬úo (t├â┬¡tulo, dono, etc.)
   // ===============================================
   function renderCollectionDetails() {
+    if (!hasCollectionPage) return;
     const data = appData.loadData();
     const collection = getCurrentCollection(data);
 
@@ -178,6 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Destacar sec├â┬º├â┬úo se for do utilizador
   // ===============================================
   function highlightOwnedSection() {
+    if (!hasCollectionPage) return;
     const data = appData.loadData();
     const collection = getCurrentCollection(data);
 
@@ -199,6 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===============================================
   // Tornada global para ser chamada por outros scripts
   window.renderItems = function renderItems() {
+    if (!hasCollectionPage) return;
     const data = appData.loadData();
     const collection = getCurrentCollection(data);
     const ownsCollection = isCollectionOwnedByCurrentUser(collection, data);
@@ -207,14 +212,17 @@ document.addEventListener("DOMContentLoaded", () => {
     itemsContainer.innerHTML = "";
 
     if (!items || items.length === 0) {
-      itemsContainer.innerHTML =
-        `<p class="no-items-message">This collection has no items yet.</p>`;
+      const emptyMessage = document.createElement("p");
+      emptyMessage.className = "no-items-message";
+      emptyMessage.textContent = "This collection has no items yet.";
+      itemsContainer.appendChild(emptyMessage);
       return;
     }
 
-    // Mensagem de carregamento inicial
-    itemsContainer.innerHTML =
-      `<p class="notice-message">Loading items...</p>`;
+    const loadingMessage = document.createElement("p");
+    loadingMessage.className = "notice-message";
+    loadingMessage.textContent = "Loading items...";
+    itemsContainer.appendChild(loadingMessage);
 
     // Fun├â┬º├â┬úo para renderizar itens em lotes (chunks)
     function renderChunk(index = 0) {
@@ -227,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement("div");
         card.className = "card item-card";
 
-        const buttons = isItemOwner
+        const ownerButtons = isItemOwner
           ? `
             <div class="item-buttons">
               <button class="explore-btn" onclick="editItem('${item.id}')"><i class="bi bi-pencil"></i> Edit</button>
@@ -235,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>`
           : "";
 
-    card.innerHTML = `
+        card.innerHTML = `
       <div class="item-image-wrapper">
         <img src="${item.image}" alt="${item.name}" class="item-image" loading="lazy">
       </div>
@@ -257,12 +265,15 @@ document.addEventListener("DOMContentLoaded", () => {
             <i class="bi bi-eye"></i> View Item
           </a>
         </div>
+        ${ownerButtons}
       </div>
     `;
         fragment.appendChild(card);
       }
 
-      if (index === 0) itemsContainer.innerHTML = ""; // Limpa "Loading..."
+      if (index === 0 && loadingMessage.isConnected) {
+        loadingMessage.remove();
+      }
       itemsContainer.appendChild(fragment);
 
       if (index + chunkSize < items.length) {
@@ -274,35 +285,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Inicia o processo de renderiza├â┬º├â┬úo
     renderChunk();
   };
-
-  function renderCollectionEvents() {
-    if (!eventsContainer) return;
-    const data = appData.loadData();
-    const collection = getCurrentCollection(data);
-
-    if (!collection) {
-      eventsContainer.innerHTML = `<p class="notice-message">Collection not found.</p>`;
-      return;
-    }
-
-    const events = appData.getEventsByCollection(collection.id, data) || [];
-    if (!events.length) {
-      eventsContainer.innerHTML = `<p class="notice-message">No events linked to this collection yet.</p>`;
-      return;
-    }
-
-    eventsContainer.innerHTML = events.map(ev => `
-      <article class="collection-event-card">
-        <div>
-          <h3>${ev.name}</h3>
-          <p class="event-meta">${formatEventDate(ev.date)} · ${ev.localization || "To be announced"}</p>
-        </div>
-        <button class="explore-btn ghost" onclick="window.location.href='event_page.html#${ev.id}'">
-          <i class="bi bi-calendar-event"></i> View event
-        </button>
-      </article>
-    `).join("");
-  }
 
   function renderCollectionEvents() {
     if (!eventsContainer) return;
@@ -338,6 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===============================================
   function populateCollectionsSelect() {
     const select = document.getElementById("item-collections");
+    if (!select) return;
     const data = appData.loadData();
 
     if (!data || !data.collections) return;
@@ -362,15 +345,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // Modal helpers
   // ===============================================
   function openModal(edit = false) {
+    if (!modal || !title) return;
     title.textContent = edit ? "Edit Item" : "Add Item";
     modal.style.display = "flex";
   }
 
   function closeModal() {
+    if (!modal || !form || !idField) return;
     modal.style.display = "none";
     form.reset();
     idField.value = "";
   }
+
+  window.openItemModal = (edit = false) => {
+    openModal(edit);
+  };
 
   // ===============================================
   // Criar / Editar / Apagar / Guardar
@@ -464,39 +453,42 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!isActiveUser) return alert("├░┼©┼í┬½ You must be logged in to add items.");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!isActiveUser) return alert("You must be logged in to add items.");
 
-    const id = idField.value.trim();
-    const selectedCollections = Array.from(
-      form["item-collections"].selectedOptions
-    ).map(opt => opt.value);
+      const id = idField.value.trim();
+      const selectedCollections = Array.from(
+        form["item-collections"].selectedOptions
+      ).map(opt => opt.value);
 
-    const action = id ? "updated" : "created";
+      const action = id ? "updated" : "created";
 
-    alert(
-      `├ó┼ôÔÇª Simulation successful. Item would have been ${action}.\n\n(This is a demonstration. No data was saved.)`
-    );
+      alert(
+        `Simulation successful. Item would have been ${action}.\n\n(This is a demonstration. No data was saved.)`
+      );
 
-    closeModal();
-    // A renderiza├â┬º├â┬úo ├â┬® removida para n├â┬úo mostrar altera├â┬º├â┬Áes que n├â┬úo aconteceram
-    // renderItems();
-  });
-// ===============================================
-// Voting Logic (demo only)
-// ===============================================
-function setupVotingListeners() {
-  document.querySelectorAll(".vote-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      alert("Demo only: voting is not saved.");
+      closeModal();
+      // A renderização foi removida para não mostrar alterações que não aconteceram
+      // renderItems();
     });
-  });
-}
+  }
 
-window.addEventListener("load", () => {
-  setTimeout(setupVotingListeners, 500);
-});
+  // ===============================================
+  // Voting Logic (demo only)
+  // ===============================================
+  function setupVotingListeners() {
+    document.querySelectorAll(".vote-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        alert("Demo only: voting is not saved.");
+      });
+    });
+  }
+
+  window.addEventListener("load", () => {
+    setTimeout(setupVotingListeners, 500);
+  });
 
 
 
@@ -545,12 +537,14 @@ window.addEventListener("load", () => {
   });
 
   // Inicializa├â┬º├â┬úo
-  renderCollectionDetails();    // Preenche os detalhes da cole├â┬º├â┬úo
-  populateCollectionsSelect();  // Preenche select de cole├â┬º├â┬Áes
-  renderItems();                // Renderiza itens da cole├â┬º├â┬úo
-  renderCollectionEvents();     // Lista eventos associados
-  highlightOwnedSection();      // Destaca se for dono
-  handleItemActionParam();      // Executa ações vindas da item_page
+  populateCollectionsSelect();  // Preenche select de colecoes (se existir)
+  if (hasCollectionPage) {
+    renderCollectionDetails();   // Preenche os detalhes da colecao
+    renderItems();               // Renderiza itens da colecao
+    highlightOwnedSection();     // Destaca se for dono
+  }
+  renderCollectionEvents();      // Lista eventos associados (se houver container)
+  handleItemActionParam();      // Executa acoes vindas da item_page
 });
 
 
@@ -561,3 +555,6 @@ window.viewItem = function viewItem(itemId) {
   // Redirect to the item page
   window.location.href = `item_page.html?id=${encodeURIComponent(itemId)}`;
 };
+
+
+

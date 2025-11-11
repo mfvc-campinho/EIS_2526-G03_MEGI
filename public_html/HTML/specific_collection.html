@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -104,6 +104,7 @@
                             <strong>Description:</strong>
                             <span id="description">—</span>
                         </p>
+
                     </div>
                 </div>
             </section>
@@ -259,39 +260,39 @@
     <!-- ===============================
        🔹 SCRIPTS (same IDs, same behavior)
        =============================== -->
-        <div id="forgot-password-modal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" id="close-forgot-modal">&times;</span>
-        <h2>Forgot Password</h2>
-        <form id="form-forgot-password">
-          <p>Enter your email address and we'll send you a link to reset your password.</p>
-          <label for="forgot-email">Email:</label>
-          <input type="email" id="forgot-email" name="forgot-email" required />
-          <div class="modal-actions">
-            <button type="submit" class="save-btn">Send Reset Link</button>
-          </div>
-        </form>
-      </div>
+    <div id="forgot-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-forgot-modal">&times;</span>
+            <h2>Forgot Password</h2>
+            <form id="form-forgot-password">
+                <p>Enter your email address and we'll send you a link to reset your password.</p>
+                <label for="forgot-email">Email:</label>
+                <input type="email" id="forgot-email" name="forgot-email" required />
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Send Reset Link</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div id="add-account-modal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" id="close-account-modal">&times;</span>
-        <h2>Create New Account</h2>
-        <form id="form-add-account">
-          <label for="acc-name">Username:</label>
-          <input type="text" id="acc-name" name="acc-name" required />
-          <label for="acc-email">Email:</label>
-          <input type="email" id="acc-email" name="acc-email" required />
-          <label for="acc-password">Password:</label>
-          <input type="password" id="acc-password" name="acc-password" required />
-          <label for="acc-password-confirm">Confirm Password:</label>
-          <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
-          <div class="modal-actions">
-            <button type="submit" class="save-btn">Create Account</button>
-          </div>
-        </form>
-      </div>
+        <div class="modal-content">
+            <span class="close-btn" id="close-account-modal">&times;</span>
+            <h2>Create New Account</h2>
+            <form id="form-add-account">
+                <label for="acc-name">Username:</label>
+                <input type="text" id="acc-name" name="acc-name" required />
+                <label for="acc-email">Email:</label>
+                <input type="email" id="acc-email" name="acc-email" required />
+                <label for="acc-password">Password:</label>
+                <input type="password" id="acc-password" name="acc-password" required />
+                <label for="acc-password-confirm">Confirm Password:</label>
+                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Create Account</button>
+                </div>
+            </form>
+        </div>
     </div>
     <script src="../JS/app-data.js"></script>
     <script src="../JS/app-users.js"></script>

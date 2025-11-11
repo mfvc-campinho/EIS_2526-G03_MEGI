@@ -25,12 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  document.getElementById("item-name").textContent = item.name || "Unnamed Item";
-  document.getElementById("item-importance").textContent = item.importance || "N/A";
-  document.getElementById("item-weight").textContent = item.weight || "N/A";
-  document.getElementById("item-price").textContent = item.price || "0.00";
-  document.getElementById("item-date").textContent = item.acquisitionDate || "-";
-  document.getElementById("item-image").src = item.image || "../images/default.jpg";
+  document.getElementById("item-name-display").textContent = item.name || "Unnamed Item";
+  document.getElementById("item-importance-display").textContent = item.importance || "N/A";
+  document.getElementById("item-weight-display").textContent = item.weight || "N/A";
+  document.getElementById("item-price-display").textContent = item.price || "0.00";
+  document.getElementById("item-date-display").textContent = item.acquisitionDate || "-";
+  document.getElementById("item-image-display").src = item.image || "../images/default.jpg";
 
   const collectionLink = (data.collectionItems || []).find(link => link.itemId === itemId);
   const collectionId = collectionLink?.collectionId || null;
@@ -60,19 +60,37 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
 
-  function redirectToCollection(action) {
-    if (!ensureCollectionLink()) return;
-    const search = new URLSearchParams({ id: collectionId, itemAction: action });
-    if (action !== "add") {
-      search.set("itemId", itemId);
-    }
-    window.location.href = `specific_collection.html?${search.toString()}`;
+  if (collectionId && typeof window.setCurrentCollectionId === "function") {
+    window.setCurrentCollectionId(collectionId);
   }
 
   if (canManage) {
-    addBtn?.addEventListener("click", () => redirectToCollection("add"));
-    editBtn?.addEventListener("click", () => redirectToCollection("edit"));
-    deleteBtn?.addEventListener("click", () => redirectToCollection("delete"));
+    addBtn?.addEventListener("click", () => {
+      if (!ensureCollectionLink()) return;
+      if (typeof window.openItemModal !== "function") {
+        alert("Item modal is not available.");
+        return;
+      }
+      window.openItemModal(false);
+    });
+
+    editBtn?.addEventListener("click", () => {
+      if (!ensureCollectionLink()) return;
+      if (typeof window.editItem !== "function") {
+        alert("Edit action is not available.");
+        return;
+      }
+      window.editItem(itemId);
+    });
+
+    deleteBtn?.addEventListener("click", () => {
+      if (!ensureCollectionLink()) return;
+      if (typeof window.deleteItem !== "function") {
+        alert("Delete action is not available.");
+        return;
+      }
+      window.deleteItem(itemId);
+    });
   } else {
     actionsContainer?.classList.add("hidden");
   }

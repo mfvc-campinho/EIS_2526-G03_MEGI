@@ -62,13 +62,13 @@
     <!-- MAIN CONTENT -->
     <main>
         <section id="item-details" class="item-details-card">
-            <img id="item-image" src="../images/default.jpg" alt="Item image">
+            <img id="item-image-display" src="../images/default.jpg" alt="Item image">
             <div class="item-details-text">
-                <h1 id="item-name">Item Name</h1>
-                <p><strong>Importance:</strong> <span id="item-importance">â€”</span></p>
-                <p><strong>Weight:</strong> <span id="item-weight">â€”</span> g</p>
-                <p><strong>Price:</strong> â‚¬<span id="item-price">â€”</span></p>
-                <p><strong>Acquisition Date:</strong> <span id="item-date">â€”</span></p>
+                <h1 id="item-name-display">Item Name</h1>
+                <p><strong>Importance:</strong> <span id="item-importance-display">â€”</span></p>
+                <p><strong>Weight:</strong> <span id="item-weight-display">â€”</span> g</p>
+                <p><strong>Price:</strong> â‚¬<span id="item-price-display">â€”</span></p>
+                <p><strong>Acquisition Date:</strong> <span id="item-date-display">â€”</span></p>
                 <div class="item-action-buttons">
                     <button id="add-item-btn" class="explore-btn success">
                         <i class="bi bi-plus-circle"></i> Add Another Item
@@ -93,7 +93,7 @@
     <footer>
         <div class="footer-content">
             <p>
-                Made with <span class="heart">â¤ï¸</span> by
+                Made with <span class="heart">❤️</span> by
                 <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
                     <i class="bi bi-github" aria-hidden="true"></i>
                     EIS_2526-G03_MEGI
@@ -111,6 +111,42 @@
     </footer>
 
     <!-- SCRIPTS -->
+    <!-- Item CRUD modal (shared with collection page) -->
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <h2 id="modal-title">Add Item</h2>
+            <form id="item-form">
+                <input type="hidden" id="item-id">
+                <label for="item-name">Name:</label>
+                <input type="text" id="item-name" required>
+                <label for="item-importance">Importance:</label>
+                <input type="text" id="item-importance" required>
+                <label for="item-weight">Weight (g):</label>
+                <input type="number" id="item-weight" step="0.01">
+                <label for="item-price">Price (&euro;):</label>
+                <input type="number" id="item-price" step="0.01" required>
+                <label for="item-date">Acquisition Date:</label>
+                <input type="date" id="item-date">
+                <label for="item-image">Image (URL):</label>
+                <input type="text" id="item-image" placeholder="../images/default.jpg">
+                <label for="item-collections">Collections:</label>
+                <select id="item-collections" name="item-collections" multiple required></select>
+                <small class="form-hint">
+                    Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.
+                </small>
+                <div class="modal-actions crud-controls">
+                    <button type="submit" class="explore-btn">
+                        <i class="bi bi-save me-1" aria-hidden="true"></i> Save
+                    </button>
+                    <button type="button" id="cancel-modal" class="explore-btn danger delete-btn">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="forgot-password-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-forgot-modal">&times;</span>
@@ -146,6 +182,7 @@
         </div>
     </div>
     <script src="../JS/app-data.js"></script>
+    <script src="../JS/app-items.js"></script>
     <script src="../JS/item_page.js"></script>
     <script src="../JS/app-users.js"></script>
 </body>

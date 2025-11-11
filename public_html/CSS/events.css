@@ -251,7 +251,8 @@
 }
 
 .rating-stars .star.user-rating {
-  color: #2563eb;
+  /* Show user-selected stars in yellow to match filled state */
+  color: #fbbf24;
 }
 
 .rating-stars .star.clickable {
@@ -259,7 +260,18 @@
 }
 
 .rating-stars .star.clickable:hover {
-  transform: translateY(-2px);
+  transform: translateY(-5px);
+}
+
+/* Progressive hover styling applied by JS (adds .hovered) */
+.rating-stars .star.hovered {
+  color: #fbbf24;
+  transform: translateY(-5px) scale(1.08);
+}
+
+/* Slight transition for hovered/selected states */
+.rating-stars .star {
+  transition: color 0.12s ease, transform 0.12s ease;
 }
 
 /* Modal width */

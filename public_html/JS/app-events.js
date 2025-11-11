@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const isPast = isPastEvent(ev.date);
 
-      // Ratings summary
+      // Ratings summary + interactive stars (for past events)
       const ratings = ev.ratings || {};
       const ratingValues = Object.values(ratings);
       const ratingCount = ratingValues.length;
@@ -220,12 +220,31 @@ document.addEventListener("DOMContentLoaded", () => {
         ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
         : null;
 
-      const ratingHtml = isPast && ratingAvg
-        ? `<div class="card-rating">
-             <span>★ ${ratingAvg.toFixed(1)}</span>
-             <span>(${ratingCount})</span>
-           </div>`
-        : "";
+      const currentUser = getCurrentUser();
+
+      // Build stars markup for card. For past events show stars (clickable if signed in).
+      let ratingHtml = "";
+      if (isPast) {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+          let classes = "star";
+          if (ratingAvg && i <= Math.round(ratingAvg)) classes += " filled";
+          if (currentUser && currentUser.active && ratings[currentUser.id] && i <= ratings[currentUser.id]) classes += " user-rating";
+          if (currentUser && currentUser.active) classes += " clickable";
+          stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
+        }
+
+        const summary = ratingAvg
+          ? `<span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span>(${ratingCount})</span>`
+          : `<span class="muted">No ratings yet</span>`;
+
+        ratingHtml = `
+          <div class="card-rating">
+            <div class="rating-stars" data-event-id="${ev.id}">${stars.join("")}</div>
+            <div class="rating-summary">${summary}</div>
+          </div>
+        `;
+      }
 
       card.innerHTML = `
         <h3 class="card-title">${escapeHtml(ev.name)}</h3>
@@ -252,9 +271,11 @@ document.addEventListener("DOMContentLoaded", () => {
           <button class="rsvp-btn" data-id="${ev.id}" data-requires-login>
             <i class="bi bi-calendar-check" aria-hidden="true"></i> RSVP
           </button>
-          <button class="edit-btn" data-id="${ev.id}" data-requires-login>
-            <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
-          </button>
+          ${currentUser && currentUser.active ? `
+            <button class="edit-btn" data-id="${ev.id}" data-requires-login>
+              <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
+            </button>
+          ` : ``}
           <button class="delete-btn" data-id="${ev.id}" data-requires-login>
             <i class="bi bi-trash3" aria-hidden="true"></i> Delete
           </button>
@@ -270,6 +291,57 @@ document.addEventListener("DOMContentLoaded", () => {
         .addEventListener("click", () => openEditModal(ev.id));
       card.querySelector(".delete-btn")
         .addEventListener("click", () => deleteEventHandler(ev.id));
+
+      // Attach star click + hover handlers for card stars (if present)
+      const starsContainer = card.querySelector(`.rating-stars[data-event-id="${ev.id}"]`);
+      if (starsContainer) {
+        const stars = Array.from(starsContainer.querySelectorAll('.star'));
+
+        function clearHover() {
+          stars.forEach(s => s.classList.remove('hovered'));
+        }
+
+        function highlightTo(val) {
+          stars.forEach(s => {
+            const v = Number(s.dataset.value);
+            if (v <= val) s.classList.add('hovered');
+            else s.classList.remove('hovered');
+          });
+        }
+
+        stars.forEach(s => {
+          const val = Number(s.dataset.value);
+
+          // Hover highlight (progressive)
+          s.addEventListener('mouseenter', () => highlightTo(val));
+          s.addEventListener('focus', () => highlightTo(val));
+
+          // Clear when leaving a star; container mouseleave also clears
+          s.addEventListener('mouseleave', () => clearHover());
+          s.addEventListener('blur', () => clearHover());
+
+          // Click: only call setRating if star is clickable (login-permission handled elsewhere)
+          if (s.classList.contains('clickable')) {
+            s.addEventListener('click', () => setRating(ev.id, val));
+            // keyboard accessibility: allow Enter/Space
+            s.addEventListener('keydown', (evKey) => {
+              if (evKey.key === 'Enter' || evKey.key === ' ') {
+                evKey.preventDefault();
+                setRating(ev.id, val);
+              }
+            });
+            s.setAttribute('tabindex', '0');
+            s.setAttribute('role', 'button');
+            s.setAttribute('aria-label', `Rate ${val} out of 5`);
+          } else {
+            // still expose aria label for non-clickable stars
+            s.setAttribute('aria-hidden', 'false');
+            s.setAttribute('tabindex', '-1');
+          }
+        });
+
+        starsContainer.addEventListener('mouseleave', clearHover);
+      }
 
       eventsList.appendChild(card);
     });

@@ -20,42 +20,39 @@
     🔹 NAVIGATION BAR (Enhanced)
     =============================== -->
     <header>
-      <nav class="navbar" role="navigation" aria-label="Main navigation">
+      <nav class="navbar">
         <div class="nav-left">
           <a href="home_page.html" class="logo">
-            <i class="bi bi-collection me-2" aria-hidden="true"></i> GoodCollections
+            <i class="bi bi-collection me-2"></i> GoodCollections
           </a>
         </div>
 
         <div class="nav-right">
           <a href="all_collections.html" class="nav-link">
-            <i class="bi bi-box-seam-fill me-1" aria-hidden="true"></i> Collections
+            <i class="bi bi-box-seam-fill me-1"></i> Collections
           </a>
 
           <a href="event_page.html" class="nav-link">
-            <i class="bi bi-calendar-event-fill me-1" aria-hidden="true"></i> Events
+            <i class="bi bi-calendar-event-fill me-1"></i> Events
           </a>
 
           <a href="team_page.html" class="nav-link">
-            <i class="bi bi-people-fill me-1" aria-hidden="true"></i> About Us
+            <i class="bi bi-people-fill me-1"></i> About Us
           </a>
 
-          <!-- Login dropdown (kept minimal; content injected by JS) -->
+          <!-- Login dropdown -->
           <div class="dropdown profile-dropdown">
-            <button class="dropbtn profile-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profile-menu" id="profile-toggle">
-              <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
-              <span class="visually-hidden">User menu</span>
-              Log In ▾
+            <button class="dropbtn profile-btn">
+              <i class="bi bi-person-circle me-1"></i> Log In ▾
             </button>
-            <div class="dropdown-content profile-menu" id="profile-menu" role="menu" aria-labelledby="profile-toggle"></div>
+            <div class="dropdown-content profile-menu"></div>
           </div>
 
-          <!-- Search (use a form for accessibility) -->
-          <form class="search-wrapper" role="search" aria-label="Site search" onsubmit="return false;">
-            <label for="site-search" class="visually-hidden">Search</label>
-            <i class="bi bi-search search-icon" aria-hidden="true"></i>
-            <input id="site-search" type="search" class="search-bar" placeholder="Search collections, items, events..." />
-          </form>
+          <!-- Search -->
+          <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input type="search" class="search-bar" placeholder="Search..." />
+          </div>
         </div>
       </nav>
     </header>
@@ -63,51 +60,78 @@
     <!-- 🔹 MAIN CONTENT -->
     <!-- ========================================================= -->
     <main>
-      <div class="container user-main">
-        <!-- 🔹 Welcome Banner -->
-        <div class="welcome-banner" aria-live="polite">
-          Welcome back, <span id="username-banner">Collector</span> 👋
-        </div>
+      <main>
+        <!-- ===============================
+           PROFILE OVERVIEW
+      =============================== -->
+        <h1 class="welcome-title">Welcome back, <span id="username-banner">Collector</span> 👋</h1>
 
-        <!-- 🔹 User Header -->
-        <section class="user-header" aria-label="User profile">
-          <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
-          <div class="user-meta">
-            <h1 id="user-name">Collector</h1>
-            <p class="user-detail"><strong>Email:</strong> <span id="user-email"></span></p>
-            <p class="user-detail"><strong>Date of Birth:</strong> <span id="user-dob"></span></p>
+        <section class="profile-hero">
+          <div class="profile-card">
+            <!-- Top row: avatar + welcome + name -->
+            <div class="profile-top">
+              <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
+
+              <div class="profile-heading">
+                <h1 id="user-name">Collector</h1>
+                <p class="user-sub">
+                  This is your personal space to manage collections, items, and events.
+                </p>
+              </div>
+            </div>
+
+            <!-- Middle row: key user info (JS can fill these spans) -->
+            <div class="profile-info-grid">
+              <div class="info-block">
+                <span class="info-label">Email</span>
+                <span class="info-value" id="user-email">—</span>
+              </div>
+              <div class="info-block">
+                <span class="info-label">Date of Birth</span>
+                <span class="info-value" id="user-dob">—</span>
+              </div>
+              <div class="info-block">
+                <span class="info-label">Member Since</span>
+                <span class="info-value" id="user-member-since">2025</span>
+              </div>
+              <div class="info-block">
+                <span class="info-label">Collections</span>
+                <span class="info-value" id="user-collection-count">0</span>
+              </div>
+            </div>
+
+            <!-- Actions: same style as Home/All Collections -->
+            <div class="user-actions collection-actions">
+              <button id="edit-profile-btn" class="explore-btn">
+                <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+                Edit Profile
+              </button>
+
+              <button id="open-collection-modal" class="explore-btn success" data-requires-login>
+                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                Add Collection
+              </button>
+
+              <button id="editCollectionBtn" class="explore-btn" data-requires-login>
+                <i class="bi bi-pencil me-1" aria-hidden="true"></i>
+                Edit Collection
+              </button>
+
+              <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>
+                <i class="bi bi-trash3 me-1" aria-hidden="true"></i>
+                Delete Collection
+              </button>
+            </div>
           </div>
         </section>
 
-        <!-- 🔹 User Actions -->
-        <div class="user-actions" role="group" aria-label="User actions">
-          <button id="edit-profile-btn" class="explore-btn" type="button" title="Edit profile">
-            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Edit Profile
-          </button>
-
-          <button id="open-collection-modal" class="explore-btn success" data-requires-login type="button" title="Add collection">
-            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Add Collection
-          </button>
-
-          <button id="editCollectionBtn" class="explore-btn" data-requires-login type="button" title="Edit a selected collection">
-            <i class="bi bi-pencil me-1" aria-hidden="true"></i> Edit Collection
-          </button>
-
-          <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login type="button" title="Delete a selected collection">
-            <i class="bi bi-trash3 me-1" aria-hidden="true"></i> Delete Collection
-          </button>
-        </div>
-
-        <!-- 🔹 User Collections -->
+        <!-- ===============================
+           USER COLLECTIONS
+      =============================== -->
         <h2 id="my-collections-title">My Collections</h2>
-        <section id="user-collections" class="collection-container" aria-live="polite">
-          <!-- JS will inject collection cards here. If none, show a friendly empty state. -->
-          <div id="collections-empty" class="empty-state" style="display:none; padding:1.25rem; text-align:center; color:var(--muted);">
-            <p><strong>No collections yet.</strong></p>
-            <p>Click "Add Collection" to create your first one.</p>
-          </div>
-        </section>
-      </div>
+        <section id="user-collections" class="collection-container"></section>
+      </main>
+
     </main>
   </div>
 

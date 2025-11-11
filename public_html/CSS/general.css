@@ -68,6 +68,80 @@ body {
   gap: 24px;
 }
 
+/* Make each nav link a stable inline-flex so icons and text stay aligned */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  /* small gap between icon and label */
+}
+
+/* Keep built-in icons vertically centered and prevent text-wrapping oddities */
+.nav-link i,
+.navbar i {
+  font-size: 1.05rem;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Search wrapper (icon + input) — keeps layout stable on resize */
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-icon {
+  color: #e5e7eb;
+  font-size: 1rem;
+}
+
+/* Responsive tweaks: tighten spacing and collapse the search input on small screens */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 18px;
+  }
+
+  .nav-left,
+  .nav-right {
+    gap: 12px;
+  }
+
+  /* Allow the right side of the nav to wrap under the logo and stay usable */
+  .nav-right {
+    flex-basis: 100%;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+
+  /* Hide the search input to save horizontal space; keep the icon visible */
+  .search-bar {
+    display: none;
+  }
+
+  /* Slightly reduce the font-size so labels don't overflow */
+  .nav-link {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 420px) {
+
+  /* When very narrow, reduce gaps and allow wrapping for action buttons */
+  .navbar {
+    padding: 8px 12px;
+  }
+
+  .nav-left,
+  .nav-right {
+    gap: 8px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+}
+
 /* === NAVIGATION LINKS === */
 .nav-link {
   color: #e5e7eb;

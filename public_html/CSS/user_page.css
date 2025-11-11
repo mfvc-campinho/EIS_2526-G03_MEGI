@@ -1,5 +1,19 @@
 /* ========= Page spacing under sticky navbar ========= */
-main { padding: 96px 16px 56px; }
+main {
+  /* Reduced top padding so the welcome banner sits closer to the navbar */
+  padding: 64px 16px 56px;
+}
+
+/* Welcome title for the user page — left aligned within content width */
+.welcome-title {
+  max-width: 1100px;
+  margin: 8px auto 6px;
+  padding: 0 26px;
+  text-align: left;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #0f172a;
+}
 
 /* Estilos movidos do HTML para uniformizar */
 .welcome-banner {
@@ -18,35 +32,18 @@ main { padding: 96px 16px 56px; }
 }
 
 /* ========= User header (uses your classes/ids) ========= */
-.user-header{
-  display:flex;
-  align-items:center;
-  gap:24px;
-  
-  margin:0 0 32px;
-}
-.avatar{
-  width:132px; height:132px; object-fit:cover;
-  border-radius:50%; border:4px solid #2563eb;
-}
-.user-meta{ display:flex; flex-direction:column; }
-#user-name{ margin:0; font-size:32px; font-weight:800; color:#0f172a; }
-.user-sub{ margin:6px 0 0; color:#64748b; font-size:.95rem; }
-.btn-primary{
-  margin-left:auto;                      /* pushes the button to the right */
-  padding:8px 14px; border-radius:10px;
-  background:#2563eb; color:#fff; text-decoration:none; font-weight:600;
-}
-
-/* Mobile */
-@media (max-width:600px){
-  .user-header{ flex-direction:column; text-align:center; }
-  .btn-primary{ margin-left:0; }
-}
+/* (Removed duplicated user-header definitions; profile-hero block below contains the page-specific styles.) */
 
 /* ===== Mini-calendar list ===== */
-.user-section { margin-top: 28px; }
-.section-title { margin: 0 0 10px; font-size: 20px; }
+.user-section {
+  margin-top: 28px;
+}
+
+.section-title {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
 .events-list {
   list-style: none;
   margin: 0;
@@ -58,12 +55,13 @@ main { padding: 96px 16px 56px; }
 /* One event row */
 .event {
   display: grid;
-  grid-template-columns: 64px 1fr auto;  /* calendar badge | info | link */
+  grid-template-columns: 64px 1fr auto;
+  /* calendar badge | info | link */
   align-items: center;
   gap: 14px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
   padding: 10px 12px;
 }
 
@@ -75,7 +73,8 @@ main { padding: 96px 16px 56px; }
   width: 64px;
   height: 64px;
   border-radius: 10px;
-  background: #1e3a8a;        /* dark blue header */
+  background: #1e3a8a;
+  /* dark blue header */
   color: #fff;
   font-weight: 700;
   overflow: hidden;
@@ -87,11 +86,13 @@ main { padding: 96px 16px 56px; }
   place-items: center;
   width: 100%;
   height: 24px;
-  background: #3b82f6;        /* lighter blue strip */
+  background: #3b82f6;
+  /* lighter blue strip */
   font-size: 12px;
   letter-spacing: .5px;
   text-transform: uppercase;
 }
+
 .event time .cal-day {
   display: grid;
   place-items: center;
@@ -108,10 +109,12 @@ main { padding: 96px 16px 56px; }
   flex-direction: column;
   gap: 4px;
 }
+
 .event .event-info strong {
   font-size: 16px;
   color: #0f172a;
 }
+
 .event .tag {
   display: inline-block;
   font-size: 12px;
@@ -129,31 +132,171 @@ main { padding: 96px 16px 56px; }
 }
 
 /* Mobile */
-@media (max-width: 560px){
+@media (max-width: 560px) {
   .event {
     grid-template-columns: 52px 1fr;
     grid-auto-rows: auto;
     padding: 10px;
   }
+
   .event .event-link {
     grid-column: 2 / -1;
     justify-self: start;
     margin-top: 6px;
   }
-  .event time { width: 52px; height: 60px; }
-  .event time .cal-day { height: calc(60px - 24px); }
+
+  .event time {
+    width: 52px;
+    height: 60px;
+  }
+
+  .event time .cal-day {
+    height: calc(60px - 24px);
+  }
 }
+
 /* Limit the width of the Upcoming events area, left-aligned */
-.user-section{
-  --events-max: 820px;                  /* <- adjust to taste (700–960px usually looks great) */
+.user-section {
+  --events-max: 820px;
+  /* <- adjust to taste (700–960px usually looks great) */
 }
 
 .user-section .events-list,
-.user-section .section-cta{
-  width: min(100%, var(--events-max));  /* not full width */
+.user-section .section-cta {
+  width: min(100%, var(--events-max));
+  /* not full width */
 }
 
 /* If your events card itself is stretching, also cap it */
-.user-section .event{
+.user-section .event {
   width: 100%;
+}
+
+/* ===== Base spacing under navbar ===== */
+/* main padding is defined at the top of this file to avoid duplicates */
+
+/* ===== Profile Hero Card ===== */
+
+.profile-hero {
+  max-width: 1100px;
+  margin: 0 auto 32px;
+}
+
+.profile-card {
+  background-color: #ffffff;
+  border-radius: 22px;
+  padding: 24px 26px 20px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Top: avatar + welcome + name */
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #2563eb;
+}
+
+.profile-heading h1 {
+  margin: 2px 0 2px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.welcome-line {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.user-sub {
+  margin: 2px 0 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Middle: info grid (Email, DOB, etc.) */
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.info-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Bottom: use global button style, just ensure centered */
+.user-actions.collection-actions {
+  margin-top: 8px;
+}
+
+/* "My Collections" title */
+#my-collections-title {
+  text-align: center;
+  margin: 14px 0 18px;
+  font-size: 1.4rem;
+  color: #111827;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 18px 16px 16px;
+  }
+
+  /* Center the welcome title on small screens to improve spacing */
+  .welcome-title {
+    text-align: center;
+    padding: 0 16px;
+  }
+
+  .profile-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-top {
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
 }

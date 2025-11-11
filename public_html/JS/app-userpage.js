@@ -38,7 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderUserEvents(data, ownerId) {
     if (!userEventsContainer)
       return;
-    const links = (data.collectionsUsers || []).filter(link => link.ownerId === ownerId);
+    let links = (data.collectionsUsers || []).filter(link => link.ownerId === ownerId);
+    if (!links.length) {
+      links = (data.collections || [])
+        .filter(col => col.ownerId === ownerId)
+        .map(col => ({ collectionId: col.id, ownerId }));
+    }
     if (!links.length) {
       userEventsContainer.innerHTML = `<p class="notice-message">No collections linked to this user yet.</p>`;
       return;
@@ -99,7 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (userMemberSinceEl)
       userMemberSinceEl.textContent = user["member-since"] || "N/A";
 
-    const collectionCount = (data.collectionsUsers || []).filter(link => link.ownerId === viewedOwnerId).length;
+    const collectionCount = ((data.collectionsUsers || []).filter(link => link.ownerId === viewedOwnerId).length) ||
+      (data.collections || []).filter(col => col.ownerId === viewedOwnerId).length;
     const countEl = document.getElementById("user-collection-count");
     if (countEl)
       countEl.textContent = collectionCount;

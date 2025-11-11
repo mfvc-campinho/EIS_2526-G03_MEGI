@@ -77,6 +77,7 @@ const collectionsData = {
       "owner-photo": "../images/rui.jpg",
       "date-of-birth": "1985-05-20",
       "email": "collector.main@email.com",
+      "password": "password123", // argument not used
       "member-since": "2015"
     },
     {
@@ -86,6 +87,7 @@ const collectionsData = {
       "owner-photo": "../images/user.jpg",
       "date-of-birth": "1982-07-14",
       "email": "rui.frio@email.com",
+      "password": "password123", // argument not used
       "member-since": "2018"
     }
   ],

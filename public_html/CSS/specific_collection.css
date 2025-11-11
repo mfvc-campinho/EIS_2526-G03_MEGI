@@ -207,6 +207,21 @@
   transition: all 0.18s ease;
 }
 
+.item-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.item-buttons .explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
 .collection-events {
   margin-top: 32px;
   background: #ffffff;

@@ -93,6 +93,24 @@ body {
   font-weight: 600;
 }
 
+.item-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.item-action-buttons .explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+}
+
+.item-action-buttons.hidden {
+  display: none;
+}
+
 /* Hover glow on info lines */
 .item-details-text p:hover {
   color: #1d4ed8;

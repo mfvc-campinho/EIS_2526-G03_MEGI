@@ -207,6 +207,56 @@
   transition: all 0.18s ease;
 }
 
+.collection-events {
+  margin-top: 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.section-subtitle {
+  margin: 0 0 18px;
+  font-size: 1.4rem;
+  color: #0f172a;
+  text-align: center;
+}
+
+.collection-events-list {
+  display: grid;
+  gap: 16px;
+}
+
+.collection-event-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.collection-event-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.collection-event-card p {
+  margin: 2px 0 0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.collection-event-card .event-meta {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
 >>>>>>> 5217222d3f51627f17e9f7f3c8875bfcde5c7af9
 /* ===============================
    🔹 MODALS (local tweaks only)

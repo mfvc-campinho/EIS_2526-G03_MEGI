@@ -279,6 +279,50 @@
   color: #111827;
 }
 
+#user-events-title {
+  text-align: center;
+  margin: 32px 0 14px;
+  font-size: 1.35rem;
+  color: #0f172a;
+}
+
+.user-events {
+  max-width: 1100px;
+  margin: 0 auto 40px;
+  display: grid;
+  gap: 16px;
+}
+
+.user-event-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+}
+
+.user-event-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.user-event-card p {
+  margin: 4px 0 0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.user-event-card .event-meta {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .profile-card {

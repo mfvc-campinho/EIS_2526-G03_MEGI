@@ -1,4 +1,4 @@
-﻿// ===============================================
+// ===============================================
 // app-items.js â€” Manage items within a collection
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Seletores principais
   const itemsContainer = document.getElementById("collection-items");
+  const eventsContainer = document.getElementById("collection-events");
   const modal = document.getElementById("item-modal");
   const form = document.getElementById("item-form");
   const closeBtn = document.getElementById("close-modal");
@@ -55,6 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const id = typeof target === "string" ? target : target?.id;
     if (!id) return null;
     return appData.getCollectionOwner(id, data);
+  }
+
+  function formatEventDate(dateStr) {
+    if (!dateStr) return "Date TBA";
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
   }
 
   function getCurrentCollection(data = appData.loadData()) {
@@ -238,6 +250,35 @@ document.addEventListener("DOMContentLoaded", () => {
     // Inicia o processo de renderizaÃ§Ã£o
     renderChunk();
   };
+
+  function renderCollectionEvents() {
+    if (!eventsContainer) return;
+    const data = appData.loadData();
+    const collection = getCurrentCollection(data);
+
+    if (!collection) {
+      eventsContainer.innerHTML = `<p class="notice-message">Collection not found.</p>`;
+      return;
+    }
+
+    const events = appData.getEventsByCollection(collection.id, data) || [];
+    if (!events.length) {
+      eventsContainer.innerHTML = `<p class="notice-message">No events linked to this collection yet.</p>`;
+      return;
+    }
+
+    eventsContainer.innerHTML = events.map(ev => `
+      <article class="collection-event-card">
+        <div>
+          <h3>${ev.name}</h3>
+          <p class="event-meta">${formatEventDate(ev.date)} · ${ev.localization || "To be announced"}</p>
+        </div>
+        <button class="explore-btn ghost" onclick="window.location.href='event_page.html#${ev.id}'">
+          <i class="bi bi-calendar-event"></i> View event
+        </button>
+      </article>
+    `).join("");
+  }
 
   // ===============================================
   // Preencher lista de coleÃ§Ãµes do utilizador atual
@@ -425,6 +466,7 @@ window.addEventListener("load", () => {
 
     updateUserState();
     highlightOwnedSection();
+    renderCollectionEvents();
     renderItems();
   });
 
@@ -432,6 +474,7 @@ window.addEventListener("load", () => {
   renderCollectionDetails();    // Preenche os detalhes da coleÃ§Ã£o
   populateCollectionsSelect();  // Preenche select de coleÃ§Ãµes
   renderItems();                // Renderiza itens da coleÃ§Ã£o
+  renderCollectionEvents();     // Lista eventos associados
   highlightOwnedSection();      // Destaca se for dono
 });
 

@@ -22,7 +22,7 @@
 <body>
     <div id="content">
         <!-- ===============================
-         🔹 NAVIGATION BAR
+         ðŸ”¹ NAVIGATION BAR
     =============================== -->
         <header>
             <nav class="navbar">
@@ -48,7 +48,7 @@
                     <!-- Login dropdown -->
                     <div class="dropdown profile-dropdown">
                         <button class="dropbtn profile-btn">
-                            <i class="bi bi-person-circle me-1"></i> Log In ▾
+                            <i class="bi bi-person-circle me-1"></i> Log In â–¾
                         </button>
                         <div class="dropdown-content profile-menu"></div>
                     </div>
@@ -63,7 +63,7 @@
         </header>
 
         <!-- ===============================
-         🔹 MAIN CONTENT
+         ðŸ”¹ MAIN CONTENT
     =============================== -->
         <main>
             <!-- Breadcrumb -->
@@ -84,7 +84,7 @@
             </section>
 
             <!-- ===============================
-           🔹 Toggle: Upcoming / Past
+           ðŸ”¹ Toggle: Upcoming / Past
            (Tabs control the hidden select used by JS)
       =============================== -->
             <section class="events-toggle-wrapper">
@@ -117,7 +117,7 @@
             </section>
 
             <!-- ===============================
-           🔹 Actions (New Event)
+           ðŸ”¹ Actions (New Event)
       =============================== -->
             <section class="events-actions">
                 <p class="actions-hint">
@@ -132,7 +132,7 @@
             </section>
 
             <!-- ===============================
-           🔹 Events Grid
+           ðŸ”¹ Events Grid
            (Cards injected by app-events.js into #eventsList)
       =============================== -->
             <section class="events-section">
@@ -142,14 +142,14 @@
             </section>
 
             <!-- ===============================
-           🔹 EVENT DETAIL MODAL
+           ðŸ”¹ EVENT DETAIL MODAL
       =============================== -->
             <div id="event-modal" class="modal">
                 <div class="modal-content">
                     <span class="close-btn" id="close-event-modal">&times;</span>
 
                     <h2 id="modal-event-title">Event Title</h2>
-                    <p id="modal-event-meta" class="muted">Date · Time · Location</p>
+                    <p id="modal-event-meta" class="muted">Date Â· Time Â· Location</p>
 
                     <div id="modal-event-body">
                         <p id="modal-event-description">
@@ -185,7 +185,7 @@
             </div>
 
             <!-- ===============================
-           🔹 CREATE / EDIT EVENT MODAL
+           ðŸ”¹ CREATE / EDIT EVENT MODAL
       =============================== -->
             <div id="event-edit-modal" class="modal">
                 <div class="modal-content">
@@ -223,12 +223,12 @@
         </main>
 
         <!-- ===============================
-         🔹 FOOTER
+         ðŸ”¹ FOOTER
     =============================== -->
         <footer>
             <div class="footer-content">
                 <p>
-                    Made with <span class="heart">❤️</span> by
+                    Made with <span class="heart">â¤ï¸</span> by
                     <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank"
                         rel="noopener noreferrer">
                         <i class="bi bi-github" aria-hidden="true"></i>
@@ -248,9 +248,43 @@
     </div>
 
     <!-- ===============================
-       🔹 SCRIPTS
+       ðŸ”¹ SCRIPTS
   =============================== -->
-    <script src="../JS/Data.js"></script>
+        <div id="forgot-password-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="close-forgot-modal">&times;</span>
+        <h2>Forgot Password</h2>
+        <form id="form-forgot-password">
+          <p>Enter your email address and we'll send you a link to reset your password.</p>
+          <label for="forgot-email">Email:</label>
+          <input type="email" id="forgot-email" name="forgot-email" required />
+          <div class="modal-actions">
+            <button type="submit" class="save-btn">Send Reset Link</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="add-account-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="close-account-modal">&times;</span>
+        <h2>Create New Account</h2>
+        <form id="form-add-account">
+          <label for="acc-name">Username:</label>
+          <input type="text" id="acc-name" name="acc-name" required />
+          <label for="acc-email">Email:</label>
+          <input type="email" id="acc-email" name="acc-email" required />
+          <label for="acc-password">Password:</label>
+          <input type="password" id="acc-password" name="acc-password" required />
+          <label for="acc-password-confirm">Confirm Password:</label>
+          <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+          <div class="modal-actions">
+            <button type="submit" class="save-btn">Create Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+<script src="../JS/Data.js"></script>
     <script src="../JS/app-data.js"></script>
     <script src="../JS/app-users.js"></script>
     <script src="../JS/app-events.js"></script>

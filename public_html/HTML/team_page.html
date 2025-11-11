@@ -14,7 +14,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <!-- Load Poppins same as other pages -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- 🔹 CSS  -->
+    <!-- ðŸ”¹ CSS  -->
     <link rel="stylesheet" href="../CSS/general.css">
     <link rel="stylesheet" href="../CSS/team_page.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -25,7 +25,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
     <div id="content">
         <!-- ===============================
-    🔹 NAVIGATION BAR (Enhanced)
+    ðŸ”¹ NAVIGATION BAR (Enhanced)
     =============================== -->
         <header>
             <nav class="navbar">
@@ -51,7 +51,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <!-- Login dropdown -->
                     <div class="dropdown profile-dropdown">
                         <button class="dropbtn profile-btn">
-                            <i class="bi bi-person-circle me-1"></i> Log In ▾
+                            <i class="bi bi-person-circle me-1"></i> Log In â–¾
                         </button>
                         <div class="dropdown-content profile-menu"></div>
                     </div>
@@ -66,7 +66,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         </header>
 
         <main>
-            <!-- 🔹 Breadcrumb (no JS change; optional visual context) -->
+            <!-- ðŸ”¹ Breadcrumb (no JS change; optional visual context) -->
             <nav class="breadcrumb-nav" aria-label="Breadcrumb">
                 <a href="home_page.html">Home</a>
                 <span>/</span>
@@ -88,7 +88,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
                     <div class="project-title">
-                        <h2>GoodCollections — Information System for Collection Management</h2>
+                        <h2>GoodCollections â€” Information System for Collection Management</h2>
                     </div>
 
                     <div class="project-meta">
@@ -132,28 +132,28 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <img src="../images/Afonso.jpeg" alt="Afonso Ramos" width="104" height="142" loading="lazy">
                     <h2>Afonso Dias Fachada Ramos</h2>
                     <p class="id">up202108474</p>
-                    <p class="desc">If I used this site, I’d collect limited edition porn movie posters.</p>
+                    <p class="desc">If I used this site, Iâ€™d collect limited edition porn movie posters.</p>
                 </div>
 
                 <div class="member">
                     <img src="../images/Ana.jpg" alt="Ana Amorim" width="104" height="142" loading="lazy">
                     <h2>Ana Isabel Dias Cunha Amorim</h2>
                     <p class="id">up202107329</p>
-                    <p class="desc">If I used this site, I’d collect airplane miniatures.</p>
+                    <p class="desc">If I used this site, Iâ€™d collect airplane miniatures.</p>
                 </div>
 
                 <div class="member">
                     <img src="../images/Filipa.jpg" alt="Filipa Mota" width="104" height="142" loading="lazy">
                     <h2>Filipa Marisa Duarte Mota</h2>
                     <p class="id">up202402072</p>
-                    <p class="desc">If I used this site, I’d collect airplane miniatures.</p>
+                    <p class="desc">If I used this site, Iâ€™d collect airplane miniatures.</p>
                 </div>
 
                 <div class="member">
                     <img src="../images/Matheus.jpeg" alt="Matheus Campinho" width="104" height="142" loading="lazy">
                     <h2>Matheus Fernandes Vilhena Campinho</h2>
                     <p class="id">up202202004</p>
-                    <p class="desc">If I used this site, I’d collect retro games and consoles.</p>
+                    <p class="desc">If I used this site, Iâ€™d collect retro games and consoles.</p>
                 </div>
             </section>
         </main>
@@ -175,12 +175,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
     <!-- ===============================
-         🔹 FOOTER
+         ðŸ”¹ FOOTER
     =============================== -->
     <footer>
         <div class="footer-content">
             <p>
-                Made with <span class="heart">❤️</span> by
+                Made with <span class="heart">â¤ï¸</span> by
                 <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
                     <i class="bi bi-github" aria-hidden="true"></i>
                     EIS_2526-G03_MEGI
@@ -198,7 +198,41 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     </footer>
 
     <!-- SCRIPTS (order matches other pages; app-events.js implements event logic) -->
-    <script src="../JS/app-users.js"></script>
+        <div id="forgot-password-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="close-forgot-modal">&times;</span>
+        <h2>Forgot Password</h2>
+        <form id="form-forgot-password">
+          <p>Enter your email address and we'll send you a link to reset your password.</p>
+          <label for="forgot-email">Email:</label>
+          <input type="email" id="forgot-email" name="forgot-email" required />
+          <div class="modal-actions">
+            <button type="submit" class="save-btn">Send Reset Link</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="add-account-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="close-account-modal">&times;</span>
+        <h2>Create New Account</h2>
+        <form id="form-add-account">
+          <label for="acc-name">Username:</label>
+          <input type="text" id="acc-name" name="acc-name" required />
+          <label for="acc-email">Email:</label>
+          <input type="email" id="acc-email" name="acc-email" required />
+          <label for="acc-password">Password:</label>
+          <input type="password" id="acc-password" name="acc-password" required />
+          <label for="acc-password-confirm">Confirm Password:</label>
+          <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+          <div class="modal-actions">
+            <button type="submit" class="save-btn">Create Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+<script src="../JS/app-users.js"></script>
 
 </body>
 

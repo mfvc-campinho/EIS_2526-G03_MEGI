@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const userDobEl = document.getElementById("user-dob");
   const userMemberSinceEl = document.getElementById("user-member-since");
   const usernameBannerEl = document.getElementById("username-banner");
+  const userEventsContainer = document.getElementById("user-events");
 
   // Elementos do Modal
   const profileModal = document.getElementById("user-profile-modal");
@@ -20,6 +21,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentUserData = null;
   let viewedOwnerId = "collector-main";
+
+  function formatEventDate(dateStr) {
+    if (!dateStr)
+      return "Date TBA";
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime()))
+      return dateStr;
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+  }
+
+  function renderUserEvents(data, ownerId) {
+    if (!userEventsContainer)
+      return;
+    const links = (data.collectionsUsers || []).filter(link => link.ownerId === ownerId);
+    if (!links.length) {
+      userEventsContainer.innerHTML = `<p class="notice-message">No collections linked to this user yet.</p>`;
+      return;
+    }
+    const collectionIds = new Set(links.map(link => link.collectionId));
+    const events = [];
+    const seen = new Set();
+    (data.collectionEvents || []).forEach(link => {
+      if (!collectionIds.has(link.collectionId))
+        return;
+      const event = (data.events || []).find(ev => ev.id === link.eventId);
+      if (event && !seen.has(event.id)) {
+        seen.add(event.id);
+        events.push(event);
+      }
+    });
+    if (!events.length) {
+      userEventsContainer.innerHTML = `<p class="notice-message">No events linked to this user yet.</p>`;
+      return;
+    }
+    userEventsContainer.innerHTML = events.map(ev => `
+      <article class="user-event-card">
+        <div>
+          <h3>${ev.name}</h3>
+          <p class="event-meta">${formatEventDate(ev.date)} · ${ev.localization || "To be announced"}</p>
+        </div>
+        <button class="explore-btn ghost" onclick="window.location.href='event_page.html#${ev.id}'">
+          <i class="bi bi-calendar-event"></i> View event
+        </button>
+      </article>
+    `).join("");
+  }
 
   // 1. Carregar e renderizar os dados do utilizador
   function loadAndRenderUserData() {
@@ -52,6 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const countEl = document.getElementById("user-collection-count");
     if (countEl)
       countEl.textContent = collectionCount;
+
+    renderUserEvents(data, viewedOwnerId);
   }
 
   // 2. Controlar o modal de edição

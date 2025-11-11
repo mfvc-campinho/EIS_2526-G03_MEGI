@@ -154,15 +154,28 @@ document.addEventListener("DOMContentLoaded", () => {
           : "";
 
     card.innerHTML = `
-    <div class="item-image-wrapper">
-    <img src="${item.image}" alt="${item.name}" class="item-image" loading="lazy">
-    </div>
-    <div class="item-info simple-item">
-    <h3>${item.name}</h3>
-    <button class="explore-btn view-item-btn" onclick="viewItem('${item.id}')">
-    <i class="bi bi-eye"></i> View
-    </button>
-    </div>
+      <div class="item-image-wrapper">
+        <img src="${item.image}" alt="${item.name}" class="item-image" loading="lazy">
+      </div>
+
+      <div class="item-info simple-item">
+        <h3>${item.name}</h3>
+
+        <div class="vote-section">
+          <button class="vote-btn upvote" data-id="${item.id}">
+            <i class="bi bi-arrow-up-circle"></i>
+          </button>
+          <button class="vote-btn downvote" data-id="${item.id}">
+            <i class="bi bi-arrow-down-circle"></i>
+          </button>
+        </div>
+
+        <div class="item-actions">
+          <a href="item_page.html?id=${item.id}" class="explore-btn view-btn">
+            <i class="bi bi-eye"></i> View Item
+          </a>
+        </div>
+      </div>
     `;
         fragment.appendChild(card);
       }
@@ -329,6 +342,84 @@ document.addEventListener("DOMContentLoaded", () => {
     // A renderização é removida para não mostrar alterações que não aconteceram
     // renderItems();
   });
+
+// ===============================================
+// 🔹 Voting Logic (Upvote / Downvote)
+// ===============================================
+function loadVotes() {
+  return JSON.parse(localStorage.getItem("itemVotes")) || {};
+}
+
+function saveVotes(votes) {
+  localStorage.setItem("itemVotes", JSON.stringify(votes));
+}
+
+function setupVotingListeners() {
+  const votes = loadVotes();
+
+  document.querySelectorAll(".vote-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      const isUpvote = btn.classList.contains("upvote");
+
+      // Initialize if missing
+      if (!votes[id]) votes[id] = { count: 0, userVote: null };
+
+      const currentVote = votes[id].userVote;
+
+      // Logic:
+      //  - If same vote clicked again → remove it
+      //  - Else → apply new vote (+1 or -1) and adjust count
+      if (currentVote === (isUpvote ? "up" : "down")) {
+        // Undo the vote
+        votes[id].count += isUpvote ? -1 : 1;
+        votes[id].userVote = null;
+      } else {
+        // Remove opposite vote if exists
+        if (currentVote === "up") votes[id].count -= 1;
+        if (currentVote === "down") votes[id].count += 1;
+
+        // Apply new vote
+        votes[id].count += isUpvote ? 1 : -1;
+        votes[id].userVote = isUpvote ? "up" : "down";
+      }
+
+      // Update UI
+      const countEl = document.getElementById(`vote-count-${id}`);
+      countEl.textContent = votes[id].count;
+
+      // Add feedback animation
+      countEl.classList.add("updated");
+      setTimeout(() => countEl.classList.remove("updated"), 300);
+
+      // Update button highlight
+      const card = btn.closest(".item-info");
+      card.querySelectorAll(".vote-btn").forEach(b => b.classList.remove("active"));
+      if (votes[id].userVote) {
+        const selector = votes[id].userVote === "up" ? ".upvote" : ".downvote";
+        card.querySelector(selector).classList.add("active");
+      }
+
+      saveVotes(votes);
+    });
+  });
+
+  // Restore active states on load
+  for (const [id, voteData] of Object.entries(votes)) {
+    if (voteData.userVote) {
+      const btn = document.querySelector(`.vote-btn.${voteData.userVote === "up" ? "upvote" : "downvote"}[data-id="${id}"]`);
+      if (btn) btn.classList.add("active");
+      const countEl = document.getElementById(`vote-count-${id}`);
+      if (countEl) countEl.textContent = voteData.count;
+    }
+  }
+}
+
+window.addEventListener("load", () => {
+  setTimeout(setupVotingListeners, 500);
+});
+
+
 
   if (addItemBtn) addItemBtn.addEventListener("click", () => openModal(false));
   if (closeBtn) closeBtn.addEventListener("click", closeModal);

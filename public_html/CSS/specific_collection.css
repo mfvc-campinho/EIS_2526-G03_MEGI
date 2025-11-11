@@ -124,9 +124,12 @@
 /* Container for items inserted by JS */
 .collection-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  /* increase the minimum card width to give more horizontal breathing room */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+  /* increased gap between cards */
   margin-bottom: 40px;
+  align-items: start;
 }
 
 /* If your JS creates elements with a specific class (e.g., .item-card),
@@ -134,7 +137,8 @@
 .collection-container>div {
   background: #ffffff;
   border-radius: 14px;
-  padding: 12px 12px 10px;
+  /* slightly more internal padding for better vertical spacing */
+  padding: 16px 14px 14px;
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
   border: 1px solid #e5e7eb;
   box-sizing: border-box;
@@ -168,6 +172,13 @@
    🔹 SMALL SCREENS
    =============================== */
 
+@media (max-width: 700px) {
+  .collection-container {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+}
+
 @media (max-width: 480px) {
   #buttons-bar {
     margin-top: 14px;
@@ -176,5 +187,6 @@
 
   .collection-container {
     gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 }

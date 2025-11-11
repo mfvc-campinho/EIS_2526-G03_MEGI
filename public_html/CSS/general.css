@@ -4,7 +4,7 @@
 /* Base layout: same spacing logic as other pages */
 main {
   padding: 96px 16px 56px;
-  max-width: 1300px;
+  max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
 }

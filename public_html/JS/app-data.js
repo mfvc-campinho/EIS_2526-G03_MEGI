@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // 2️⃣ Funções utilitárias
+  // 2. Funções utilitárias
   // ============================================================
   function loadData() {
     return JSON.parse(localStorage.getItem("collectionsData"));
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // 3️⃣ Ligações N:N
+  // 3. Ligações N:N
   // ============================================================
 
   // Itens associados a uma coleção
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!exists) {
       data.collectionItems.push({ itemId, collectionId });
       saveData(data);
-      console.log(`🔗 Item ${itemId} ligado à coleção ${collectionId}`);
+      console.log(`Linked item ${itemId} to collection ${collectionId}`);
     }
   }
 
@@ -88,12 +88,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!exists) {
       data.collectionEvents.push({ eventId, collectionId });
       saveData(data);
-      console.log(`🔗 Evento ${eventId} ligado à coleção ${collectionId}`);
+      console.log(`Linked event ${eventId} to collection ${collectionId}`);
     }
   }
 
   // ============================================================
-  // 4️⃣ CRUD básico
+  // 4. CRUD básico
   // ============================================================
   function addEntity(type, entity) {
     const data = loadData();
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // 5️⃣ Exportar API global
+  // 5. Exportar API global
   // ============================================================
   window.appData = {
     loadData,

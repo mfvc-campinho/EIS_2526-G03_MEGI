@@ -3,47 +3,6 @@
    Consistent with GoodCollections design system
    ============================================ */
 
-/* Base layout: same spacing logic as other pages */
-main {
-  padding: 96px 16px 56px;
-  max-width: 1200px;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-/* ===============================
-   🔹 Breadcrumb
-   =============================== */
-
-.breadcrumb-nav {
-  font-size: 0.82rem;
-  color: #9ca3af;
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.breadcrumb-nav a {
-  color: #6b7280;
-  text-decoration: none;
-}
-
-.breadcrumb-nav a:hover {
-  color: #2563eb;
-  text-decoration: underline;
-}
-
-.breadcrumb-nav span:last-child {
-  color: #111827;
-  font-weight: 500;
-}
-
-/* Page title spacing */
-.page-title {
-  margin: 0 0 18px;
-}
-
 /* ===============================
    🔹 COLLECTION OVERVIEW CARD
    =============================== */

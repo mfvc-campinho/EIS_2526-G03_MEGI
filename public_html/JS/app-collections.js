@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // 🔹 OTIMIZAÇÃO CRÍTICA: Pré-processar todos os itens uma única vez
+        // OTIMIZAÇÃO CRÍTICA: Pré-processar todos os itens uma única vez
         const itemsByCollectionId = data.collectionItems.reduce((acc, link) => {
             if (!acc[link.collectionId]) {
                 acc[link.collectionId] = [];

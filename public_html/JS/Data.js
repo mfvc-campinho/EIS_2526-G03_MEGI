@@ -96,7 +96,7 @@ const collectionsData = {
 
 
   // ======================================================
-  // 🔶 ITENS (cada um agora tem ID único)
+  // ITENS (cada um agora tem ID único)
   // ======================================================
   items: [
     // escudos
@@ -201,7 +201,7 @@ const collectionsData = {
   ],
 
   // ======================================================
-  // 🔴 EVENTOS (cada um com ID único)
+  // EVENTOS (cada um com ID único)
   // ======================================================
   events: [
     { id: "escudos-event-1", name: "Lisbon Numismatic Fair", localization: "Lisbon", date: "2025-03-22" },
@@ -219,7 +219,7 @@ const collectionsData = {
   ],
 
   // ======================================================
-  // 🔷 RELAÇÃO N:N → coleção ↔ item
+  // RELAÇÃO N:N → coleção ↔ item
   // ======================================================
   collectionItems: [
     { collectionId: "escudos", itemId: "escudos-item-1" },
@@ -239,7 +239,7 @@ const collectionsData = {
   ],
 
   // ======================================================
-  // 🔶 RELAÇÃO N:N → coleção ↔ evento
+  // RELAÇÃO N:N → coleção ↔ evento
   // ======================================================
   collectionEvents: [
     { collectionId: "escudos", eventId: "escudos-event-1" },

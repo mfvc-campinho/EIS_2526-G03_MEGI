@@ -60,78 +60,83 @@
     <!-- 🔹 MAIN CONTENT -->
     <!-- ========================================================= -->
     <main>
-      <main>
-        <!-- ===============================
+
+      <!-- 🔹 Breadcrumb (no JS change; optional visual context) -->
+      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+        <a href="home_page.html">Home</a>
+        <span>/</span>
+        <a href="user_page.html">User Profile</a>
+      </nav>
+
+      <!-- ===============================
            PROFILE OVERVIEW
-      =============================== -->
-        <h1 class="welcome-title">Welcome back, <span id="username-banner">Collector</span> 👋</h1>
+        =============================== -->
+      <h1 class="welcome-title">Welcome back, <span id="username-banner">Collector</span> 👋</h1>
 
-        <section class="profile-hero">
-          <div class="profile-card">
-            <!-- Top row: avatar + welcome + name -->
-            <div class="profile-top">
-              <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
+      <section class="profile-hero">
+        <div class="profile-card">
+          <!-- Top row: avatar + welcome + name -->
+          <div class="profile-top">
+            <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
 
-              <div class="profile-heading">
-                <h1 id="user-name">Collector</h1>
-                <p class="user-sub">
-                  This is your personal space to manage collections, items, and events.
-                </p>
-              </div>
-            </div>
-
-            <!-- Middle row: key user info (JS can fill these spans) -->
-            <div class="profile-info-grid">
-              <div class="info-block">
-                <span class="info-label">Email</span>
-                <span class="info-value" id="user-email">—</span>
-              </div>
-              <div class="info-block">
-                <span class="info-label">Date of Birth</span>
-                <span class="info-value" id="user-dob">—</span>
-              </div>
-              <div class="info-block">
-                <span class="info-label">Member Since</span>
-                <span class="info-value" id="user-member-since">2025</span>
-              </div>
-              <div class="info-block">
-                <span class="info-label">Collections</span>
-                <span class="info-value" id="user-collection-count">0</span>
-              </div>
-            </div>
-
-            <!-- Actions: same style as Home/All Collections -->
-            <div class="user-actions collection-actions">
-              <button id="edit-profile-btn" class="explore-btn">
-                <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
-                Edit Profile
-              </button>
-
-              <button id="open-collection-modal" class="explore-btn success" data-requires-login>
-                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                Add Collection
-              </button>
-
-              <button id="editCollectionBtn" class="explore-btn" data-requires-login>
-                <i class="bi bi-pencil me-1" aria-hidden="true"></i>
-                Edit Collection
-              </button>
-
-              <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>
-                <i class="bi bi-trash3 me-1" aria-hidden="true"></i>
-                Delete Collection
-              </button>
+            <div class="profile-heading">
+              <h1 id="user-name">Collector</h1>
+              <p class="user-sub">
+                This is your personal space to manage collections, items, and events.
+              </p>
             </div>
           </div>
-        </section>
 
-        <!-- ===============================
+          <!-- Middle row: key user info (JS can fill these spans) -->
+          <div class="profile-info-grid">
+            <div class="info-block">
+              <span class="info-label">Email</span>
+              <span class="info-value" id="user-email">—</span>
+            </div>
+            <div class="info-block">
+              <span class="info-label">Date of Birth</span>
+              <span class="info-value" id="user-dob">—</span>
+            </div>
+            <div class="info-block">
+              <span class="info-label">Member Since</span>
+              <span class="info-value" id="user-member-since">2025</span>
+            </div>
+            <div class="info-block">
+              <span class="info-label">Collections</span>
+              <span class="info-value" id="user-collection-count">0</span>
+            </div>
+          </div>
+
+          <!-- Actions: same style as Home/All Collections -->
+          <div class="user-actions collection-actions">
+            <button id="edit-profile-btn" class="explore-btn">
+              <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+              Edit Profile
+            </button>
+
+            <button id="open-collection-modal" class="explore-btn success" data-requires-login>
+              <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+              Add Collection
+            </button>
+
+            <button id="editCollectionBtn" class="explore-btn" data-requires-login>
+              <i class="bi bi-pencil me-1" aria-hidden="true"></i>
+              Edit Collection
+            </button>
+
+            <button id="deleteCollectionBtn" class="explore-btn danger" data-requires-login>
+              <i class="bi bi-trash3 me-1" aria-hidden="true"></i>
+              Delete Collection
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===============================
            USER COLLECTIONS
       =============================== -->
-        <h2 id="my-collections-title">My Collections</h2>
-        <section id="user-collections" class="collection-container"></section>
-      </main>
-
+      <h2 id="my-collections-title">My Collections</h2>
+      <section id="user-collections" class="collection-container"></section>
     </main>
   </div>
 

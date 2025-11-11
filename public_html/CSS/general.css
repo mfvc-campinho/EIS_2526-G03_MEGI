@@ -1,6 +1,14 @@
 /* ===============================
    🔹 SECTION TITLE (Our Collections)
 =============================== */
+/* Base layout: same spacing logic as other pages */
+main {
+  padding: 96px 16px 56px;
+  max-width: 1300px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
 h1.page-title {
   text-align: center;
   margin-top: 50px;
@@ -20,6 +28,27 @@ h1.page-title::after {
   background: linear-gradient(90deg, #0078ff, #00c6ff);
   margin: 10px auto 0;
   border-radius: 2px;
+}
+
+/* Subtitle under the main page title. Matches site typography and spacing. */
+.page-subtitle {
+  margin: 12px auto 0;
+  margin-bottom: 28px;
+  text-align: center;
+  color: #6b7280;
+  /* muted gray */
+  font-size: 1rem;
+  max-width: 860px;
+  line-height: 1.5;
+  font-weight: 500;
+  padding: 0 18px;
+}
+
+@media (max-width: 480px) {
+  .page-subtitle {
+    font-size: 0.98rem;
+    padding: 0 12px;
+  }
 }
 
 
@@ -560,4 +589,37 @@ footer .heart {
   width: 100%;
   /* ensures container spans the page */
   text-align: center;
+}
+
+/* ===============================
+   🔹 Breadcrumb
+   =============================== */
+
+.breadcrumb-nav {
+  font-size: 0.82rem;
+  color: #9ca3af;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb-nav a {
+  color: #6b7280;
+  text-decoration: none;
+}
+
+.breadcrumb-nav a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.breadcrumb-nav span:last-child {
+  color: #111827;
+  font-weight: 500;
+}
+
+/* Page title spacing */
+.page-title {
+  margin: 0 0 18px;
 }

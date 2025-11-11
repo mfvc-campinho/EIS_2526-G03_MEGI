@@ -4,7 +4,7 @@
 /* Base layout: same spacing logic as other pages */
 main {
   padding: 96px 16px 56px;
-  max-width: 1300px;
+  max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -74,6 +74,10 @@ body {
   padding: 14px 40px;
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
 }
 
 /* === LOGO / BRAND === */
@@ -596,6 +600,9 @@ footer .heart {
    =============================== */
 
 .breadcrumb-nav {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
   font-size: 0.82rem;
   color: #9ca3af;
   margin-bottom: 6px;

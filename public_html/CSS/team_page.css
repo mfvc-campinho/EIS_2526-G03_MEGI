@@ -17,6 +17,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   max-width: 1200px;
   margin: 0 auto;
   /* small side gutter */
+  gap: 28px 12px;
+  (row-gap e column-gap)
 }
 
 /* Cards fill their column (no extra margins) */
@@ -54,14 +56,20 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   font-size: 1.2rem;
   margin: 10px 0 5px;
   color: #2563eb;
+  text-align: center;
 }
 
 /* Student ID */
 .member .id {
-  color: #6b7280;
-  /* Cinzento escuro para contraste */
-  font-size: 0.9rem;
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background-color: #e8f2ff;
+  color: #1d4ed8;
+  font-size: 0.86rem;
+  font-weight: 600;
 }
 
 /* Personal description */
@@ -71,6 +79,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   /* Cinzento mais escuro */
   line-height: 1.4;
   font-weight: 300;
+  font-style: italic;
+  text-align: center;
 }
 
 @media (max-width: 520px) {

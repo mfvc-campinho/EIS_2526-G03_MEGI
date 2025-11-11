@@ -6,24 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Events - GoodCollections</title>
 
-    <!-- Google Font (keeps consistency with other pages) -->
+    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-    <!-- Project styles (same order as other pages) -->
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Project CSS -->
     <link rel="stylesheet" href="../CSS/general.css" />
     <link rel="stylesheet" href="../CSS/modal.css" />
     <link rel="stylesheet" href="../CSS/grid.css" />
     <link rel="stylesheet" href="../CSS/events.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
 </head>
 
 <body>
     <div id="content">
         <!-- ===============================
-    🔹 NAVIGATION BAR (Enhanced)
+         🔹 NAVIGATION BAR
     =============================== -->
         <header>
             <nav class="navbar">
@@ -57,165 +56,163 @@
                     <!-- Search -->
                     <div class="search-wrapper">
                         <i class="bi bi-search search-icon"></i>
-                        <input type="search" class="search-bar" placeholder="Search..." />
+                        <input type="search" class="search-bar" placeholder="Search events..." />
                     </div>
                 </div>
             </nav>
         </header>
 
-        <!-- MAIN CONTENT -->
+        <!-- ===============================
+         🔹 MAIN CONTENT
+    =============================== -->
         <main>
-
-            <!-- 🔹 Breadcrumb (no JS change; optional visual context) -->
+            <!-- Breadcrumb -->
             <nav class="breadcrumb-nav" aria-label="Breadcrumb">
                 <a href="home_page.html">Home</a>
                 <span>/</span>
                 <a href="event_page.html">Events</a>
             </nav>
 
+            <!-- Page header -->
             <section class="page-header">
                 <h1 class="page-title">Events</h1>
-                <p class="lead">Discover upcoming events, RSVP, and view past meetups from our community.</p>
+                <p class="page-subtitle">
+                    Browse upcoming and past events related to your collections.
+                    View details, register (RSVP), and receive alerts for upcoming dates.
+                    After attending, you can rate the event from 1 to 5 stars.
+                </p>
             </section>
 
-            <!-- Filters and actions (kept for consistency) -->
-            <section class="filter-section">
-                <div class="filter-control">
-                    <label for="eventFilter">Show:</label>
+            <!-- ===============================
+           🔹 Toggle: Upcoming / Past
+           (Tabs control the hidden select used by JS)
+      =============================== -->
+            <section class="events-toggle-wrapper">
+                <div class="events-toggle" aria-label="Filter events">
+                    <button id="tabUpcoming" class="toggle-pill active" type="button">
+                        Upcoming <span class="toggle-count" id="upcomingCount">(0)</span>
+                    </button>
+                    <button id="tabPast" class="toggle-pill" type="button">
+                        Past <span class="toggle-count" id="pastCount">(0)</span>
+                    </button>
+                </div>
+
+                <!-- Hidden native controls used by app-events.js -->
+                <div class="hidden-filters">
+                    <label for="eventFilter" class="sr-only">Show</label>
                     <select id="eventFilter">
-                        <option value="upcoming">Upcoming</option>
+                        <option value="upcoming" selected>Upcoming</option>
                         <option value="all">All</option>
                         <option value="past">Past</option>
                     </select>
+
                     <label for="eventType" class="sr-only">Type</label>
                     <select id="eventType">
-                        <option value="all">All Types</option>
+                        <option value="all" selected>All Types</option>
                         <option value="meetup">Meetup</option>
                         <option value="swap">Swap</option>
                         <option value="workshop">Workshop</option>
                     </select>
-                    <button id="newEventBtn" class="explore-btn" data-requires-login>➕ New Event</button>
                 </div>
             </section>
 
-            <!-- Event detail layout: left = description / media, right = meta & actions -->
-            <section class="event-detail">
-                <div class="event-grid">
-                    <article class="event-main">
-                        <div class="event-hero">
-                            <!-- Placeholder image; app-events.js can replace with event image if available -->
-                            <img src="../images/event-placeholder.jpg" alt="Event image" class="event-image"
-                                onerror="this.style.display='none'" />
-                        </div>
+            <!-- ===============================
+           🔹 Actions (New Event)
+      =============================== -->
+            <section class="events-actions">
+                <p class="actions-hint">
+                    Filter using the tabs above. Logged-in collectors can propose new events for the community.
+                </p>
 
-                        <h2 id="event-title">Event Title</h2>
-                        <p id="event-meta" class="muted">Date · Time · Location</p>
+                <!-- Left-aligned, below the text -->
+                <button id="newEventBtn" class="explore-btn success events-new-btn" data-requires-login>
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                    New Event
+                </button>
+            </section>
 
-                        <div id="event-body">
-                            <h3>About this event</h3>
-                            <p id="event-description">Full event description goes here. It can include agenda, host,
-                                requirements and links.</p>
-
-                            <h4>Agenda</h4>
-                            <ul id="event-agenda">
-                                <li>Introduction</li>
-                                <li>Main talk / activity</li>
-                                <li>Q&amp;A and networking</li>
-                            </ul>
-
-                            <h4>Notes</h4>
-                            <p id="event-notes">Bring your own items for swap. Registration required for workshops.</p>
-                        </div>
-                    </article>
-
-                    <aside class="event-aside">
-                        <div class="card event-card">
-                            <div class="card-section">
-                                <strong>Date &amp; Time</strong>
-                                <div id="aside-date">--</div>
-                            </div>
-                            <div class="card-section">
-                                <strong>Location</strong>
-                                <div id="aside-location">--</div>
-                            </div>
-                            <div class="card-section">
-                                <strong>Host</strong>
-                                <div id="aside-host">--</div>
-                            </div>
-                            <div class="card-section">
-                                <strong>Attendees</strong>
-                                <div id="aside-attendees">0 attending</div>
-                            </div>
-
-                            <div class="card-actions">
-                                <button id="rsvpBtn" class="save-btn" data-requires-login><i
-                                        class="bi bi-calendar-check me-1" aria-hidden="true"></i> RSVP</button>
-                                <button id="shareEventBtn" class="explore-btn"><i class="bi bi-share-fill me-1"
-                                        aria-hidden="true"></i> Share</button>
-                            </div>
-                        </div>
-
-                        <div class="card event-quick-links">
-                            <strong>Quick Links</strong>
-                            <ul>
-                                <li><a href="#event-body">Details</a></li>
-                                <li><a href="#event-agenda">Agenda</a></li>
-                                <li><a href="#">Organizer profile</a></li>
-                            </ul>
-                        </div>
-                    </aside>
+            <!-- ===============================
+           🔹 Events Grid
+           (Cards injected by app-events.js into #eventsList)
+      =============================== -->
+            <section class="events-section">
+                <div id="eventsList" class="events-grid">
+                    <!-- JS will populate event cards here -->
                 </div>
             </section>
 
-            <!-- Related / other events list -->
-            <section class="events-section related-events">
-                <h3>Other events you may like</h3>
-                <div id="eventsList" class="collection-container">
-                    <!-- Event cards are injected by app-events.js into #eventsList -->
-                </div>
-            </section>
-
-            <!-- Keep modals for create/edit and legacy usage by app-events.js -->
+            <!-- ===============================
+           🔹 EVENT DETAIL MODAL
+      =============================== -->
             <div id="event-modal" class="modal">
                 <div class="modal-content">
                     <span class="close-btn" id="close-event-modal">&times;</span>
+
                     <h2 id="modal-event-title">Event Title</h2>
                     <p id="modal-event-meta" class="muted">Date · Time · Location</p>
+
                     <div id="modal-event-body">
-                        <p id="modal-event-description">Full event description goes here. It can include agenda, host,
-                            requirements and links.</p>
+                        <p id="modal-event-description">
+                            Full event description goes here. It can include agenda, host,
+                            requirements and links.
+                        </p>
                         <p><strong>Host:</strong> <span id="modal-event-host"></span></p>
-                        <p><strong>Attendees:</strong> <span id="modal-event-attendees-count">0</span></p>
+                        <p><strong>Attendees:</strong>
+                            <span id="modal-event-attendees-count">0</span>
+                        </p>
                     </div>
+
+                    <!-- Rating area for past events -->
+                    <div id="modal-rating-info" class="modal-rating muted">
+                        <span id="modal-rating-label">
+                            Rating available after the event date.
+                        </span>
+                        <div id="modal-rating-stars" class="rating-stars"></div>
+                    </div>
+
                     <div class="modal-actions">
-                        <button id="modal-rsvpBtn" class="save-btn" data-requires-login><i
-                                class="bi bi-calendar-check me-1" aria-hidden="true"></i> RSVP</button>
-                        <button id="modal-shareEventBtn" class="explore-btn"><i class="bi bi-share-fill me-1"
-                                aria-hidden="true"></i> Share</button>
+                        <button id="modal-rsvpBtn" class="save-btn" data-requires-login>
+                            <i class="bi bi-calendar-check me-1" aria-hidden="true"></i>
+                            RSVP
+                        </button>
+                        <button id="modal-shareEventBtn" class="explore-btn">
+                            <i class="bi bi-share-fill me-1" aria-hidden="true"></i>
+                            Share
+                        </button>
                         <button id="modal-closeEventBtn" class="cancel-btn">Close</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Create / Edit Event modal -->
+            <!-- ===============================
+           🔹 CREATE / EDIT EVENT MODAL
+      =============================== -->
             <div id="event-edit-modal" class="modal">
                 <div class="modal-content">
                     <span class="close-btn" id="close-event-edit-modal">&times;</span>
                     <h2 id="event-edit-title">Create Event</h2>
+
                     <form id="form-event">
                         <input type="hidden" id="event-id" />
+
                         <label for="evt-name">Name:</label>
                         <input type="text" id="evt-name" name="evt-name" required />
-                        <label for="evt-date">Date & Time:</label>
+
+                        <label for="evt-date">Date &amp; Time:</label>
                         <input type="datetime-local" id="evt-date" name="evt-date" required />
+
                         <label for="evt-location">Location:</label>
                         <input type="text" id="evt-location" name="evt-location" />
+
                         <label for="evt-summary">Summary:</label>
                         <input type="text" id="evt-summary" name="evt-summary" />
+
                         <label for="evt-description">Description:</label>
                         <textarea id="evt-description" name="evt-description"></textarea>
+
                         <label for="evt-type">Type:</label>
                         <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop" />
+
                         <div class="modal-actions">
                             <button type="submit" class="save-btn">Save Event</button>
                             <button type="button" id="cancel-event-edit" class="cancel-btn">Cancel</button>
@@ -223,31 +220,36 @@
                     </form>
                 </div>
             </div>
-
         </main>
 
-        <!-- FOOTER -->
+        <!-- ===============================
+         🔹 FOOTER
+    =============================== -->
         <footer>
             <div class="footer-content">
-                <div class="footer-left">
-                    <span class="small">
-                        Made with ❤️ by
-                        <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank"
-                            rel="noopener noreferrer" class="text-decoration-none text-light fw-semibold">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"
-                                style="vertical-align:middle;margin-right:6px;">
-                                <path
-                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
-                            </svg>
-                            EIS_2526-G03_MEGI
-                        </a>
-                    </span>
+                <p>
+                    Made with <span class="heart">❤️</span> by
+                    <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank"
+                        rel="noopener noreferrer">
+                        <i class="bi bi-github" aria-hidden="true"></i>
+                        EIS_2526-G03_MEGI
+                    </a>
+                </p>
+
+                <div class="footer-links">
+                    <a href="home_page.html">Home Page</a>
+                    <a href="all_collections.html">Collections</a>
+                    <a href="event_page.html">Events</a>
+                    <a href="team_page.html">About Us</a>
+                    <a href="user_page.html">User Profile</a>
                 </div>
             </div>
         </footer>
     </div>
 
-    <!-- SCRIPTS (order matches other pages; app-events.js implements event logic) -->
+    <!-- ===============================
+       🔹 SCRIPTS
+  =============================== -->
     <script src="../JS/Data.js"></script>
     <script src="../JS/app-data.js"></script>
     <script src="../JS/app-users.js"></script>

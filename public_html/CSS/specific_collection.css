@@ -121,6 +121,39 @@
    🔹 ITEMS GRID
    =============================== */
 
+<<<<<<< HEAD
+=======
+/* Container for items inserted by JS */
+.collection-container {
+  display: grid;
+  /* increase the minimum card width to give more horizontal breathing room */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+  /* increased gap between cards */
+  margin-bottom: 40px;
+  align-items: start;
+}
+
+/* If your JS creates elements with a specific class (e.g., .item-card),
+   you can style them here. Example (safe & generic): */
+.collection-container>div {
+  background: #ffffff;
+  border-radius: 14px;
+  /* slightly more internal padding for better vertical spacing */
+  padding: 16px 14px 14px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+/* Simple hover feedback for item cards */
+.collection-container>div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transition: all 0.18s ease;
+}
+
+>>>>>>> 5217222d3f51627f17e9f7f3c8875bfcde5c7af9
 /* ===============================
    🔹 MODALS (local tweaks only)
    =============================== */
@@ -142,6 +175,13 @@
    🔹 SMALL SCREENS
    =============================== */
 
+@media (max-width: 700px) {
+  .collection-container {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+}
+
 @media (max-width: 480px) {
   #buttons-bar {
     margin-top: 14px;
@@ -150,5 +190,6 @@
 
   .collection-container {
     gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 }

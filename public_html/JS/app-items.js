@@ -1,5 +1,5 @@
-// ===============================================
-// app-items.js — Manage items within a collection
+﻿// ===============================================
+// app-items.js â€” Manage items within a collection
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
   // ===============================================
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUserName = userData ? userData.name : null;
     isActiveUser = Boolean(userData && userData.active);
 
-    // Esconde/mostra botões que requerem login
+    // Esconde/mostra botÃµes que requerem login
     document.querySelectorAll("[data-requires-login]").forEach(btn => {
       btn.style.display = isActiveUser ? "inline-block" : "none";
     });
@@ -34,14 +34,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const title = document.getElementById("modal-title");
   const idField = document.getElementById("item-id");
 
-  // Seletores para o modal da coleção
+  // Seletores para o modal da coleÃ§Ã£o
   const collectionModal = document.getElementById("collection-modal");
   const collectionForm = document.getElementById("form-collection");
   const editCollectionBtn = document.getElementById("edit-collection");
   const closeCollectionModalBtn = document.getElementById("close-collection-modal");
   const cancelCollectionModalBtn = document.getElementById("cancel-collection-modal");
 
-  // Obtém o ID da coleção a partir da URL
+  // ObtÃ©m o ID da coleÃ§Ã£o a partir da URL
   const params = new URLSearchParams(window.location.search);
   const collectionId = params.get("id");
 
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================================
-  // Renderizar detalhes da coleção (título, dono, etc.)
+  // Renderizar detalhes da coleÃ§Ã£o (tÃ­tulo, dono, etc.)
   // ===============================================
   function renderCollectionDetails() {
     const data = appData.loadData();
@@ -130,16 +130,16 @@ document.addEventListener("DOMContentLoaded", () => {
         ownerPhotoEl.alt = `${ownerDisplayName} owner`;
       }
     } else {
-      // Se a coleção não for encontrada, mostra uma mensagem de erro
+      // Se a coleÃ§Ã£o nÃ£o for encontrada, mostra uma mensagem de erro
       document.getElementById("collection-title").textContent = "Collection Not Found";
-      // Esconde os botões de ação se a coleção não existir
+      // Esconde os botÃµes de aÃ§Ã£o se a coleÃ§Ã£o nÃ£o existir
       if (addItemBtn) addItemBtn.style.display = "none";
       if (editCollectionBtn) editCollectionBtn.style.display = "none";
     }
   }
 
   // ===============================================
-  // Destacar secção se for do utilizador
+  // Destacar secÃ§Ã£o se for do utilizador
   // ===============================================
   function highlightOwnedSection() {
     const data = appData.loadData();
@@ -147,19 +147,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isCollectionOwnedByCurrentUser(collection, data)) {
       itemsContainer.classList.add("owned-section");
-      // Mostra os botões se for o dono
+      // Mostra os botÃµes se for o dono
       if (editCollectionBtn) editCollectionBtn.style.display = "inline-block";
       if (addItemBtn) addItemBtn.style.display = "inline-block";
     } else {
       itemsContainer.classList.remove("owned-section");
-      // Esconde os botões se não for o dono
+      // Esconde os botÃµes se nÃ£o for o dono
       if (editCollectionBtn) editCollectionBtn.style.display = "none";
       if (addItemBtn) addItemBtn.style.display = "none";
     }
   }
 
   // ===============================================
-  // Renderizar itens da coleção atual (relação N:N)
+  // Renderizar itens da coleÃ§Ã£o atual (relaÃ§Ã£o N:N)
   // ===============================================
   // Tornada global para ser chamada por outros scripts
   window.renderItems = function renderItems() {
@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
     itemsContainer.innerHTML =
       `<p class="notice-message">Loading items...</p>`;
 
-    // Função para renderizar itens em lotes (chunks)
+    // FunÃ§Ã£o para renderizar itens em lotes (chunks)
     function renderChunk(index = 0) {
       const chunkSize = 50; // Renderiza 50 itens de cada vez
       const fragment = document.createDocumentFragment();
@@ -230,17 +230,17 @@ document.addEventListener("DOMContentLoaded", () => {
       itemsContainer.appendChild(fragment);
 
       if (index + chunkSize < items.length) {
-        // Agenda o próximo lote sem bloquear o browser
+        // Agenda o prÃ³ximo lote sem bloquear o browser
         setTimeout(() => renderChunk(index + chunkSize), 0);
       }
     }
 
-    // Inicia o processo de renderização
+    // Inicia o processo de renderizaÃ§Ã£o
     renderChunk();
   };
 
   // ===============================================
-  // Preencher lista de coleções do utilizador atual
+  // Preencher lista de coleÃ§Ãµes do utilizador atual
   // ===============================================
   function populateCollectionsSelect() {
     const select = document.getElementById("item-collections");
@@ -282,14 +282,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Criar / Editar / Apagar / Guardar
   // ===============================================
   window.editItem = (id) => {
-    if (!isActiveUser) return alert("🚫 You must be logged in to edit items.");
+    if (!isActiveUser) return alert("ðŸš« You must be logged in to edit items.");
 
     const data = appData.loadData();
     const item = data.items.find(i => i.id === id);
     if (!item) return alert("Item not found");
     const collection = getCurrentCollection(data);
     if (!isCollectionOwnedByCurrentUser(collection, data)) {
-      return alert("🚫 You cannot edit this item.");
+      return alert("ðŸš« You cannot edit this item.");
     }
 
     idField.value = item.id;
@@ -304,23 +304,23 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.deleteItem = (id) => {
-    if (!isActiveUser) return alert("🚫 You must be logged in to delete items.");
+    if (!isActiveUser) return alert("ðŸš« You must be logged in to delete items.");
 
     const data = appData.loadData();
     const item = data.items.find(i => i.id === id);
     const collection = getCurrentCollection(data);
 
     if (!isCollectionOwnedByCurrentUser(collection, data)) {
-      return alert("🚫 You can only delete your own items.");
+      return alert("ðŸš« You can only delete your own items.");
     }
 
     if (confirm("Delete this item?\n\n(This is a demonstration. No data will be changed.)")) {
-      alert("✅ Simulation successful. No data was deleted.");
+      alert("âœ… Simulation successful. No data was deleted.");
     }
   };
 
   // ===============================================
-  // Lógica para Editar a Coleção
+  // LÃ³gica para Editar a ColeÃ§Ã£o
   // ===============================================
   function openCollectionModal() {
     const data = appData.loadData();
@@ -328,10 +328,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!collection) return alert("Collection not found!");
     if (!isCollectionOwnedByCurrentUser(collection, data)) {
-      return alert("🚫 You can only edit your own collections.");
+      return alert("ðŸš« You can only edit your own collections.");
     }
 
-    // Preenche o formulário do modal da coleção
+    // Preenche o formulÃ¡rio do modal da coleÃ§Ã£o
     collectionForm.querySelector("#collection-id").value = collection.id;
     collectionForm.querySelector("#col-name").value = collection.name;
     collectionForm.querySelector("#col-summary").value = collection.summary || "";
@@ -361,18 +361,18 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       alert(
-        "✅ Simulation successful. Collection would have been updated.\n\n(This is a demonstration. No data was saved.)"
+        "âœ… Simulation successful. Collection would have been updated.\n\n(This is a demonstration. No data was saved.)"
       );
 
       closeCollectionModal();
-      // Não renderiza novamente para não dar a falsa impressão de que os dados mudaram.
+      // NÃ£o renderiza novamente para nÃ£o dar a falsa impressÃ£o de que os dados mudaram.
       // renderCollectionDetails();
     });
   }
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (!isActiveUser) return alert("🚫 You must be logged in to add items.");
+    if (!isActiveUser) return alert("ðŸš« You must be logged in to add items.");
 
     const id = idField.value.trim();
     const selectedCollections = Array.from(
@@ -382,76 +382,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const action = id ? "updated" : "created";
 
     alert(
-      `✅ Simulation successful. Item would have been ${action}.\n\n(This is a demonstration. No data was saved.)`
+      `âœ… Simulation successful. Item would have been ${action}.\n\n(This is a demonstration. No data was saved.)`
     );
 
     closeModal();
-    // A renderização é removida para não mostrar alterações que não aconteceram
+    // A renderizaÃ§Ã£o Ã© removida para nÃ£o mostrar alteraÃ§Ãµes que nÃ£o aconteceram
     // renderItems();
   });
-
 // ===============================================
-// 🔹 Voting Logic (Upvote / Downvote)
+// Voting Logic (demo only)
 // ===============================================
 function setupVotingListeners() {
-  const votes = loadVotes();
-
   document.querySelectorAll(".vote-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-      const id = btn.dataset.id;
-      const isUpvote = btn.classList.contains("upvote");
-
-      // Initialize if missing
-      if (!votes[id]) votes[id] = { count: 0, userVote: null };
-
-      const currentVote = votes[id].userVote;
-
-      // Logic:
-      //  - If same vote clicked again → remove it
-      //  - Else → apply new vote (+1 or -1) and adjust count
-      if (currentVote === (isUpvote ? "up" : "down")) {
-        // Undo the vote
-        votes[id].count += isUpvote ? -1 : 1;
-        votes[id].userVote = null;
-      } else {
-        // Remove opposite vote if exists
-        if (currentVote === "up") votes[id].count -= 1;
-        if (currentVote === "down") votes[id].count += 1;
-
-        // Apply new vote
-        votes[id].count += isUpvote ? 1 : -1;
-        votes[id].userVote = isUpvote ? "up" : "down";
-      }
-
-      // Update UI
-      const countEl = document.getElementById(`vote-count-${id}`);
-      countEl.textContent = votes[id].count;
-
-      // Add feedback animation
-      countEl.classList.add("updated");
-      setTimeout(() => countEl.classList.remove("updated"), 300);
-
-      // Update button highlight
-      const card = btn.closest(".item-info");
-      card.querySelectorAll(".vote-btn").forEach(b => b.classList.remove("active"));
-      if (votes[id].userVote) {
-        const selector = votes[id].userVote === "up" ? ".upvote" : ".downvote";
-        card.querySelector(selector).classList.add("active");
-      }
-
-      saveVotes(votes);
+      alert("Demo only: voting is not saved.");
     });
   });
-
-  // Restore active states on load
-  for (const [id, voteData] of Object.entries(votes)) {
-    if (voteData.userVote) {
-      const btn = document.querySelector(`.vote-btn.${voteData.userVote === "up" ? "upvote" : "downvote"}[data-id="${id}"]`);
-      if (btn) btn.classList.add("active");
-      const countEl = document.getElementById(`vote-count-${id}`);
-      if (countEl) countEl.textContent = voteData.count;
-    }
-  }
 }
 
 window.addEventListener("load", () => {
@@ -469,12 +415,12 @@ window.addEventListener("load", () => {
     if (e.target === collectionModal) closeCollectionModal();
   });
 
-  // Ouve o evento de login/logout e atualiza a página
+  // Ouve o evento de login/logout e atualiza a pÃ¡gina
   window.addEventListener("userStateChange", (e) => {
     const newUserData = e.detail;
     const newIsActiveUser = newUserData && newUserData.active;
 
-    // Só renderiza de novo se o estado de login MUDOU
+    // SÃ³ renderiza de novo se o estado de login MUDOU
     if (newIsActiveUser === isActiveUser) return;
 
     updateUserState();
@@ -482,10 +428,10 @@ window.addEventListener("load", () => {
     renderItems();
   });
 
-  // Inicialização
-  renderCollectionDetails();    // Preenche os detalhes da coleção
-  populateCollectionsSelect();  // Preenche select de coleções
-  renderItems();                // Renderiza itens da coleção
+  // InicializaÃ§Ã£o
+  renderCollectionDetails();    // Preenche os detalhes da coleÃ§Ã£o
+  populateCollectionsSelect();  // Preenche select de coleÃ§Ãµes
+  renderItems();                // Renderiza itens da coleÃ§Ã£o
   highlightOwnedSection();      // Destaca se for dono
 });
 

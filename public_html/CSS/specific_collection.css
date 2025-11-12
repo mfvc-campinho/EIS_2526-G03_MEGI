@@ -67,6 +67,7 @@
     opacity: 0.3;
     transform: scale(0.9);
   }
+
   100% {
     opacity: 0;
     transform: scale(1.4);
@@ -175,8 +176,7 @@
    🔹 ITEMS GRID
    =============================== */
 
-<<<<<<< HEAD
-=======
+
 /* Container for items inserted by JS */
 .collection-container {
   display: grid;
@@ -272,7 +272,6 @@
   color: #64748b;
 }
 
->>>>>>> 5217222d3f51627f17e9f7f3c8875bfcde5c7af9
 /* ===============================
    🔹 MODALS (local tweaks only)
    =============================== */
@@ -344,22 +343,26 @@
   border: none;
   cursor: pointer;
   font-size: 1.5rem;
-  color: #cbd5e1; /* neutral bluish-gray */
+  color: #cbd5e1;
+  /* neutral bluish-gray */
   transition: transform 0.2s ease, color 0.25s ease;
 }
 
 .vote-btn:hover {
   transform: translateY(-2px);
-  color: #93c5fd; /* light blue hover */
+  color: #93c5fd;
+  /* light blue hover */
 }
 
 /* Active vote states */
 .vote-btn.upvote.active-up i {
-  color: #60a5fa; /* light blue for upvote */
+  color: #60a5fa;
+  /* light blue for upvote */
 }
 
 .vote-btn.downvote.active-down i {
-  color: #2563eb; /* darker blue for downvote */
+  color: #2563eb;
+  /* darker blue for downvote */
 }
 
 /* Smooth press animation */

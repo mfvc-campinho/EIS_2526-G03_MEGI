@@ -697,3 +697,594 @@ footer .heart {
 .page-title {
   margin: 0 0 18px;
 }
+
+
+/* ==========================================
+   🌟 GRID UNIFICADO (Coleções e Itens)
+   Controla o layout de todas as grelhas de cartões do site.
+   ========================================== */
+
+/* ===============================
+   🔹 GRID CONTAINER
+=============================== */
+.collections-row,
+.collection-container,
+.item-container {
+  /* Adicionado para abranger ambos */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  /* Aumentado o espaço entre cartões para melhor legibilidade */
+  padding: 18px;
+  max-width: 2000px;
+  /* Reduz a largura máxima para "apertar" o layout */
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ===============================
+   🔹 CARD BASE
+   (Estilo comum para .collection-card e .item-card)
+=============================== */
+.card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: calc(20% - 24px);
+  /* 5 por linha (ajustado ao gap) */
+  min-width: 280px;
+  /* Aumentar um pouco para melhor visualização */
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Ajustes específicos para cada tipo de cartão */
+.collection-card {
+  justify-content: flex-start;
+  /* Alinha conteúdo ao topo */
+}
+
+.collection-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+}
+
+
+.item-card {
+  justify-content: space-between;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* Estica o conteúdo para preencher a altura */
+}
+
+.item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* ===============================
+   🔹 CARD IMAGE — Modern White Aesthetic
+   =============================== */
+.card-image,
+.item-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.4s ease;
+}
+
+/* Image styling */
+.card-image img,
+.item-image-wrapper .item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.97) contrast(1.02);
+  transition: transform 0.5s ease, filter 0.4s ease;
+}
+
+/* Hover effect — slight zoom + light lift */
+.card-image:hover img,
+.item-image-wrapper:hover .item-image {
+  transform: scale(1.05);
+  filter: brightness(1.05) contrast(1.05);
+}
+
+/* Light overlay fade for polish */
+.card-image::before,
+.item-image-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 60%, rgba(248, 250, 252, 0.4) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-image:hover::before,
+.item-image-wrapper:hover::before {
+  opacity: 1;
+}
+
+/* Empty state — graceful fallback */
+.card-image:empty,
+.item-image-wrapper:empty {
+  background: #f1f5f9;
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.9rem;
+  border: 1px dashed #e2e8f0;
+}
+
+.card-image:empty::after,
+.item-image-wrapper:empty::after {
+  content: "No image available";
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+}
+
+/* Subtle fade-up on load */
+.card-image,
+.item-image-wrapper {
+  opacity: 0;
+  animation: fadeUpImage 0.5s ease forwards;
+}
+
+@keyframes fadeUpImage {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ===============================
+   🔹 CARD INFO
+=============================== */
+.card-info {
+  padding: 20px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.card-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: #222;
+  font-weight: 600;
+}
+
+.card-info p {
+  font-size: 0.95rem;
+  color: #777;
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   🔹 ITEMS PREVIEW
+=============================== */
+.items-preview {
+  margin: 8px 0 0 0;
+}
+
+.mini-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+}
+
+.mini-item-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 4px;
+}
+
+.mini-item-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 2px 4px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.mini-item-link:hover,
+.mini-item-link:focus-visible {
+  color: #0d6efd;
+  background-color: #edf4ff;
+}
+
+.mini-item-img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #eee;
+  border: 1px solid #ddd;
+}
+
+/* ===============================
+   🔹 CARD BUTTONS — Refined Modern White
+   =============================== */
+.card-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+/* ===============================
+   🔹 Base Button
+   =============================== */
+.explore-btn {
+  position: relative;
+  background: #ffffff;
+  color: #1e3a8a;
+  border: 1px solid #e5e7eb;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  font-family: "Inter", "Poppins", "Segoe UI", sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Text inside for smoother color animation */
+.explore-btn span {
+  position: relative;
+  z-index: 2;
+  transition: color 0.25s ease;
+}
+
+/* Animated underline bar */
+.explore-btn::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background: #2563eb;
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+/* Hover interaction */
+.explore-btn:hover {
+  color: #2563eb;
+  border-color: #dbeafe;
+  background: #f9fafb;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.08);
+}
+
+.explore-btn:hover::after {
+  width: 50%;
+}
+
+/* Optional active press feedback */
+.explore-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ===============================
+   🔹 Variants
+   =============================== */
+.btn-preview {
+  color: #2563eb;
+  border-color: #dbeafe;
+}
+
+.btn-preview:hover {
+  background: #f3f8ff;
+  color: #1d4ed8;
+  box-shadow: 0 6px 14px rgba(59, 130, 246, 0.1);
+}
+
+.delete-btn {
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.delete-btn:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+  box-shadow: 0 6px 14px rgba(185, 28, 28, 0.08);
+}
+
+/* ===============================
+   🔹 Subtle Entry Animation
+   =============================== */
+.explore-btn {
+  opacity: 0;
+  animation: fadeUp 0.5s ease forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   🔹 MODALS (CRUD)
+=============================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: white;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.crud-controls {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ===============================
+   🔹 DETAILS LIST (EXPLORE MORE)
+=============================== */
+.details-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 20px 0;
+}
+
+.details-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #eee;
+  padding: 6px 0;
+}
+
+.details-list img.mini-item-img {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* ===============================
+   🔹 RESPONSIVE FIXES
+=============================== */
+
+@media (max-width: 1300px) {
+  .card {
+    width: calc(25% - 24px);
+  }
+
+  /* 4 por linha */
+}
+
+@media (max-width: 900px) {
+  .card {
+    width: calc(33.33% - 24px);
+  }
+
+  /* 3 por linha */
+}
+
+@media (max-width: 600px) {
+  .card {
+    width: calc(50% - 24px);
+  }
+
+  /* 2 por linha */
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 100%;
+  }
+
+  /* 1 por linha */
+}
+
+
+/* ===============================================
+   MODAL — ESTILO UNIFICADO E MODERNO
+=============================================== */
+
+/* 🔹 Fundo escurecido (overlay) */
+.modal {
+  display: none;
+  /* Escondido por defeito, JS controla a visibilidade */
+  position: fixed;
+  inset: 0;
+  background-color: rgba(17, 24, 39, 0.6);
+  /* Fundo semi-transparente */
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(3px);
+}
+
+/* 🔹 Conteúdo do modal */
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 550px;
+  /* Aumentado para dar mais espaço */
+  padding: 28px 32px;
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Animação de entrada */
+.modal[style*="display: flex"] {
+  opacity: 1;
+}
+
+.modal[style*="display: flex"] .modal-content {
+  transform: scale(1);
+}
+
+/* 🔹 Título do modal */
+#collection-modal-title,
+#modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+/* 🔹 Formulário e campos */
+#form-collection,
+#item-form {
+  display: grid;
+  gap: 16px;
+}
+
+/* Labels */
+.modal-content label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Inputs e Textareas */
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content input[type="date"],
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  /* Garante que o padding não aumenta a largura total */
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* Estilo específico para a área de texto (descrição) */
+.modal-content textarea {
+  min-height: 120px;
+  /* Altura mínima equivalente a ~4-5 linhas */
+  resize: vertical;
+  /* Permite redimensionar apenas na vertical */
+}
+
+/* 🔹 Botões de Ação (Guardar, Cancelar) */
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Texto de ajuda dentro dos formulários do modal */
+.form-hint {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* 🔹 Botão de fechar (X) */
+.close-btn,
+.close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-btn:hover,
+.close:hover {
+  color: #1f2937;
+}

@@ -703,3 +703,104 @@
     text-overflow: unset;
   }
 }
+
+/* ------------------------------------------------------------------
+   Added mobile-friendly grid adjustments for smaller breakpoints.
+   Targets: .collection-container, .events-grid/.event-grid, .features-grid, .Team
+   These rules are intentionally simple and only apply below the stated
+   breakpoints so desktop (>992px) layouts remain unchanged.
+   ------------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+  /* Prefer two-column layouts on small tablets for readability */
+  .collection-container,
+  .events-grid,
+  .event-grid,
+  .features-grid,
+  .Team {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.125rem;
+    /* 18px */
+    padding-left: 12px;
+    padding-right: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Allow grid children to shrink properly and avoid overflowing the column */
+  .collection-container>*,
+  .events-grid>*,
+  #eventsList>*,
+  .features-grid>*,
+  .Team>* {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+
+  /* Stack to a single full-width column on phones */
+  .collection-container,
+  .events-grid,
+  .event-grid,
+  .features-grid,
+  .Team {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem;
+    /* 20px for touch readability */
+    padding-left: 14px;
+    padding-right: 14px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Make sure images and media inside grid cards don't overflow */
+  .collection-container img,
+  .events-grid img,
+  .features-grid img,
+  .Team img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Ensure card children can break and don't force horizontal scroll */
+  .collection-container>*,
+  .events-grid>*,
+  #eventsList>*,
+  .features-grid>*,
+  .Team>* {
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Improve tappable areas for controls inside collection/team items */
+  .collection-container .item-buttons button,
+  .Team .member-actions button {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 375px) {
+
+  /* Final small-screen polish to prevent accidental overflow on very small phones */
+  .collection-container,
+  .events-grid,
+  .features-grid,
+  .Team {
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 1rem;
+  }
+
+  /* Extra safe rule so long titles and flex children can wrap */
+  .collection-container .item-info h3,
+  .Team .member-name,
+  #eventsList .card-title {
+    word-break: break-word;
+    white-space: normal;
+  }
+}

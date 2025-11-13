@@ -4,6 +4,107 @@
 // ===============================================
 
 document.addEventListener("DOMContentLoaded", () => {
+    function attachCollectionInteractions(collections, data) {
+        if (!list) return;
+        const map = collections.reduce((acc, col) => {
+            acc[col.id] = col;
+            return acc;
+        }, {});
+        list.querySelectorAll(".vote-toggle").forEach(btn => {
+            const id = btn.dataset.collectionId;
+            btn.addEventListener("click", () => toggleVote(id));
+        });
+        list.querySelectorAll(".top-pick-btn").forEach(btn => {
+            const id = btn.dataset.collectionId;
+            btn.addEventListener("click", () => handleTopPickSelection(id, map[id], data));
+        });
+    }
+
+    function toggleVote(collectionId) {
+        if (!isActiveUser) {
+            alert("To do that, login.");
+            return;
+        }
+        const ownerId = getEffectiveOwnerId();
+        if (!ownerId)
+            return;
+        const data = lastRenderData || appData.loadData();
+        buildLikesMaps(data);
+        const collection = data?.collections?.find(c => c.id === collectionId);
+        if (!collection)
+            return;
+        alert("Simulation only: voting here would change the collection's total.");
+        const currentState = getEffectiveUserLike(collection, ownerId);
+        voteState[collectionId] = !currentState;
+        renderCollections(lastRenderCriteria, lastRenderLimit);
+        notifyLikesChange(ownerId);
+    }
+
+    function startTopPickFlow(ownerId, collectionId, collectionName, dataParam) {
+        if (!ownerId || !collectionId)
+            return;
+        const data = dataParam || appData.loadData();
+        if (!data)
+            return;
+        const entries = getActiveShowcase(ownerId, data);
+        const existing = entries.find(entry => entry.collectionId === collectionId);
+        if (!existing && entries.length >= MAX_USER_CHOICES) {
+            alert(`You already selected ${MAX_USER_CHOICES} collections. Remove one before adding another.`);
+            return;
+        }
+        const defaultOrder = existing?.order || Math.min(MAX_USER_CHOICES, entries.length + 1);
+        openTopPickModal({
+            collectionName: collectionName || "this collection",
+            helperText: existing
+                ? `Update the position for "${collectionName || "this collection"}".`
+                : `Add "${collectionName || "this collection"}" to your Top ${MAX_USER_CHOICES}.`,
+            maxChoices: MAX_USER_CHOICES,
+            defaultOrder,
+            existingOrder: existing?.order || null,
+            onSubmit: order => {
+                if (!Number.isInteger(order) || order < 1 || order > MAX_USER_CHOICES) {
+                    alert(`Please enter a number between 1 and ${MAX_USER_CHOICES}.`);
+                    return;
+                }
+                const updated = entries.filter(entry => entry.collectionId !== collectionId);
+                const conflictIndex = updated.findIndex(entry => entry.order === order);
+                if (conflictIndex !== -1) {
+                    updated.splice(conflictIndex, 1);
+                }
+                updated.push({ collectionId, order });
+                updated.sort((a, b) => a.order - b.order);
+                userChosenState[ownerId] = updated;
+                closeTopPickModal();
+                renderCollections(lastRenderCriteria, lastRenderLimit);
+                notifyShowcaseChange(ownerId);
+            },
+            onRemove: existing
+                ? () => {
+                    const filtered = entries.filter(entry => entry.collectionId !== collectionId);
+                    userChosenState[ownerId] = filtered;
+                    closeTopPickModal();
+                    renderCollections(lastRenderCriteria, lastRenderLimit);
+                    notifyShowcaseChange(ownerId);
+                }
+                : null,
+        });
+    }
+
+    window.demoTopPickFlow = function (options = {}) {
+        const { ownerId, collectionId, collectionName } = options;
+        const data = options.data || appData.loadData();
+        startTopPickFlow(ownerId, collectionId, collectionName, data);
+    };
+
+    function handleTopPickSelection(collectionId, collection, data) {
+        if (!isActiveUser) {
+            return;
+        }
+        const ownerId = getEffectiveOwnerId();
+        if (!ownerId)
+            return;
+        startTopPickFlow(ownerId, collectionId, collection?.name || "this collection", data);
+    }
     // ==========================================================
     // 1. Seletores de Elementos e Contexto da Página
     // ==========================================================
@@ -23,17 +124,172 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("form-collection");
     const openBtn = document.getElementById("open-collection-modal");
     const restoreBtn = document.getElementById("restoreDataBtn");
-    const editBtn = document.getElementById("editCollectionBtn");
-    const deleteBtn = document.getElementById("deleteCollectionBtn");
 
     // ==========================================================
     // 2. Gestão do Estado do Utilizador
     // ==========================================================
     const DEFAULT_OWNER_ID = "collector-main";
+    const MAX_USER_CHOICES = 5;
     let currentUserId;
     let currentUserName;
     let isActiveUser;
     let collectionOwnerMap = {};
+    const sessionState = window.demoCollectionsState || (window.demoCollectionsState = {});
+    const voteState = sessionState.voteState || (sessionState.voteState = {});
+    const userChosenState = sessionState.userChosenState || (sessionState.userChosenState = {});
+    let defaultShowcaseMap = {};
+    let showcaseInitialized = false;
+    let lastRenderCriteria = "lastAdded";
+    let lastRenderLimit = null;
+    let lastRenderData = null;
+    let topPickModalElements = null;
+    let topPickModalHandlers = null;
+    let likesByCollectionMap = {};
+    let ownerLikesMap = {};
+
+    function notifyShowcaseChange(ownerId) {
+        if (!ownerId) return;
+        window.dispatchEvent(new CustomEvent("userShowcaseChange", { detail: { ownerId } }));
+    }
+
+    function notifyLikesChange(ownerId) {
+        if (!ownerId) return;
+        window.dispatchEvent(new CustomEvent("userLikesChange", { detail: { ownerId } }));
+    }
+
+    function buildLikesMaps(data) {
+        likesByCollectionMap = {};
+        ownerLikesMap = {};
+        (data?.userShowcases || []).forEach(entry => {
+            const owner = entry.ownerId;
+            const likes = entry.likes || entry.likedCollections || [];
+            ownerLikesMap[owner] = new Set(likes);
+            likes.forEach(colId => {
+                if (!likesByCollectionMap[colId]) likesByCollectionMap[colId] = new Set();
+                likesByCollectionMap[colId].add(owner);
+            });
+        });
+    }
+
+    function getCollectionLikedBy(collection) {
+        if (!collection) return new Set();
+        const set = likesByCollectionMap[collection.id];
+        return set ? new Set(set) : new Set();
+    }
+
+    function getVoteOverride(collectionId) {
+        return Object.prototype.hasOwnProperty.call(voteState, collectionId)
+            ? voteState[collectionId]
+            : undefined;
+    }
+
+    function getUserBaseLike(collection, userId) {
+        if (!userId || !collection) return false;
+        const likedSet = ownerLikesMap[userId];
+        return likedSet ? likedSet.has(collection.id) : false;
+    }
+
+    function getEffectiveUserLike(collection, userId) {
+        if (!userId || !collection) return false;
+        const override = getVoteOverride(collection.id);
+        if (override === undefined) return getUserBaseLike(collection, userId);
+        return override;
+    }
+
+    function getDisplayLikes(collection, userId) {
+        const likedSet = getCollectionLikedBy(collection);
+        if (userId && collection) {
+            const override = getVoteOverride(collection.id);
+            const baseHas = likedSet.has(userId);
+            const finalState = override === undefined ? baseHas : override;
+            if (finalState) likedSet.add(userId);
+            else likedSet.delete(userId);
+        }
+        return likedSet.size;
+    }
+
+    function ensureTopPickModal() {
+        if (topPickModalElements) return;
+        const backdrop = document.createElement("div");
+        backdrop.className = "top-pick-modal-backdrop";
+        backdrop.innerHTML = `
+      <div class="top-pick-modal" role="dialog" aria-modal="true">
+        <form class="top-pick-form">
+          <h3>Select a position</h3>
+          <p class="top-pick-message">Choose where this collection should appear in your Top 5.</p>
+          <label for="top-pick-select">Position</label>
+          <select id="top-pick-select"></select>
+          <div class="top-pick-actions">
+            <button type="submit" class="primary">Save</button>
+            <button type="button" class="remove-btn">Remove from Top 5</button>
+            <button type="button" class="ghost cancel-btn">Cancel</button>
+          </div>
+        </form>
+      </div>
+    `;
+        document.body.appendChild(backdrop);
+        const modal = backdrop.querySelector(".top-pick-modal");
+        const form = modal.querySelector(".top-pick-form");
+        const message = modal.querySelector(".top-pick-message");
+        const select = modal.querySelector("#top-pick-select");
+        const removeBtn = modal.querySelector(".remove-btn");
+        const cancelBtn = modal.querySelector(".cancel-btn");
+        topPickModalElements = {
+            backdrop,
+            modal,
+            form,
+            message,
+            select,
+            removeBtn,
+            cancelBtn,
+        };
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            if (!topPickModalHandlers?.onSubmit) return;
+            const order = Number(select.value);
+            topPickModalHandlers.onSubmit(order);
+        });
+        removeBtn.addEventListener("click", () => {
+            if (topPickModalHandlers?.onRemove) {
+                topPickModalHandlers.onRemove();
+            }
+        });
+        cancelBtn.addEventListener("click", () => closeTopPickModal());
+        backdrop.addEventListener("click", e => {
+            if (e.target === backdrop) closeTopPickModal();
+        });
+        window.addEventListener("keydown", e => {
+            if (e.key === "Escape" && backdrop.classList.contains("visible")) {
+                closeTopPickModal();
+            }
+        });
+    }
+
+    function openTopPickModal(options) {
+        ensureTopPickModal();
+        const { backdrop, select, message, removeBtn } = topPickModalElements;
+        const { collectionName, helperText, maxChoices, defaultOrder, existingOrder, onSubmit, onRemove } = options;
+        message.textContent = helperText || `Choose where "${collectionName}" should appear (1 is the top).`;
+        select.innerHTML = "";
+        for (let i = 1; i <= maxChoices; i++) {
+            const option = document.createElement("option");
+            option.value = String(i);
+            option.textContent = `#${i}`;
+            select.appendChild(option);
+        }
+        select.value = String(defaultOrder);
+        removeBtn.style.display = existingOrder ? "inline-flex" : "none";
+        removeBtn.disabled = !onRemove;
+        topPickModalHandlers = { onSubmit, onRemove };
+        backdrop.classList.add("visible");
+        select.focus();
+    }
+
+    function closeTopPickModal() {
+        if (!topPickModalElements) return;
+        topPickModalElements.backdrop.classList.remove("visible");
+        topPickModalHandlers = null;
+    }
 
     function hydrateCollectionOwnerMap(data) {
         collectionOwnerMap = (data?.collectionsUsers || []).reduce((acc, link) => {
@@ -97,169 +353,171 @@ document.addEventListener("DOMContentLoaded", () => {
         return Boolean(collectionOwnerId && collectionOwnerId === ownerId);
     }
 
-    // ==========================================================
-    // 3. Renderização das Coleções
-    // ==========================================================
-    function renderCollections(criteria = "lastAdded", limit = null) {
-        const data = appData.loadData();
-        hydrateCollectionOwnerMap(data);
-        let collections = data.collections || [];
-
-        // Filtra para a página de utilizador
-        if (isUserPage) {
-            const ownerId = resolveUserPageOwnerId();
-            if (!ownerId) {
-                list.innerHTML = `<p class="notice-message">No collections found for this user.</p>`;
-                return;
-            }
-            collections = collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId);
-        }
-
-        // Ordena conforme o critério
-        if (criteria === "lastAdded") {
-            collections.sort((a, b) => new Date(b.metrics.addedAt) - new Date(a.metrics.addedAt));
-        } else if (criteria === "userChosen") {
-            collections = collections.filter(c => c.metrics.userChosen);
-        } else if (criteria === "itemCount") {
-            // Otimização de Performance: Pré-calcular a contagem de itens
-            // Em vez de recalcular em cada comparação do sort, calculamos uma vez para cada coleção.
-            const itemCounts = data.collectionItems.reduce((acc, link) => {
-                acc[link.collectionId] = (acc[link.collectionId] || 0) + 1;
-                return acc;
-            }, {});
-
-            // Ordena usando a contagem pré-calculada.
-            collections.sort((a, b) => (itemCounts[b.id] || 0) - (itemCounts[a.id] || 0));
-        }
-
-        // Aplica o limite (para a homepage)
-        if (limit)
-            collections = collections.slice(0, limit);
-
-        list.innerHTML = "";
-        if (collections.length === 0) {
-            list.innerHTML = `<p class="notice-message">No collections found.</p>`;
-            return;
-        }
-
-        // Gera o HTML dos cartões
-        let allCardsHTML = ""; // 1. Acumulador de HTML
-
-        for (const col of collections) {
-            const items = (appData.getItemsByCollection(col.id, data) || []).slice(0, 2);
-            const itemsHTML = items.length
-                ? `<ul class="mini-item-list">${items.map(it =>
-                    `<li><a class="mini-item-link" href="item_page.html?id=${encodeURIComponent(it.id || "")}">
-                        <img src="${it.image}" alt="${it.name}" class="mini-item-img" loading="lazy">
-                        <span>${it.name}</span>
-                      </a></li>`
-                ).join("")}</ul>`
-                : `<p class="no-items">No items yet.</p>`;
-
-            const isOwnerLoggedIn = isCollectionOwnedByCurrentUser(col, data);
-            const specialClass = isOwnerLoggedIn ? 'collector-owned' : '';
-            const canEdit = isOwnerLoggedIn;
-
-            const buttons = `
-                <button class="explore-btn" onclick="togglePreview('${col.id}', this)"><i class="bi bi-eye"></i> Show Preview</button>
-                <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'"><i class="bi bi-search"></i> Explore More</button>
-                ${canEdit ? `<button class="explore-btn" onclick="editCollection('${col.id}')"><i class="bi bi-pencil"></i> Edit</button>` : ""}
-                ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')"><i class="bi bi-trash"></i> Delete</button>` : ""}
-            `;
-
-            // 2. Adiciona o HTML do cartão ao acumulador em vez de ao DOM
-            allCardsHTML += `
-        <div class="card collection-card ${specialClass}">
-          <div class="card-image" id="img-${col.id}"><img src="${col.coverImage || '../images/default.jpg'}" alt="${col.name}" loading="lazy"></div>
-          <div class="card-info">
-            <h3>${col.name}</h3>
-            <p>${col.summary || ""}</p>
-            <div class="items-preview" id="preview-${col.id}" style="display:none;">${itemsHTML}</div>
-            <div class="card-buttons">${buttons}</div>
-          </div>
-        </div>
-      `;
-        }
-
-        // 3. Insere todo o HTML no DOM de uma só vez, após o loop
-        list.innerHTML = allCardsHTML;
+    function ensureDefaultShowcases(data) {
+        if (showcaseInitialized) return;
+        (data?.userShowcases || []).forEach(entry => {
+            defaultShowcaseMap[entry.ownerId] = (entry.picks || []).slice().sort((a, b) => a.order - b.order);
+        });
+        showcaseInitialized = true;
     }
-    function renderCollections(criteria = "lastAdded", limit = null) {
-        const data = appData.loadData();
-        hydrateCollectionOwnerMap(data);
-        let collections = data.collections || [];
 
-        // Filtra para a página de utilizador
-        if (isUserPage) {
-            const ownerId = resolveUserPageOwnerId();
-            if (!ownerId) {
-                list.innerHTML = `<p class="notice-message">No collections found for this user.</p>`;
-                return;
-            }
-            collections = collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId);
+    function getActiveShowcase(ownerId, data) {
+        if (!ownerId) return [];
+        if (userChosenState[ownerId] && userChosenState[ownerId].length) {
+            return userChosenState[ownerId];
         }
+        ensureDefaultShowcases(data);
+        return (defaultShowcaseMap[ownerId] || []).slice();
+    }
 
-        // Ordena conforme o critério
-        if (criteria === "lastAdded") {
-            collections.sort((a, b) => new Date(b.metrics.addedAt) - new Date(a.metrics.addedAt));
-        } else if (criteria === "userChosen") {
-            collections = collections.filter(c => c.metrics.userChosen);
-        } else if (criteria === "itemCount") {
-            // Otimização de Performance: Pré-calcular a contagem de itens
-            // Em vez de recalcular em cada comparação do sort, calculamos uma vez para cada coleção.
-            const itemCounts = data.collectionItems.reduce((acc, link) => {
-                acc[link.collectionId] = (acc[link.collectionId] || 0) + 1;
-                return acc;
-            }, {});
+    function getUserChosenOrderForCollection(collectionId, ownerIdOverride, data) {
+        const ownerId = ownerIdOverride || getEffectiveOwnerId();
+        if (!ownerId)
+            return null;
+        const entries = getActiveShowcase(ownerId, data);
+        const match = entries.find(entry => entry.collectionId === collectionId);
+        return match ? match.order : null;
+    }
 
-            // Ordena usando a contagem pré-calculada.
-            collections.sort((a, b) => (itemCounts[b.id] || 0) - (itemCounts[a.id] || 0));
-        }
+    function getTimestamp(value) {
+        if (!value)
+            return null;
+        const date = new Date(value);
+        const time = date.getTime();
+        return Number.isNaN(time) ? null : time;
+    }
 
-        // Aplica o limite (para a homepage)
-        if (limit)
-            collections = collections.slice(0, limit);
-
-        list.innerHTML = "";
-        if (collections.length === 0) {
-            list.innerHTML = `<p class="notice-message">No collections found.</p>`;
-            return;
-        }
-
-        // OTIMIZAÇÃO CRÍTICA: Pré-processar todos os itens uma única vez
-        const itemsByCollectionId = data.collectionItems.reduce((acc, link) => {
-            if (!acc[link.collectionId]) {
-                acc[link.collectionId] = [];
-            }
+    function buildCollectionDerivedMaps(data) {
+        const latestMap = {};
+        const itemsByCollection = (data.collectionItems || []).reduce((acc, link) => {
+            acc[link.collectionId] = acc[link.collectionId] || [];
             acc[link.collectionId].push(link.itemId);
             return acc;
         }, {});
-
-        const allItemsById = data.items.reduce((acc, item) => {
+        const eventsByCollection = (data.collectionEvents || []).reduce((acc, link) => {
+            acc[link.collectionId] = acc[link.collectionId] || [];
+            acc[link.collectionId].push(link.eventId);
+            return acc;
+        }, {});
+        const itemsMap = (data.items || []).reduce((acc, item) => {
             acc[item.id] = item;
             return acc;
         }, {});
+        const eventsMap = (data.events || []).reduce((acc, event) => {
+            acc[event.id] = event;
+            return acc;
+        }, {});
 
-        // Gera o HTML dos cartões
-        let allCardsHTML = ""; // 1. Acumulador de HTML
+        (data.collections || []).forEach(col => {
+            let latest = getTimestamp(col.metrics?.lastUpdated) ?? getTimestamp(col.createdAt);
+            (itemsByCollection[col.id] || []).forEach(itemId => {
+                const item = itemsMap[itemId];
+                if (!item)
+                    return;
+                const ts = getTimestamp(item.updatedAt) ?? getTimestamp(item.createdAt) ?? getTimestamp(item.acquisitionDate);
+                if (ts && (!latest || ts > latest))
+                    latest = ts;
+            });
+            (eventsByCollection[col.id] || []).forEach(eventId => {
+                const ev = eventsMap[eventId];
+                if (!ev)
+                    return;
+                const ts = getTimestamp(ev.updatedAt) ?? getTimestamp(ev.createdAt) ?? getTimestamp(ev.date);
+                if (ts && (!latest || ts > latest))
+                    latest = ts;
+            });
+            latestMap[col.id] = latest || getTimestamp(col.createdAt) || 0;
+        });
 
-        for (const col of collections) {
-            // Usa o mapa pré-calculado para obter os itens instantaneamente
-            const itemIds = itemsByCollectionId[col.id] || [];
-            const items = itemIds.slice(0, 2).map(id => allItemsById[id]).filter(Boolean);
+        return { latestMap, itemsByCollection, itemsMap };
+    }
 
+    // ==========================================================
+    // 3. Renderização das Coleções
+    // ==========================================================
+        function renderCollections(criteria = "lastAdded", limit = null) {
+        const data = appData.loadData();
+        lastRenderData = data;
+        ensureDefaultShowcases(data);
+        hydrateCollectionOwnerMap(data);
+        buildLikesMaps(data);
+        let collections = data.collections || [];
+        lastRenderCriteria = criteria;
+        lastRenderLimit = limit;
+
+        if (isUserPage) {
+            const ownerId = resolveUserPageOwnerId();
+            if (!ownerId) {
+                list.innerHTML = `<p class="notice-message">No collections found for this user.</p>`;
+                return;
+            }
+            collections = collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId);
+        }
+
+        const { latestMap, itemsByCollection, itemsMap } = buildCollectionDerivedMaps(data);
+
+        if (criteria === "lastAdded") {
+            collections.sort((a, b) => (latestMap[b.id] || 0) - (latestMap[a.id] || 0));
+        } else if (criteria === "userChosen") {
+            if (!isActiveUser) {
+                list.innerHTML = `<p class="notice-message">Log in to view your curated picks.</p>`;
+                return;
+            }
+            const ownerId = getEffectiveOwnerId();
+            const ownerEntries = ownerId ? getActiveShowcase(ownerId, data) : [];
+            if (!ownerEntries.length) {
+                list.innerHTML = `<p class="notice-message">You haven't selected any collections for your Top 5 yet.</p>`;
+                return;
+            }
+            const orderMap = ownerEntries.reduce((acc, entry) => {
+                acc[entry.collectionId] = entry.order;
+                return acc;
+            }, {});
+            collections = collections.filter(c => orderMap[c.id]).sort((a, b) => orderMap[a.id] - orderMap[b.id]);
+        } else if (criteria === "itemCount") {
+            const itemCounts = data.collectionItems.reduce((acc, link) => {
+                acc[link.collectionId] = (acc[link.collectionId] || 0) + 1;
+                return acc;
+            }, {});
+            collections.sort((a, b) => (itemCounts[b.id] || 0) - (itemCounts[a.id] || 0));
+        }
+
+        if (limit) {
+            collections = collections.slice(0, limit);
+        }
+
+        if (!collections.length) {
+            list.innerHTML = `<p class="notice-message">No collections found.</p>`;
+            return;
+        }
+
+        const ownerIdForDisplay = getEffectiveOwnerId();
+        const cardsHTML = collections.map(col => {
+            const itemIds = itemsByCollection[col.id] || [];
+            const items = itemIds.slice(0, 2).map(id => itemsMap[id]).filter(Boolean);
             const itemsHTML = items.length
-                ? `<ul class="mini-item-list">${items.map(it =>
-                    `<li><a class="mini-item-link" href="item_page.html?id=${encodeURIComponent(it.id || "")}">
+                ? `<ul class="mini-item-list">${items.map(it => `
+                    <li>
+                      <a class="mini-item-link" href="item_page.html?id=${encodeURIComponent(it.id || "")}">
                         <img src="${it.image}" alt="${it.name}" class="mini-item-img" loading="lazy">
                         <span>${it.name}</span>
-                      </a></li>`
-                ).join("")}</ul>`
+                      </a>
+                    </li>`).join("")}</ul>`
                 : `<p class="no-items">No items yet.</p>`;
 
             const isOwnerLoggedIn = isCollectionOwnedByCurrentUser(col, data);
-            const specialClass = isOwnerLoggedIn ? 'collector-owned' : '';
+            const specialClass = isOwnerLoggedIn ? "collector-owned" : "";
             const canEdit = isOwnerLoggedIn;
+            const displayVotes = getDisplayLikes(col, ownerIdForDisplay);
+            const userPickOrder = getUserChosenOrderForCollection(col.id);
+            const isStarred = ownerIdForDisplay ? getEffectiveUserLike(col, ownerIdForDisplay) : false;
+            const pickLabel = userPickOrder ? `My pick #${userPickOrder}` : "Add to My Top 5";
+            const topPickBtn = isActiveUser
+                ? `<button class="metric-btn top-pick-btn ${userPickOrder ? "active" : ""}" data-collection-id="${col.id}">
+                <i class="bi bi-award"></i>
+                <span class="top-pick-label">${pickLabel}</span>
+              </button>`
+                : "";
 
             const buttons = `
                 <button class="explore-btn" onclick="togglePreview('${col.id}', this)"><i class="bi bi-eye"></i> Show Preview</button>
@@ -268,25 +526,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')"><i class="bi bi-trash"></i> Delete</button>` : ""}
             `;
 
-            // 2. Adiciona o HTML do cartão ao acumulador em vez de ao DOM
-            allCardsHTML += `
+            return `
         <div class="card collection-card ${specialClass}">
-          <div class="card-image" id="img-${col.id}"><img src="${col.coverImage || '../images/default.jpg'}" alt="${col.name}" loading="lazy"></div>
+          <div class="card-image" id="img-${col.id}">
+            <img src="${col.coverImage || '../images/default.jpg'}" alt="${col.name}" loading="lazy">
+          </div>
           <div class="card-info">
             <h3>${col.name}</h3>
             <p>${col.summary || ""}</p>
             <div class="items-preview" id="preview-${col.id}" style="display:none;">${itemsHTML}</div>
+            <div class="collection-metrics">
+              <button class="metric-btn vote-toggle ${isStarred ? "active" : ""}" data-collection-id="${col.id}">
+                <i class="bi ${isStarred ? "bi-star-fill" : "bi-star"}"></i>
+                <span class="vote-count">${displayVotes}</span>
+              </button>
+              ${topPickBtn}
+            </div>
             <div class="card-buttons">${buttons}</div>
           </div>
-        </div>
-      `;
-        }
+        </div>`;
+        }).join("");
 
-        // 3. Insere todo o HTML no DOM de uma só vez, após o loop
-        list.innerHTML = allCardsHTML;
-    }
-
-    // ==========================================================
+        list.innerHTML = cardsHTML;
+        attachCollectionInteractions(collections, data);
+    }// ==========================================================
     // 4. Funções Globais (acessíveis pelo HTML)
     // ==========================================================
     window.togglePreview = (id, btn) => {
@@ -303,6 +566,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.editCollection = id => {
         const data = appData.loadData();
+        lastRenderData = data;
+        ensureDefaultShowcases(data);
         hydrateCollectionOwnerMap(data);
         const col = data.collections.find(c => c.id === id);
         if (!col || !isCollectionOwnedByCurrentUser(col, data))
@@ -322,6 +587,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.deleteCollection = id => {
         const data = appData.loadData();
+        lastRenderData = data;
+        ensureDefaultShowcases(data);
         hydrateCollectionOwnerMap(data);
         const col = data.collections.find(c => c.id === id);
         if (!col || !isCollectionOwnedByCurrentUser(col, data))
@@ -391,42 +658,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Botões de Ação Globais
-    const setupGlobalActions = (btn, action) => {
-        if (!btn)
-            return;
-        btn.addEventListener("click", () => {
-            if (!isActiveUser)
-                return alert(`🚫 You must be logged in to ${action} collections.`);
-            const data = appData.loadData();
-            hydrateCollectionOwnerMap(data);
-            const ownerId = getEffectiveOwnerId();
-            const myCollections = ownerId
-                ? data.collections.filter(c => getCollectionOwnerIdCached(c.id, data) === ownerId)
-                : [];
-            if (myCollections.length === 0)
-                return alert(`⚠️ You don't own any collections to ${action}.`);
-
-            const names = myCollections.map(c => `• ${c.name}`).join("\n");
-            const name = prompt(`Which collection do you want to ${action}?\n\n${names}`);
-            if (!name)
-                return;
-
-            const col = myCollections.find(c => c.name.toLowerCase() === name.toLowerCase());
-            if (!col)
-                return alert("❌ Collection not found.");
-
-            if (action === 'edit') {
-                editCollection(col.id);
-            } else if (action === 'delete') {
-                deleteCollection(col.id);
-            }
-        });
-    };
-
-    setupGlobalActions(editBtn, 'edit');
-    setupGlobalActions(deleteBtn, 'delete');
-
     // Botão de Restaurar Dados
     if (restoreBtn) {
         restoreBtn.addEventListener("click", () => {
@@ -453,3 +684,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateUserState();
     renderCollections("lastAdded", isHomePage ? 5 : null);
 });
+
+
+

@@ -25,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Hidden selects used for filtering
   const filterSelect = document.getElementById("eventFilter");
   const typeSelect = document.getElementById("eventType");
+  const locationSelect = document.getElementById("eventLocation");
+  const sortSelect = document.getElementById("eventSort");
 
   // Detail modal elements
   const eventDetailModal = document.getElementById("event-modal");
@@ -54,6 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const fieldDescription = document.getElementById("evt-description");
   const fieldType = document.getElementById("evt-type");
   const cancelEditBtn = document.getElementById("cancel-event-edit");
+
+  let locationFilterPopulated = false;
 
   // ---------- HELPERS ----------
 
@@ -141,6 +145,33 @@ document.addEventListener("DOMContentLoaded", () => {
     return d.toLocaleDateString();
   }
 
+  function formatDateHuman(dateStr) {
+    const d = parseEventDate(dateStr);
+    if (!d) return "Date to be announced";
+    return d.toLocaleDateString(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+  }
+
+  function populateLocationFilterOptions(events = []) {
+    if (!locationSelect || locationFilterPopulated) return;
+    const uniqueLocations = new Set();
+    events.forEach(ev => {
+      if (ev.localization) uniqueLocations.add(ev.localization);
+    });
+    if (!uniqueLocations.size) return;
+    uniqueLocations.forEach(loc => {
+      const opt = document.createElement("option");
+      opt.value = loc.toLowerCase();
+      opt.textContent = loc;
+      locationSelect.appendChild(opt);
+    });
+    locationFilterPopulated = true;
+  }
+
   function escapeHtml(str) {
     if (!str) return "";
     return String(str).replace(/[&<>\"']/g, s => ({
@@ -203,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
     eventsList.innerHTML = "";
 
     const allEvents = (data.events || []).slice();
+    populateLocationFilterOptions(allEvents);
     const currentUser = getCurrentUser();
 
     // Count upcoming/past for tabs
@@ -218,17 +250,24 @@ document.addEventListener("DOMContentLoaded", () => {
     // Apply filters
     const filter = filterSelect?.value || "all";
     const typeFilter = (typeSelect?.value || "all").toLowerCase();
+    const sortMode = (sortSelect?.value || "asc").toLowerCase();
+    const locationFilter = (locationSelect?.value || "all").toLowerCase();
 
     const filtered = allEvents
       .sort((a, b) => {
         const da = parseEventDate(a.date) || new Date(0);
         const db = parseEventDate(b.date) || new Date(0);
+        if (sortMode === "desc") return db - da;
+        if (sortMode === "alpha") {
+          return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
+        }
         return da - db;
       })
       .filter(ev => {
         if (filter === "upcoming" && !isUpcoming(ev.date)) return false;
         if (filter === "past" && isUpcoming(ev.date)) return false;
         if (typeFilter !== "all" && (ev.type || "").toLowerCase() !== typeFilter) return false;
+        if (locationFilter !== "all" && (ev.localization || "").toLowerCase() !== locationFilter) return false;
         return true;
       });
 
@@ -240,145 +279,132 @@ document.addEventListener("DOMContentLoaded", () => {
     filtered.forEach(ev => {
       const card = document.createElement("div");
       card.className = "event-card";
+       const isPast = isPastEvent(ev.date);
+        const ratings = ev.ratings || {};
+        const ratingValues = Object.values(ratings);
+        const ratingCount = ratingValues.length;
+        const ratingAvg = ratingCount
+          ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
+          : null;
+        const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
 
-      const isPast = isPastEvent(ev.date);
+        let ratingHtml = "";
+        if (isPast) {
+          const stars = [];
+          for (let i = 1; i <= 5; i++) {
+            let classes = "star";
+            if (ratingAvg && i <= Math.round(ratingAvg)) classes += " filled";
+            if (currentUser && currentUser.active && ratings[currentUser.id] && i <= ratings[currentUser.id]) classes += " user-rating";
+            if (currentUser && currentUser.active) classes += " clickable";
+            stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
+          }
 
-      // Ratings summary + interactive stars (for past events)
-      const ratings = ev.ratings || {};
-      const ratingValues = Object.values(ratings);
-      const ratingCount = ratingValues.length;
-      const ratingAvg = ratingCount
-        ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
-        : null;
+          const summary = ratingAvg
+            ? `<span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span>(${ratingCount})</span>`
+            : `<span class="muted">No ratings yet</span>`;
 
-      const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
-
-      // Build stars markup for card. For past events show stars (clickable if signed in).
-      let ratingHtml = "";
-      if (isPast) {
-        const stars = [];
-        for (let i = 1; i <= 5; i++) {
-          let classes = "star";
-          if (ratingAvg && i <= Math.round(ratingAvg)) classes += " filled";
-          if (currentUser && currentUser.active && ratings[currentUser.id] && i <= ratings[currentUser.id]) classes += " user-rating";
-          if (currentUser && currentUser.active) classes += " clickable";
-          stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
+          ratingHtml = `
+            <div class="card-rating">
+              <div class="rating-stars" data-event-id="${ev.id}">${stars.join("")}</div>
+              <div class="rating-summary">${summary}</div>
+            </div>
+          `;
         }
 
-        const summary = ratingAvg
-          ? `<span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span>(${ratingCount})</span>`
-          : `<span class="muted">No ratings yet</span>`;
+        card.innerHTML = `
+          <h3 class="card-title">${escapeHtml(ev.name)}</h3>
+          <p class="card-summary">
+            ${escapeHtml(ev.summary || ev.description || "")}
+          </p>
 
-        ratingHtml = `
-          <div class="card-rating">
-            <div class="rating-stars" data-event-id="${ev.id}">${stars.join("")}</div>
-            <div class="rating-summary">${summary}</div>
+          <div class="event-meta-row">
+            <i class="bi bi-calendar-event-fill" aria-hidden="true"></i>
+            <span>${formatDateShort(ev.date)}</span>
+          </div>
+
+          <div class="event-meta-row">
+            <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+            <span>${escapeHtml(ev.localization || "To be announced")}</span>
+          </div>
+
+          ${ratingHtml}
+
+          <div class="card-actions">
+            <button class="view-btn">
+              <i class="bi bi-eye-fill" aria-hidden="true"></i> View
+            </button>
+            <button class="rsvp-btn" data-id="${ev.id}" data-requires-login>
+              <i class="bi bi-calendar-check" aria-hidden="true"></i> RSVP
+            </button>
+            ${canManage ? `
+              <button class="edit-btn" data-id="${ev.id}" data-requires-login>
+                <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
+              </button>
+            ` : ``}
+            ${canManage ? `
+              <button class="delete-btn" data-id="${ev.id}" data-requires-login>
+                <i class="bi bi-trash3" aria-hidden="true"></i> Delete
+              </button>
+            ` : ``}
           </div>
         `;
-      }
 
-      card.innerHTML = `
-        <h3 class="card-title">${escapeHtml(ev.name)}</h3>
-        <p class="card-summary">
-          ${escapeHtml(ev.summary || ev.description || "")}
-        </p>
-
-        <div class="event-meta-row">
-          <i class="bi bi-calendar-event-fill" aria-hidden="true"></i>
-          <span>${formatDateShort(ev.date)}</span>
-        </div>
-
-        <div class="event-meta-row">
-          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-          <span>${escapeHtml(ev.localization || "To be announced")}</span>
-        </div>
-
-        ${ratingHtml}
-
-        <div class="card-actions">
-          <button class="view-btn">
-            <i class="bi bi-eye-fill" aria-hidden="true"></i> View
-          </button>
-          <button class="rsvp-btn" data-id="${ev.id}" data-requires-login>
-            <i class="bi bi-calendar-check" aria-hidden="true"></i> RSVP
-          </button>
-          ${canManage ? `
-            <button class="edit-btn" data-id="${ev.id}" data-requires-login>
-              <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
-            </button>
-          ` : ``}
-          ${canManage ? `
-            <button class="delete-btn" data-id="${ev.id}" data-requires-login>
-              <i class="bi bi-trash3" aria-hidden="true"></i> Delete
-            </button>
-          ` : ``}
-        </div>
-      `;
-
-      // Attach listeners
-      card.querySelector(".view-btn")
-        .addEventListener("click", () => openEventDetail(ev.id));
-      card.querySelector(".rsvp-btn")
-        .addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
-      const editBtn = card.querySelector(".edit-btn");
-      if (editBtn) {
-        editBtn.addEventListener("click", () => openEditModal(ev.id));
-      }
-      const deleteBtn = card.querySelector(".delete-btn");
-      if (deleteBtn) {
-        deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
-      }
-
-      // Attach star click + hover handlers for card stars (if present)
-      const starsContainer = card.querySelector(`.rating-stars[data-event-id="${ev.id}"]`);
-      if (starsContainer) {
-        const stars = Array.from(starsContainer.querySelectorAll('.star'));
-
-        function clearHover() {
-          stars.forEach(s => s.classList.remove('hovered'));
+        card.querySelector(".view-btn")
+          .addEventListener("click", () => openEventDetail(ev.id));
+        card.querySelector(".rsvp-btn")
+          .addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
+        const editBtn = card.querySelector(".edit-btn");
+        if (editBtn) {
+          editBtn.addEventListener("click", () => openEditModal(ev.id));
+        }
+        const deleteBtn = card.querySelector(".delete-btn");
+        if (deleteBtn) {
+          deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
         }
 
-        function highlightTo(val) {
-          stars.forEach(s => {
-            const v = Number(s.dataset.value);
-            if (v <= val) s.classList.add('hovered');
-            else s.classList.remove('hovered');
-          });
-        }
+        const starsContainer = card.querySelector(`.rating-stars[data-event-id="${ev.id}"]`);
+        if (starsContainer) {
+          const stars = Array.from(starsContainer.querySelectorAll('.star'));
 
-        stars.forEach(s => {
-          const val = Number(s.dataset.value);
-
-          // Hover highlight (progressive)
-          s.addEventListener('mouseenter', () => highlightTo(val));
-          s.addEventListener('focus', () => highlightTo(val));
-
-          // Clear when leaving a star; container mouseleave also clears
-          s.addEventListener('mouseleave', () => clearHover());
-          s.addEventListener('blur', () => clearHover());
-
-          // Click: only call setRating if star is clickable (login-permission handled elsewhere)
-          if (s.classList.contains('clickable')) {
-            s.addEventListener('click', () => setRating(ev.id, val));
-            // keyboard accessibility: allow Enter/Space
-            s.addEventListener('keydown', (evKey) => {
-              if (evKey.key === 'Enter' || evKey.key === ' ') {
-                evKey.preventDefault();
-                setRating(ev.id, val);
-              }
-            });
-            s.setAttribute('tabindex', '0');
-            s.setAttribute('role', 'button');
-            s.setAttribute('aria-label', `Rate ${val} out of 5`);
-          } else {
-            // still expose aria label for non-clickable stars
-            s.setAttribute('aria-hidden', 'false');
-            s.setAttribute('tabindex', '-1');
+          function clearHover() {
+            stars.forEach(s => s.classList.remove('hovered'));
           }
-        });
 
-        starsContainer.addEventListener('mouseleave', clearHover);
-      }
+          function highlightTo(val) {
+            stars.forEach(s => {
+              const v = Number(s.dataset.value);
+              if (v <= val) s.classList.add('hovered');
+              else s.classList.remove('hovered');
+            });
+          }
+
+          stars.forEach(s => {
+            const val = Number(s.dataset.value);
+
+            s.addEventListener('mouseenter', () => highlightTo(val));
+            s.addEventListener('focus', () => highlightTo(val));
+            s.addEventListener('mouseleave', () => clearHover());
+            s.addEventListener('blur', () => clearHover());
+
+            if (s.classList.contains('clickable')) {
+              s.addEventListener('click', () => setRating(ev.id, val));
+              s.addEventListener('keydown', (evKey) => {
+              if (evKey.key === 'Enter' || evKey.key === ' ') {
+                  evKey.preventDefault();
+                  setRating(ev.id, val);
+                }
+              });
+              s.setAttribute('tabindex', '0');
+              s.setAttribute('role', 'button');
+              s.setAttribute('aria-label', `Rate ${val} out of 5`);
+            } else {
+              s.setAttribute('aria-hidden', 'false');
+              s.setAttribute('tabindex', '-1');
+            }
+          });
+
+          starsContainer.addEventListener('mouseleave', clearHover);
+        }
 
       eventsList.appendChild(card);
     });
@@ -662,6 +688,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   typeSelect?.addEventListener("change", renderEvents);
+  locationSelect?.addEventListener("change", renderEvents);
+  sortSelect?.addEventListener("change", renderEvents);
 
   // ---------- GLOBAL LISTENERS ----------
 

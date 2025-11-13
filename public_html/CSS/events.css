@@ -62,6 +62,35 @@
   border: 0;
 }
 
+.events-advanced-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 14px 0 6px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.filter-field label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.filter-field select {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1f2937;
+  background: #fff;
+}
+
 /* Screen reader only */
 .sr-only {
   position: absolute;

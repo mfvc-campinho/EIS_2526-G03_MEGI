@@ -103,13 +103,38 @@
                         <option value="all">All</option>
                         <option value="past">Past</option>
                     </select>
+                </div>
+            </section>
 
-                    <label for="eventType" class="sr-only">Type</label>
+            <!-- Visible advanced filters -->
+            <section class="events-advanced-filters" aria-label="Additional filters">
+                <div class="filter-field">
+                    <label for="eventType">Type</label>
                     <select id="eventType">
                         <option value="all" selected>All Types</option>
                         <option value="meetup">Meetup</option>
+                        <option value="fair">Fair</option>
+                        <option value="exhibition">Exhibition</option>
+                        <option value="expo">Expo</option>
+                        <option value="convention">Convention</option>
+                        <option value="gallery">Gallery</option>
+                        <option value="signing">Signing</option>
                         <option value="swap">Swap</option>
                         <option value="workshop">Workshop</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="eventLocation">Location</label>
+                    <select id="eventLocation">
+                        <option value="all" selected>All Locations</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="eventSort">Sort by</label>
+                    <select id="eventSort">
+                        <option value="asc" selected>Date · Oldest first</option>
+                        <option value="desc">Date · Newest first</option>
+                        <option value="alpha">Name · A → Z</option>
                     </select>
                 </div>
             </section>

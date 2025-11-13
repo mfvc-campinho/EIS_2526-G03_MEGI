@@ -4,7 +4,7 @@
 /* Base layout: same spacing logic as other pages */
 main {
   padding: 24px 24px 40px;
-  max-width: 1140px;
+  max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -208,6 +208,79 @@ body {
 
 .nav-link:hover::after {
   width: 60%;
+}
+
+/* Keep the underline pseudo-element but hide it visually for active links.
+  For non-active links the underline will animate (expand from center) on hover.
+  Avoid using `display:none` so width transitions animate smoothly. */
+
+/* ===============================
+   Active navigation link indicator
+   Use either: <a class="nav-link active"> or
+   <a class="nav-link" aria-current="page"> to mark current page
+   =============================== */
+.nav-link.active,
+.nav-link[aria-current="page"] {
+  /* pill style: white text on gradient blue background */
+  color: #ffffff;
+  font-weight: 600;
+  background: linear-gradient(90deg, #0078ff, #00b3ff);
+  padding: 8px 12px;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(3, 102, 214, 0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+
+/* For active/current page links we keep the underline element but make it
+   invisible so it doesn't show; keeping the element ensures hover
+   transitions on sibling links remain smooth. */
+.nav-link.active::after,
+.nav-link[aria-current="page"]::after {
+  width: 0%;
+  opacity: 0;
+}
+
+.nav-link.active:hover,
+.nav-link[aria-current="page"]:hover {
+  /* active links still get the pill/blue background (if used); keep hover
+     subtle movement but no underline */
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(3, 102, 214, 0.16);
+}
+
+/* Show the blue footer-like underline when hovering non-active nav links.
+   Keeps the active page (aria-current) free of the underline. */
+.nav-link:not([aria-current="page"]):hover::after,
+.nav-link:not(.active):hover::after {
+  display: block;
+  /* re-enable previously-hidden pseudo-element */
+  width: 60%;
+}
+
+/* Logo / brand when on the home page: give a subtle active affordance
+   Use either: <a class="logo active"> or <a class="logo" aria-current="page"> */
+.logo.active,
+.logo[aria-current="page"] {
+  color: #00c6ff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.logo.active::after,
+.logo[aria-current="page"]::after {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #00c6ff, #0078ff);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 /* === SEARCH BAR === */
@@ -1043,6 +1116,41 @@ footer .heart {
 .explore-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ==================================================
+   Enforce consistent "ghost" (back) button across pages
+   Some page-specific CSS previously adjusted button sizing.
+   These selectors are slightly more specific to ensure parity
+   for back buttons placed inside common page containers.
+   ================================================== */
+.back-section .explore-btn.ghost,
+#buttons-bar .explore-btn.ghost,
+section#buttons-bar .explore-btn.ghost {
+  padding: 10px 18px;
+  /* consistent padding for back buttons */
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  vertical-align: middle;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.06);
+}
+
+.explore-btn.ghost i,
+.back-section .explore-btn.ghost i,
+#buttons-bar .explore-btn.ghost i {
+  font-size: 1rem;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Make sure page-specific smaller padding doesn't win */
+.back-section .explore-btn.ghost span,
+#buttons-bar .explore-btn.ghost span {
+  line-height: 1.2;
 }
 
 /* ===============================

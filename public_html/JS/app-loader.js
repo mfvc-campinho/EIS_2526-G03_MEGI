@@ -1,10 +1,9 @@
 // ===============================================
-// app-loader.js — Gestão do ecrã de carregamento
+// app-loader.js — Page loader helper
+// - Hides the loader and reveals the main content on DOM ready
+// - For performance, the visual loader was removed; this script ensures
+//   content visibility remains correct across pages.
 // ===============================================
-//
-// O loader foi removido para melhorar a velocidade de carregamento.
-// Este script agora apenas garante que o conteúdo principal da página seja visível.
-//
 document.addEventListener("DOMContentLoaded", () => {
   const loader = document.getElementById("loader");
   const content = document.getElementById("content");

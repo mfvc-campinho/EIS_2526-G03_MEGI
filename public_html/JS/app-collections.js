@@ -1,6 +1,8 @@
 // ===============================================
-// app-collections.js — Versão reescrita e robusta
-// Funciona em todas as páginas (home, all, user) sem quebrar noutras.
+// File: public_html/JS/app-collections.js
+// Purpose: Render collection cards across pages and provide interactions (preview, edit, delete, likes, top-pick flow).
+// Major blocks: element selectors & page context, user state management, derived maps, rendering logic, global functions, event listeners and initialization.
+// Notes: Exposes some globals used by HTML (togglePreview, editCollection, deleteCollection).
 // ===============================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -106,19 +108,19 @@ document.addEventListener("DOMContentLoaded", () => {
         startTopPickFlow(ownerId, collectionId, collection?.name || "this collection", data);
     }
     // ==========================================================
-    // 1. Seletores de Elementos e Contexto da Página
+    // 1. Element selectors and page context
     // ==========================================================
     const list = document.getElementById("collections-list") ||
         document.getElementById("homeCollections") ||
         document.getElementById("user-collections");
-    // Se não houver um contentor de coleções nesta página, o script não faz mais nada.
+    // If there is no collections container on this page, stop early.
     if (!list)
         return;
 
     const isHomePage = list?.id === "homeCollections";
     const isUserPage = list?.id === "user-collections";
 
-    // Elementos que podem ou não existir dependendo da página
+    // Elements that may or may not exist depending on the page
     const filter = document.getElementById("rankingFilter");
     const modal = document.getElementById("collection-modal");
     const form = document.getElementById("form-collection");
@@ -126,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const restoreBtn = document.getElementById("restoreDataBtn");
 
     // ==========================================================
-    // 2. Gestão do Estado do Utilizador
+    // 2. User state management
     // ==========================================================
     const DEFAULT_OWNER_ID = "collector-main";
     const MAX_USER_CHOICES = 5;
@@ -431,9 +433,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================================
-    // 3. Renderização das Coleções
+    // 3. Collections rendering
     // ==========================================================
-        function renderCollections(criteria = "lastAdded", limit = null) {
+    function renderCollections(criteria = "lastAdded", limit = null) {
         const data = appData.loadData();
         lastRenderData = data;
         ensureDefaultShowcases(data);
@@ -546,9 +548,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }).join("");
 
         list.innerHTML = cardsHTML;
+        // Attach interaction handlers after DOM insertion
         attachCollectionInteractions(collections, data);
     }// ==========================================================
-    // 4. Funções Globais (acessíveis pelo HTML)
+    // ==========================================================
+    // 4. Global functions (accessible from HTML)
     // ==========================================================
     window.togglePreview = (id, btn) => {
         const img = document.getElementById(`img-${id}`);
@@ -601,22 +605,22 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // ==========================================================
-    // 5. Event Listeners (com verificações de existência)
+    // 5. Event listeners (existence-checked)
     // ==========================================================
 
-    // Filtro da Homepage
+    // Homepage filter
     if (filter) {
         filter.addEventListener("change", e =>
             renderCollections(e.target.value, isHomePage ? 5 : null)
         );
     }
-    // Modal de Coleção
+    // Collection modal
     if (modal && form) {
         const modalTitle = document.getElementById("collection-modal-title");
         const idField = document.getElementById("collection-id");
 
         const openModal = (edit = false) => {
-            // Garante que o formulário é limpo antes de abrir
+            // Ensure the form is cleared before opening
             form.reset();
             idField.value = "";
             modalTitle.textContent = edit ? "Edit Collection" : "New Collection";
@@ -644,7 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(`✅ Simulation successful. Collection would have been ${action}.\n\n(This is a demonstration. No data was saved.)`);
 
             closeModal();
-            // A renderização é removida para não mostrar alterações que não aconteceram
+            // Rendering is omitted to avoid showing changes that did not actually occur
             // renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
         });
 
@@ -656,7 +660,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Botão de Restaurar Dados
+    // Restore Data button
     if (restoreBtn) {
         restoreBtn.addEventListener("click", () => {
             if (confirm("⚠️ Restore initial data? This will delete all current collections and log you out.")) {
@@ -670,14 +674,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Reatividade ao estado do utilizador
+    // React to global user state changes
     window.addEventListener("userStateChange", () => {
         updateUserState();
         renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
     });
 
     // ==========================================================
-    // 6. Inicialização
+    // 6. Initialization
     // ==========================================================
     updateUserState();
     renderCollections("lastAdded", isHomePage ? 5 : null);

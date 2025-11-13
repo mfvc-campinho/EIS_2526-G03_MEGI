@@ -1,3 +1,10 @@
+/*
+  File: public_html/CSS/user_page.css
+  Purpose: Styles for the user profile page (profile hero, top picks, user events).
+  Major selector groups: layout / hero / profile cards / top picks / responsive rules.
+  Notes: Keep selectors like .profile-hero, .user-top-picks, and .top-picks-grid stable.
+*/
+
 /* ========= Page spacing under sticky navbar ========= */
 
 /* Welcome title for the user page — left aligned within content width */

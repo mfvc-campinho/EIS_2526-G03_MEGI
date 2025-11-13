@@ -1,7 +1,13 @@
+/*
+  File: public_html/CSS/specific_collection.css
+  Purpose: Styles for specific collection pages — overview card, items grid, buttons and modals.
+  Major selector groups: collection-hero, collection-container, item-card, collection-events, modals.
+*/
+
 /* ============================================
-   SPECIFIC COLLECTION PAGE
-   Consistent with GoodCollections design system
-   ============================================ */
+  SPECIFIC COLLECTION PAGE
+  Consistent with GoodCollections design system
+  ============================================ */
 
 /* ===============================
    🔹 COLLECTION OVERVIEW CARD — Modern Photo Hover

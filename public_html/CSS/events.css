@@ -1,6 +1,12 @@
+/*
+  File: public_html/CSS/events.css
+  Purpose: Styles for the Events page (toggle, filters, grid, modals, and rating stars).
+  Major selector groups: toggle, filters, actions, grid/cards, rating, modal styling, responsive.
+*/
+
 /* ============================================
-   events.css — Page-specific styles for Events
-   ============================================ */
+  events.css — Page-specific styles for Events
+  ============================================ */
 
 /* -------------------------------
    Toggle (Upcoming / Past)

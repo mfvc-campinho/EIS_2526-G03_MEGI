@@ -1,6 +1,12 @@
+/*
+  File: public_html/CSS/item_page.css
+  Purpose: Styles for item detail page and related item cards (layout, image, actions, relations).
+  Major selector groups: item-details-card, item image, item-relations, responsiveness, animations.
+*/
+
 /* ===============================
-   🔹 ITEM PAGE — GoodCollections+
-   =============================== */
+  🔹 ITEM PAGE — GoodCollections+
+  =============================== */
 
 body {
   background: #f9fafb;

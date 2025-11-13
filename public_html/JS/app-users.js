@@ -1,5 +1,8 @@
 // ===============================================
-// app-users.js — Gestão visual do utilizador
+// app-users.js — UI helper for user/profile interactions
+// - Renders profile dropdown depending on login state
+// - Emits global userStateChange events
+// - Handles login/logout, forgot-password and account creation modals (simulated)
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
   let currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -9,7 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let dropdownToggleReady = false;
 
   // =======================================================
-  // 1. Renderizar menu (consoante o estado)
+  // 1. Render profile menu based on current user state
+  // - Updates dropdown content for authenticated or anonymous users
+  // - Attaches event handlers for embedded forms and links
   // =======================================================
   function renderProfileMenu() {
     if (!profileMenu) return;
@@ -17,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     profileDropdown?.classList.remove("open");
 
     if (currentUser && currentUser.active) {
-      // Utilizador autenticado
+      // Authenticated user
       const displayName = currentUser.ownerName || currentUser.id || "Profile";
       profileButton.innerHTML = `<i class="bi bi-person"></i> ${displayName} ▾`;
       profileMenu.innerHTML = `
@@ -25,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <a href="#" id="signout-btn">Sign Out</a>
       `;
     } else {
-      // Não autenticado → mostra formulário inline
+      // Not authenticated -> render inline login form
       profileButton.innerHTML = `<i class="bi bi-person"></i> Log In ▾`;
       profileMenu.innerHTML = `
         <form id="login-form" class="login-form">
@@ -42,11 +47,13 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     }
 
+    // Wire up interactions after inserting the menu content
     attachEvents();
     setupDropdownToggle();
     profileMenu.onclick = (e) => e.stopPropagation();
   }
 
+  // Setup the small dropdown toggle behavior (single init)
   function setupDropdownToggle() {
     if (dropdownToggleReady || !profileButton) return;
     dropdownToggleReady = true;
@@ -63,7 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
-  // 2. Login simulado (sempre como 'collector')
+  // 2. Simulated login (demo only)
+  // - For the demo we always use a fixed owner id and mark currentUser as active
   // =======================================================
   function getOwnerProfile(ownerId) {
     if (!ownerId) return null;
@@ -95,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
-  // 3. Logout
+  // 3. Logout (simulated)
   // =======================================================
   function logoutUser() {
     if (confirm("Sign out?")) {
@@ -107,7 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
-  // 4. Notificação global
+  // 4. Global notification helper
+  // - Emits a `userStateChange` event with updated user data
   // =======================================================
   function notifyUserStateChange() {
     const event = new CustomEvent("userStateChange", {
@@ -118,13 +127,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
-  // 5. Eventos dinâmicos
+  // 5. Dynamic event bindings for menu forms and links
   // =======================================================
   function attachEvents() {
     const form = document.getElementById("login-form");
     const signoutBtn = document.getElementById("signout-btn");
 
-    // Links para os novos modais
+    // Links that open demo modals
     const forgotPasswordBtn = document.getElementById("forgot-password-btn");
     const addAccountBtn = document.getElementById("add-account-btn");
 
@@ -153,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Eventos para os novos modais
+    // Forgot-password modal behavior (demo)
     if (forgotPasswordBtn) {
       const forgotModal = document.getElementById("forgot-password-modal");
       const closeForgot = document.getElementById("close-forgot-modal");
@@ -169,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // Create-account modal behavior (demo)
     if (addAccountBtn) {
       const accountModal = document.getElementById("add-account-modal");
       const closeAccount = document.getElementById("close-account-modal");
@@ -189,12 +199,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Alerta para a barra de pesquisa
+    // Quick search-bar placeholder handler (demo)
     const searchBar = document.querySelector(".search-bar");
     if (searchBar) {
       searchBar.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
-          e.preventDefault(); // Previne qualquer ação padrão do 'Enter'
+          e.preventDefault(); // Prevent default Enter behavior
           alert("Search functionality is under construction!");
         }
       });
@@ -202,18 +212,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =======================================================
-  // 6. Inicialização
+  // 6. Initialization
   // =======================================================
   renderProfileMenu();
   window.appUsers = { currentUser };
 
-  // Dispara o estado inicial logo ao abrir a página
+  // Emit initial userStateChange so other scripts can react
   const initialEvent = new CustomEvent("userStateChange", { detail: currentUser });
   window.dispatchEvent(initialEvent);
 });
 
 // =======================================================
-// 7. Atualização global em todas as páginas
+// 7. Global listener for userStateChange (updates UI across pages)
 // =======================================================
 window.addEventListener("userStateChange", (e) => {
   const user = e.detail;
@@ -221,7 +231,7 @@ window.addEventListener("userStateChange", (e) => {
 
   console.log("userStateChange received:", user);
 
-  // Esconde/mostra botões com base no login
+  // Show/hide elements that require a logged-in user
   document.querySelectorAll("[data-requires-login]").forEach(btn => {
     btn.style.display = isActiveUser ? "inline-block" : "none";
   });

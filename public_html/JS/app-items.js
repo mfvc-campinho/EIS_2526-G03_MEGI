@@ -1,5 +1,8 @@
 // ===============================================
-// app-items.js — Manage items within a collection
+// File: public_html/JS/app-items.js
+// Purpose: Manage items inside a collection page — render items, open item modal (add/edit), and provide item CRUD simulation.
+// Major blocks: user state management, selectors, render functions, modal helpers, create/edit/delete handlers.
+// Notes: Exposes window.renderItems and window.viewItem for cross-page interactions.
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
   // ===============================================
@@ -14,15 +17,15 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUserId = userData ? userData.id : null;
     isActiveUser = Boolean(userData && userData.active);
 
-    // Esconde/mostra botões que requerem login
+    // Hide/show buttons that require login
     document.querySelectorAll("[data-requires-login]").forEach(btn => {
       btn.style.display = isActiveUser ? "inline-block" : "none";
     });
   }
 
-  updateUserState(); // Define o estado inicial
+  updateUserState(); // Initialize the user state
 
-  // Seletores principais
+  // Main selectors
   const itemsContainer = document.getElementById("collection-items");
   const eventsContainer = document.getElementById("collection-events");
   const modal = document.getElementById("item-modal");
@@ -33,14 +36,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const title = document.getElementById("modal-title");
   const idField = document.getElementById("item-id");
 
-  // Seletores para o modal da coleção
+  // Selectors for the collection modal
   const collectionModal = document.getElementById("collection-modal");
   const collectionForm = document.getElementById("form-collection");
   const editCollectionBtn = document.getElementById("edit-collection");
   const closeCollectionModalBtn = document.getElementById("close-collection-modal");
   const cancelCollectionModalBtn = document.getElementById("cancel-collection-modal");
   const hasCollectionPage = Boolean(itemsContainer);
-  // Obtém o ID da coleção a partir da URL
+  // Get collection ID from URL
   const params = new URLSearchParams(window.location.search);
   let collectionId = params.get("id");
 
@@ -110,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================================
-  // Renderizar detalhes da coleção (título, dono, etc.)
+  // Render collection details (title, owner, metadata)
   // ===============================================
   function renderCollectionDetails() {
     if (!hasCollectionPage) return;
@@ -119,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (collection) {
       document.getElementById("collection-title").textContent = collection.name;
-      // Atualiza também o breadcrumb para referenciar corretamente a coleção
+      // Also update the breadcrumb to correctly reference the collection
       const bc = document.getElementById("collection-breadcrumb-name");
       if (bc) bc.textContent = collection.name;
       const ownerProfile = getOwnerProfileForCollection(collection, data) || {};
@@ -174,19 +177,19 @@ document.addEventListener("DOMContentLoaded", () => {
         ownerPhotoEl.alt = `${ownerDisplayName} owner`;
       }
     } else {
-      // Se a coleção não for encontrada, mostra uma mensagem de erro
+      // If the collection is not found, show an error state
       document.getElementById("collection-title").textContent = "Collection Not Found";
-      // Atualiza breadcrumb para refletir o erro/estado
+      // Update breadcrumb to reflect the error/state
       const bc = document.getElementById("collection-breadcrumb-name");
       if (bc) bc.textContent = "Collection Not Found";
-      // Esconde os botões de ação se a coleção não existir
+      // Hide action buttons if the collection does not exist
       if (addItemBtn) addItemBtn.style.display = "none";
       if (editCollectionBtn) editCollectionBtn.style.display = "none";
     }
   }
 
   // ===============================================
-  // Destacar seção se for do utilizador
+  // Highlight section when owned by current user
   // ===============================================
   function highlightOwnedSection() {
     if (!hasCollectionPage) return;
@@ -195,21 +198,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isCollectionOwnedByCurrentUser(collection, data)) {
       itemsContainer.classList.add("owned-section");
-      // Mostra os botões se for o dono
+      // Show action buttons when the current user is the owner
       if (editCollectionBtn) editCollectionBtn.style.display = "inline-block";
       if (addItemBtn) addItemBtn.style.display = "inline-block";
     } else {
       itemsContainer.classList.remove("owned-section");
-      // Esconde os botões se não for o dono
+      // Hide action buttons when not the owner
       if (editCollectionBtn) editCollectionBtn.style.display = "none";
       if (addItemBtn) addItemBtn.style.display = "none";
     }
   }
 
   // ===============================================
-  // Renderizar itens da coleção atual (relação N:N)
+  // Render items for the current collection (many-to-many relation)
+  // Exposed globally so other scripts can call it
   // ===============================================
-  // Tornada global para ser chamada por outros scripts
   window.renderItems = function renderItems() {
     if (!hasCollectionPage) return;
     const data = appData.loadData();
@@ -232,9 +235,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingMessage.textContent = "Loading items...";
     itemsContainer.appendChild(loadingMessage);
 
-    // Função para renderizar itens em lotes (chunks)
+    // Function to render items in chunks to avoid blocking the UI
     function renderChunk(index = 0) {
-      const chunkSize = 50; // Renderiza 50 itens de cada vez
+      const chunkSize = 50; // Renders 50 items at a time
       const fragment = document.createDocumentFragment();
       const chunk = items.slice(index, index + chunkSize);
 
@@ -276,12 +279,12 @@ document.addEventListener("DOMContentLoaded", () => {
       itemsContainer.appendChild(fragment);
 
       if (index + chunkSize < items.length) {
-        // Agenda o próximo lote sem bloquear o browser
+        // Schedule next chunk without blocking the main thread
         setTimeout(() => renderChunk(index + chunkSize), 0);
       }
     }
 
-    // Inicia o processo de renderização
+    // Start the rendering process
     renderChunk();
   };
 
@@ -315,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================================
-  // Preencher lista de coleções do utilizador atual
+  // Populate select with the current user's collections
   // ===============================================
   function populateCollectionsSelect() {
     const select = document.getElementById("item-collections");
@@ -361,7 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ===============================================
-  // Criar / Editar / Apagar / Guardar
+  // Create / Edit / Delete / Save (simulated)
   // ===============================================
   window.editItem = (id) => {
     if (!isActiveUser) return alert("You must be logged in to edit items.");
@@ -402,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ===============================================
-  // Lógica para Editar a Coleção
+  // Logic for editing a collection (modal)
   // ===============================================
   function openCollectionModal() {
     const data = appData.loadData();
@@ -413,7 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return alert("You can only edit your own collections.");
     }
 
-    // Preenche o formulário do modal da coleção
+    // Fill the collection modal form with existing values
     collectionForm.querySelector("#collection-id").value = collection.id;
     collectionForm.querySelector("#col-name").value = collection.name;
     collectionForm.querySelector("#col-summary").value = collection.summary || "";
@@ -447,7 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       closeCollectionModal();
-      // Não renderiza novamente para não dar a falsa impressão de que os dados mudaram.
+      // Not re-rendering to avoid giving the false impression that data changed.
       // renderCollectionDetails();
     });
   }
@@ -469,7 +472,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       closeModal();
-      // A renderização foi removida para não mostrar alterações que não aconteceram
+      // Rendering is omitted to avoid showing changes that did not actually occur
       // renderItems();
     });
   }
@@ -506,12 +509,12 @@ document.addEventListener("DOMContentLoaded", () => {
     window.history.replaceState({}, "", nextUrl);
   }
 
-  // Ouve o evento de login/logout e atualiza a página
+  // Listen for login/logout events and update the page
   window.addEventListener("userStateChange", (e) => {
     const newUserData = e.detail;
     const newIsActiveUser = newUserData && newUserData.active;
 
-    // Só renderiza de novo se o estado de login MUDOU
+    // Only re-render if the login state actually changed
     if (newIsActiveUser === isActiveUser) return;
 
     updateUserState();
@@ -520,15 +523,15 @@ document.addEventListener("DOMContentLoaded", () => {
     renderItems();
   });
 
-  // Inicialização
-  populateCollectionsSelect();  // Preenche select de coleções (se existir)
+  // Initialization
+  populateCollectionsSelect();  // Populate collections select (if present)
   if (hasCollectionPage) {
-    renderCollectionDetails();   // Preenche os detalhes da coleção
-    renderItems();               // Renderiza itens da colecao
-    highlightOwnedSection();     // Destaca se for dono
+    renderCollectionDetails();   // Fill the collection details
+    renderItems();               // Render items for the collection
+    highlightOwnedSection();     // Highlight if owned by current user
   }
-  renderCollectionEvents();      // Lista eventos associados (se houver container)
-  handleItemActionParam();      // Executa acoes vindas da item_page
+  renderCollectionEvents();      // List associated events (if container exists)
+  handleItemActionParam();      // Execute actions coming from item_page
 });
 
 

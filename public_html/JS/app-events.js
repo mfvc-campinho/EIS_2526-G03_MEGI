@@ -1,12 +1,8 @@
 // ===============================================
-// app-events.js
-// ===============================================
-// Client-side event manager for the Events page.
-// - Renders events from appData
-// - Filters upcoming/past/all (tabs + hidden selects)
-// - Create / Edit / Delete events via appData
-// - RSVP support
-// - Rating (1–5 stars) for past events by logged-in users
+// File: public_html/JS/app-events.js
+// Purpose: Manage event rendering, filtering, modals, RSVP and rating UX on the Events page.
+// Major blocks: element selectors, helpers (date parsing, filtering), rendering, detail modal & rating, edit/create/delete, RSVP, event listeners, initialization.
+// Notes: Uses window.appData where available; keeps data changes simulated or delegated to appData.
 // ===============================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -291,59 +287,59 @@ document.addEventListener("DOMContentLoaded", () => {
     filtered.forEach(ev => {
       const card = document.createElement("div");
       card.className = "event-card";
-       const isPast = isPastEvent(ev.date);
-        const baseRatings = ev.ratings || {};
-        const ratingValues = Object.values(baseRatings);
-        const ratingCount = ratingValues.length;
-        const ratingAvg = ratingCount
-          ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
-          : null;
-        const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
-        const userCanRate = Boolean(currentUser && currentUser.active);
-        const sessionValue = userCanRate ? sessionRatings[ev.id] : undefined;
-        const storedUserRating = currentUser ? baseRatings[currentUser.id] : null;
-        const userRating = userCanRate
-          ? (sessionValue !== undefined ? sessionValue : storedUserRating || null)
-          : null;
+      const isPast = isPastEvent(ev.date);
+      const baseRatings = ev.ratings || {};
+      const ratingValues = Object.values(baseRatings);
+      const ratingCount = ratingValues.length;
+      const ratingAvg = ratingCount
+        ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
+        : null;
+      const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
+      const userCanRate = Boolean(currentUser && currentUser.active);
+      const sessionValue = userCanRate ? sessionRatings[ev.id] : undefined;
+      const storedUserRating = currentUser ? baseRatings[currentUser.id] : null;
+      const userRating = userCanRate
+        ? (sessionValue !== undefined ? sessionValue : storedUserRating || null)
+        : null;
 
-        let ratingHtml = "";
-        if (isPast) {
-          const stars = [];
-          for (let i = 1; i <= 5; i++) {
-            let classes = "star";
-            if (ratingAvg && i <= Math.round(ratingAvg)) classes += " filled";
-            if (userRating && i <= userRating) classes += " user-rating";
-            classes += " clickable";
-            stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
+      let ratingHtml = "";
+      if (isPast) {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+          let classes = "star";
+          if (ratingAvg && i <= Math.round(ratingAvg)) classes += " filled";
+          if (userRating && i <= userRating) classes += " user-rating";
+          classes += " clickable";
+          stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
+        }
+
+        const summaryParts = [];
+        const showDemoOnly = userCanRate && sessionValue !== undefined;
+        if (!showDemoOnly) {
+          if (ratingAvg) {
+            summaryParts.push(`<span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span>(${ratingCount})</span>`);
+          } else {
+            summaryParts.push(`<span class="muted">No ratings yet</span>`);
           }
+        }
 
-          const summaryParts = [];
-          const showDemoOnly = userCanRate && sessionValue !== undefined;
-          if (!showDemoOnly) {
-            if (ratingAvg) {
-              summaryParts.push(`<span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span>(${ratingCount})</span>`);
-            } else {
-              summaryParts.push(`<span class="muted">No ratings yet</span>`);
-            }
-          }
+        if (showDemoOnly) {
+          summaryParts.push(`<span class="demo-rating-note">Your demo rating: ${sessionValue}/5 (not saved)</span>`);
+        } else if (userCanRate && userRating) {
+          summaryParts.push(`<span class="demo-rating-note">You rated this ${userRating}/5</span>`);
+        }
 
-          if (showDemoOnly) {
-            summaryParts.push(`<span class="demo-rating-note">Your demo rating: ${sessionValue}/5 (not saved)</span>`);
-          } else if (userCanRate && userRating) {
-            summaryParts.push(`<span class="demo-rating-note">You rated this ${userRating}/5</span>`);
-          }
+        const summary = summaryParts.join("");
 
-          const summary = summaryParts.join("");
-
-          ratingHtml = `
+        ratingHtml = `
             <div class="card-rating">
               <div class="rating-stars" data-event-id="${ev.id}">${stars.join("")}</div>
               <div class="rating-summary">${summary}</div>
             </div>
           `;
-        }
+      }
 
-        card.innerHTML = `
+      card.innerHTML = `
           <h3 class="card-title">${escapeHtml(ev.name)}</h3>
           <p class="card-summary">
             ${escapeHtml(ev.summary || ev.description || "")}
@@ -381,57 +377,57 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
 
-        card.querySelector(".view-btn")
-          .addEventListener("click", () => openEventDetail(ev.id));
-        card.querySelector(".rsvp-btn")
-          .addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
-        const editBtn = card.querySelector(".edit-btn");
-        if (editBtn) {
-          editBtn.addEventListener("click", () => openEditModal(ev.id));
+      card.querySelector(".view-btn")
+        .addEventListener("click", () => openEventDetail(ev.id));
+      card.querySelector(".rsvp-btn")
+        .addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
+      const editBtn = card.querySelector(".edit-btn");
+      if (editBtn) {
+        editBtn.addEventListener("click", () => openEditModal(ev.id));
+      }
+      const deleteBtn = card.querySelector(".delete-btn");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
+      }
+
+      const starsContainer = card.querySelector(`.rating-stars[data-event-id="${ev.id}"]`);
+      if (starsContainer) {
+        const stars = Array.from(starsContainer.querySelectorAll('.star'));
+
+        function clearHover() {
+          stars.forEach(s => s.classList.remove('hovered'));
         }
-        const deleteBtn = card.querySelector(".delete-btn");
-        if (deleteBtn) {
-          deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
-        }
 
-        const starsContainer = card.querySelector(`.rating-stars[data-event-id="${ev.id}"]`);
-        if (starsContainer) {
-          const stars = Array.from(starsContainer.querySelectorAll('.star'));
-
-          function clearHover() {
-            stars.forEach(s => s.classList.remove('hovered'));
-          }
-
-          function highlightTo(val) {
-            stars.forEach(s => {
-              const v = Number(s.dataset.value);
-              if (v <= val) s.classList.add('hovered');
-              else s.classList.remove('hovered');
-            });
-          }
-
+        function highlightTo(val) {
           stars.forEach(s => {
-            const val = Number(s.dataset.value);
-
-            s.addEventListener('mouseenter', () => highlightTo(val));
-            s.addEventListener('focus', () => highlightTo(val));
-            s.addEventListener('mouseleave', () => clearHover());
-            s.addEventListener('blur', () => clearHover());
-
-            s.addEventListener('click', () => setRating(ev.id, val));
-            s.addEventListener('keydown', (evKey) => {
-              if (evKey.key === 'Enter' || evKey.key === ' ') {
-                evKey.preventDefault();
-                setRating(ev.id, val);
-              }
-            });
-            s.setAttribute('tabindex', '0');
-            s.setAttribute('role', 'button');
-            s.setAttribute('aria-label', `Rate ${val} out of 5`);
+            const v = Number(s.dataset.value);
+            if (v <= val) s.classList.add('hovered');
+            else s.classList.remove('hovered');
           });
-
-          starsContainer.addEventListener('mouseleave', clearHover);
         }
+
+        stars.forEach(s => {
+          const val = Number(s.dataset.value);
+
+          s.addEventListener('mouseenter', () => highlightTo(val));
+          s.addEventListener('focus', () => highlightTo(val));
+          s.addEventListener('mouseleave', () => clearHover());
+          s.addEventListener('blur', () => clearHover());
+
+          s.addEventListener('click', () => setRating(ev.id, val));
+          s.addEventListener('keydown', (evKey) => {
+            if (evKey.key === 'Enter' || evKey.key === ' ') {
+              evKey.preventDefault();
+              setRating(ev.id, val);
+            }
+          });
+          s.setAttribute('tabindex', '0');
+          s.setAttribute('role', 'button');
+          s.setAttribute('aria-label', `Rate ${val} out of 5`);
+        });
+
+        starsContainer.addEventListener('mouseleave', clearHover);
+      }
 
       eventsList.appendChild(card);
     });

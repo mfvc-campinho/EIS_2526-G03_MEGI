@@ -1,27 +1,28 @@
 // ===============================================
-// app-data.js — Gestão de dados para GoodCollections
-// ===============================================
-// Lê e grava os dados das coleções, itens e eventos,
-// seguindo exatamente a estrutura do ficheiro Data.js.
+// File: public_html/JS/app-data.js
+// Purpose: Provide a lightweight data API for the demo app — load/save demo data to localStorage and helpers for relations (items/events/collections/users).
+// Major blocks: initialization, utility functions (load/save), relation helpers, CRUD helpers, export (window.appData).
+// Notes: appData is exported to window and used by page scripts (app-collections.js, app-events.js, app-items.js).
 // ===============================================
 
 document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
-  // 1️⃣ Inicialização
+  // 1. Initialization
+  // - Import demo data from Data.js into localStorage if missing
   // ============================================================
   if (!localStorage.getItem("collectionsData")) {
     if (typeof collectionsData !== "undefined") {
       localStorage.setItem("collectionsData", JSON.stringify(collectionsData));
-      console.log("✅ Dados iniciais importados do Data.js");
+      console.log("✅ Initial data imported from Data.js");
     } else {
-      console.error("❌ ERRO: O ficheiro Data.js não foi carregado.");
+      console.error("❌ ERROR: Data.js was not loaded.");
     }
   } else {
-    console.log("📦 Dados carregados do localStorage.");
+    console.log("📦 Data loaded from localStorage.");
   }
 
   // ============================================================
-  // 2. Funções utilitárias
+  // 2. Utility functions
   // ============================================================
   function loadData() {
     return JSON.parse(localStorage.getItem("collectionsData"));
@@ -32,15 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // 3. Ligações N:N
+  // 3. Many-to-many relations helpers
   // ============================================================
 
-  // Itens associados a uma coleção
+  // Items associated with a collection
   function getItemsByCollection(collectionId, data) {
-    if (!data) data = loadData(); // Carrega os dados se não forem passados como argumento
+    if (!data) data = loadData(); // Load data when argument is omitted
     if (!data || !data.collectionItems) return [];
 
-    // Otimização: Usar um Set para pesquisa O(1) em vez de Array.includes() que é O(n).
+    // Optimization: use a Set for O(1) lookups instead of Array.includes() which is O(n).
     const linkedItemIds = new Set(
       data.collectionItems
         .filter(link => link.collectionId === collectionId)
@@ -50,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return data.items.filter(item => linkedItemIds.has(item.id));
   }
 
-  // Eventos associados a uma coleção
+  // Events associated with a collection
   function getEventsByCollection(collectionId) {
     const data = loadData();
     if (!data || !data.collectionEvents) return [];
@@ -62,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return data.events.filter(event => linkedIds.includes(event.id));
   }
 
-  // Criar uma nova ligação item ↔ coleção
+  // Create a new item ↔ collection link
   function linkItemToCollection(itemId, collectionId) {
     const data = loadData();
     if (!data.collectionItems) data.collectionItems = [];
@@ -77,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Criar uma nova ligação evento ↔ coleção
+  // Create a new event ↔ collection link
   function linkEventToCollection(eventId, collectionId) {
     const data = loadData();
     if (!data.collectionEvents) data.collectionEvents = [];
@@ -92,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Dono associado a uma coleção
+  // Owner associated with a collection
   function getCollectionOwnerId(collectionId, data) {
     if (!collectionId) return null;
     if (!data) data = loadData();
@@ -113,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // 4. CRUD básico
+  // 4. Basic CRUD helpers
   // ============================================================
   function addEntity(type, entity) {
     const data = loadData();
@@ -134,14 +135,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = loadData();
     data[type] = data[type].filter(e => e.id !== id);
 
-    // Se apagar coleção, remove as relações associadas
+    // If deleting a collection, remove associated relations
     if (type === "collections") {
       data.collectionItems = data.collectionItems.filter(r => r.collectionId !== id);
       data.collectionEvents = data.collectionEvents.filter(r => r.collectionId !== id);
       data.collectionsUsers = data.collectionsUsers?.filter(r => r.collectionId !== id) || [];
     }
 
-    // Se apagar item/evento, remove as ligações também
+    // If deleting an item/event, remove associated links as well
     if (type === "items") {
       data.collectionItems = data.collectionItems.filter(r => r.itemId !== id);
     }
@@ -156,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================================
-  // 5. Exportar API global
+  // 5. Export global API (window.appData)
   // ============================================================
   window.appData = {
     loadData,

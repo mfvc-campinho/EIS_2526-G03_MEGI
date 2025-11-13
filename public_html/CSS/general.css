@@ -1,5 +1,5 @@
 /* ===============================
-   🔹 SECTION TITLE (Our Collections)
+  🔹 SECTION TITLE (Our Collections)
 =============================== */
 /* Base layout: same spacing logic as other pages */
 main {
@@ -412,7 +412,7 @@ body {
 
 
 /* ===============================
-   🔹 FOOTER — BARRA COMPLETA E VISÍVEL NO FUNDO
+  🔹 FOOTER — Full-width footer bar
 =============================== */
 
 footer {
@@ -421,7 +421,7 @@ footer {
   left: 0;
   width: 100%;
   background-color: #0d1320;
-  /* mesma cor do cabeçalho */
+  /* same color as the header */
   color: #ffffff;
   font-family: 'Poppins', sans-serif;
   box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25);
@@ -433,7 +433,7 @@ footer {
   /* ⚡ aumenta visibilidade real */
   z-index: 100;
   margin-top: 80px;
-  /* separação natural do conteúdo */
+  /* natural spacing from the main content */
 
   /* Links extra no footer (Team / Guidelines / Privacy) */
   .footer-links {
@@ -455,7 +455,7 @@ footer {
     color: #ffffff;
   }
 
-  /* Ajuste do ícone do GitHub dentro do texto */
+  /* Adjust GitHub icon alignment within text */
   footer i.bi-github {
     font-size: 1.05rem;
     margin-right: 4px;
@@ -512,7 +512,7 @@ footer a:hover::after {
   width: 60%;
 }
 
-/* Ícone do coração */
+/* Heart icon */
 footer .heart {
   color: #ff4d6d;
   animation: pulse 1.5s infinite ease-in-out;
@@ -828,8 +828,8 @@ footer .heart {
 
 
 /* ==========================================
-   🌟 GRID UNIFICADO (Coleções e Itens)
-   Controla o layout de todas as grelhas de cartões do site.
+  🌟 UNIFIED GRID (Collections & Items)
+  Controls layout for all card grids across the site.
    ========================================== */
 
 /* ===============================
@@ -843,10 +843,10 @@ footer .heart {
   flex-wrap: wrap;
   justify-content: center;
   gap: 24px;
-  /* Aumentado o espaço entre cartões para melhor legibilidade */
+  /* Increased spacing between cards for better readability */
   padding: 18px;
   max-width: 2000px;
-  /* Reduz a largura máxima para "apertar" o layout */
+  /* Reduced max-width to tighten the layout */
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -863,7 +863,7 @@ footer .heart {
   width: calc(20% - 24px);
   /* 5 por linha (ajustado ao gap) */
   min-width: 280px;
-  /* Aumentar um pouco para melhor visualização */
+  /* Increased slightly for better visibility */
   height: 420px;
   display: flex;
   flex-direction: column;
@@ -876,10 +876,10 @@ footer .heart {
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
 }
 
-/* Ajustes específicos para cada tipo de cartão */
+/* Specific adjustments for each card type */
 .collection-card {
   justify-content: flex-start;
-  /* Alinha conteúdo ao topo */
+  /* Align content to the top */
 }
 
 .collection-card:hover {
@@ -894,7 +894,7 @@ footer .heart {
   overflow: hidden;
   background: #fff;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* Estica o conteúdo para preencher a altura */
+  /* Stretch content to fill available height */
 }
 
 .item-card:hover {
@@ -1395,14 +1395,14 @@ button {
   backdrop-filter: blur(3px);
 }
 
-/* 🔹 Conteúdo do modal */
+/* 🔹 Modal content */
 .modal-content {
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: 550px;
-  /* Aumentado para dar mais espaço */
+  /* Increased to provide more space */
   padding: 28px 32px;
   position: relative;
   transform: scale(0.95);
@@ -1412,7 +1412,7 @@ button {
   font-family: 'Poppins', sans-serif;
 }
 
-/* Animação de entrada */
+/* Entrance animation */
 .modal[style*="display: flex"] {
   opacity: 1;
 }
@@ -1421,7 +1421,7 @@ button {
   transform: scale(1);
 }
 
-/* 🔹 Título do modal */
+/* 🔹 Modal title */
 #collection-modal-title,
 #modal-title {
   font-size: 1.5rem;
@@ -1431,7 +1431,7 @@ button {
   text-align: center;
 }
 
-/* 🔹 Formulário e campos */
+/* 🔹 Form and fields */
 #form-collection,
 #item-form {
   display: grid;
@@ -1458,7 +1458,7 @@ button {
   font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
-  /* Garante que o padding não aumenta a largura total */
+  /* Ensure padding does not increase the overall width */
 }
 
 .modal-content input:focus,
@@ -1469,15 +1469,15 @@ button {
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
-/* Estilo específico para a área de texto (descrição) */
+/* Specific style for the text area (description) */
 .modal-content textarea {
   min-height: 120px;
-  /* Altura mínima equivalente a ~4-5 linhas */
+  /* Minimum height roughly equivalent to ~4-5 lines */
   resize: vertical;
   /* Permite redimensionar apenas na vertical */
 }
 
-/* 🔹 Botões de Ação (Guardar, Cancelar) */
+/* 🔹 Action buttons (Save, Cancel) */
 .modal-actions {
   display: flex;
   justify-content: center;
@@ -1542,13 +1542,13 @@ button {
   box-shadow: 0 0 0 4px rgba(3, 102, 214, 0.12);
 }
 
-/* Texto de ajuda dentro dos formulários do modal */
+/* Helper text inside modal forms */
 .form-hint {
   font-size: 0.8rem;
   color: #666;
 }
 
-/* 🔹 Botão de fechar (X) */
+/* 🔹 Close button (X) */
 .close-btn,
 .close {
   position: absolute;

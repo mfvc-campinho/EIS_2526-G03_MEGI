@@ -1,10 +1,8 @@
 /*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this template
-*/
-/* 
-    Created on : 21 de out. de 2025, 21:02:59
-    Author     : anaamorim
+  File: public_html/CSS/team_page.css
+  Purpose: Styles for the Team page and project summary card.
+  Major selector groups: Team grid, member cards, project summary, responsive adjustments.
+  Notes: Keep .Team and .member selectors stable as HTML relies on them.
 */
 
 /* ===== TEAM SECTION ===== */
@@ -13,7 +11,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
 .Team {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  /* 4 por linha */
+  /* 4 per row */
   gap: 28px 12px;
   max-width: 1200px;
   margin: 0 auto;
@@ -46,9 +44,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   border: 3px solid #2563eb;
   margin-bottom: 15px;
   display: block;
-  /* <- necessário para margin:auto funcionar */
+  /* <- required for margin:auto to work */
   margin: 6px auto 14px;
-  /* <- centra e dá espaço em cima/baixo */
+  /* <- centers and provides vertical spacing */
 }
 
 /* Member name */
@@ -71,29 +69,29 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   font-weight: 600;
   white-space: nowrap;
   margin-bottom: 10px;
-  /* opcional: espaço antes da descrição */
+  /* optional: spacing before the description */
 }
 
 /* Personal description */
 .member .desc {
   font-size: 0.95rem;
   color: #374151;
-  /* Cinzento mais escuro */
+  /* Darker gray */
   line-height: 1.4;
   font-weight: 300;
   font-style: italic;
   text-align: center;
 }
 
-/* Responsivo: 2 por linha em telas menores */
+/* Responsive: 2 per row on smaller screens */
 @media (max-width: 768px) {
   .Team {
     grid-template-columns: repeat(2, 1fr);
-    /* 2 por linha */
+    /* 2 per row */
   }
 }
 
-/* Opcional: 1 por linha em telas muito pequenas */
+/* Optional: 1 per row on very small screens */
 @media (max-width: 480px) {
   .Team {
     grid-template-columns: 1fr;
@@ -126,7 +124,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   margin-top: 14px;
   align-items: center;
   justify-items: center;
-  /* centra cada bloco dentro do cartão */
+  /* centers each block inside the card */
 }
 
 /* Cada bloco (label + value) centrado */
@@ -134,7 +132,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* centra texto dentro da coluna */
+  /* centers text within the column */
   gap: 4px;
 }
 
@@ -151,7 +149,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   font-weight: 500;
 }
 
-/* Pill azul apenas à volta do G03 */
+/* Blue pill used to highlight G03 */
 .meta-value.pill {
   display: inline-flex;
   align-items: center;
@@ -232,10 +230,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
 .team-icon {
   font-size: 2rem;
   color: #2563eb;
-  /* azul consistente */
+  /* consistent blue */
 }
 
-/* Ajuste do alinhamento do título */
+/* Title alignment adjustment */
 .heading-content {
   display: inline-flex;
   align-items: center;

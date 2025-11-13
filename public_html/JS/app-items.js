@@ -119,6 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (collection) {
       document.getElementById("collection-title").textContent = collection.name;
+      // Atualiza também o breadcrumb para referenciar corretamente a coleção
+      const bc = document.getElementById("collection-breadcrumb-name");
+      if (bc) bc.textContent = collection.name;
       const ownerProfile = getOwnerProfileForCollection(collection, data) || {};
       const collectionOwnerId = getOwnerIdForCollection(collection, data);
       const ownerDisplayName =
@@ -173,6 +176,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       // Se a coleção não for encontrada, mostra uma mensagem de erro
       document.getElementById("collection-title").textContent = "Collection Not Found";
+      // Atualiza breadcrumb para refletir o erro/estado
+      const bc = document.getElementById("collection-breadcrumb-name");
+      if (bc) bc.textContent = "Collection Not Found";
       // Esconde os botões de ação se a coleção não existir
       if (addItemBtn) addItemBtn.style.display = "none";
       if (editCollectionBtn) editCollectionBtn.style.display = "none";

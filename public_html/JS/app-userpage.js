@@ -336,7 +336,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const ownerName = user["owner-name"] || viewedOwnerId;
 
     userNameEl.textContent = ownerName;
-    usernameBannerEl.textContent = ownerName;
+    // Only update the banner if it exists. We may use a static page title
+    // (for example 'User Profile') in the markup so avoid throwing if
+    // the element is missing.
+    if (usernameBannerEl) usernameBannerEl.textContent = ownerName;
     userAvatarEl.src = user["owner-photo"];
     userEmailEl.textContent = user.email;
     userDobEl.textContent = user["date-of-birth"];

@@ -258,12 +258,14 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #9ca3af;
+  text-align: center;
 }
 
 .info-value {
   font-size: 0.95rem;
   font-weight: 500;
   color: #111827;
+  text-align: center;
 }
 
 /* Bottom: use global button style, just ensure centered */

@@ -885,6 +885,44 @@ footer .heart {
   margin-bottom: 16px;
 }
 
+.collection-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.metric-btn {
+  border: 1px solid rgba(148, 163, 253, 0.4);
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1d4ed8;
+  font-weight: 600;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.metric-btn i {
+  font-size: 1rem;
+}
+
+.metric-btn:hover {
+  background: #dbeafe;
+  transform: translateY(-1px);
+}
+
+.metric-btn.active {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
 /* ===============================
    🔹 ITEMS PREVIEW
 =============================== */
@@ -1287,4 +1325,93 @@ button {
 .close-btn:hover,
 .close:hover {
   color: #1f2937;
+}
+
+/* ===== Top Pick Modal ===== */
+.top-pick-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 16px;
+}
+
+.top-pick-modal-backdrop.visible {
+  display: flex;
+}
+
+.top-pick-modal {
+  background: #ffffff;
+  border-radius: 18px;
+  width: min(360px, 100%);
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+  padding: 24px 24px 20px;
+}
+
+.top-pick-form h3 {
+  margin: 0 0 4px;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.top-pick-form p {
+  margin: 0 0 16px;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.top-pick-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.top-pick-form select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  outline: none;
+  margin-bottom: 18px;
+}
+
+.top-pick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.top-pick-actions .primary {
+  flex: 1;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.top-pick-actions .remove-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.top-pick-actions .ghost {
+  border: 1px solid #cbd5f5;
+  background: transparent;
+  color: #1e3a8a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
 }

@@ -323,6 +323,158 @@
   font-size: 0.9rem;
 }
 
+.user-top-picks {
+  margin: 40px 0 10px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mini-reset-btn {
+  border: 1px solid #cbd5f5;
+  background: #eef2ff;
+  color: #1e3a8a;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mini-reset-btn:hover:not(:disabled) {
+  background: #dbeafe;
+  color: #0f172a;
+}
+
+.mini-reset-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.section-note {
+  margin: 6px 0 14px;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.user-top-picks .section-title {
+  margin-bottom: 12px;
+}
+
+.top-picks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.top-pick-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.top-pick-link {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.top-pick-link h3 {
+  transition: color 0.2s ease;
+}
+
+.top-pick-link:hover h3 {
+  color: #2563eb;
+}
+
+.top-pick-card .rank-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(140deg, #2563eb, #3b82f6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.top-pick-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.top-pick-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.pick-controls {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.pick-controls .mini-btn {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.pick-controls .mini-btn:hover {
+  background: #e0e7ff;
+}
+
+.liked-collections {
+  margin: 24px 0 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.liked-collection-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.liked-collection-card a {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.liked-collection-card h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.liked-collection-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .profile-card {

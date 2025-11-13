@@ -639,6 +639,13 @@ footer .heart {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 0.9rem;
+  color: #111827;
+  /* ensure typed characters are dark (don't inherit white from navbar) */
+}
+
+.login-form input::placeholder {
+  color: #9ca3af;
+  /* muted placeholder for better contrast */
 }
 
 .login-form input:focus {

@@ -618,6 +618,16 @@ footer .heart {
   display: block;
 }
 
+/* Keep dropdown visible and fully opaque when toggled open via JS (click)
+   This ensures the menu does not hide when the mouse leaves the navbar area. */
+.profile-dropdown.open .dropdown-content,
+.profile-dropdown.open .profile-menu {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
 /* ==========================================
    👤 LOGIN FORM (Dropdown)
    ========================================== */

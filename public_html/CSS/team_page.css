@@ -22,18 +22,24 @@
 .member {
   box-sizing: border-box;
   margin: 0;
-  padding: 22px;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+  padding: 28px 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+
 
 
 .member:hover {
   transform: translateY(-6px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
 }
+
 
 /* Round photo */
 .member img {
@@ -51,36 +57,31 @@
 
 /* Member name */
 .member h2 {
-  font-size: 1.2rem;
-  margin: 10px 0 5px;
-  color: #2563eb;
-  text-align: center;
+  font-size: 1.35rem;
+  margin: 12px 0 6px;
+  color: #1d4ed8;
+  font-weight: 600;
 }
 
 /* Student ID */
 .member .id {
-  display: inline-block;
-  /* ✅ Alterado de inline-flex para inline-block */
-  padding: 4px 14px;
+  padding: 5px 16px;
   border-radius: 999px;
-  background-color: #e8f2ff;
-  color: #1d4ed8;
-  font-size: 0.86rem;
-  font-weight: 600;
-  white-space: nowrap;
-  margin-bottom: 10px;
-  /* optional: spacing before the description */
+  background-color: #eef6ff;
+  color: #2563eb;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 12px;
 }
 
 /* Personal description */
 .member .desc {
   font-size: 0.95rem;
-  color: #374151;
-  /* Darker gray */
-  line-height: 1.4;
-  font-weight: 300;
+  color: #4b5563;
+  line-height: 1.5;
+  font-weight: 400;
   font-style: italic;
-  text-align: center;
+  max-width: 90%;
 }
 
 /* Responsive: 2 per row on smaller screens */

@@ -329,22 +329,39 @@
 
 /* ===== RANKING / FILTER SECTION ===== */
 .filter-section {
+  /* local design tokens for easier future tweaks */
+  --fp-bg: #ffffff;
+  --fp-border: rgba(14, 165, 233, 0.06);
+  --fp-muted: #6b7280;
+  --fp-accent: #0078ff;
+
   display: flex;
   justify-content: center;
   padding: 18px 20px 8px;
 }
 
 .filter-control {
-  background: #ffffff;
+  background: var(--fp-bg);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 10px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  border: 1px solid rgba(14, 165, 233, 0.06);
+  border: 1px solid var(--fp-border);
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 520px;
+  max-width: 920px;
   width: 100%;
+  flex-wrap: wrap;
+  /* allow controls to wrap on narrow screens */
+}
+
+/* small logical grouping if markup uses multiple controls */
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+  flex: 1 1 auto;
 }
 
 .filter-label {
@@ -355,14 +372,16 @@
   align-items: center;
   gap: 8px;
   margin: 0;
+  white-space: nowrap;
 }
 
 .filter-input {
   margin-left: auto;
-  /* push to the right */
+  /* keeps the clear/search on the right when space allows */
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 0 0 auto;
 }
 
 .filter-select {
@@ -370,26 +389,74 @@
   appearance: none;
   background: transparent;
   border: 1px solid #e6f0ff;
-  padding: 8px 10px;
+  padding: 8px 36px 8px 10px;
+  /* room for custom chevron */
   border-radius: 8px;
-  min-width: 180px;
+  min-width: 140px;
   font-size: 0.95rem;
   color: #0b1220;
   cursor: pointer;
   transition: box-shadow 160ms ease, transform 120ms ease, border-color 160ms ease;
+  /* small SVG chevron on the right (tint matches accent) */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%230078ff'><path fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z' clip-rule='evenodd'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
 }
 
-.filter-select:focus {
+.filter-select:focus,
+.filter-select:focus-visible {
   outline: none;
   box-shadow: 0 6px 18px rgba(0, 120, 255, 0.12);
   border-color: rgba(59, 130, 246, 0.6);
 }
 
+/* Improve option/list appearance where browsers allow styling */
+.filter-select option {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  background-color: #fff;
+  color: #0b1220;
+}
+
+.filter-select option:checked {
+  background-color: #e0e7ff;
+  font-weight: 600;
+}
+
+.filter-select option[selected] {
+  background: #f3f4f6;
+  color: #0b1220;
+  font-weight: 700;
+}
+
+/* Hide native dropdown arrow on IE/Edge to avoid double UI (we draw our own chevron) */
+.filter-select::-ms-expand {
+  display: none;
+}
+
+/* Firefox focus workaround to preserve consistent text color when using custom appearance */
+.filter-select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #0b1220;
+}
+
+/* Optional: scrollbar styling for WebKit-based browsers when dropdown shows a scrollbar */
+.filter-select::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.filter-select::-webkit-scrollbar-thumb {
+  background: rgba(2, 6, 23, 0.12);
+  border-radius: 8px;
+}
+
 .filter-clear {
   background: #f8fafc;
   border: 1px solid #e6eefc;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   display: inline-grid;
   place-items: center;
@@ -408,16 +475,29 @@
   transform: translateY(0);
 }
 
+.filter-clear:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 120, 255, 0.12);
+}
+
 /* small screens */
 @media (max-width: 600px) {
   .filter-control {
-    padding: 8px 10px;
-    gap: 8px;
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .filter-group {
+    min-width: 120px;
+    flex-basis: 100%;
+    /* stack groups full width */
+    justify-content: space-between;
   }
 
   .filter-select {
-    min-width: 140px;
+    min-width: 120px;
     font-size: 0.92rem;
+    padding-right: 34px;
   }
 
   .filter-section {

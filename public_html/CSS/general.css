@@ -12,7 +12,7 @@ main {
 
 h1.page-title {
   text-align: center;
-  margin-top: 5 px;
+  margin-top: 5px;
   font-size: 2.4rem;
   color: #222;
   position: relative;
@@ -63,6 +63,18 @@ body {
   margin: 0;
   padding: 0;
   color: #333;
+}
+
+/* Ensure all form controls inherit the site's font stack so modals and other
+   form elements remain visually consistent with the rest of the page. */
+input,
+textarea,
+select,
+option {
+  font-family: inherit;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
 }
 
 .navbar {
@@ -413,7 +425,7 @@ body {
 
 /* ===============================
   🔹 FOOTER — Full-width footer bar
-=============================== */
+  =============================== */
 
 footer {
   position: relative;
@@ -434,33 +446,33 @@ footer {
   z-index: 100;
   margin-top: 80px;
   /* natural spacing from the main content */
+}
 
-  /* Links extra no footer (Team / Guidelines / Privacy) */
-  .footer-links {
-    display: flex;
-    gap: 18px;
-    margin-top: 4px;
-  }
+/* Links extra no footer (Team / Guidelines / Privacy) */
+footer .footer-links {
+  display: flex;
+  gap: 18px;
+  margin-top: 4px;
+}
 
-  .footer-links a {
-    font-weight: 400;
-    font-size: 0.9rem;
-    color: #9ca3af;
-    text-decoration: none;
-    position: relative;
-    transition: color 0.25s ease;
-  }
+footer .footer-links a {
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: #9ca3af;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.25s ease;
+}
 
-  .footer-links a:hover {
-    color: #ffffff;
-  }
+footer .footer-links a:hover {
+  color: #ffffff;
+}
 
-  /* Adjust GitHub icon alignment within text */
-  footer i.bi-github {
-    font-size: 1.05rem;
-    margin-right: 4px;
-    vertical-align: -1px;
-  }
+/* Adjust GitHub icon alignment within text */
+footer i.bi-github {
+  font-size: 1.05rem;
+  margin-right: 4px;
+  vertical-align: -1px;
 }
 
 /* Container interno */
@@ -748,6 +760,30 @@ footer .heart {
   box-shadow: 0 4px 10px rgba(146, 64, 14, 0.08);
 }
 
+/* Set gradient accents for each button variant via CSS variables. This controls the
+   small animated underline bar so it matches the button's color intent. */
+.explore-btn.success {
+  --btn-accent-start: #16a34a;
+  --btn-accent-end: #4ade80;
+}
+
+.explore-btn.danger {
+  --btn-accent-start: #b91c1c;
+  --btn-accent-end: #fca5a5;
+}
+
+.explore-btn.warning {
+  --btn-accent-start: #92400e;
+  --btn-accent-end: #fde68a;
+}
+
+/* ghost and preview variants should keep blue accents by default */
+.explore-btn.ghost,
+.btn-preview {
+  --btn-accent-start: #2563eb;
+  --btn-accent-end: #3b82f6;
+}
+
 /* ============================================
    🔹 ICONS INSIDE BUTTONS
    ============================================ */
@@ -756,20 +792,11 @@ footer .heart {
   transition: color 0.2s ease;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* ============================================
+   🔹 CENTERED ACTION BUTTON GROUPS
+   Used on Home Page and All Collections page
+   to center action buttons horizontally.
+   ============================================ */
 
 /* Center the action buttons horizontally on the page */
 .crud-controls,
@@ -1147,6 +1174,9 @@ footer .heart {
   position: relative;
   background: #ffffff;
   color: #1e3a8a;
+  /* accent gradient for the animated underline (can be overridden by variants) */
+  --btn-accent-start: #2563eb;
+  --btn-accent-end: #3b82f6;
   border: 1px solid #e5e7eb;
   padding: 10px 20px;
   border-radius: 10px;
@@ -1168,7 +1198,7 @@ footer .heart {
   transition: color 0.25s ease;
 }
 
-/* Animated underline bar */
+/* Animated underline bar - uses CSS variables so variants can change the color */
 .explore-btn::after {
   content: "";
   position: absolute;
@@ -1176,7 +1206,7 @@ footer .heart {
   left: 50%;
   width: 0%;
   height: 2px;
-  background: #2563eb;
+  background: linear-gradient(90deg, var(--btn-accent-start, #2563eb), var(--btn-accent-end, #3b82f6));
   border-radius: 2px;
   transform: translateX(-50%);
   transition: width 0.3s ease;
@@ -1469,22 +1499,26 @@ button {
 
 /* Labels */
 .modal-content label {
+  display: block;
+  margin-bottom: 6px;
   font-weight: 500;
   font-size: 0.9rem;
   color: #4b5563;
 }
 
 /* Inputs e Textareas */
-.modal-content input[type="text"],
-.modal-content input[type="number"],
-.modal-content input[type="date"],
+.modal-content input,
 .modal-content textarea,
 .modal-content select {
   width: 100%;
+  display: block;
   padding: 12px 14px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 1rem;
+  font-family: inherit;
+  color: inherit;
+  line-height: 1.4;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
   /* Ensure padding does not increase the overall width */

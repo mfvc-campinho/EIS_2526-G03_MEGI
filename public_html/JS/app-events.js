@@ -577,6 +577,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     filtered.forEach(ev => {
+      // determine if event is happening within the next 7 days (inclusive)
+      const today = todayStart();
+      const in7 = new Date(today.getTime() + 7 * 24 * 3600 * 1000);
+      const evDateObj = parseEventDate(ev.date);
+      const isSoon = evDateObj && evDateObj >= today && evDateObj <= in7;
       const card = document.createElement("div");
       card.className = "event-card";
       const isPast = isPastEvent(ev.date);
@@ -631,8 +636,10 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
       }
 
+      const alertBadgeHtml = isSoon && !isPast ? `<span class="event-alert-badge" aria-hidden="true">⚠️ Soon</span>` : "";
+
       card.innerHTML = `
-          <h3 class="card-title">${escapeHtml(ev.name)}</h3>
+          <h3 class="card-title">${escapeHtml(ev.name)} ${alertBadgeHtml}</h3>
           <p class="card-summary">
             ${escapeHtml(ev.summary || ev.description || "")}
           </p>

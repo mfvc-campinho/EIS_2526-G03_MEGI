@@ -517,3 +517,83 @@
     text-align: center;
   }
 }
+
+/* Additional responsive improvements for user page */
+@media (max-width: 768px) {
+  .welcome-title {
+    padding: 18px 16px;
+    text-align: center;
+  }
+
+  .profile-card {
+    padding: 18px;
+  }
+
+  .profile-top {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 88px;
+    height: 88px;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  /* Ensure pick-controls and mini buttons meet touch sizes */
+  .pick-controls .mini-btn,
+  .mini-reset-btn {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .welcome-title {
+    font-size: 1.6rem;
+    padding: 12px 12px;
+    text-align: center;
+  }
+
+  .profile-top {
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  /* My Collections & top picks should be single column and centered */
+  .user-top-picks .top-picks-grid,
+  .liked-collections {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0 12px;
+  }
+
+  .user-event-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  /* Ensure actions remain tappable */
+  .user-actions .explore-btn,
+  .pick-controls .mini-btn {
+    min-height: 44px;
+    width: 100%;
+    justify-content: center;
+  }
+}

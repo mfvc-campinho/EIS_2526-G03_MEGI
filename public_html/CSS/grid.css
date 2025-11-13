@@ -1,0 +1,56 @@
+/* Helper grid.css — small utilities used across pages for responsive grids
+   Created: appended by Copilot assistant
+   Purpose: Provide small reusable responsive helpers so HTML pages can include
+   compact classes like .responsive-grid and .grid-center without changing markup.
+*/
+
+/* Responsive utility: default grid that adapts to available width */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Centered grid helper for lists that should remain centered on narrow viewports */
+.grid-center {
+  display: grid;
+  justify-content: center;
+  grid-auto-flow: row;
+  gap: 16px;
+}
+
+/* Stack cards vertically for very small devices */
+@media (max-width: 600px) {
+
+  .responsive-grid,
+  .grid-center {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Utility class to ensure clickable/touch targets meet size recommendations */
+.touch-friendly {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Compact helpers for consistent card spacing */
+.card-tight {
+  padding: 12px !important;
+  border-radius: 12px !important;
+}
+
+/* Ensure grid children wrap and center nicely on medium viewports */
+@media (max-width: 992px) {
+  .responsive-grid {
+    gap: 16px;
+  }
+}

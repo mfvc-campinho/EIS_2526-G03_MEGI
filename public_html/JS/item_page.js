@@ -45,6 +45,51 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fallbackCollection) collections.push(fallbackCollection);
   }
 
+  /* Render accessible breadcrumb: Home > Collections > (Collection) > Item */
+  function renderBreadcrumb() {
+    const nav = document.getElementById('page-breadcrumb');
+    if (!nav) return;
+    const ol = nav.querySelector('.breadcrumb-list');
+    if (!ol) return;
+    // Clear existing items (keep Home and Collections if present)
+    ol.innerHTML = '';
+
+    const makeLi = (content, href, isCurrent) => {
+      const li = document.createElement('li');
+      li.className = 'breadcrumb-item';
+      if (isCurrent) {
+        li.setAttribute('aria-current', 'page');
+        li.textContent = content;
+      } else if (href) {
+        const a = document.createElement('a');
+        a.href = href;
+        a.textContent = content;
+        li.appendChild(a);
+      } else {
+        li.textContent = content;
+      }
+      return li;
+    };
+
+    // Home
+    ol.appendChild(makeLi('Home', 'home_page.html', false));
+    // Collections
+    ol.appendChild(makeLi('Collections', 'all_collections.html', false));
+
+    // Collection (if available)
+    if (primaryCollectionId) {
+      const col = (data.collections || []).find(c => c.id === primaryCollectionId) || collections[0];
+      const colName = col?.name || primaryCollectionId;
+      const colHref = `specific_collection.html?id=${encodeURIComponent(primaryCollectionId)}`;
+      ol.appendChild(makeLi(colName, colHref, false));
+    }
+
+    // Current item
+    const itemName = item?.name || 'Item';
+    ol.appendChild(makeLi(itemName, null, true));
+  }
+
+
   function resolveOwnerIdForCollection(collectionId) {
     if (!collectionId) return null;
     const link = (data.collectionsUsers || []).find(entry => entry.collectionId === collectionId);
@@ -126,6 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Render breadcrumb then collection/owner links
+  renderBreadcrumb();
   renderCollectionLinks();
   renderOwnerLinks();
 

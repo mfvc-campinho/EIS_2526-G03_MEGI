@@ -865,6 +865,47 @@ footer .heart {
   font-weight: 500;
 }
 
+/* Support ordered-list breadcrumb structure used on the item page
+   e.g. <nav class="breadcrumb-nav"><ol class="breadcrumb-list"><li class="breadcrumb-item">...</li></ol></nav> */
+.breadcrumb-nav .breadcrumb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.breadcrumb-nav .breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  color: #6b7280;
+}
+
+.breadcrumb-nav .breadcrumb-item+.breadcrumb-item::before {
+  content: '\203A';
+  /* › */
+  display: inline-block;
+  margin-right: 10px;
+  color: #9ca3af;
+  font-size: 0.95rem;
+}
+
+.breadcrumb-nav .breadcrumb-item a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.breadcrumb-nav .breadcrumb-item a:hover,
+.breadcrumb-nav .breadcrumb-item a:focus {
+  text-decoration: underline;
+}
+
+.breadcrumb-nav .breadcrumb-item[aria-current="page"] {
+  color: #111827;
+  font-weight: 600;
+}
+
 /* Page title spacing */
 .page-title {
   margin: 0 0 18px;

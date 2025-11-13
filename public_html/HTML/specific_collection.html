@@ -70,13 +70,14 @@
          🔹 MAIN CONTENT
         =============================== -->
         <main>
-            <!-- 🔹 Breadcrumb (no JS change; optional visual context) -->
+            <!-- 🔹 Breadcrumb (standardized) -->
             <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-                <a href="home_page.html">Home</a>
-                <span>/</span>
-                <a href="all_collections.html">Collections</a>
-                <span>/</span>
-                <span id="collection-breadcrumb-name">Collection</span>
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="all_collections.html">Collections</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><span
+                            id="collection-breadcrumb-name">Collection</span></li>
+                </ol>
             </nav>
 
             <!-- 🔹 Page Title (filled by JS) -->

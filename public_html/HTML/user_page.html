@@ -67,11 +67,12 @@
     <!-- ========================================================= -->
     <main>
 
-      <!-- 🔹 Breadcrumb (no JS change; optional visual context) -->
+      <!-- 🔹 Breadcrumb (standardized) -->
       <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-        <a href="home_page.html">Home</a>
-        <span>/</span>
-        <a href="user_page.html">User Profile</a>
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
+          <li class="breadcrumb-item" aria-current="page">User Profile</li>
+        </ol>
       </nav>
 
       <!-- ===============================

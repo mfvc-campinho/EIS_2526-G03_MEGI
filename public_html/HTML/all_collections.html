@@ -20,6 +20,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../CSS/grid.css" />
 
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.classList.add('dark-mode');
+        }
+      } catch (e) { }
+    })();
+  </script>
+  <script src="../JS/theme-toggle.js" defer></script>
+
 
 </head>
 
@@ -48,6 +59,11 @@
           <a href="team_page.html" class="nav-link">
             <i class="bi bi-people-fill me-1"></i> About Us
           </a>
+
+          <!-- Dark mode toggle -->
+          <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
+            <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
+          </button>
 
           <!-- Login dropdown -->
           <div class="dropdown profile-dropdown">

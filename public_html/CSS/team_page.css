@@ -272,9 +272,9 @@
 }
 
 .repo-icon {
-  font-size: 2rem;
+  font-size: 4rem;
   color: #111827;
-  margin-bottom: 6px;
+  margin-bottom: 1px;
 }
 
 .repo-card h3 {
@@ -306,5 +306,10 @@
 @media (max-width: 600px) {
   .repo-card {
     padding: 20px 18px;
+  }
+
+  /* Slightly reduce the repo icon size on small screens to avoid overflow */
+  .repo-icon {
+    font-size: 2.4rem;
   }
 }

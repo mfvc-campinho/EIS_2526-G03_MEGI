@@ -1481,8 +1481,65 @@ button {
 .modal-actions {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* Make modal buttons visually match the project's .explore-btn system.
+   Save -> primary gradient, Cancel -> ghost variant. Scoped to modal only. */
+.modal-actions button,
+.modal-actions .btn,
+.modal-actions input[type="button"],
+.modal-actions input[type="submit"] {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-width: 110px;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.08);
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #1e3a8a;
+}
+
+/* Save (primary) */
+.modal-actions .save-btn {
+  background: linear-gradient(90deg, #0078ff, #00b3ff);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.modal-actions .save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(3, 102, 214, 0.12);
+}
+
+/* Cancel (ghost) */
+.modal-actions .cancel-btn {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid #cbd5f5;
+}
+
+.modal-actions .cancel-btn:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.06);
+}
+
+/* Focus styles for accessibility */
+.modal-actions button:focus,
+.modal-actions .save-btn:focus,
+.modal-actions .cancel-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(3, 102, 214, 0.12);
 }
 
 /* Texto de ajuda dentro dos formulários do modal */

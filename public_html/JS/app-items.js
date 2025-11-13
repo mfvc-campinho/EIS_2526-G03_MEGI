@@ -283,9 +283,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!eventsContainer) return;
     const data = appData.loadData();
     const collection = getCurrentCollection(data);
-    const returnTarget = `${window.location.pathname}${window.location.search || ""}`;
-    const encodedReturn = encodeURIComponent(returnTarget);
-    const fromQuery = encodedReturn ? `&from=${encodedReturn}` : "";
 
     if (!collection) {
       eventsContainer.innerHTML = `<p class="notice-message">Collection not found.</p>`;
@@ -304,7 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <h3>${ev.name}</h3>
           <p class="event-meta">${formatEventDate(ev.date)} ┬À ${ev.localization || "To be announced"}</p>
         </div>
-        <a class="explore-btn ghost" href="event_page.html?id=${ev.id}${fromQuery}">
+        <a class="explore-btn ghost" href="event_page.html?id=${ev.id}">
           <i class="bi bi-calendar-event"></i> View event
         </a>
       </article>

@@ -13,6 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- ELEMENTS ----------
 
   const DEFAULT_OWNER_ID = "collector-main";
+  const urlParams = new URLSearchParams(window.location.search);
+  let deepLinkEventId = urlParams.get("id");
+  let deepLinkHandled = false;
+  const sessionRatings = {};
+  let modalReturnUrl = null;
   const eventsList = document.getElementById("eventsList");
   const newEventBtn = document.getElementById("newEventBtn");
 
@@ -58,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelEditBtn = document.getElementById("cancel-event-edit");
 
   let locationFilterPopulated = false;
-  const sessionRatings = {};
 
   // ---------- HELPERS ----------
 
@@ -71,6 +75,13 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch {
       return { events: [] };
     }
+  }
+
+  function clearDeepLinkParams() {
+    const currentUrl = new URL(window.location.href);
+    if (!currentUrl.searchParams.has("id")) return;
+    currentUrl.searchParams.delete("id");
+    history.replaceState(null, "", currentUrl.toString());
   }
 
   function saveEntityUpdate(id, patch) {
@@ -424,11 +435,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
       eventsList.appendChild(card);
     });
+
+    if (!deepLinkHandled && deepLinkEventId) {
+      const exists = (data.events || []).some(ev => ev.id === deepLinkEventId);
+      if (exists) {
+        const ref = document.referrer && document.referrer.length ? document.referrer : null;
+        openEventDetail(deepLinkEventId, { returnUrl: ref });
+        if (!ref) clearDeepLinkParams();
+      } else {
+        clearDeepLinkParams();
+      }
+      deepLinkHandled = true;
+      deepLinkEventId = null;
+    }
   }
 
   // ---------- DETAIL MODAL & RATING ----------
 
-  function openEventDetail(id) {
+  function openEventDetail(id, options = {}) {
     const data = loadData();
     const ev = (data.events || []).find(x => x.id === id);
     if (!ev) return alert("Event not found.");
@@ -532,11 +556,24 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
+    modalReturnUrl = options.returnUrl || null;
     eventDetailModal.style.display = "flex";
+    if (!modalReturnUrl) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("id", id);
+      history.replaceState(null, "", url.toString());
+    }
   }
 
   function closeEventDetail() {
     if (eventDetailModal) eventDetailModal.style.display = "none";
+    if (modalReturnUrl) {
+      const target = modalReturnUrl;
+      modalReturnUrl = null;
+      window.location.href = target;
+      return;
+    }
+    clearDeepLinkParams();
   }
 
   function setRating(eventId, value) {
@@ -557,9 +594,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     sessionRatings[eventId] = value;
     alert("Demo only: rating stored for this session.");
+    const preserveReturnUrl = modalReturnUrl;
     renderEvents();
     if (eventDetailModal && eventDetailModal.style.display === "flex") {
-      openEventDetail(eventId);
+      openEventDetail(eventId, { returnUrl: preserveReturnUrl });
     }
   }
 

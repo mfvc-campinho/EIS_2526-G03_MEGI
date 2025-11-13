@@ -315,9 +315,16 @@
 }
 
 /* Modal width */
+#event-modal,
+#event-edit-modal {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(2px);
+}
+
 #event-modal .modal-content,
 #event-edit-modal .modal-content {
   max-width: 740px;
+  background: rgba(255, 255, 255, 0.96);
 }
 
 /* -------------------------------

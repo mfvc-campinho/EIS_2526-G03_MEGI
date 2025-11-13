@@ -158,17 +158,7 @@
   margin: 16px auto 26px;
 }
 
-/* Ghost variant for Back (using your explore-btn base) */
-.explore-btn.ghost {
-  background: transparent;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
-}
-
-.explore-btn.ghost:hover {
-  background: #eff6ff;
-  color: #1d4ed8;
-}
+/* Ghost variant moved to general.css (global) */
 
 /* Success (green) already defined globally; used on Add Item */
 
@@ -374,7 +364,7 @@
    🔹 VIEW ITEM BUTTON (kept minimal & white)
    =============================== */
 .item-actions {
-  margin-top: 12px;
+  margin-top: 30px;
   text-align: center;
 }
 
@@ -391,6 +381,7 @@
   gap: 6px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
   transition: all 0.25s ease;
+  text-decoration: none;
 }
 
 .view-btn:hover {

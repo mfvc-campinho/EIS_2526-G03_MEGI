@@ -3,15 +3,16 @@
 =============================== */
 /* Base layout: same spacing logic as other pages */
 main {
-  padding: 96px 16px 56px;
-  max-width: 1200px;
+  padding: 24px 24px 40px;
+  max-width: 1140px;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
+
 h1.page-title {
   text-align: center;
-  margin-top: 50px;
+  margin-top: 5 px;
   font-size: 2.4rem;
   color: #222;
   position: relative;
@@ -518,21 +519,6 @@ footer .heart {
   margin: 22px auto 10px;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ============================================
    🔹 MINIMALIST WHITE BUTTON SYSTEM
    ============================================ */
@@ -552,6 +538,7 @@ footer .heart {
   color: #1e3a8a;
   transition: all 0.25s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  text-decoration: none;
 }
 
 .explore-btn:hover {
@@ -1031,6 +1018,25 @@ footer .heart {
 
 .explore-btn:hover::after {
   width: 50%;
+}
+
+/* Ghost variant (back buttons) - defined globally so all pages share the same style */
+.explore-btn.ghost {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.06);
+}
+
+.explore-btn.ghost:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
 }
 
 /* Optional active press feedback */

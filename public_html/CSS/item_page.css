@@ -120,33 +120,47 @@ body {
    🔹 BACK BUTTON
    =============================== */
 .back-section {
-  text-align: center;
-  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px auto 26px;
 }
 
-.back-section .explore-btn {
-  background: linear-gradient(90deg, #2563eb, #3b82f6);
-  color: white;
-  padding: 12px 26px;
-  border: none;
-  border-radius: 10px;
+.back-section .explore-btn:not(.ghost) {
+  background: linear-gradient(90deg, #ffffff, #f9fafb);
+  border: 1px solid #e2e8f0;
+  color: #1e3a8a;
   font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  font-size: 0.95rem;
+  border-radius: 8px;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
   transition: all 0.25s ease;
+  text-decoration: none;
 }
 
 .back-section .explore-btn:hover {
-  background: linear-gradient(90deg, #1d4ed8, #2563eb);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.4);
+  background: #f1f5f9;
+  color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
 }
 
 .back-section .explore-btn:active {
   transform: translateY(0);
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
 }
+
+/* When used inside .back-section and the button is the ghost variant,
+   force the pill appearance (match general.css / specific_collection) */
+/* Ghost appearance is defined globally in general.css */
+
+/* Ghost variant moved to general.css (global) */
 
 /* ===============================
    🔹 RESPONSIVENESS

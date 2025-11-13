@@ -12,13 +12,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
 /* Grid that auto-wraps with spacing */
 .Team {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  /* space between cards */
+  grid-template-columns: repeat(4, 1fr);
+  /* 4 por linha */
+  gap: 28px 12px;
   max-width: 1200px;
   margin: 0 auto;
-  /* small side gutter */
-  gap: 28px 12px;
-  (row-gap e column-gap)
+  padding: 10px 16px;
 }
 
 /* Cards fill their column (no extra margins) */
@@ -29,6 +28,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   background: #fff;
   border-radius: 18px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+  text-align: center;
 }
 
 
@@ -61,15 +61,17 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
 
 /* Student ID */
 .member .id {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  /* ✅ Alterado de inline-flex para inline-block */
   padding: 4px 14px;
   border-radius: 999px;
   background-color: #e8f2ff;
   color: #1d4ed8;
   font-size: 0.86rem;
   font-weight: 600;
+  white-space: nowrap;
+  margin-bottom: 10px;
+  /* opcional: espaço antes da descrição */
 }
 
 /* Personal description */
@@ -83,22 +85,22 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
   text-align: center;
 }
 
-@media (max-width: 520px) {
-  main {
-    padding-top: 64px;
+/* Responsivo: 2 por linha em telas menores */
+@media (max-width: 768px) {
+  .Team {
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 por linha */
   }
+}
 
-  /* a touch tighter on small screens */
+/* Opcional: 1 por linha em telas muito pequenas */
+@media (max-width: 480px) {
+  .Team {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ===== TEAM HERO + PROJECT SUMMARY ===== */
-
-.page-title {
-  font-size: 2.4rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 4px;
-}
 
 .team-hero {
   text-align: center;
@@ -223,9 +225,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
     font-size: 1.4rem;
   }
 
-  .team-icon {
-    font-size: 1.8rem;
-  }
 }
 
 /* Project cap and team icons */

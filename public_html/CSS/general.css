@@ -1797,3 +1797,211 @@ button {
   align-items: center;
   gap: 8px;
 }
+
+/* ==================================================
+   📱 ADDITIONAL RESPONSIVE IMPROVEMENTS (appended)
+   Purpose: improve mobile layout for Navbar, grids, cards,
+   footer and touch targets across Home, Collections, Events, User, Team.
+   Breakpoints added: 992px, 768px, 600px (mobile)
+   ================================================== */
+
+@media (max-width: 992px) {
+
+  /* Slightly reduce navbar padding and keep items usable on medium devices */
+  .navbar {
+    padding: 12px 20px;
+  }
+
+  .nav-left,
+  .nav-right {
+    gap: 14px;
+  }
+
+  /* Make grid containers center their content earlier */
+  .collections-row,
+  .collection-container,
+  .item-container {
+    justify-content: center;
+    gap: 20px;
+    padding: 12px;
+  }
+
+  /* Ensure cards reduce to 3 per row on medium screens */
+  .card {
+    width: calc(33.33% - 24px);
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* Navbar: allow sections to wrap cleanly and center contents */
+  .navbar {
+    padding: 10px 14px;
+    align-items: center;
+  }
+
+  .nav-left,
+  .nav-right {
+    gap: 10px;
+  }
+
+  /* Collapse right side beneath the logo and center action groups */
+  .nav-right {
+    flex-basis: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  /* Make nav links wrap and center, avoid horizontal overflow */
+  .nav-link {
+    white-space: normal;
+    text-align: center;
+    padding: 8px 6px;
+    display: inline-flex;
+    justify-content: center;
+  }
+
+  /* Increase touch size for icons and search affordances */
+  .search-icon,
+  .profile-btn,
+  .explore-btn,
+  .metric-btn,
+  .toggle-pill {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Cards: make height auto to avoid text overlap and allow wrapping */
+  .card {
+    height: auto;
+    min-height: 320px;
+    padding: 14px;
+  }
+
+  .card-info h3 {
+    white-space: normal;
+    word-break: break-word;
+    font-size: 1.1rem;
+  }
+
+  .card-info p {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  /* Footer: give more vertical space on tablets */
+  footer {
+    height: auto;
+    padding: 24px 18px;
+    text-align: center;
+  }
+
+  footer .footer-links {
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+
+  /* MOBILE: stack navbar sections, center everything and remove overflow */
+  .navbar {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .nav-left,
+  .nav-right {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+    padding: 4px 8px;
+  }
+
+  /* Make each nav link a block to prevent horizontal scrolling */
+  .nav-link {
+    display: block;
+    width: auto;
+    padding: 10px 12px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.98rem;
+  }
+
+  /* Ensure the search-bar doesn't push content; keep icon tappable */
+  .search-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Grids: 1 column layout for small phones for comfortable reading */
+  .collections-row,
+  .collection-container,
+  .item-container,
+  .events-grid,
+  #eventsList,
+  .top-picks-grid,
+  .liked-collections {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 12px;
+  }
+
+  /* Card full width and sensible spacing */
+  .card {
+    width: 100% !important;
+    min-width: 0;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  /* Card image reduced height to preserve vertical space */
+  .card-image,
+  .item-image-wrapper {
+    height: 140px;
+  }
+
+  /* Buttons and clickable controls should be easy to tap */
+  .explore-btn,
+  .metric-btn,
+  .profile-btn,
+  .mini-reset-btn,
+  .mini-btn,
+  .toggle-pill {
+    min-height: 44px;
+    padding-left: 14px;
+    padding-right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+  }
+
+  /* Footer stacking: links vertically centered */
+  footer .footer-links {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .footer-content {
+    align-items: center;
+    padding: 18px 12px;
+  }
+
+  /* Small text adjustments to avoid overflow */
+  .page-title {
+    font-size: 1.6rem;
+    padding: 0 12px;
+  }
+
+  .page-subtitle {
+    font-size: 0.95rem;
+    padding: 0 12px;
+  }
+}

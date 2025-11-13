@@ -120,13 +120,15 @@
             <!-- ===============================
            🔹 ACTION BUTTONS
             =============================== -->
-            <section id="buttons-bar">
-                <!-- Back button (history-based, no extra JS) -->
-                <a href="javascript:history.back()" class="explore-btn ghost">
+            <!-- Back button (history-based, centered on page) -->
+            <div class="center-block">
+                <a href="javascript:history.back()" class="explore-btn ghost centered-btn">
                     <i class="bi bi-arrow-left" aria-hidden="true"></i>
                     Back to Collections
                 </a>
+            </div>
 
+            <section id="buttons-bar">
                 <!-- Edit current collection -->
                 <button id="edit-collection" class="explore-btn" data-requires-login>
                     <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
@@ -193,7 +195,7 @@
                 </small>
 
                 <div class="modal-actions crud-controls">
-                    <button type="submit" class="explore-btn">
+                    <button type="submit" class="explore-btn success">
                         <i class="bi bi-save me-1" aria-hidden="true"></i> Save
                     </button>
                     <button type="button" id="cancel-modal" class="explore-btn danger delete-btn">

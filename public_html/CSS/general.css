@@ -1007,6 +1007,13 @@ footer .heart {
   font-weight: 600;
 }
 
+/* Ensure collection/item card titles are visually centered
+   (added specific rules to override any accidental page-specific styling) */
+.collection-card .card-info h3,
+.item-card .card-info h3 {
+  text-align: center;
+}
+
 .card-info p {
   font-size: 0.95rem;
   color: #777;
@@ -1109,6 +1116,28 @@ footer .heart {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 18px;
+}
+
+/* Make sure Edit / Delete (and other action buttons) are centered
+   inside both collection and item cards. This targets the common
+   card types used across the site to avoid layout regressions. */
+.collection-card .card-buttons,
+.item-card .card-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* On very small screens keep buttons wrapping but centered */
+@media (max-width: 420px) {
+
+  .collection-card .card-buttons,
+  .item-card .card-buttons {
+    gap: 8px;
+    padding: 0 8px;
+    justify-content: center;
+  }
 }
 
 /* ===============================
@@ -1509,16 +1538,17 @@ button {
   color: #1e3a8a;
 }
 
-/* Save (primary) */
-.modal-actions .save-btn {
-  background: linear-gradient(90deg, #0078ff, #00b3ff);
+/* Save (primary) - global for any element with class .save-btn
+   Changed from blue to greenish tones so all "Save" buttons match a green theme. */
+.save-btn {
+  background: linear-gradient(90deg, #16a34a, #4ade80);
   color: #ffffff;
   border-color: transparent;
 }
 
-.modal-actions .save-btn:hover {
+.save-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(3, 102, 214, 0.12);
+  box-shadow: 0 10px 22px rgba(16, 185, 129, 0.12);
 }
 
 /* Cancel (ghost) */
@@ -1539,7 +1569,14 @@ button {
 .modal-actions .save-btn:focus,
 .modal-actions .cancel-btn:focus {
   outline: none;
+  /* keep cancel focus ring neutral (blueish) for contrast; save buttons will use their own ring below */
   box-shadow: 0 0 0 4px rgba(3, 102, 214, 0.12);
+}
+
+/* Specific focus ring for save buttons (green) */
+.save-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
 }
 
 /* Helper text inside modal forms */
@@ -1653,4 +1690,18 @@ button {
   border-radius: 10px;
   padding: 10px 14px;
   cursor: pointer;
+}
+
+/* Helper: center a single action control (used for the "Back to Collections" link)
+   Keeps layout consistent and non-invasive so we don't need to edit many HTML files. */
+.center-block {
+  display: flex;
+  justify-content: center;
+  margin: 18px 0;
+}
+
+.center-block .explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }

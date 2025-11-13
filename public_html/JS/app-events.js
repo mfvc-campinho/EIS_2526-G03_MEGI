@@ -44,6 +44,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalRatingInfo = document.getElementById("modal-rating-info");
   const modalRatingLabel = document.getElementById("modal-rating-label");
   const modalRatingStars = document.getElementById("modal-rating-stars");
+  const modalAddCalendar = document.getElementById('modal-add-calendar');
+
+  // Calendar day modal elements (shows events for a particular day)
+  const calendarDayModal = document.getElementById('calendar-day-modal');
+  const calendarDayTitle = document.getElementById('calendar-day-title');
+  const calendarDayList = document.getElementById('calendar-day-list');
+  const closeCalendarDayModal = document.getElementById('close-calendar-day-modal');
+  const calendarDayClose = document.getElementById('calendar-day-close');
 
   // Edit/Create modal elements
   const eventEditModal = document.getElementById("event-edit-modal");
@@ -164,6 +172,75 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // -----------------------------
+  // Calendar export helper
+  // -----------------------------
+  function addEventToCalendar(eventData) {
+    if (!eventData || !eventData.name || !eventData.date) return;
+
+    const start = parseEventDate(eventData.date);
+    if (!start) return alert('Invalid event date');
+
+    // determine end time: provided or default 2 hours
+    let end = null;
+    if (eventData.endDate) {
+      end = parseEventDate(eventData.endDate) || null;
+    }
+    if (!end) end = new Date(start.getTime() + (eventData.durationMinutes ? eventData.durationMinutes * 60000 : 2 * 60 * 60 * 1000));
+
+    function toICSDate(d) {
+      // return UTC in YYYYMMDDTHHMMSSZ
+      return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    }
+
+    const uid = `${Date.now()}@goodcollections.local`;
+    const dtstamp = toICSDate(new Date());
+    const dtstart = toICSDate(start);
+    const dtend = toICSDate(end);
+
+    const summary = (eventData.name || '').replace(/\n/g, ' ');
+    const description = (eventData.description || '').replace(/\n/g, '\\n');
+    const location = eventData.location || '';
+
+    const icsLines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//GoodCollections//EN',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      `UID:${uid}`,
+      `DTSTAMP:${dtstamp}`,
+      `DTSTART:${dtstart}`,
+      `DTEND:${dtend}`,
+      `SUMMARY:${summary}`,
+      `DESCRIPTION:${description}`,
+      `LOCATION:${location}`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ];
+
+    const icsContent = icsLines.join('\r\n');
+
+    // trigger download
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const safeName = (eventData.name || 'event').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${safeName}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+    // open Google Calendar link in new tab (user can choose)
+    const gStart = dtstart.replace(/Z$/, 'Z');
+    const gEnd = dtend.replace(/Z$/, 'Z');
+    const gDates = `${gStart}/${gEnd}`;
+    const gUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(summary)}&details=${encodeURIComponent(eventData.description || '')}&location=${encodeURIComponent(location)}&dates=${encodeURIComponent(gDates)}`;
+    try { window.open(gUrl, '_blank'); } catch (e) { /* ignore */ }
+  }
+
   function populateLocationFilterOptions(events = []) {
     if (!locationSelect || locationFilterPopulated) return;
     const uniqueLocations = new Set();
@@ -232,6 +309,221 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!owners.length) return false;
     return owners.includes(ownerId);
   }
+
+  // ---------- CALENDAR WIDGET ----------
+  // Small self-contained calendar that highlights upcoming event days
+  let calendarState = { year: null, month: null };
+  let calendarGrid, calendarMonthTitle, calendarPrev, calendarNext, calendarAlertEl;
+
+  function initCalendar() {
+    const widget = document.getElementById('calendarWidget');
+    if (!widget) return;
+    calendarGrid = document.getElementById('calendarGrid');
+    calendarMonthTitle = document.getElementById('calendarMonthTitle');
+    calendarPrev = document.getElementById('calendarPrev');
+    calendarNext = document.getElementById('calendarNext');
+    calendarAlertEl = document.getElementById('calendarAlert');
+
+    const today = new Date();
+    calendarState.year = today.getFullYear();
+    calendarState.month = today.getMonth();
+
+    calendarPrev?.addEventListener('click', () => navigateMonth(-1));
+    calendarNext?.addEventListener('click', () => navigateMonth(1));
+
+    renderCalendar();
+  }
+
+  function formatMonthYear(y, m) {
+    const d = new Date(y, m, 1);
+    return d.toLocaleString(undefined, { month: 'long', year: 'numeric' });
+  }
+
+  function getEventsMapForMonth(year, month) {
+    const data = loadData();
+    const map = new Map();
+    (data.events || []).forEach(ev => {
+      const d = parseEventDate(ev.date);
+      if (!d) return;
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        const day = d.getDate();
+        if (!map.has(day)) map.set(day, []);
+        map.get(day).push(ev);
+      }
+    });
+    return map;
+  }
+
+  function getEventsForDateObj(dateObj) {
+    const data = loadData();
+    return (data.events || []).filter(ev => {
+      const d = parseEventDate(ev.date);
+      if (!d) return false;
+      return d.getFullYear() === dateObj.getFullYear() && d.getMonth() === dateObj.getMonth() && d.getDate() === dateObj.getDate();
+    });
+  }
+
+  function renderCalendar() {
+    if (!calendarGrid) return;
+    calendarGrid.innerHTML = '';
+    const year = calendarState.year;
+    const month = calendarState.month;
+    calendarMonthTitle.textContent = formatMonthYear(year, month);
+
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    weekdays.forEach(w => {
+      const el = document.createElement('div');
+      el.className = 'weekday';
+      el.textContent = w;
+      calendarGrid.appendChild(el);
+    });
+
+    const first = new Date(year, month, 1);
+    const firstDay = first.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // leading empty cells
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'cal-day empty';
+      calendarGrid.appendChild(empty);
+    }
+
+    const eventsMap = getEventsMapForMonth(year, month);
+    const today = new Date();
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-day';
+      const dateNum = document.createElement('div');
+      dateNum.className = 'date-number';
+      dateNum.textContent = d;
+      cell.appendChild(dateNum);
+
+      const dateObj = new Date(year, month, d);
+      if (dateObj.getFullYear() === today.getFullYear() && dateObj.getMonth() === today.getMonth() && dateObj.getDate() === today.getDate()) {
+        cell.classList.add('today');
+      }
+
+      if (eventsMap.has(d)) {
+        const evs = eventsMap.get(d) || [];
+        const hasUpcoming = evs.some(e => isUpcoming(e.date));
+        const hasPast = evs.some(e => isPastEvent(e.date));
+
+        if (hasUpcoming) cell.classList.add('has-event-upcoming');
+        else if (hasPast) cell.classList.add('has-event-past');
+
+        const dot = document.createElement('div');
+        dot.className = 'event-dot';
+        cell.appendChild(dot);
+
+        // tooltip: list of event names
+        const names = evs.map(e => e.name).filter(Boolean);
+        if (names.length) cell.setAttribute('title', names.join('\n'));
+        cell.style.cursor = 'pointer';
+        cell.addEventListener('click', () => showEventDetails(dateObj));
+      }
+
+      calendarGrid.appendChild(cell);
+    }
+
+    checkUpcomingWeekEvents();
+  }
+
+  function checkUpcomingWeekEvents() {
+    if (!calendarAlertEl) return;
+    const data = loadData();
+    const today = todayStart();
+    const in7 = new Date(today.getTime() + 7 * 24 * 3600 * 1000);
+    const upcoming = (data.events || []).filter(ev => {
+      const d = parseEventDate(ev.date);
+      if (!d) return false;
+      return d >= today && d <= in7;
+    }).sort((a, b) => (parseEventDate(a.date) || 0) - (parseEventDate(b.date) || 0));
+
+    if (upcoming.length) {
+      const ev = upcoming[0];
+      const human = formatDateHuman(ev.date);
+      calendarAlertEl.style.display = 'block';
+      calendarAlertEl.textContent = `📅 Upcoming event: ${ev.name} on ${human}!`;
+    } else {
+      calendarAlertEl.style.display = 'none';
+      calendarAlertEl.textContent = '';
+    }
+  }
+
+  // Navigate months (direction: -1 previous, 1 next)
+  function navigateMonth(direction) {
+    if (typeof direction !== 'number') return;
+    calendarState.month += direction;
+    if (calendarState.month < 0) { calendarState.month = 11; calendarState.year -= 1; }
+    if (calendarState.month > 11) { calendarState.month = 0; calendarState.year += 1; }
+    renderCalendar();
+  }
+
+  // Show modal with events on the given date (dateObj is a Date)
+  function showEventDetails(dateObj) {
+    if (!calendarDayModal || !calendarDayList || !calendarDayTitle) return;
+    const evs = getEventsForDateObj(dateObj).sort((a, b) => (parseEventDate(a.date) || 0) - (parseEventDate(b.date) || 0));
+    calendarDayList.innerHTML = '';
+    const humanTitle = dateObj.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    calendarDayTitle.textContent = `Events on ${humanTitle}`;
+
+    if (!evs.length) {
+      calendarDayList.innerHTML = '<p class="muted">No events for this date.</p>';
+    } else {
+      evs.forEach(ev => {
+        const div = document.createElement('div');
+        div.className = 'calendar-day-event';
+        const title = document.createElement('h4');
+        title.innerHTML = escapeHtml(ev.name || 'Untitled Event');
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const dateSpan = document.createElement('span');
+        dateSpan.innerHTML = `<i class="bi bi-calendar-event-fill"></i> ${escapeHtml(formatDateShort(ev.date))}`;
+        const locSpan = document.createElement('span');
+        locSpan.innerHTML = `<i class="bi bi-geo-alt-fill"></i> ${escapeHtml(ev.localization || 'TBA')}`;
+        meta.appendChild(dateSpan);
+        meta.appendChild(locSpan);
+
+        const typeP = document.createElement('div');
+        typeP.className = 'meta';
+        typeP.innerHTML = `<small class="muted">Type: ${escapeHtml(ev.type || 'General')}</small>`;
+
+        const desc = document.createElement('p');
+        desc.textContent = ev.description || ev.summary || '';
+
+        const actions = document.createElement('div');
+        actions.style.marginTop = '8px';
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'explore-btn';
+        viewBtn.textContent = 'View Details';
+        viewBtn.addEventListener('click', () => {
+          // close calendar modal and open event detail
+          closeCalendarDayModalFn();
+          openEventDetail(ev.id);
+        });
+        actions.appendChild(viewBtn);
+
+        div.appendChild(title);
+        div.appendChild(meta);
+        div.appendChild(typeP);
+        if (desc.textContent) div.appendChild(desc);
+        div.appendChild(actions);
+
+        calendarDayList.appendChild(div);
+      });
+    }
+
+    // show modal
+    calendarDayModal.style.display = 'flex';
+  }
+
+  function closeCalendarDayModalFn() {
+    if (calendarDayModal) calendarDayModal.style.display = 'none';
+  }
+
+  // ---------- END CALENDAR WIDGET ----------
 
   // ---------- RENDERING ----------
 
@@ -390,6 +682,28 @@ document.addEventListener("DOMContentLoaded", () => {
         deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
       }
 
+      // Add 'Add to My Calendar' button for upcoming events
+      if (!isPast) {
+        const actionsEl = card.querySelector('.card-actions');
+        if (actionsEl) {
+          const calBtn = document.createElement('button');
+          calBtn.className = 'explore-btn calendar-btn';
+          calBtn.type = 'button';
+          calBtn.innerHTML = '<i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i> 📅 Add to My Calendar';
+          calBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            addEventToCalendar({
+              name: ev.name,
+              date: ev.date,
+              endDate: ev.endDate || null,
+              description: ev.description || ev.summary || '',
+              location: ev.localization || ''
+            });
+          });
+          actionsEl.appendChild(calBtn);
+        }
+      }
+
       const starsContainer = card.querySelector(`.rating-stars[data-event-id="${ev.id}"]`);
       if (starsContainer) {
         const stars = Array.from(starsContainer.querySelectorAll('.star'));
@@ -431,6 +745,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       eventsList.appendChild(card);
     });
+
+    // Update calendar after rendering list so highlights & alert match data
+    try { renderCalendar(); } catch (e) { /* ignore if calendar not present */ }
 
     if (!deepLinkHandled && deepLinkEventId) {
       const exists = (data.events || []).some(ev => ev.id === deepLinkEventId);
@@ -550,6 +867,25 @@ document.addEventListener("DOMContentLoaded", () => {
       modalShareBtn.onclick = () => {
         alert("Sharing is simulated in this prototype.");
       };
+    }
+
+    // Add to My Calendar button in modal (only for upcoming events)
+    if (modalAddCalendar) {
+      if (!isPast) {
+        modalAddCalendar.style.display = '';
+        modalAddCalendar.onclick = () => {
+          addEventToCalendar({
+            name: ev.name,
+            date: ev.date,
+            endDate: ev.endDate || null,
+            description: ev.description || ev.summary || '',
+            location: ev.localization || ''
+          });
+        };
+      } else {
+        modalAddCalendar.style.display = 'none';
+        modalAddCalendar.onclick = null;
+      }
     }
 
     modalReturnUrl = options.returnUrl || null;
@@ -770,16 +1106,21 @@ document.addEventListener("DOMContentLoaded", () => {
   modalCloseBtn?.addEventListener("click", closeEventDetail);
   eventEditClose?.addEventListener("click", closeEditModal);
   cancelEditBtn?.addEventListener("click", closeEditModal);
+  closeCalendarDayModal?.addEventListener('click', () => closeCalendarDayModalFn());
+  calendarDayClose?.addEventListener('click', () => closeCalendarDayModalFn());
 
   // Close on backdrop click
   window.addEventListener("click", (ev) => {
     if (ev.target === eventDetailModal) closeEventDetail();
     if (ev.target === eventEditModal) closeEditModal();
+    if (ev.target === calendarDayModal) closeCalendarDayModalFn();
   });
 
   // Re-render when user state changes so data-requires-login buttons reflect state
   window.addEventListener("userStateChange", renderEvents);
 
   // ---------- INITIAL RENDER ----------
+  // Initialize calendar and render events (calendar will refresh from renderEvents)
+  try { initCalendar(); } catch (e) { /* ignore if calendar not present */ }
   renderEvents();
 });

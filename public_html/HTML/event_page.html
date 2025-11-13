@@ -88,6 +88,26 @@
                 </p>
             </section>
 
+            <!-- Calendar widget: placed above the filters -->
+            <section class="calendar-widget" aria-label="Events calendar" id="calendarWidget">
+                <div class="calendar-header">
+                    <button id="calendarPrev" class="cal-nav" aria-label="Previous month">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <div class="calendar-title" id="calendarMonthTitle">March 2025</div>
+                    <button id="calendarNext" class="cal-nav" aria-label="Next month">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid" role="grid" aria-labelledby="calendarMonthTitle">
+                    <!-- JS will render weekday labels and day cells here -->
+                </div>
+
+                <div id="calendarAlert" class="calendar-alert" role="status" aria-live="polite" style="display:none;">
+                </div>
+            </section>
+
             <!-- ===============================
            Toggle: Upcoming / Past
            (Tabs control the hidden select used by JS)
@@ -201,7 +221,7 @@
                     </div>
 
                     <div class="modal-actions">
-                        <button id="modal-rsvpBtn" class="save-btn" data-requires-login>
+                        <button id="modal-rsvpBtn" class="explore-btn success" data-requires-login>
                             <i class="bi bi-calendar-check me-1" aria-hidden="true"></i>
                             RSVP
                         </button>
@@ -209,7 +229,10 @@
                             <i class="bi bi-share-fill me-1" aria-hidden="true"></i>
                             Share
                         </button>
-                        <button id="modal-closeEventBtn" class="cancel-btn">Close</button>
+                        <button id="modal-add-calendar" class="explore-btn" style="display:none;">
+                            <i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i>
+                            📅 Add to My Calendar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -250,6 +273,16 @@
                                 class="explore-btn danger delete-btn">Cancel</button>
                         </div>
                     </form>
+                </div>
+            </div>
+            <!-- Calendar Day Details Modal (shows events for a clicked date) -->
+            <div id="calendar-day-modal" class="modal" aria-hidden="true">
+                <div class="modal-content" id="calendar-day-modal-content">
+                    <span class="close-btn" id="close-calendar-day-modal">&times;</span>
+                    <h3 id="calendar-day-title">Events on DATE</h3>
+                    <div id="calendar-day-list">
+                        <!-- Populated by JS with a list of events for the selected day -->
+                    </div>
                 </div>
             </div>
         </main>

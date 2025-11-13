@@ -73,8 +73,8 @@ const collectionsData = {
   users: [
     {
       "owner-id": "collector-main",
-      "owner-name": "Maria Joaquina",
-      "owner-photo": "../images/collector.jpg",
+      "owner-name": "Cristina Sem Feira",
+      "owner-photo": "../images/cristina.jpg",
       "date-of-birth": "1985-05-20",
       "email": "collector.main@email.com",
       "password": "password123", // argument not used
@@ -83,7 +83,7 @@ const collectionsData = {
     {
       "owner-id": "rui-frio",
       "owner-name": "Rui Frio",
-      "owner-photo": "../images/rui.jpg",
+      "owner-photo": "../images/cristina.jpg",
       "date-of-birth": "1982-07-14",
       "email": "rui.frio@email.com",
       "password": "password123", // argument not used
@@ -165,7 +165,7 @@ const collectionsData = {
       acquisitionDate: "2021-06-18",
       createdAt: "2021-06-01T00:00:00Z",
       updatedAt: "2021-06-18T00:00:00Z",
-      image: "../images/pikachu.jpg"
+      image: "../images/pikachuset.JPG"
     },
     {
       id: "pokemon-item-2",

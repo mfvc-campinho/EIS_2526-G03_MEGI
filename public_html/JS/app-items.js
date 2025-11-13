@@ -251,15 +251,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="item-info simple-item">
         <h3>${item.name}</h3>
 
-        <div class="vote-section">
-          <button class="vote-btn upvote" data-id="${item.id}">
-            <i class="bi bi-arrow-up-circle"></i>
-          </button>
-          <button class="vote-btn downvote" data-id="${item.id}">
-            <i class="bi bi-arrow-down-circle"></i>
-          </button>
-        </div>
-
         <div class="item-actions">
           <a href="item_page.html?id=${item.id}" class="explore-btn view-btn">
             <i class="bi bi-eye"></i> View Item
@@ -290,6 +281,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!eventsContainer) return;
     const data = appData.loadData();
     const collection = getCurrentCollection(data);
+    const returnTarget = `${window.location.pathname}${window.location.search || ""}`;
+    const encodedReturn = encodeURIComponent(returnTarget);
+    const fromQuery = encodedReturn ? `&from=${encodedReturn}` : "";
 
     if (!collection) {
       eventsContainer.innerHTML = `<p class="notice-message">Collection not found.</p>`;
@@ -308,9 +302,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <h3>${ev.name}</h3>
           <p class="event-meta">${formatEventDate(ev.date)} ┬À ${ev.localization || "To be announced"}</p>
         </div>
-        <button class="explore-btn ghost" onclick="window.location.href='event_page.html#${ev.id}'">
+        <a class="explore-btn ghost" href="event_page.html?id=${ev.id}${fromQuery}">
           <i class="bi bi-calendar-event"></i> View event
-        </button>
+        </a>
       </article>
     `).join("");
   }
@@ -474,21 +468,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // renderItems();
     });
   }
-
-  // ===============================================
-  // Voting Logic (demo only)
-  // ===============================================
-  function setupVotingListeners() {
-    document.querySelectorAll(".vote-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        alert("Demo only: voting is not saved.");
-      });
-    });
-  }
-
-  window.addEventListener("load", () => {
-    setTimeout(setupVotingListeners, 500);
-  });
 
 
 

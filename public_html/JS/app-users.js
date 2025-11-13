@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (currentUser && currentUser.active) {
       // Utilizador autenticado
-      profileButton.innerHTML = `<i class="bi bi-person"></i> ${currentUser.name} ▾`;
+      const displayName = currentUser.ownerName || currentUser.id || "Profile";
+      profileButton.innerHTML = `<i class="bi bi-person"></i> ${displayName} ▾`;
       profileMenu.innerHTML = `
         <a href="user_page.html">See Profile</a>
         <a href="#" id="signout-btn">Sign Out</a>
@@ -64,10 +65,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // =======================================================
   // 2. Login simulado (sempre como 'collector')
   // =======================================================
+  function getOwnerProfile(ownerId) {
+    if (!ownerId) return null;
+    let data = null;
+    try {
+      if (window.appData?.loadData) {
+        data = window.appData.loadData();
+      }
+    } catch (err) {
+      console.warn("Could not load appData during login:", err);
+    }
+    if (!data && typeof collectionsData !== "undefined") {
+      data = collectionsData;
+    }
+    return data?.users?.find(user => user["owner-id"] === ownerId) || null;
+  }
+
   function loginUser() {
+    const ownerId = "collector-main";
+    const profile = getOwnerProfile(ownerId);
     currentUser = {
-      id: "collector-main",
-      name: "collector",
+      id: ownerId,
+      ownerName: profile?.["owner-name"] || ownerId,
       active: true
     };
     localStorage.setItem("currentUser", JSON.stringify(currentUser));

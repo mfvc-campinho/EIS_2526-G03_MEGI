@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentUserData = user;
-    const ownerName = user["owner-name"] || user.name || viewedOwnerId;
+    const ownerName = user["owner-name"] || viewedOwnerId;
 
     userNameEl.textContent = ownerName;
     usernameBannerEl.textContent = ownerName;
@@ -363,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function openProfileModal() {
     if (!currentUserData) return;
     profileForm.querySelector("#user-form-name").value =
-      currentUserData["owner-name"] || currentUserData.name || "";
+      currentUserData["owner-name"] || "";
     profileForm.querySelector("#user-form-email").value =
       currentUserData.email;
     profileForm.querySelector("#user-form-dob").value =

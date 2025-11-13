@@ -214,6 +214,17 @@
   color: #6b7280;
 }
 
+.card-rating .rating-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-rating .demo-rating-note {
+  font-size: 0.8rem;
+  color: #475569;
+}
+
 /* Buttons inside cards */
 #eventsList .card-actions {
   display: flex;

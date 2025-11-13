@@ -68,12 +68,13 @@ const collectionsData = {
 
 
   // ======================================================
+  // USERS
+  // ======================================================
   users: [
     {
       "owner-id": "collector-main",
       "owner-name": "Maria Joaquina",
-      "name": "collector",
-      "owner-photo": "../images/user.jpg",
+      "owner-photo": "../images/collector.jpg",
       "date-of-birth": "1985-05-20",
       "email": "collector.main@email.com",
       "password": "password123", // argument not used
@@ -82,7 +83,6 @@ const collectionsData = {
     {
       "owner-id": "rui-frio",
       "owner-name": "Rui Frio",
-      "name": "rui_frio",
       "owner-photo": "../images/rui.jpg",
       "date-of-birth": "1982-07-14",
       "email": "rui.frio@email.com",
@@ -340,7 +340,7 @@ const collectionsData = {
   ],
 
   // ======================================================
-  // RELAÇÃO N:N → COLLECTIONS ↔ ITEMS
+  // RELATIONSHIP N:N → COLLECTIONS ↔ ITEMS
   // ======================================================
   collectionItems: [
     { collectionId: "escudos", itemId: "escudos-item-1" },
@@ -361,7 +361,7 @@ const collectionsData = {
   ],
 
   // ======================================================
-  // RELAÇÃO N:N → COLLLECTIONS ↔ EVENTS
+  // RELATIONSHIP N:N → COLLLECTIONS ↔ EVENTS
   // ======================================================
   collectionEvents: [
     { collectionId: "escudos", eventId: "escudos-event-1" },

@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const profile = (data.users || []).find(u => u["owner-id"] === ownerId);
       ownersMap.set(ownerId, {
         id: ownerId,
-        name: profile?.["owner-name"] || profile?.name || ownerId
+        name: profile?.["owner-name"] || ownerId
       });
     });
 

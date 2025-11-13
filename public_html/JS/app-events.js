@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelEditBtn = document.getElementById("cancel-event-edit");
 
   let locationFilterPopulated = false;
+  const sessionRatings = {};
 
   // ---------- HELPERS ----------
 
@@ -280,13 +281,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "event-card";
        const isPast = isPastEvent(ev.date);
-        const ratings = ev.ratings || {};
-        const ratingValues = Object.values(ratings);
+        const baseRatings = ev.ratings || {};
+        const ratingValues = Object.values(baseRatings);
         const ratingCount = ratingValues.length;
         const ratingAvg = ratingCount
           ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
           : null;
         const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
+        const userCanRate = Boolean(currentUser && currentUser.active);
+        const sessionValue = userCanRate ? sessionRatings[ev.id] : undefined;
+        const storedUserRating = currentUser ? baseRatings[currentUser.id] : null;
+        const userRating = userCanRate
+          ? (sessionValue !== undefined ? sessionValue : storedUserRating || null)
+          : null;
 
         let ratingHtml = "";
         if (isPast) {
@@ -294,14 +301,28 @@ document.addEventListener("DOMContentLoaded", () => {
           for (let i = 1; i <= 5; i++) {
             let classes = "star";
             if (ratingAvg && i <= Math.round(ratingAvg)) classes += " filled";
-            if (currentUser && currentUser.active && ratings[currentUser.id] && i <= ratings[currentUser.id]) classes += " user-rating";
-            if (currentUser && currentUser.active) classes += " clickable";
+            if (userRating && i <= userRating) classes += " user-rating";
+            classes += " clickable";
             stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
           }
 
-          const summary = ratingAvg
-            ? `<span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span>(${ratingCount})</span>`
-            : `<span class="muted">No ratings yet</span>`;
+          const summaryParts = [];
+          const showDemoOnly = userCanRate && sessionValue !== undefined;
+          if (!showDemoOnly) {
+            if (ratingAvg) {
+              summaryParts.push(`<span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span>(${ratingCount})</span>`);
+            } else {
+              summaryParts.push(`<span class="muted">No ratings yet</span>`);
+            }
+          }
+
+          if (showDemoOnly) {
+            summaryParts.push(`<span class="demo-rating-note">Your demo rating: ${sessionValue}/5 (not saved)</span>`);
+          } else if (userCanRate && userRating) {
+            summaryParts.push(`<span class="demo-rating-note">You rated this ${userRating}/5</span>`);
+          }
+
+          const summary = summaryParts.join("");
 
           ratingHtml = `
             <div class="card-rating">
@@ -386,21 +407,16 @@ document.addEventListener("DOMContentLoaded", () => {
             s.addEventListener('mouseleave', () => clearHover());
             s.addEventListener('blur', () => clearHover());
 
-            if (s.classList.contains('clickable')) {
-              s.addEventListener('click', () => setRating(ev.id, val));
-              s.addEventListener('keydown', (evKey) => {
+            s.addEventListener('click', () => setRating(ev.id, val));
+            s.addEventListener('keydown', (evKey) => {
               if (evKey.key === 'Enter' || evKey.key === ' ') {
-                  evKey.preventDefault();
-                  setRating(ev.id, val);
-                }
-              });
-              s.setAttribute('tabindex', '0');
-              s.setAttribute('role', 'button');
-              s.setAttribute('aria-label', `Rate ${val} out of 5`);
-            } else {
-              s.setAttribute('aria-hidden', 'false');
-              s.setAttribute('tabindex', '-1');
-            }
+                evKey.preventDefault();
+                setRating(ev.id, val);
+              }
+            });
+            s.setAttribute('tabindex', '0');
+            s.setAttribute('role', 'button');
+            s.setAttribute('aria-label', `Rate ${val} out of 5`);
           });
 
           starsContainer.addEventListener('mouseleave', clearHover);
@@ -426,7 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Host
     if (ev.hostId && Array.isArray(data.users)) {
       const user = data.users.find(u => u.id === ev.hostId || u["owner-id"] === ev.hostId);
-      modalHostEl.textContent = user ? (user.name || user["owner-name"]) : ev.hostId;
+      modalHostEl.textContent = user ? (user["owner-name"] || ev.hostId) : ev.hostId;
     } else {
       modalHostEl.textContent = ev.host || "Community";
     }
@@ -438,11 +454,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Rating (only for past events)
     const isPast = isPastEvent(ev.date);
     const currentUser = getCurrentUser();
-    const ratings = ev.ratings || {};
-    const values = Object.values(ratings);
+    const baseRatings = ev.ratings || {};
+    const values = Object.values(baseRatings);
     const count = values.length;
     const avg = count ? values.reduce((a, b) => a + b, 0) / count : null;
-    const userRating = currentUser ? ratings[currentUser.id] : null;
+    const sessionValue = currentUser && currentUser.active ? sessionRatings[ev.id] : undefined;
+    const storedUserRating = currentUser ? baseRatings[currentUser.id] : null;
+    const userRating = currentUser && currentUser.active
+      ? (sessionValue !== undefined ? sessionValue : storedUserRating || null)
+      : storedUserRating || null;
 
     modalRatingStars.innerHTML = "";
 
@@ -460,10 +480,16 @@ document.addEventListener("DOMContentLoaded", () => {
           star.classList.add("user-rating");
         }
 
-        if (currentUser && currentUser.active) {
-          star.classList.add("clickable");
-          star.addEventListener("click", () => setRating(ev.id, i));
-        }
+        star.classList.add("clickable");
+        star.setAttribute("tabindex", "0");
+        star.setAttribute("role", "button");
+        star.addEventListener("click", () => setRating(ev.id, i));
+        star.addEventListener("keydown", (evKey) => {
+          if (evKey.key === "Enter" || evKey.key === " ") {
+            evKey.preventDefault();
+            setRating(ev.id, i);
+          }
+        });
 
         modalRatingStars.appendChild(star);
       }
@@ -473,6 +499,10 @@ document.addEventListener("DOMContentLoaded", () => {
           avg
             ? `Average rating: ${avg.toFixed(1)} (${count} rating${count !== 1 ? "s" : ""}). Sign in to rate this event.`
             : "No ratings yet. Sign in after attending to rate this event.";
+      } else if (sessionValue !== undefined) {
+        modalRatingLabel.textContent =
+          `Demo rating selected: ${sessionValue}/5. (Not saved.) ` +
+          (avg ? `Current average: ${avg.toFixed(1)} (${count}).` : "");
       } else if (userRating) {
         modalRatingLabel.textContent =
           `You rated this event ${userRating}/5. ` +
@@ -525,7 +555,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    alert("Demo only: rating is not saved.");
+    sessionRatings[eventId] = value;
+    alert("Demo only: rating stored for this session.");
+    renderEvents();
+    if (eventDetailModal && eventDetailModal.style.display === "flex") {
+      openEventDetail(eventId);
+    }
   }
 
   // ---------- EDIT / CREATE EVENT ----------

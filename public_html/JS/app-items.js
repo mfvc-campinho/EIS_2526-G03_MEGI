@@ -7,13 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===============================================
   const DEFAULT_OWNER_ID = "collector-main";
   let currentUserId;
-  let currentUserName;
   let isActiveUser;
 
   function updateUserState() {
     const userData = JSON.parse(localStorage.getItem("currentUser"));
     currentUserId = userData ? userData.id : null;
-    currentUserName = userData ? userData.name : null;
     isActiveUser = Boolean(userData && userData.active);
 
     // Esconde/mostra bot├â┬Áes que requerem login
@@ -125,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const collectionOwnerId = getOwnerIdForCollection(collection, data);
       const ownerDisplayName =
         ownerProfile["owner-name"] ||
-        ownerProfile.name ||
         collectionOwnerId ||
         "Unknown Owner";
 
@@ -158,6 +155,11 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("type").textContent = collection.type || "N/A";
       document.getElementById("description").textContent =
         collection.description || "No description provided.";
+      const itemsCountEl = document.getElementById("items-count");
+      if (itemsCountEl) {
+        const collectionItems = collection ? appData.getItemsByCollection(collection.id, data) : [];
+        itemsCountEl.textContent = collectionItems.length;
+      }
 
       const ownerPhotoEl = document.getElementById("owner-photo");
       if (ownerPhotoEl) {

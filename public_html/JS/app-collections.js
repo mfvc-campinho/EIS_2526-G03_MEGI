@@ -131,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const DEFAULT_OWNER_ID = "collector-main";
     const MAX_USER_CHOICES = 5;
     let currentUserId;
-    let currentUserName;
     let isActiveUser;
     let collectionOwnerMap = {};
     const sessionState = window.demoCollectionsState || (window.demoCollectionsState = {});
@@ -335,7 +334,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateUserState() {
         const userData = JSON.parse(localStorage.getItem("currentUser"));
         currentUserId = userData ? userData.id : null;
-        currentUserName = userData ? userData.name : null;
         isActiveUser = Boolean(userData && userData.active);
     }
 

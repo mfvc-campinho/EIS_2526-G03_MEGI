@@ -1,9 +1,13 @@
 // ======================================================
-// NEW collectionsData (Relational N ↔ N version)
-// With "type" and new "description" fields for collections
+// Data.js (with Relational)
+
 // ======================================================
 
+
 const collectionsData = {
+  // ======================================================
+  // COLLECTIONS
+  // ======================================================
   collections: [
     {
       id: "escudos",
@@ -12,8 +16,7 @@ const collectionsData = {
       coverImage: "../images/coins.png",
       summary: "A journey through Portugal’s historical coins.",
       description: "This collection showcases Portugal’s numismatic legacy, featuring original Escudo coins minted before the euro era. It highlights their unique designs, materials, and historical significance in the country’s economy.",
-      createdAt: "2018-04-10",
-      metrics: { votes: 120, userChosen: true, addedAt: "2025-10-15" }
+      createdAt: "2018-04-10"
     },
     {
       id: "playboys",
@@ -23,7 +26,6 @@ const collectionsData = {
       summary: "A collection of iconic Portuguese magazine editions.",
       description: "A curated archive of Portuguese Playboy issues spanning several decades, capturing evolving trends in media, design, and culture. Each edition represents a snapshot of its era’s aesthetics and editorial vision.",
       createdAt: "2019-01-05",
-      metrics: { votes: 95, userChosen: true, addedAt: "2025-10-22" }
     },
     {
       id: "pokemon",
@@ -33,7 +35,6 @@ const collectionsData = {
       summary: "Rare and classic cards from the Pokémon universe.",
       description: "A comprehensive Pokémon TCG collection featuring rare holographic cards, first editions, and limited releases from various generations. It celebrates both the nostalgic and competitive sides of Pokémon collecting.",
       createdAt: "2021-04-20",
-      metrics: { votes: 88, userChosen: false, addedAt: "2025-10-10" }
     },
     {
       id: "portraits",
@@ -43,7 +44,6 @@ const collectionsData = {
       summary: "Historical register of controversial figures.",
       description: "An artistic and historical exploration through portraits of world leaders who shaped the 20th century. The collection invites reflection on power, influence, and the legacy of leadership in visual art.",
       createdAt: "2017-02-02",
-      metrics: { votes: 67, userChosen: false, addedAt: "2025-10-25" }
     },
     {
       id: "jerseys",
@@ -53,28 +53,27 @@ const collectionsData = {
       summary: "Signed memorabilia from legendary players.",
       description: "An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.",
       createdAt: "2019-06-25",
-      metrics: { votes: 105, userChosen: true, addedAt: "2025-10-05" }
+    }
+    ,
+    {
+      id: "escudos-gold",
+      name: "Golden Escudos Vault",
+      type: "Coins",
+      coverImage: "../images/gold_coins.jpg",
+      summary: "Handpicked gold Escudos from the monarchy to mid-century republic.",
+      description: "Focuses on premium gold-minted Escudo coins, documenting mint marks, alloys, and historical context tied to Portugal's treasury reforms.",
+      createdAt: "2020-11-18",
     }
   ],
 
-  // ======================================================
-  // RELAÇÃO coleções -> utilizadores
-  // ======================================================
-  collectionsUsers: [
-    { collectionId: "escudos", ownerId: "collector-main" },
-    { collectionId: "playboys", ownerId: "rui-frio" },
-    { collectionId: "pokemon", ownerId: "rui-frio" },
-    { collectionId: "portraits", ownerId: "rui-frio" },
-    { collectionId: "jerseys", ownerId: "rui-frio" }
-  ],
 
   // ======================================================
   users: [
     {
       "owner-id": "collector-main",
-      "owner-name": "Collector",
+      "owner-name": "Maria Joaquina",
       "name": "collector",
-      "owner-photo": "../images/rui.jpg",
+      "owner-photo": "../images/user.jpg",
       "date-of-birth": "1985-05-20",
       "email": "collector.main@email.com",
       "password": "password123", // argument not used
@@ -84,7 +83,7 @@ const collectionsData = {
       "owner-id": "rui-frio",
       "owner-name": "Rui Frio",
       "name": "rui_frio",
-      "owner-photo": "../images/user.jpg",
+      "owner-photo": "../images/rui.jpg",
       "date-of-birth": "1982-07-14",
       "email": "rui.frio@email.com",
       "password": "password123", // argument not used
@@ -94,7 +93,7 @@ const collectionsData = {
 
 
   // ======================================================
-  // ITENS (cada um agora tem ID único)
+  // ITENS
   // ======================================================
   items: [
     // escudos
@@ -105,6 +104,8 @@ const collectionsData = {
       weight: 4.5,
       price: 120,
       acquisitionDate: "2020-03-15",
+      createdAt: "2020-03-01T00:00:00Z",
+      updatedAt: "2020-03-15T00:00:00Z",
       image: "../images/escudo1950.jpg"
     },
     {
@@ -114,6 +115,8 @@ const collectionsData = {
       weight: 5.1,
       price: 250,
       acquisitionDate: "2021-07-10",
+      createdAt: "2021-06-20T00:00:00Z",
+      updatedAt: "2021-07-10T00:00:00Z",
       image: "../images/escudo1960.jpg"
     },
 
@@ -125,6 +128,8 @@ const collectionsData = {
       weight: 0.3,
       price: 5,
       acquisitionDate: "2019-05-22",
+      createdAt: "2019-05-01T00:00:00Z",
+      updatedAt: "2019-05-22T00:00:00Z",
       image: "../images/playboy.jpg"
     },
     {
@@ -134,6 +139,8 @@ const collectionsData = {
       weight: 0.3,
       price: 12,
       acquisitionDate: "2020-11-05",
+      createdAt: "2020-10-15T00:00:00Z",
+      updatedAt: "2020-11-05T00:00:00Z",
       image: "../images/lenka.jpg"
     },
     {
@@ -143,6 +150,8 @@ const collectionsData = {
       weight: 0.3,
       price: 12,
       acquisitionDate: "2016-08-05",
+      createdAt: "2016-07-20T00:00:00Z",
+      updatedAt: "2016-08-05T00:00:00Z",
       image: "../images/fabiana.jpg"
     },
 
@@ -154,6 +163,8 @@ const collectionsData = {
       weight: 0.005,
       price: 150,
       acquisitionDate: "2021-06-18",
+      createdAt: "2021-06-01T00:00:00Z",
+      updatedAt: "2021-06-18T00:00:00Z",
       image: "../images/pikachu.jpg"
     },
     {
@@ -163,6 +174,8 @@ const collectionsData = {
       weight: 0.005,
       price: 2000,
       acquisitionDate: "2022-04-22",
+      createdAt: "2022-03-30T00:00:00Z",
+      updatedAt: "2022-04-22T00:00:00Z",
       image: "../images/charizard.jpg"
     },
 
@@ -174,6 +187,8 @@ const collectionsData = {
       weight: 2.4,
       price: 300,
       acquisitionDate: "2018-09-10",
+      createdAt: "2018-08-25T00:00:00Z",
+      updatedAt: "2018-09-10T00:00:00Z",
       image: "../images/salazar.jpg"
     },
 
@@ -185,6 +200,8 @@ const collectionsData = {
       weight: 0.4,
       price: 450,
       acquisitionDate: "2020-03-12",
+      createdAt: "2020-02-20T00:00:00Z",
+      updatedAt: "2020-03-12T00:00:00Z",
       image: "../images/porto.jpg"
     },
     {
@@ -194,34 +211,141 @@ const collectionsData = {
       weight: 0.4,
       price: 400,
       acquisitionDate: "2021-09-03",
+      createdAt: "2021-08-10T00:00:00Z",
+      updatedAt: "2021-09-03T00:00:00Z",
       image: "../images/benfica.jpg"
     }
   ],
 
   // ======================================================
-  // EVENTOS (cada um com ID único)
+  // EVENTS
   // ======================================================
   events: [
-    { id: "escudos-event-1", name: "Lisbon Numismatic Fair", localization: "Lisbon", date: "2025-12-12" },
-    { id: "escudos-event-2", name: "Coin Acquisition Meetup", localization: "Porto", date: "2025-05-10" },
+    {
+      id: "escudos-event-1",
+      name: "Lisbon Numismatic Fair",
+      localization: "Lisbon",
+      date: "2025-12-12",
+      type: "fair",
+      summary: "Annual showcase for Iberian coins, rare notes, and appraisal sessions.",
+      description: "Dealers and historians gather to trade Escudo-era coins, host restoration demos, and discuss preservation techniques for metallic currencies.",
+      createdAt: "2025-09-01T00:00:00Z",
+      updatedAt: "2025-11-20T00:00:00Z",
+      hostId: "collector-main",
+      attendees: ["collector-main", "rui-frio"],
+      ratings: { "collector-main": 5 }
+    },
+    {
+      id: "escudos-event-2",
+      name: "Coin Acquisition Meetup",
+      localization: "Porto",
+      date: "2025-05-10",
+      type: "meetup",
+      summary: "Small-group meetup focused on sourcing missing Escudo variants.",
+      description: "Collectors swap duplicates, share leads for reputable sellers, and review authentication tips for mid-century Portuguese currency.",
+      createdAt: "2025-02-15T00:00:00Z",
+      updatedAt: "2025-04-15T00:00:00Z",
+      hostId: "collector-main",
+      attendees: ["collector-main"],
+      ratings: {}
+    },
 
-    { id: "playboys-event-1", name: "Vintage Magazine Exhibition", localization: "Lisbon", date: "2025-02-10" },
+    {
+      id: "playboys-event-1",
+      name: "Vintage Magazine Exhibition",
+      localization: "Lisbon",
+      date: "2025-02-10",
+      type: "exhibition",
+      summary: "Curated wall display covering the evolution of Portuguese Playboy layouts.",
+      description: "Graphic designers and cultural historians walk through iconic spreads, cover redesigns, and interviews with former editorial staff.",
+      createdAt: "2024-11-05T00:00:00Z",
+      updatedAt: "2025-01-05T00:00:00Z",
+      hostId: "rui-frio",
+      attendees: ["rui-frio"],
+      ratings: { "rui-frio": 4 }
+    },
 
-    { id: "pokemon-event-1", name: "Pokémon Expo 2025", localization: "Tokyo", date: "2025-03-10" },
-    { id: "pokemon-event-2", name: "Trading Card Convention", localization: "London", date: "2025-05-01" },
+    {
+      id: "pokemon-event-1",
+      name: "Pokémon Expo 2025",
+      localization: "Tokyo",
+      date: "2025-03-10",
+      type: "expo",
+      summary: "Global expo highlighting competitive decks and newly graded grails.",
+      description: "Includes PSA grading booths, artist signings, and a showcase of legendary cards from the Kanto through Paldea releases.",
+      createdAt: "2024-12-01T00:00:00Z",
+      updatedAt: "2025-02-01T00:00:00Z",
+      hostId: "rui-frio",
+      attendees: ["rui-frio", "collector-main"],
+      ratings: { "collector-main": 5, "rui-frio": 5 }
+    },
+    {
+      id: "pokemon-event-2",
+      name: "Trading Card Convention",
+      localization: "London",
+      date: "2025-05-01",
+      type: "convention",
+      summary: "European convention dedicated to rare pulls, auctions, and live trades.",
+      description: "Vendors curate showcase cases for first editions, while panels cover long-term storage, pricing data, and authenticity checks.",
+      createdAt: "2025-01-20T00:00:00Z",
+      updatedAt: "2025-03-15T00:00:00Z",
+      hostId: "rui-frio",
+      attendees: ["rui-frio"],
+      ratings: {}
+    },
 
-    { id: "portraits-event-1", name: "Historical Exhibit Lisbon", localization: "Lisbon", date: "2025-01-15" },
+    {
+      id: "portraits-event-1",
+      name: "Historical Exhibit Lisbon",
+      localization: "Lisbon",
+      date: "2025-01-15",
+      type: "gallery",
+      summary: "Gallery event reflecting on political portraiture and its narratives.",
+      description: "Art critics discuss brush techniques, symbolism, and the tension between propaganda and documentation in 20th-century leadership portraits.",
+      createdAt: "2024-10-10T00:00:00Z",
+      updatedAt: "2024-12-12T00:00:00Z",
+      hostId: "rui-frio",
+      attendees: ["rui-frio"],
+      ratings: { "rui-frio": 3 }
+    },
 
-    { id: "jerseys-event-1", name: "Autograph Session 2025", localization: "Porto Stadium", date: "2025-06-01" },
-    { id: "jerseys-event-2", name: "Collectors’ Expo 2025", localization: "Lisbon", date: "2025-09-12" }
+    {
+      id: "jerseys-event-1",
+      name: "Autograph Session 2025",
+      localization: "Porto Stadium",
+      date: "2025-06-01",
+      type: "signing",
+      summary: "Pitch-side autograph session with national league legends.",
+      description: "Participants bring authenticated jerseys for signatures, while equipment managers talk about fabric care for long-term display.",
+      createdAt: "2025-02-28T00:00:00Z",
+      updatedAt: "2025-04-30T00:00:00Z",
+      hostId: "rui-frio",
+      attendees: ["rui-frio"],
+      ratings: {}
+    },
+    {
+      id: "jerseys-event-2",
+      name: "Collectors’ Expo 2025",
+      localization: "Lisbon",
+      date: "2025-09-12",
+      type: "expo",
+      summary: "Large expo covering game-worn memorabilia and restoration services.",
+      description: "Workshops detail how to certify match-used kits, remove stains without damaging signatures, and insure valuable memorabilia.",
+      createdAt: "2025-05-05T00:00:00Z",
+      updatedAt: "2025-07-18T00:00:00Z",
+      host: "Liga Memorabilia",
+      attendees: [],
+      ratings: {}
+    }
   ],
 
   // ======================================================
-  // RELAÇÃO N:N → coleção ↔ item
+  // RELAÇÃO N:N → COLLECTIONS ↔ ITEMS
   // ======================================================
   collectionItems: [
     { collectionId: "escudos", itemId: "escudos-item-1" },
     { collectionId: "escudos", itemId: "escudos-item-2" },
+    { collectionId: "escudos-gold", itemId: "escudos-item-1" },
 
     { collectionId: "playboys", itemId: "playboys-item-1" },
     { collectionId: "playboys", itemId: "playboys-item-2" },
@@ -237,7 +361,7 @@ const collectionsData = {
   ],
 
   // ======================================================
-  // RELAÇÃO N:N → coleção ↔ evento
+  // RELAÇÃO N:N → COLLLECTIONS ↔ EVENTS
   // ======================================================
   collectionEvents: [
     { collectionId: "escudos", eventId: "escudos-event-1" },
@@ -252,5 +376,44 @@ const collectionsData = {
 
     { collectionId: "jerseys", eventId: "jerseys-event-1" },
     { collectionId: "jerseys", eventId: "jerseys-event-2" }
+  ],
+  // ======================================================
+  // RELATIONSHIP N:1 COLLECTIONS ↔ USERS
+  // ======================================================
+  collectionsUsers: [
+    { collectionId: "escudos", ownerId: "collector-main" },
+    { collectionId: "escudos-gold", ownerId: "collector-main" },
+    { collectionId: "playboys", ownerId: "rui-frio" },
+    { collectionId: "pokemon", ownerId: "rui-frio" },
+    { collectionId: "portraits", ownerId: "rui-frio" },
+    { collectionId: "jerseys", ownerId: "rui-frio" }
+  ],
+
+  // ======================================================
+  // SHOWCASES
+  // ======================================================
+  userShowcases: [
+    {
+      ownerId: "collector-main",
+      lastUpdated: "2025-09-30T00:00:00Z", // not used yet, future ready
+      picks: [
+        { collectionId: "escudos", order: 1 },
+        { collectionId: "escudos-gold", order: 2 },
+        { collectionId: "playboys", order: 3 },
+        { collectionId: "pokemon", order: 4 },
+        { collectionId: "jerseys", order: 5 }
+      ],
+      likes: ["escudos", "escudos-gold", "playboys", "jerseys"]
+    },
+    {
+      ownerId: "rui-frio",
+      lastUpdated: "2025-08-12T00:00:00Z",
+      picks: [
+        { collectionId: "pokemon", order: 1 },
+        { collectionId: "portraits", order: 2 },
+        { collectionId: "jerseys", order: 3 }
+      ],
+      likes: ["pokemon", "jerseys", "escudos"]
+    }
   ]
 };

@@ -31,7 +31,7 @@ const collectionsData = {
       id: "pokemon",
       name: "Pokémon Trading Cards",
       type: "Collectible Cards",
-      coverImage: "../images/pikachu.jpg",
+      coverImage: "../images/pikachuset.jpg",
       summary: "Rare and classic cards from the Pokémon universe.",
       description: "A comprehensive Pokémon TCG collection featuring rare holographic cards, first editions, and limited releases from various generations. It celebrates both the nostalgic and competitive sides of Pokémon collecting.",
       createdAt: "2021-04-20",
@@ -195,7 +195,7 @@ const collectionsData = {
     // jerseys
     {
       id: "jerseys-item-1",
-      name: "FC Porto 2004 Jersey",
+      name: "Deco's FC Porto 2004 Jersey",
       importance: "High",
       weight: 0.4,
       price: 450,
@@ -206,7 +206,7 @@ const collectionsData = {
     },
     {
       id: "jerseys-item-2",
-      name: "Benfica 2010 Jersey",
+      name: "Cardozo's Benfica 2010 Jersey",
       importance: "High",
       weight: 0.4,
       price: 400,

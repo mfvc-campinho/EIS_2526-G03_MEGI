@@ -424,3 +424,74 @@
     padding: 12px;
   }
 }
+
+/* ===== UPCOMING EVENTS ===== */
+.upcoming-events {
+  padding: 28px 20px;
+  max-width: 1200px;
+  margin: 18px auto;
+}
+
+.upcoming-inner {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+  border: 1px solid #eef6ff;
+}
+
+.upcoming-title {
+  font-size: 1.35rem;
+  margin: 0 0 6px;
+  color: #0b1220;
+  font-weight: 700;
+}
+
+.upcoming-sub {
+  margin: 0 0 12px;
+  color: #6b7280;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.event-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.04);
+  border: 1px solid rgba(230, 244, 255, 0.6);
+}
+
+.event-title {
+  font-size: 0.98rem;
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.event-meta {
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+
+.events-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 980px) {
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+}

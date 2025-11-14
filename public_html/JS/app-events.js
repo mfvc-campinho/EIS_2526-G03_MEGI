@@ -696,7 +696,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const calBtn = document.createElement('button');
           calBtn.className = 'explore-btn calendar-btn';
           calBtn.type = 'button';
-          calBtn.innerHTML = '<i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i> 📅 Add to My Calendar';
+          calBtn.innerHTML = '<i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i> Add to My Calendar';
           calBtn.addEventListener('click', (e) => {
             e.preventDefault();
             addEventToCalendar({

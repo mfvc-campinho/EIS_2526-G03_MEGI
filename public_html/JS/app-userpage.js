@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetTopPicksBtn = document.getElementById("reset-top-picks-btn");
   const topPicksContainer = document.getElementById("user-top-picks");
   const likedCollectionsContainer = document.getElementById("user-liked-collections");
+  const likedEventsContainer = document.getElementById("user-liked-events");
 
   // Modal elements
   const profileModal = document.getElementById("user-profile-modal");
@@ -32,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let isViewingOwnProfile = false;
   let ownerLikesLookup = {};
 
+
   if (!window.demoCollectionsState) {
     window.demoCollectionsState = { voteState: {}, userChosenState: {} };
   } else {
@@ -39,6 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
     window.demoCollectionsState.userChosenState = window.demoCollectionsState.userChosenState || {};
   }
   const demoState = window.demoCollectionsState;
+  const eventsDemoState = window.demoEventsState || (window.demoEventsState = { voteState: {} });
+
+
+
+
 
   function formatEventDate(dateStr) {
     if (!dateStr) return "Date TBA";
@@ -63,6 +70,17 @@ document.addEventListener("DOMContentLoaded", () => {
     (data?.userShowcases || []).forEach(entry => {
       const likes = entry.likes || entry.likedCollections || [];
       map[entry.ownerId] = new Set(likes);
+    });
+    return map;
+  }
+
+  function buildOwnerEventLikesLookup(data) {
+    const map = {};
+    (data?.userShowcases || []).forEach(entry => {
+      const likes = entry.likedEvents || [];
+      if (likes.length) {
+        map[entry.ownerId] = new Set(likes);
+      }
     });
     return map;
   }
@@ -311,6 +329,34 @@ document.addEventListener("DOMContentLoaded", () => {
     likedCollectionsContainer.innerHTML = cards.join("");
   }
 
+  function renderLikedEvents(data, ownerId) {
+    if (!likedEventsContainer) return;
+    const eventLikesMap = buildOwnerEventLikesLookup(data);
+    const likedSet = eventLikesMap[ownerId] || new Set();
+    const sessionOverrides = eventsDemoState.voteState || {};
+
+    // Apply session changes
+    Object.entries(sessionOverrides).forEach(([eventId, isLiked]) => {
+      if (isLiked) likedSet.add(eventId);
+      else likedSet.delete(eventId);
+    });
+
+    if (!likedSet.size) {
+      likedEventsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any events yet." : "This user hasn't liked any events yet."}</p>`;
+      return;
+    }
+
+    const likedEvents = (data.events || []).filter(ev => likedSet.has(ev.id));
+    const cards = likedEvents.map(ev => `
+      <article class="liked-collection-card">
+        <a href="event_page.html?id=${encodeURIComponent(ev.id)}">
+          <h3>${ev.name}</h3>
+          <p>${ev.summary || ev.description || "No summary provided."}</p>
+        </a>
+      </article>`);
+    likedEventsContainer.innerHTML = cards.join("");
+  }
+
   function handleTopPickAction(event) {
     const btn = event.target.closest("[data-top-pick-action]");
     if (!btn) return;
@@ -386,6 +432,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderUserRsvpEvents(latestData, viewedOwnerId);
     renderUserChosenShowcase(latestData, viewedOwnerId);
     renderLikedCollections(latestData);
+    renderLikedEvents(latestData, viewedOwnerId);
   }
 
   function openProfileModal() {
@@ -428,6 +475,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (targetOwner && targetOwner !== viewedOwnerId) return;
     ownerLikesLookup = buildOwnerLikesLookup(latestData);
     renderLikedCollections(latestData);
+  });
+
+  window.addEventListener("userEventLikesChange", (event) => {
+    const targetOwner = event?.detail?.ownerId;
+    if (targetOwner && targetOwner !== viewedOwnerId) return;
+    if (!latestData) latestData = appData.loadData();
+    renderLikedEvents(latestData, viewedOwnerId);
   });
 
   loadAndRenderUserData();

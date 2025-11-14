@@ -30,7 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
   updateUserState(); // Initialize the user state
 
   // Main selectors
-  const itemsContainer = document.getElementById("collection-items");
+  const itemsContainer = document.getElementById("collection-items") || document.getElementById("user-liked-items");
+
+
   const eventsContainer = document.getElementById("collection-events");
   const modal = document.getElementById("item-modal");
   const form = document.getElementById("item-form");
@@ -58,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     : null;
   // Get collection ID from URL
   const params = new URLSearchParams(window.location.search);
-  let collectionId = params.get("id");
+  let collectionId = hasCollectionPage ? params.get("id") : null;
 
   function getInitialPageSizeFromControls(controls) {
     for (const ctrl of controls) {
@@ -440,7 +442,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function resolveItemsFilterMode() {
-    return itemsFilterSelect?.value || "all";
+    // If on user page, force "liked" mode. Otherwise, use the dropdown.
+    if (itemsContainer?.id === "user-liked-items") {
+      return "liked";
+    }
+    return itemsFilterSelect ? itemsFilterSelect.value : "all";
   }
 
   function parseItemTimestamp(item) {
@@ -504,7 +510,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Exposed globally so other scripts can call it
   // ===============================================
   window.renderItems = function renderItems() {
-    if (!hasCollectionPage) return;
+    if (!itemsContainer) return;
     const data = refreshItemLikesState();
     const collection = getCurrentCollection(data);
 
@@ -513,14 +519,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!collection) {
       const missingMessage = document.createElement("p");
       missingMessage.className = "notice-message";
-      missingMessage.textContent = "Collection not found.";
+      missingMessage.textContent = itemsContainer.id === "user-liked-items" ? "" : "Collection not found.";
       itemsContainer.appendChild(missingMessage);
       updateItemsPaginationSummary(0, 0, 0);
       return;
     }
 
     const ownsCollection = isCollectionOwnedByCurrentUser(collection, data);
-    const allItems = appData.getItemsByCollection(collectionId, data) || [];
+    const allItems = collectionId
+      ? (appData.getItemsByCollection(collectionId, data) || [])
+      : (data.items || []);
+
     const filterResult = applyItemsFilter(allItems);
     updateItemsFilterNote(filterResult.note);
 
@@ -583,7 +592,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const likeCount = getItemDisplayLikes(item.id, ownerIdForDisplay);
         const likeButton = `
           <button class="item-like-btn ${isLiked ? "active" : ""}" data-item-id="${item.id}" aria-pressed="${isLiked}">
-            <i class="bi ${isLiked ? "bi-heart-fill" : "bi-heart"}"></i>
+            <i class="bi ${isLiked ? "bi-star-fill" : "bi-star"}"></i>
             <span class="like-count">${likeCount}</span>
           </button>
         `;
@@ -1021,7 +1030,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialization
   populateCollectionsSelect();  // Populate collections select (if present)
   if (hasCollectionPage) {
-    renderCollectionDetails();   // Fill the collection details
+    if (collectionId) renderCollectionDetails();   // Fill the collection details
     // Compute and render collection statistics (keeps in sync with collection data)
     try {
       const stats = computeCollectionStatistics();
@@ -1032,7 +1041,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initItemsPaginationControls();
     renderItems();               // Render items for the collection
     highlightOwnedSection();     // Highlight if owned by current user
-  }
+  } else if (itemsContainer) { renderItems(); }
   renderCollectionEvents();      // List associated events (if container exists)
   handleItemActionParam();      // Execute actions coming from item_page
   // Expose compute/render helpers for debugging and external triggers
@@ -1053,3 +1062,12 @@ window.viewItem = function viewItem(itemId) {
   window.location.href = `item_page.html?id=${encodeURIComponent(itemId)}`;
 };
 
+
+
+window.viewItem = function viewItem(itemId) {
+  // Save the current item ID to localStorage so the detail page can load it
+  localStorage.setItem("currentItemId", itemId);
+
+  // Redirect to the item page
+  window.location.href = `item_page.html?id=${encodeURIComponent(itemId)}`;
+};

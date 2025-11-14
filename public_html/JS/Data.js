@@ -415,7 +415,8 @@ const collectionsData = {
         "playboys-item-2",
         "pokemon-item-1",
         "jerseys-item-1"
-      ]
+      ],
+      likedEvents: ["escudos-event-1", "pokemon-event-1"]
     },
     {
       ownerId: "rui-frio",
@@ -431,7 +432,8 @@ const collectionsData = {
         "pokemon-item-2",
         "portraits-item-1",
         "jerseys-item-2"
-      ]
+      ],
+      likedEvents: ["playboys-event-1", "pokemon-event-1", "jerseys-event-2"]
     }
   ]
 };

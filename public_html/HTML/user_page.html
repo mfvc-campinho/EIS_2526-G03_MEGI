@@ -158,7 +158,8 @@
       </section>
 
       <h2 id="user-liked-items-title">Liked Items</h2>
-      <section id="user-liked-items" class="liked-items collection-container">
+      <section id="user-liked-items" class="liked-items collection-container" data-item-source="liked"
+        data-owner-context="true">
         <p class="notice-message">You haven't liked any items yet.</p>
       </section>
 
@@ -173,13 +174,13 @@
       <h2 id="my-collections-title">Collections</h2>
       <div class="list-pagination" data-pagination-for="user-collections">
         <label class="page-size-label">
-          Ver
+          See
           <select data-page-size>
             <option value="5">5</option>
             <option value="10" selected>10</option>
             <option value="50">50</option>
           </select>
-          coleções de cada vez
+          collections at the same time
         </label>
         <div class="pagination-actions">
           <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">

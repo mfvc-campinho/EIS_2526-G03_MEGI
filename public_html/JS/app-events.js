@@ -12,6 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let deepLinkEventId = urlParams.get("id");
   const deepLinkReturnUrl = urlParams.get("returnUrl");
   let deepLinkHandled = false;
+  const sessionState = window.demoEventsState || (window.demoEventsState = {});
+  const voteState = sessionState.voteState || (sessionState.voteState = {});
+  let likesByEventMap = {};
+  let ownerLikesMap = {};
+
   const sessionRatings = {};
   let modalReturnUrl = null;
   const eventsList = document.getElementById("eventsList");
@@ -482,6 +487,79 @@ document.addEventListener("DOMContentLoaded", () => {
     return entry && typeof entry.rating === "number" ? entry.rating : null;
   }
 
+  function buildLikesMaps(data) {
+    likesByEventMap = {};
+    ownerLikesMap = {};
+    (data?.userShowcases || []).forEach(entry => {
+      const owner = entry.ownerId;
+      const likes = entry.likedEvents || [];
+      ownerLikesMap[owner] = new Set(likes);
+      likes.forEach(eventId => {
+        if (!likesByEventMap[eventId]) likesByEventMap[eventId] = new Set();
+        likesByEventMap[eventId].add(owner);
+      });
+    });
+  }
+
+  function getEventLikedBy(eventId) {
+    const set = likesByEventMap[eventId];
+    return set ? new Set(set) : new Set();
+  }
+
+  function getVoteOverride(eventId) {
+    return Object.prototype.hasOwnProperty.call(voteState, eventId)
+      ? voteState[eventId]
+      : undefined;
+  }
+
+  function getUserBaseLike(eventId, userId) {
+    if (!userId) return false;
+    const likedSet = ownerLikesMap[userId];
+    return likedSet ? likedSet.has(eventId) : false;
+  }
+
+  function getEffectiveUserLike(eventId, userId) {
+    if (!userId) return false;
+    const override = getVoteOverride(eventId);
+    if (override === undefined) return getUserBaseLike(eventId, userId);
+    return override;
+  }
+
+  function getDisplayLikes(eventId, userId) {
+    const likedSet = getEventLikedBy(eventId);
+    if (userId) {
+      const override = getVoteOverride(eventId);
+      const baseHas = likedSet.has(userId);
+      const finalState = override === undefined ? baseHas : override;
+      if (finalState) likedSet.add(userId);
+      else likedSet.delete(userId);
+    }
+    return likedSet.size;
+  }
+
+  function notifyEventLikesChange(ownerId) {
+    if (!ownerId) return;
+    window.dispatchEvent(new CustomEvent("userEventLikesChange", { detail: { ownerId } }));
+  }
+
+  function toggleEventLike(eventId) {
+    if (!isLoggedIn()) {
+      alert("Please sign in to like events.");
+      return;
+    }
+    const ownerId = getActiveOwnerId();
+    if (!ownerId) return;
+    const currentState = getEffectiveUserLike(eventId, ownerId);
+    voteState[eventId] = !currentState;
+    alert("Simulation only: your 'like' is not saved permanently.");
+    // Re-render the list and the modal if it's open
+    renderEvents();
+    if (eventDetailModal && eventDetailModal.style.display === "flex") {
+      openEventDetail(eventId);
+    }
+    notifyEventLikesChange(ownerId);
+  }
+
   // ---------- CALENDAR WIDGET ----------
   // Small self-contained calendar that highlights upcoming event days
   let calendarState = { year: null, month: null };
@@ -701,6 +779,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderEvents() {
     const data = loadData();
+    buildLikesMaps(data);
     if (!eventsList) return;
 
     eventsList.innerHTML = "";
@@ -790,7 +869,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const ownerDisplayText = ownerProfiles
         .map(profile => escapeHtml(profile.name))
         .join(", ") || "Community host";
-      const ownerLinkHref = `event_page.html?id=${encodeURIComponent(ev.id)}`;
+      const ownerLinkHref = `user_page.html?id=${encodeURIComponent(ev.id)}`;
+      const ownerIdForDisplay = getActiveOwnerId(currentUser);
+      const isLiked = ownerIdForDisplay ? getEffectiveUserLike(ev.id, ownerIdForDisplay) : false;
+      const displayLikes = getDisplayLikes(ev.id, ownerIdForDisplay);
 
       let ratingHtml = "";
       if (isPast) {
@@ -837,6 +919,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <a class="event-owner-link" href="${ownerLinkHref}" data-event-id="${ev.id}">
               ${ownerDisplayText}
             </a>
+          </div>
+
+          <div class="event-meta-row">
+            <button class="metric-btn vote-toggle ${isLiked ? "active" : ""}" data-event-id="${ev.id}">
+              <i class="bi ${isLiked ? "bi-star-fill" : "bi-star"}"></i>
+              <span class="vote-count">${displayLikes}</span>
+            </button>
           </div>
         `;
 
@@ -892,6 +981,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (deleteBtn) {
         deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
       }
+      const likeBtn = card.querySelector(".vote-toggle");
+      if (likeBtn) {
+        likeBtn.addEventListener("click", () => toggleEventLike(ev.id));
+      }
+
 
       // Add 'Add to My Calendar' button for upcoming events
       if (!isPast) {
@@ -1072,6 +1166,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // RSVP button
     if (modalRsvpBtn) {
       modalRsvpBtn.onclick = () => rsvpEvent(id);
+    }
+
+    const ownerIdForDisplay = getActiveOwnerId(currentUser);
+    const isLiked = ownerIdForDisplay ? getEffectiveUserLike(ev.id, ownerIdForDisplay) : false;
+    const likeBtn = document.getElementById("modal-likeBtn");
+    if (likeBtn) {
+      likeBtn.classList.toggle("active", isLiked);
+      likeBtn.querySelector(".bi").className = `bi ${isLiked ? "bi-star-fill" : "bi-star"}`;
+      likeBtn.onclick = () => toggleEventLike(id);
     }
 
     // (Optional) share button: simple alert for now

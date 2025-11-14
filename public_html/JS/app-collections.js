@@ -522,7 +522,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const buttons = `
                 <button class="explore-btn" onclick="togglePreview('${col.id}', this)"><i class="bi bi-eye"></i> Show Preview</button>
                 <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'"><i class="bi bi-search"></i> Explore More</button>
-                ${canEdit ? `<button class="explore-btn" onclick="editCollection('${col.id}')"><i class="bi bi-pencil"></i> Edit</button>` : ""}
+                ${canEdit ? `<button class="explore-btn warning" onclick="editCollection('${col.id}')"><i class="bi bi-pencil"></i> Edit</button>` : ""}
                 ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')"><i class="bi bi-trash"></i> Delete</button>` : ""}
             `;
 

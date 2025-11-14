@@ -657,26 +657,26 @@ document.addEventListener("DOMContentLoaded", () => {
           ${ratingHtml}
 
           <div class="card-actions">
-            <button class="view-btn">
+            <button class="explore-btn">
               <i class="bi bi-eye-fill" aria-hidden="true"></i> View
             </button>
             <button class="rsvp-btn" data-id="${ev.id}" data-requires-login>
               <i class="bi bi-calendar-check" aria-hidden="true"></i> RSVP
             </button>
             ${canManage ? `
-              <button class="edit-btn" data-id="${ev.id}" data-requires-login>
+              <button class="explore-btn warning" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
               </button>
             ` : ``}
             ${canManage ? `
-              <button class="delete-btn" data-id="${ev.id}" data-requires-login>
+              <button class="explore-btn danger" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-trash3" aria-hidden="true"></i> Delete
               </button>
             ` : ``}
           </div>
         `;
 
-      card.querySelector(".view-btn")
+      card.querySelector(".explore-btn")
         .addEventListener("click", () => openEventDetail(ev.id));
       card.querySelector(".rsvp-btn")
         .addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });

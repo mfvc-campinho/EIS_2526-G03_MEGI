@@ -153,11 +153,11 @@
 #eventsList .event-card,
 #eventsList .collection-card,
 #eventsList>div {
-  background: #ffffff;
-  border-radius: 26px;
-  padding: 24px 22px 18px;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e5e7eb;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 22px 18px 18px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -169,18 +169,18 @@
 #eventsList .collection-card:hover,
 #eventsList>div:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-elevated);
 }
 
 /* Title */
 #eventsList .card-title,
 #eventsList .event-title,
 #eventsList h3 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #111827;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.18;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -192,7 +192,7 @@
 #eventsList p.summary {
   margin: 0;
   font-size: 0.98rem;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 /* Meta rows for date & location */
@@ -232,24 +232,26 @@
 }
 
 /* Buttons inside cards */
+
 #eventsList .card-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 #eventsList .card-actions button {
-  padding: 6px 11px;
-  font-size: 0.8rem;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 253, 0.4);
-  background: #f9fafb;
-  color: #111827;
+  height: 36px;
+  padding: 0 14px;
+  font-size: 0.9rem;
+  border-radius: 50px;
+  border: 1px solid rgba(148, 163, 253, 0.25);
+  background: var(--card-bg);
+  color: var(--text-main);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   transition: all 0.14s ease;
 }
 

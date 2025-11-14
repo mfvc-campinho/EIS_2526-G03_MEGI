@@ -92,6 +92,12 @@ h1.page-title::after {
   --save-btn-text: #ffffff;
   --modal-bg: #ffffff;
   --overlay-bg: rgba(17, 24, 39, 0.6);
+  /* New semantic aliases used by updated card styles */
+  --text-main: var(--text-color);
+  --text-muted: var(--muted-color);
+  --border-color: #e5e7eb;
+  --shadow-elevated: 0 8px 22px rgba(0, 0, 0, 0.12);
+  --card-radius: 16px;
 }
 
 /* Dark mode overrides will be defined in .dark-mode (applied to <html> or <body>) */
@@ -980,15 +986,15 @@ footer .heart {
    (Estilo comum para .collection-card e .item-card)
 =============================== */
 .card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
   width: calc(20% - 24px);
-  /* 5 por linha (ajustado ao gap) */
+  /* 5 per row (adjusted to gap) */
   min-width: 280px;
-  /* Increased slightly for better visibility */
-  height: 420px;
+  /* keep good minimum visual weight but allow flexible height */
+  min-height: 420px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -996,8 +1002,8 @@ footer .heart {
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
 }
 
 /* Specific adjustments for each card type */
@@ -1016,7 +1022,7 @@ footer .heart {
   justify-content: space-between;
   border-radius: 16px;
   overflow: hidden;
-  background: #fff;
+  background: var(--card-bg);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   /* Stretch content to fill available height */
 }
@@ -1033,15 +1039,16 @@ footer .heart {
 .item-image-wrapper {
   position: relative;
   width: 100%;
-  height: 190px;
-  background: #f8fafc;
+  /* Larger, more premium image area */
+  height: 240px;
+  background: var(--card-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-top-left-radius: var(--card-radius);
+  border-top-right-radius: var(--card-radius);
+  border-bottom: 1px solid var(--border-color);
   transition: all 0.4s ease;
 }
 
@@ -1081,11 +1088,11 @@ footer .heart {
 /* Empty state — graceful fallback */
 .card-image:empty,
 .item-image-wrapper:empty {
-  background: #f1f5f9;
+  background: var(--card-bg);
   color: #94a3b8;
   font-style: italic;
   font-size: 0.9rem;
-  border: 1px dashed #e2e8f0;
+  border: 1px dashed var(--border-color);
 }
 
 .card-image:empty::after,
@@ -1119,16 +1126,17 @@ footer .heart {
    🔹 CARD INFO
 =============================== */
 .card-info {
-  padding: 20px;
+  padding: 22px 20px 24px;
   text-align: center;
   flex-grow: 1;
 }
 
 .card-info h3 {
-  font-size: 1.2rem;
+  font-size: 1.18rem;
   margin-bottom: 8px;
-  color: #222;
-  font-weight: 600;
+  color: var(--text-main);
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 /* Ensure collection/item card titles are visually centered
@@ -1139,9 +1147,33 @@ footer .heart {
 }
 
 .card-info p {
-  font-size: 0.95rem;
-  color: #777;
+  font-size: 0.98rem;
+  color: var(--text-muted);
   margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Support project-specific internal classes without changing HTML structure
+   .item-info is used by JS-generated cards; make sure it matches the new card body style */
+.item-info {
+  padding: 22px 18px 24px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.item-info h3 {
+  font-size: 1.18rem;
+  margin-bottom: 8px;
+  color: var(--text-main);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.item-info p {
+  font-size: 0.98rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
 }
 
 .collection-metrics {
@@ -1240,6 +1272,28 @@ footer .heart {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 18px;
+}
+
+/* Standardize small action buttons inside cards (rating, preview, top5) */
+.card-actions button,
+.card-buttons .explore-btn,
+.card-actions .explore-btn {
+  height: 36px;
+  border-radius: 50px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.card-actions {
+  gap: 12px;
+}
+
+.card-rating {
+  gap: 10px;
 }
 
 /* Make sure Edit / Delete (and other action buttons) are centered
@@ -1999,6 +2053,33 @@ button {
     border-radius: 12px;
   }
 
+
+  /* Responsive image heights for cards: larger on desktop, scale down on small devices */
+  @media (max-width: 900px) {
+
+    .card-image,
+    .item-image-wrapper {
+      height: 220px;
+    }
+  }
+
+  @media (max-width: 700px) {
+
+    .card-image,
+    .item-image-wrapper {
+      height: 220px;
+    }
+  }
+
+  @media (max-width: 480px) {
+
+    .card-image,
+    .item-image-wrapper {
+      height: 180px;
+      max-height: 180px;
+    }
+  }
+
   /* Card image reduced height to preserve vertical space */
   .card-image,
   .item-image-wrapper {
@@ -2150,6 +2231,12 @@ h1.page-title {
 
   --save-btn-bg: linear-gradient(90deg, #0e8750, #2f9f6b);
   --save-btn-text: #e6edf3;
+  /* Dark-mode aliases for the new variables */
+  --text-main: var(--text-color);
+  --text-muted: var(--muted-color);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --shadow-elevated: 0 12px 30px rgba(0, 0, 0, 0.5);
+  --card-radius: 16px;
 }
 
 /* Ensure interactive elements keep accessible contrast in dark mode */

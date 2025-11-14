@@ -268,20 +268,20 @@
 /* If your JS creates elements with a specific class (e.g., .item-card),
    you can style them here. Example (safe & generic): */
 .collection-container>div {
-  background: #ffffff;
-  border-radius: 14px;
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
   /* slightly more internal padding for better vertical spacing */
-  padding: 16px 14px 14px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e5e7eb;
+  padding: 18px 16px 16px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
   box-sizing: border-box;
 }
 
-/* Simple hover feedback for item cards */
+/* Simple hover feedback for item cards (smoother / stronger) */
 .collection-container>div:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  transition: all 0.18s ease;
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+  transition: all 0.22s ease;
 }
 
 .item-buttons {

@@ -102,12 +102,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let collectionOwnerId = resolveOwnerIdForCollection(primaryCollectionId);
+  let canManage = false;
+  let manageEventsBound = false;
 
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  const effectiveOwnerId = currentUser && currentUser.active
-    ? (currentUser.id || DEFAULT_OWNER_ID)
-    : null;
-  const canManage = Boolean(collectionOwnerId && effectiveOwnerId && collectionOwnerId === effectiveOwnerId);
+  function getStoredEffectiveOwnerId() {
+    const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!storedUser || !storedUser.active) return null;
+    return storedUser.id || DEFAULT_OWNER_ID;
+  }
+
+  function computeCanManage() {
+    const effectiveOwnerId = getStoredEffectiveOwnerId();
+    return Boolean(collectionOwnerId && effectiveOwnerId && collectionOwnerId === effectiveOwnerId);
+  }
 
   function ensureCollectionLink() {
     if (primaryCollectionId) return true;
@@ -240,39 +247,61 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCollectionLinks();
   renderOwnerLinks();
   initItemLikeButton();
+  updateManageControls();
 
-  if (canManage) {
-    addBtn?.addEventListener("click", () => {
-      if (!ensureCollectionLink()) return;
-      if (typeof window.openItemModal !== "function") {
-        alert("Item modal is not available.");
-        return;
-      }
-      window.openItemModal(false);
-    });
-
-    editBtn?.addEventListener("click", () => {
-      if (!ensureCollectionLink()) return;
-      if (typeof window.editItem !== "function") {
-        alert("Edit action is not available.");
-        return;
-      }
-      window.editItem(itemId);
-    });
-
-    deleteBtn?.addEventListener("click", () => {
-      if (!ensureCollectionLink()) return;
-      if (typeof window.deleteItem !== "function") {
-        alert("Delete action is not available.");
-        return;
-      }
-      window.deleteItem(itemId);
-    });
-  } else {
-    actionsContainer?.classList.add("hidden");
+  function handleAddItemClick() {
+    if (!canManage) return;
+    if (!ensureCollectionLink()) return;
+    if (typeof window.openItemModal !== "function") {
+      alert("Item modal is not available.");
+      return;
+    }
+    window.openItemModal(false);
   }
 
-  window.addEventListener("userStateChange", () => refreshItemLikeState());
+  function handleEditItemClick() {
+    if (!canManage) return;
+    if (!ensureCollectionLink()) return;
+    if (typeof window.editItem !== "function") {
+      alert("Edit action is not available.");
+      return;
+    }
+    window.editItem(itemId);
+  }
+
+  function handleDeleteItemClick() {
+    if (!canManage) return;
+    if (!ensureCollectionLink()) return;
+    if (typeof window.deleteItem !== "function") {
+      alert("Delete action is not available.");
+      return;
+    }
+    window.deleteItem(itemId);
+  }
+
+  function bindManageEvents() {
+    if (manageEventsBound) return;
+    manageEventsBound = true;
+    addBtn?.addEventListener("click", handleAddItemClick);
+    editBtn?.addEventListener("click", handleEditItemClick);
+    deleteBtn?.addEventListener("click", handleDeleteItemClick);
+  }
+
+  function updateManageControls() {
+    const hasAccess = computeCanManage();
+    canManage = hasAccess;
+    if (actionsContainer) {
+      actionsContainer.classList.toggle("hidden", !hasAccess);
+    }
+    if (hasAccess) {
+      bindManageEvents();
+    }
+  }
+
+  window.addEventListener("userStateChange", () => {
+    refreshItemLikeState();
+    updateManageControls();
+  });
   window.addEventListener("userItemLikesChange", (event) => {
     const changedOwner = event.detail?.ownerId;
     const helpers = getItemLikeHelpers();

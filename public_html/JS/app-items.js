@@ -88,6 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // URL params
   const params = new URLSearchParams(window.location.search);
   let collectionId = isCollectionPage ? params.get("id") : null;
+  window.setCurrentCollectionId = (value) => {
+    if (!value) return;
+    collectionId = value;
+  };
 
 
   // ===============================================

@@ -1509,9 +1509,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (!confirm("Delete this event? This action cannot be undone.")) return;
-    deleteEntity(id);
-    renderEvents();
+    if (!confirm("Delete this event? This action cannot be undone. This prototype only simulates the flow.")) {
+      return;
+    }
+
+    alert("Simulation: the delete button only shows this confirmation; no data was removed.");
   }
 
   // ---------- RSVP ----------

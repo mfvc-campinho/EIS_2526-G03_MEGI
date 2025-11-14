@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <!--
     File: public_html/HTML/specific_collection.html
 
 
-    Purpose: Collection details page — shows collection metadata, items grid and related events.
+    Purpose: Collection details page ï¿½ shows collection metadata, items grid and related events.
     Major sections: NAVIGATION, COLLECTION OVERVIEW, ITEM GRID (injected by app-items.js or app-collections.js), MODALS.
     Notes: JS expects IDs like #collection-title, #collection-items and #collection-events.
 -->
@@ -11,7 +11,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Specific Collection — GoodCollections</title>
+    <title>Specific Collection ï¿½ GoodCollections</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Font -->
@@ -54,7 +54,7 @@
                         <i class="bi bi-people-fill me-1"></i> About Us
                     </a>
 
-                    <!-- Dark mode toggle -->
+                    <a href="user_page.html" class="nav-link">\r\n                        <i class="bi bi-person-fill me-1"></i> Profile\r\n                    </a>\r\n\r\n                    <!-- Dark mode toggle -->
                     <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
                         <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
                     </button>
@@ -105,11 +105,11 @@
                     <div id="meta-text">
                         <p>
                             <strong>Owner:</strong>
-                            <span id="owner-name">—</span>
+                            <span id="owner-name">ï¿½</span>
                         </p>
                         <p>
                             <strong>Created:</strong>
-                            <span id="creation-date">—</span>
+                            <span id="creation-date">ï¿½</span>
                         </p>
                         <p>
                             <strong>Type:</strong>
@@ -137,7 +137,7 @@
                     <article class="stat-card" data-key="totalItems">
                         <div class="stat-icon"><i class="bi bi-list"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">ï¿½</div>
                             <div class="stat-label">Total items</div>
                         </div>
                     </article>
@@ -145,8 +145,8 @@
                     <article class="stat-card" data-key="totalValue">
                         <div class="stat-icon"><i class="bi bi-currency-euro"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
-                            <div class="stat-label">Total estimated value (€)</div>
+                            <div class="stat-value">ï¿½</div>
+                            <div class="stat-label">Total estimated value (ï¿½)</div>
                         </div>
                     </article>
 
@@ -154,7 +154,7 @@
                         <div class="stat-icon"><i class="bi bi-123"></i>
                         </div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">ï¿½</div>
                             <div class="stat-label">Average item weight (g)</div>
                         </div>
                     </article>
@@ -162,7 +162,7 @@
                     <article class="stat-card" data-key="linkedEvents">
                         <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">ï¿½</div>
                             <div class="stat-label">Linked events</div>
                         </div>
                     </article>
@@ -170,7 +170,7 @@
                     <article class="stat-card" data-key="oldestItem">
                         <div class="stat-icon"><i class="bi bi-calendar2-minus"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">ï¿½</div>
                             <div class="stat-label">Oldest item (acquired)</div>
                         </div>
                     </article>
@@ -178,7 +178,7 @@
                     <article class="stat-card" data-key="newestItem">
                         <div class="stat-icon"><i class="bi bi-calendar2-plus"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">ï¿½</div>
                             <div class="stat-label">Newest item (acquired)</div>
                         </div>
                     </article>
@@ -313,7 +313,7 @@
                 <input type="hidden" id="item-id">
 
                 <div class="form-section form-section--required">
-                    <h3>Campos obrigatorios</h3>
+                    <h3>Required fields</h3>
                     <label for="item-name">Name:</label>
                     <input type="text" id="item-name" required>
                     <label for="item-price">Price (?):</label>
@@ -326,7 +326,7 @@
                 </div>
 
                 <div class="form-section form-section--optional">
-                    <h3>Campos facultativos</h3>
+                    <h3>Optional fields</h3>
                     <label for="item-importance">Importance:</label>
                     <input type="text" id="item-importance">
                     <label for="item-weight">Weight (g):</label>
@@ -360,7 +360,7 @@
                 <input type="hidden" id="collection-id" />
 
                 <div class="form-section form-section--required">
-                    <h3>Campos obrigatorios</h3>
+                    <h3>Required fields</h3>
                     <label for="col-name">Name:</label>
                     <input type="text" id="col-name" name="col-name" required />
                     <label for="col-summary">Summary:</label>
@@ -368,7 +368,7 @@
                 </div>
 
                 <div class="form-section form-section--optional">
-                    <h3>Campos facultativos</h3>
+                    <h3>Optional fields</h3>
                     <label for="col-description">Full Description:</label>
                     <textarea id="col-description" name="col-description"></textarea>
                     <label for="col-image">Image (URL):</label>
@@ -466,6 +466,8 @@
 </body>
 
 </html>
+
+
 
 
 

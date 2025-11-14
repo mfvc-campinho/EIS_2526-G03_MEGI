@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const eventsDemoState = window.demoEventsState || (window.demoEventsState = { voteState: {} });
 
   const FOLLOW_SIMULATION_MESSAGE =
-    "Atenção: seguir colecionadores é apenas uma simulação de backend; não há persistência real.";
+    "Attention: following collectors is just a backend simulation; there is no real persistence.";
   let followSimulationAlertShown = false;
 
 
@@ -69,6 +69,36 @@ document.addEventListener("DOMContentLoaded", () => {
     const primary = event.date || event.updatedAt || event.createdAt;
     const time = primary ? new Date(primary).getTime() : NaN;
     return Number.isNaN(time) ? 0 : time;
+  }
+
+  function getPaginationControls(controlKey) {
+    if (!controlKey) return [];
+    return Array.from(document.querySelectorAll(`[data-pagination-for="${controlKey}"]`));
+  }
+
+  function updatePaginationStatus(controlKey, total, startIndex = 0, shownCount = total) {
+    const controls = getPaginationControls(controlKey);
+    if (!controls.length) return;
+
+    const totalSafe = Math.max(total || 0, 0);
+    const shownSafe = Math.max(Math.min(shownCount || 0, totalSafe), 0);
+    const startSafe =
+      totalSafe === 0
+        ? 0
+        : Math.min(Math.max(startIndex || 0, 0), Math.max(totalSafe - 1, 0));
+    const rangeStart = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + 1;
+    const rangeEnd = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + shownSafe;
+
+    controls.forEach(ctrl => {
+      const status = ctrl.querySelector("[data-pagination-status]");
+      if (status) {
+        status.textContent = `Showing ${rangeStart}-${rangeEnd} of ${totalSafe}`;
+      }
+      const actions = ctrl.querySelector(".pagination-actions");
+      if (actions) {
+        actions.hidden = totalSafe === 0;
+      }
+    });
   }
 
   function buildOwnerLikesLookup(data) {
@@ -137,14 +167,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function renderEventList(container, events, emptyMessage) {
+  function renderEventList(container, events, emptyMessage, paginationKey) {
     if (!container) return;
-    if (!events.length) {
+    const normalizedEvents = Array.isArray(events) ? events : [];
+    if (!normalizedEvents.length) {
       container.innerHTML = `<p class="notice-message">${emptyMessage}</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
 
-    const sorted = events
+    const sorted = normalizedEvents
       .slice()
       .sort((a, b) => getEventTimestamp(a) - getEventTimestamp(b));
 
@@ -164,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `
       )
       .join("");
+    updatePaginationStatus(paginationKey, sorted.length, 0, sorted.length);
   }
 
   function toggleRsvpVisibility(showSection) {
@@ -230,7 +263,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    renderEventList(userEventsContainer, events, "No events linked to this user yet.");
+    renderEventList(
+      userEventsContainer,
+      events,
+      "No events linked to this user yet.",
+      "user-events"
+    );
   }
 
   function renderUserRsvpEvents(data, ownerId) {
@@ -250,7 +288,12 @@ document.addEventListener("DOMContentLoaded", () => {
         .map((link) => link.eventId)
     );
     const events = (data.events || []).filter((event) => attendingIds.has(event.id));
-    renderEventList(userRsvpContainer, events, "No RSVP activity yet.");
+    renderEventList(
+      userRsvpContainer,
+      events,
+      "No RSVP activity yet.",
+      "user-rsvp-events"
+    );
   }
 
   function renderUserChosenShowcase(data, ownerId) {
@@ -332,19 +375,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderLikedCollections(dataArg) {
     if (!likedCollectionsContainer) return;
+    const paginationKey = "user-liked-collections";
     const data = dataArg || latestData || appData.loadData();
     if (!data) {
       likedCollectionsContainer.innerHTML = `<p class="notice-message">Likes unavailable right now.</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
     const targetOwner = viewedOwnerId;
     if (!targetOwner) {
       likedCollectionsContainer.innerHTML = `<p class="notice-message">No user selected.</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
     const liked = (data.collections || []).filter(col => doesUserLikeCollection(col, targetOwner));
     if (!liked.length) {
       likedCollectionsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't starred any collections yet." : "This user hasn't starred any collections yet."}</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
     const cards = liked.map(col => `
@@ -356,23 +403,28 @@ document.addEventListener("DOMContentLoaded", () => {
       </article>
     `);
     likedCollectionsContainer.innerHTML = cards.join("");
+    updatePaginationStatus(paginationKey, cards.length, 0, cards.length);
   }
 
   function renderLikedItems(dataArg, ownerId) {
     if (!likedItemsContainer) return;
+    const paginationKey = "user-liked-items";
     const data = dataArg || latestData || appData.loadData();
     if (!data) {
       likedItemsContainer.innerHTML = `<p class="notice-message">Likes unavailable right now.</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
     const targetOwner = ownerId || viewedOwnerId;
     if (!targetOwner) {
       likedItemsContainer.innerHTML = `<p class="notice-message">No user selected.</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
     const likedIds = getOwnerLikedItems(data, targetOwner);
     if (!likedIds.length) {
       likedItemsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any items yet." : "This user hasn't liked any items yet."}</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
 
@@ -409,10 +461,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!cards.length) {
       likedItemsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any items yet." : "This user hasn't liked any items yet."}</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
 
     likedItemsContainer.innerHTML = cards.join("");
+    updatePaginationStatus(paginationKey, cards.length, 0, cards.length);
   }
 
   function renderLikedEvents(data, ownerId) {

@@ -300,6 +300,7 @@
 }
 
 /* Items filter panel */
+/* SECTION: everything side-by-side */
 .items-filter {
   margin: 28px 0 12px;
   padding: 22px 26px;
@@ -307,9 +308,11 @@
   border-radius: 18px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  gap: 24px;       /* space between each block */
+  flex-wrap: nowrap;   /* ⬅️ important: keep all in one line */
 }
 
 .items-filter .filter-control {
@@ -368,6 +371,29 @@
   background: #dbeafe;
   transform: rotate(90deg);
 }
+
+.list-pagination {
+    display: flex;
+    align-items: center;
+    gap: 16px;         /* space between label and arrows */
+    flex-wrap: nowrap; /* keep everything on one line */
+}
+
+.page-size-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;          /* space between "Ver", select, and text */
+    margin: 0;
+    white-space: nowrap;  /* avoid line breaks inside the label */
+}
+
+.pagination-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;          /* space between prev, text, next */
+}
+
+
 
 .filter-note {
   margin: 0;

@@ -2359,3 +2359,25 @@ h1.page-title {
 .dark-mode .profile-menu {
   background: #0b1220;
 }
+
+
+.list-pagination {
+    display: flex;
+    align-items: center;
+    gap: 20px;         /* space between label and arrows */
+    flex-wrap: nowrap; /* keep everything on one line */
+}
+
+.page-size-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;          /* space between "Ver", select, and text */
+    margin: 0;
+    white-space: nowrap;  /* avoid line breaks inside the label */
+}
+
+.pagination-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;          /* space between prev, text, next */
+}

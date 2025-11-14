@@ -56,6 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const itemsFilterSelect = document.getElementById("itemsFilter");
   const resetItemsFilterBtn = document.getElementById("resetItemsFilter");
   const itemsFilterNote = document.getElementById("items-filter-note");
+  const importanceFilterSelect = document.getElementById("importanceFilter");
+  const priceFilterSelect = document.getElementById("priceFilter");
 
   const collectionModal = document.getElementById("collection-modal");
   const collectionForm = document.getElementById("form-collection");
@@ -120,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const shownSafe = Math.max(Math.min(shown || 0, totalSafe), 0);
     const startSafe =
       totalSafe === 0 ? 0 : Math.min(Math.max(start || 0, 0), Math.max(totalSafe - 1, 0));
+    const hasResults = totalSafe > 0;
 
     const rangeStart = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + 1;
     const rangeEnd = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + shownSafe;
@@ -150,6 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
         next.disabled = atEnd;
         next.setAttribute("aria-disabled", atEnd ? "true" : "false");
         next.classList.toggle("disabled", atEnd);
+      }
+      const actions = ctrl.querySelector(".pagination-actions");
+      if (actions) {
+        actions.hidden = !hasResults;
       }
     });
   }
@@ -564,21 +571,38 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number.isNaN(ts) ? 0 : ts;
   }
 
+  const PRICE_FILTER_LABELS = {
+    budget: "Budget (< EUR 100)",
+    mid: "Mid (EUR 100-500)",
+    premium: "Premium (> EUR 500)"
+  };
+
+  function matchesPriceRange(item, range) {
+    const price = Number(item.price);
+    if (!Number.isFinite(price)) return false;
+
+    if (range === "budget") return price < 100;
+    if (range === "mid") return price >= 100 && price <= 500;
+    if (range === "premium") return price > 500;
+
+    return true;
+  }
+
   function applyItemsFilter(allItems) {
     const mode = resolveFilterMode();
+    const importanceMode = importanceFilterSelect?.value || "all";
+    const priceMode = priceFilterSelect?.value || "all";
     const ownerId = getEffectiveOwnerId();
 
     const base = Array.isArray(allItems) ? allItems.slice() : [];
+    let filtered = base;
+    let noteParts = [];
+    let requiresLogin = false;
 
     if (!mode || mode === "all") {
-      return {
-        items: base,
-        note: base.length ? "Showing all items." : "",
-        requiresLogin: false
-      };
-    }
-
-    if (mode === "liked") {
+      filtered = base;
+      if (base.length) noteParts.push("Showing all items.");
+    } else if (mode === "liked") {
       if (!isActiveUser || !ownerId) {
         return {
           items: [],
@@ -586,32 +610,40 @@ document.addEventListener("DOMContentLoaded", () => {
           requiresLogin: true
         };
       }
-      const liked = base.filter(it => getEffectiveItemLike(it.id, ownerId));
-      const note = liked.length
-        ? `Showing ${liked.length} liked item${liked.length === 1 ? "" : "s"}.`
+      filtered = base.filter(it => getEffectiveItemLike(it.id, ownerId));
+      const likedNote = filtered.length
+        ? `Showing ${filtered.length} liked item${filtered.length === 1 ? "" : "s"}.`
         : "You haven't liked any items yet.";
-      return { items: liked, note, requiresLogin: false };
+      noteParts.push(likedNote);
+    } else if (mode === "mostLiked") {
+      filtered.sort((a, b) => getItemLikedBy(b.id).size - getItemLikedBy(a.id).size);
+      const mostLikedNote = filtered.length
+        ? "Sorted by community likes."
+        : "No items available.";
+      noteParts.push(mostLikedNote);
+    } else if (mode === "recent") {
+      filtered.sort((a, b) => parseItemTimestamp(b) - parseItemTimestamp(a));
+      if (filtered.length) noteParts.push("Newest items first.");
+    } else {
+      filtered = base;
     }
 
-    if (mode === "mostLiked") {
-      base.sort((a, b) => getItemLikedBy(b.id).size - getItemLikedBy(a.id).size);
-      return {
-        items: base,
-        note: base.length ? "Sorted by community likes." : "No items available.",
-        requiresLogin: false
-      };
+    if (importanceMode !== "all") {
+      filtered = filtered.filter(item => item.importance === importanceMode);
+      noteParts.push(`Importance: ${importanceMode}`);
     }
 
-    if (mode === "recent") {
-      base.sort((a, b) => parseItemTimestamp(b) - parseItemTimestamp(a));
-      return {
-        items: base,
-        note: base.length ? "Newest items first." : "",
-        requiresLogin: false
-      };
+    if (priceMode !== "all") {
+      filtered = filtered.filter(item => matchesPriceRange(item, priceMode));
+      const priceLabel = PRICE_FILTER_LABELS[priceMode] || priceMode;
+      noteParts.push(`Price: ${priceLabel}`);
     }
 
-    return { items: base, note: "", requiresLogin: false };
+    return {
+      items: filtered,
+      note: noteParts.filter(Boolean).join(" "),
+      requiresLogin
+    };
   }
 
 
@@ -1148,9 +1180,19 @@ document.addEventListener("DOMContentLoaded", () => {
     itemsFilterSelect.addEventListener("change", () => renderItems());
   }
 
+  if (importanceFilterSelect) {
+    importanceFilterSelect.addEventListener("change", () => renderItems());
+  }
+
+  if (priceFilterSelect) {
+    priceFilterSelect.addEventListener("change", () => renderItems());
+  }
+
   if (resetItemsFilterBtn) {
     resetItemsFilterBtn.addEventListener("click", () => {
-      itemsFilterSelect.value = "all";
+      if (itemsFilterSelect) itemsFilterSelect.value = "all";
+      if (importanceFilterSelect) importanceFilterSelect.value = "all";
+      if (priceFilterSelect) priceFilterSelect.value = "all";
       renderItems();
     });
   }

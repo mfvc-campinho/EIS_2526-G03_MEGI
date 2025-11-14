@@ -49,6 +49,10 @@
     animation: rating-star-lift 260ms ease forwards;
 }
 
+.rating-stars .star.dimmed {
+    color: #d1d5db !important;
+}
+
 .rating-stars .star.clickable:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.45);

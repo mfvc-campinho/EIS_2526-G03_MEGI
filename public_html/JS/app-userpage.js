@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const userEmailEl = document.getElementById("user-email");
   const userDobEl = document.getElementById("user-dob");
   const userMemberSinceEl = document.getElementById("user-member-since");
+  const userFollowersEl = document.getElementById("user-followers");
   const usernameBannerEl = document.getElementById("username-banner");
   const userEventsContainer = document.getElementById("user-events");
   const userRsvpTitleEl = document.getElementById("user-rsvp-title");
@@ -98,6 +99,20 @@ document.addEventListener("DOMContentLoaded", () => {
   function getOwnerLikedItems(data, ownerId) {
     const entry = getUserShowcaseEntry(data, ownerId);
     return entry?.likedItems || [];
+  }
+
+  function resolveFollowerCount(data, ownerId) {
+    if (!ownerId || !data) return 0;
+    if (typeof appData?.getUserFollowerCount === "function") {
+      return appData.getUserFollowerCount(ownerId);
+    }
+    const followsMap = data.userFollows || {};
+    return Object.values(followsMap).reduce((count, followingList) => {
+      if (Array.isArray(followingList) && followingList.includes(ownerId)) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
   }
 
   function doesUserLikeCollection(collection, ownerId) {
@@ -542,7 +557,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // the element is missing.
     if (usernameBannerEl) usernameBannerEl.textContent = ownerName;
     userAvatarEl.src = user["owner-photo"];
-    userEmailEl.textContent = user.email;
+    if (userEmailEl) {
+      userEmailEl.textContent = isViewingOwnProfile ? user.email : "Private";
+    }
     userDobEl.textContent = user["date-of-birth"];
     if (userMemberSinceEl) {
       userMemberSinceEl.textContent = user["member-since"] || "N/A";
@@ -557,6 +574,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ).length;
     const countEl = document.getElementById("user-collection-count");
     if (countEl) countEl.textContent = collectionCount;
+    const followerCount = resolveFollowerCount(latestData, viewedOwnerId);
+    if (userFollowersEl) userFollowersEl.textContent = followerCount;
 
     renderUserEvents(latestData, viewedOwnerId);
     renderUserRsvpEvents(latestData, viewedOwnerId);

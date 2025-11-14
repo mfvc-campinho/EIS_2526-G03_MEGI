@@ -227,9 +227,38 @@
                             <option value="mostLiked">Most liked</option>
                             <option value="recent">Recently acquired</option>
                         </select>
-                        <button id="resetItemsFilter" class="filter-clear" type="button" title="Reset filter">
+                        <button id="resetItemsFilter" class="filter-clear" type="button" title="Reset filters">
                             <i class="bi bi-x-lg" aria-hidden="true"></i>
                         </button>
+                    </div>
+                </div>
+                <div class="filter-control">
+                    <label for="importanceFilter" class="filter-label">
+                        <i class="bi bi-badge-ad me-1" aria-hidden="true"></i>
+                        Importance
+                    </label>
+                    <div class="filter-input">
+                        <select id="importanceFilter" class="filter-select">
+                            <option value="all">All importances</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Very High">Very High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-control">
+                    <label for="priceFilter" class="filter-label">
+                        <i class="bi bi-cash-stack me-1" aria-hidden="true"></i>
+                        Price
+                    </label>
+                    <div class="filter-input">
+                        <select id="priceFilter" class="filter-select">
+                            <option value="all">All prices</option>
+                            <option value="budget">Budget (&lt; EUR 100)</option>
+                            <option value="mid">Mid (EUR 100-500)</option>
+                            <option value="premium">Premium (&gt; EUR 500)</option>
+                        </select>
                     </div>
                 </div>
                 <p id="items-filter-note" class="filter-note" aria-live="polite"></p>

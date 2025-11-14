@@ -122,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const rangeStart = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + 1;
     const rangeEnd = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + shownSafe;
     const effectiveSize = eventsPaginationState ? Math.max(eventsPaginationState.pageSize || defaultEventsPageSize || 1, 1) : 1;
+    const hasResults = totalSafe > 0;
     const totalPages = totalSafe === 0 ? 0 : Math.ceil(totalSafe / effectiveSize);
     const currentPage = eventsPaginationState ? eventsPaginationState.pageIndex : 0;
     const atStart = !totalSafe || currentPage <= 0;
@@ -142,6 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
         nextBtn.disabled = atEnd;
         nextBtn.setAttribute("aria-disabled", atEnd ? "true" : "false");
         nextBtn.classList.toggle("disabled", atEnd);
+      }
+      const actions = ctrl.querySelector(".pagination-actions");
+      if (actions) {
+        actions.hidden = !hasResults;
       }
     });
   }

@@ -163,10 +163,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const atStart = !cappedTotal || currentPage <= 0;
         const atEnd = !cappedTotal || currentPage >= Math.max(totalPages - 1, 0);
         paginationControls.forEach(ctrl => {
-            const status = ctrl.querySelector("[data-pagination-status]");
-            if (status) {
-                status.textContent = `Showing ${rangeStart}-${rangeEnd} of ${cappedTotal}`;
-            }
+        const status = ctrl.querySelector("[data-pagination-status]");
+        if (status) {
+            status.textContent = `Showing ${rangeStart}-${rangeEnd} of ${cappedTotal}`;
+        }
+        const actions = ctrl.querySelector(".pagination-actions");
+        if (actions) {
+            actions.hidden = cappedTotal === 0;
+        }
             const prevBtn = ctrl.querySelector("[data-page-prev]");
             if (prevBtn) {
                 prevBtn.disabled = atStart;
@@ -312,18 +316,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const stars = Array.from(container.querySelectorAll(".star"));
 
             function clearHover() {
-                stars.forEach(star => star.classList.remove("hovered"));
+                stars.forEach(star => {
+                    star.classList.remove("hovered", "dimmed");
+                });
             }
 
             function highlightTo(value) {
+                const ratingValue = Number(value) || 0;
                 stars.forEach(star => {
                     const numeric = Number(star.dataset.value);
-                    if (numeric <= value) {
-                        star.classList.add("hovered");
-                    }
-                    else {
-                        star.classList.remove("hovered");
-                    }
+                    const isActive = numeric <= ratingValue;
+                    star.classList.toggle("hovered", isActive);
+                    star.classList.toggle("dimmed", !isActive);
                 });
             }
 
@@ -568,7 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }, {});
             collections = collections.filter(c => orderMap[c.id]).sort((a, b) => orderMap[a.id] - orderMap[b.id]);
         } else if (criteria === "itemCount") {
-            const itemCounts = data.collectionItems.reduce((acc, link) => {
+            const itemCounts = (data.collectionItems || []).reduce((acc, link) => {
                 acc[link.collectionId] = (acc[link.collectionId] || 0) + 1;
                 return acc;
             }, {});

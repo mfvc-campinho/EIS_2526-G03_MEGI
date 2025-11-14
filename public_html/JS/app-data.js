@@ -32,6 +32,125 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("collectionsData", JSON.stringify(data));
   }
 
+  function ensureUserShowcasesArray(data) {
+    if (!Array.isArray(data.userShowcases)) {
+      data.userShowcases = [];
+    }
+    return data.userShowcases;
+  }
+
+  function findOrCreateUserShowcase(data, ownerId) {
+    if (!ownerId) return null;
+    const userShowcases = ensureUserShowcasesArray(data);
+    let userShowcase = userShowcases.find(us => us.ownerId === ownerId);
+    if (!userShowcase) {
+      userShowcase = {
+        ownerId,
+        picks: [],
+        likes: [],
+        likedItems: [],
+        likedEvents: []
+      };
+      userShowcases.push(userShowcase);
+    }
+    return userShowcase;
+  }
+
+  function ensureUserFollowsMap(data) {
+    if (!data.userFollows || typeof data.userFollows !== "object" || Array.isArray(data.userFollows)) {
+      data.userFollows = {};
+    }
+    return data.userFollows;
+  }
+
+  function dispatchFollowChangeEvent(detail) {
+    if (typeof window?.CustomEvent !== "function") return;
+    window.dispatchEvent(new CustomEvent("userFollowChange", { detail }));
+  }
+
+  function setUserItemLike(ownerId, itemId, isLiked) {
+    if (!ownerId || !itemId) return;
+    const data = loadData();
+    const userShowcase = findOrCreateUserShowcase(data, ownerId);
+    if (!userShowcase) return;
+    userShowcase.likedItems = userShowcase.likedItems || [];
+    const likedSet = new Set(userShowcase.likedItems);
+
+    if (isLiked) {
+      likedSet.add(itemId);
+    } else {
+      likedSet.delete(itemId);
+    }
+    userShowcase.likedItems = Array.from(likedSet);
+    saveData(data);
+  }
+
+  function setUserEventLike(ownerId, eventId, isLiked) {
+    if (!ownerId || !eventId) return;
+    const data = loadData();
+    const userShowcase = findOrCreateUserShowcase(data, ownerId);
+    if (!userShowcase) return;
+    userShowcase.likedEvents = userShowcase.likedEvents || [];
+    const likedSet = new Set(userShowcase.likedEvents);
+
+    if (isLiked) {
+      likedSet.add(eventId);
+    } else {
+      likedSet.delete(eventId);
+    }
+    userShowcase.likedEvents = Array.from(likedSet);
+    saveData(data);
+  }
+
+  function getUserFollowing(followerId) {
+    if (!followerId) return [];
+    const data = loadData();
+    if (!data) return [];
+    const followsMap = ensureUserFollowsMap(data);
+    const follows = followsMap[followerId];
+    return Array.isArray(follows) ? [...follows] : [];
+  }
+
+  function isUserFollowing(followerId, targetOwnerId) {
+    if (!followerId || !targetOwnerId) return false;
+    return getUserFollowing(followerId).includes(targetOwnerId);
+  }
+
+  function toggleUserFollow(followerId, targetOwnerId) {
+    if (!followerId || !targetOwnerId || followerId === targetOwnerId) return false;
+    const data = loadData();
+    if (!data) return false;
+    const followsMap = ensureUserFollowsMap(data);
+    const existingFollows = Array.isArray(followsMap[followerId]) ? [...followsMap[followerId]] : [];
+    const followIndex = existingFollows.indexOf(targetOwnerId);
+    const following = followIndex === -1;
+
+    if (following) {
+      existingFollows.push(targetOwnerId);
+    } else {
+      existingFollows.splice(followIndex, 1);
+    }
+
+    followsMap[followerId] = existingFollows;
+    saveData(data);
+    dispatchFollowChangeEvent({ followerId, targetOwnerId, following });
+    return following;
+  }
+
+  function getUserFollowers(ownerId) {
+    if (!ownerId) return [];
+    const data = loadData();
+    if (!data) return [];
+    const followsMap = ensureUserFollowsMap(data);
+    return Object.entries(followsMap)
+      .filter(([, followingList]) => Array.isArray(followingList) && followingList.includes(ownerId))
+      .map(([followerId]) => followerId);
+  }
+
+  function getUserFollowerCount(ownerId) {
+    return getUserFollowers(ownerId).length;
+  }
+
   // ============================================================
   // 3. Many-to-many relations helpers
   // ============================================================
@@ -415,6 +534,13 @@ document.addEventListener("DOMContentLoaded", () => {
     deleteEntity,
     getProductRatingSnapshot,
     setProductRating,
-    getStoredProductRating
+    getStoredProductRating,
+    setUserItemLike,
+    setUserEventLike,
+    getUserFollowing,
+    getUserFollowers,
+    getUserFollowerCount,
+    isUserFollowing,
+    toggleUserFollow
   };
 });

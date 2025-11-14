@@ -19,19 +19,7 @@
   <link rel="stylesheet" href="../CSS/general.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../CSS/grid.css" />
-
-  <script>
-    (function () {
-      try {
-        if (localStorage.getItem('theme') === 'dark') {
-          document.documentElement.classList.add('dark-mode');
-        }
-      } catch (e) { }
-    })();
-  </script>
-  <script src="../JS/theme-toggle.js" defer></script>
-
-
+  <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
@@ -108,6 +96,23 @@
 
 
       <!-- Listas -->
+      <div class="list-pagination" data-pagination-for="collections-list">
+        <label class="page-size-label">
+          Ver
+          <select data-page-size>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
+          coleções de cada vez
+        </label>
+        <div class="pagination-actions">
+          <span class="pagination-status" data-pagination-status>Mostrando 0</span>
+          <button type="button" class="explore-btn ghost" data-load-more>
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Ver mais
+          </button>
+        </div>
+      </div>
       <section class="collection-container" id="collections-list"></section>
     </main>
 

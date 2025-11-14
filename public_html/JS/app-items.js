@@ -11,6 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_OWNER_ID = "collector-main";
   let currentUserId;
   let isActiveUser;
+  const itemsSessionState = window.demoItemsState || (window.demoItemsState = {});
+  const itemVoteState = itemsSessionState.voteState || (itemsSessionState.voteState = {});
+  let itemLikesById = {};
+  let ownerItemLikesMap = {};
 
   function updateUserState() {
     const userData = JSON.parse(localStorage.getItem("currentUser"));
@@ -35,6 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const addItemBtn = document.getElementById("add-item");
   const title = document.getElementById("modal-title");
   const idField = document.getElementById("item-id");
+  const itemsFilterSelect = document.getElementById("itemsFilter");
+  const resetItemsFilterBtn = document.getElementById("resetItemsFilter");
+  const itemsFilterNote = document.getElementById("items-filter-note");
 
   // Selectors for the collection modal
   const collectionModal = document.getElementById("collection-modal");
@@ -210,26 +217,202 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================================
+  // Item likes helpers
+  // ===============================================
+  function notifyItemLikesChange(ownerId) {
+    if (!ownerId) return;
+    window.dispatchEvent(new CustomEvent("userItemLikesChange", { detail: { ownerId } }));
+  }
+
+  function buildItemLikesMaps(data) {
+    itemLikesById = {};
+    ownerItemLikesMap = {};
+    (data?.userShowcases || []).forEach(entry => {
+      const owner = entry.ownerId;
+      const likes = entry.likedItems || entry.itemLikes || [];
+      if (!likes.length) return;
+      ownerItemLikesMap[owner] = new Set(likes);
+      likes.forEach(itemId => {
+        if (!itemLikesById[itemId]) itemLikesById[itemId] = new Set();
+        itemLikesById[itemId].add(owner);
+      });
+    });
+  }
+
+  function getItemLikedBy(itemId) {
+    const set = itemLikesById[itemId];
+    return set ? new Set(set) : new Set();
+  }
+
+  function getItemVoteOverride(itemId) {
+    return Object.prototype.hasOwnProperty.call(itemVoteState, itemId)
+      ? itemVoteState[itemId]
+      : undefined;
+  }
+
+  function getUserBaseItemLike(itemId, ownerId) {
+    if (!ownerId) return false;
+    const likedSet = ownerItemLikesMap[ownerId];
+    return likedSet ? likedSet.has(itemId) : false;
+  }
+
+  function getEffectiveItemLike(itemId, ownerId) {
+    if (!ownerId) return false;
+    const override = getItemVoteOverride(itemId);
+    if (override === undefined) return getUserBaseItemLike(itemId, ownerId);
+    return override;
+  }
+
+  function getItemDisplayLikes(itemId, ownerId) {
+    const likedSet = getItemLikedBy(itemId);
+    if (ownerId) {
+      const override = getItemVoteOverride(itemId);
+      if (override === true) {
+        likedSet.add(ownerId);
+      } else if (override === false) {
+        likedSet.delete(ownerId);
+      } else if (getUserBaseItemLike(itemId, ownerId)) {
+        likedSet.add(ownerId);
+      }
+    }
+    return likedSet.size;
+  }
+
+  function toggleItemLike(itemId) {
+    if (!isActiveUser) {
+      alert("Sign in to like items.");
+      return;
+    }
+    const ownerId = getEffectiveOwnerId();
+    if (!ownerId) return;
+    const data = appData.loadData();
+    buildItemLikesMaps(data);
+    const currentState = getEffectiveItemLike(itemId, ownerId);
+    itemVoteState[itemId] = !currentState;
+    renderItems();
+    notifyItemLikesChange(ownerId);
+    alert("Simulation only: liking an item here is not saved to local storage.");
+  }
+
+  function attachItemLikeHandlers() {
+    if (!itemsContainer) return;
+    const buttons = itemsContainer.querySelectorAll(".item-like-btn");
+    buttons.forEach(btn => {
+      const id = btn.dataset.itemId;
+      if (!id) return;
+      btn.addEventListener("click", () => toggleItemLike(id));
+    });
+  }
+
+  function updateItemsFilterNote(message) {
+    if (!itemsFilterNote) return;
+    itemsFilterNote.textContent = message || "";
+  }
+
+  function resolveItemsFilterMode() {
+    return itemsFilterSelect?.value || "all";
+  }
+
+  function parseItemTimestamp(item) {
+    if (!item) return 0;
+    const dateStr = item.acquisitionDate || item.updatedAt || item.createdAt;
+    const ts = dateStr ? new Date(dateStr).getTime() : NaN;
+    return Number.isNaN(ts) ? 0 : ts;
+  }
+
+  function applyItemsFilter(allItems) {
+    const mode = resolveItemsFilterMode();
+    const ownerId = getEffectiveOwnerId();
+    const baseItems = Array.isArray(allItems) ? allItems.slice() : [];
+
+    if (!mode || mode === "all") {
+      return {
+        items: baseItems,
+        note: baseItems.length ? "Showing all items." : "",
+        requiresLogin: false
+      };
+    }
+
+    if (mode === "liked") {
+      if (!isActiveUser || !ownerId) {
+        return {
+          items: [],
+          note: "Sign in to view items you have liked.",
+          requiresLogin: true
+        };
+      }
+      const likedItems = baseItems.filter(item => getEffectiveItemLike(item.id, ownerId));
+      const note = likedItems.length
+        ? `Showing ${likedItems.length} liked item${likedItems.length === 1 ? "" : "s"}.`
+        : "You haven't liked any items in this collection yet.";
+      return { items: likedItems, note, requiresLogin: false };
+    }
+
+    if (mode === "mostLiked") {
+      baseItems.sort((a, b) => getItemLikedBy(b.id).size - getItemLikedBy(a.id).size);
+      return {
+        items: baseItems,
+        note: baseItems.length ? "Sorted by community likes." : "No items available to rank.",
+        requiresLogin: false
+      };
+    }
+
+    if (mode === "recent") {
+      baseItems.sort((a, b) => parseItemTimestamp(b) - parseItemTimestamp(a));
+      return {
+        items: baseItems,
+        note: baseItems.length ? "Newest acquisitions first." : "",
+        requiresLogin: false
+      };
+    }
+
+    return { items: baseItems, note: "", requiresLogin: false };
+  }
+
+  // ===============================================
   // Render items for the current collection (many-to-many relation)
   // Exposed globally so other scripts can call it
   // ===============================================
   window.renderItems = function renderItems() {
     if (!hasCollectionPage) return;
     const data = appData.loadData();
+    buildItemLikesMaps(data);
     const collection = getCurrentCollection(data);
-    const ownsCollection = isCollectionOwnedByCurrentUser(collection, data);
-    const items = appData.getItemsByCollection(collectionId, data);
 
     itemsContainer.innerHTML = "";
+
+    if (!collection) {
+      const missingMessage = document.createElement("p");
+      missingMessage.className = "notice-message";
+      missingMessage.textContent = "Collection not found.";
+      itemsContainer.appendChild(missingMessage);
+      return;
+    }
+
+    const ownsCollection = isCollectionOwnedByCurrentUser(collection, data);
+    const allItems = appData.getItemsByCollection(collectionId, data) || [];
+    const filterResult = applyItemsFilter(allItems);
+    updateItemsFilterNote(filterResult.note);
+
+    if (filterResult.requiresLogin) {
+      const loginMessage = document.createElement("p");
+      loginMessage.className = "notice-message";
+      loginMessage.textContent = filterResult.note || "Sign in to use this filter.";
+      itemsContainer.appendChild(loginMessage);
+      return;
+    }
+
+    let items = filterResult.items;
 
     if (!items || items.length === 0) {
       const emptyMessage = document.createElement("p");
       emptyMessage.className = "no-items-message";
-      emptyMessage.textContent = "This collection has no items yet.";
+      emptyMessage.textContent = filterResult.note || "This collection has no items yet.";
       itemsContainer.appendChild(emptyMessage);
       return;
     }
 
+    const ownerIdForDisplay = getEffectiveOwnerId();
     const loadingMessage = document.createElement("p");
     loadingMessage.className = "notice-message";
     loadingMessage.textContent = "Loading items...";
@@ -245,6 +428,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const isItemOwner = ownsCollection;
         const card = document.createElement("div");
         card.className = "card item-card";
+        const isLiked = ownerIdForDisplay ? getEffectiveItemLike(item.id, ownerIdForDisplay) : false;
+        const likeCount = getItemDisplayLikes(item.id, ownerIdForDisplay);
+        const likeButton = `
+          <button class="item-like-btn ${isLiked ? "active" : ""}" data-item-id="${item.id}" aria-pressed="${isLiked}">
+            <i class="bi ${isLiked ? "bi-heart-fill" : "bi-heart"}"></i>
+            <span class="like-count">${likeCount}</span>
+          </button>
+        `;
 
         const ownerButtons = isItemOwner
           ? `
@@ -263,6 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <h3>${item.name}</h3>
 
         <div class="item-actions">
+          ${likeButton}
           <a href="item_page.html?id=${item.id}" class="explore-btn view-btn">
             <i class="bi bi-eye"></i> View Item
           </a>
@@ -281,6 +473,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (index + chunkSize < items.length) {
         // Schedule next chunk without blocking the main thread
         setTimeout(() => renderChunk(index + chunkSize), 0);
+      } else {
+        attachItemLikeHandlers();
       }
     }
 
@@ -304,13 +498,23 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    let encodedReturnUrl = "";
+    try {
+      const returnTarget = new URL(window.location.href);
+      returnTarget.hash = "collection-events";
+      encodedReturnUrl = encodeURIComponent(returnTarget.toString());
+    } catch (err) {
+      const fallback = `${window.location.pathname || ""}#collection-events`;
+      encodedReturnUrl = encodeURIComponent(fallback);
+    }
+
     eventsContainer.innerHTML = events.map(ev => `
       <article class="collection-event-card">
         <div>
           <h3>${ev.name}</h3>
           <p class="event-meta">${formatEventDate(ev.date)} · ${ev.localization || "To be announced"}</p>
         </div>
-        <a class="explore-btn ghost" href="event_page.html?id=${ev.id}">
+        <a class="explore-btn ghost" href="event_page.html?id=${ev.id}&returnUrl=${encodedReturnUrl}">
           <i class="bi bi-calendar-event"></i> View event
         </a>
       </article>
@@ -594,6 +798,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+  if (itemsFilterSelect) {
+    itemsFilterSelect.addEventListener("change", () => renderItems());
+  }
+
+  if (resetItemsFilterBtn) {
+    resetItemsFilterBtn.addEventListener("click", () => {
+      if (itemsFilterSelect) itemsFilterSelect.value = "all";
+      renderItems();
+    });
+  }
+
   if (addItemBtn) addItemBtn.addEventListener("click", () => openModal(false));
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
   if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
@@ -677,3 +892,4 @@ window.viewItem = function viewItem(itemId) {
   // Redirect to the item page
   window.location.href = `item_page.html?id=${encodeURIComponent(itemId)}`;
 };
+

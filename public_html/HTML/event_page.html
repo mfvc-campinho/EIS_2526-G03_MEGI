@@ -22,18 +22,7 @@
     <link rel="stylesheet" href="../CSS/general.css" />
     <link rel="stylesheet" href="../CSS/events.css" />
     <link rel="stylesheet" href="../CSS/grid.css" />
-
-    <script>
-        (function () {
-            try {
-                if (localStorage.getItem('theme') === 'dark') {
-                    document.documentElement.classList.add('dark-mode');
-                }
-            } catch (e) { }
-        })();
-    </script>
-    <script src="../JS/theme-toggle.js" defer></script>
-
+    <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
@@ -204,6 +193,23 @@
          (Cards injected by app-events.js into #eventsList)
      =============================== -->
             <section class="events-section">
+                <div class="list-pagination" data-pagination-for="eventsList">
+                    <label class="page-size-label">
+                        Ver
+                        <select data-page-size>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                        eventos de cada vez
+                    </label>
+                    <div class="pagination-actions">
+                        <span class="pagination-status" data-pagination-status>Mostrando 0</span>
+                        <button type="button" class="explore-btn ghost" data-load-more>
+                            <i class="bi bi-plus-lg" aria-hidden="true"></i> Ver mais
+                        </button>
+                    </div>
+                </div>
                 <div id="eventsList" class="events-grid">
                     <!-- JS will populate event cards here -->
                 </div>

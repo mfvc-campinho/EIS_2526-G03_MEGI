@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const userMemberSinceEl = document.getElementById("user-member-since");
   const usernameBannerEl = document.getElementById("username-banner");
   const userEventsContainer = document.getElementById("user-events");
+  const userRsvpTitleEl = document.getElementById("user-rsvp-title");
   const userRsvpContainer = document.getElementById("user-rsvp-events");
   const topPicksNoteEl = document.getElementById("top-picks-note");
   const resetTopPicksBtn = document.getElementById("reset-top-picks-btn");
@@ -116,6 +117,18 @@ document.addEventListener("DOMContentLoaded", () => {
       .join("");
   }
 
+  function toggleRsvpVisibility(showSection) {
+    if (userRsvpTitleEl) {
+      userRsvpTitleEl.hidden = !showSection;
+    }
+    if (userRsvpContainer) {
+      userRsvpContainer.hidden = !showSection;
+      if (!showSection) {
+        userRsvpContainer.innerHTML = "";
+      }
+    }
+  }
+
   function resolveShowcaseEntries(data, ownerId) {
     if (!ownerId) {
       return { entries: [], source: "none", fallback: null };
@@ -172,10 +185,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderUserRsvpEvents(data, ownerId) {
-    if (!userRsvpContainer) return;
-    const events = (data.events || []).filter(
-      (event) => Array.isArray(event.attendees) && event.attendees.includes(ownerId)
+    const canShowRsvp = Boolean(isViewingOwnProfile);
+    toggleRsvpVisibility(canShowRsvp);
+    if (!canShowRsvp || !userRsvpContainer) return;
+    let rsvpLinks = Array.isArray(data.eventsUsers) ? data.eventsUsers.slice() : [];
+    if (!rsvpLinks.length) {
+      rsvpLinks = (data.events || []).flatMap((event) => {
+        if (!Array.isArray(event.attendees)) return [];
+        return event.attendees.map((userId) => ({ eventId: event.id, userId }));
+      });
+    }
+    const attendingIds = new Set(
+      rsvpLinks
+        .filter((link) => link.userId === ownerId)
+        .map((link) => link.eventId)
     );
+    const events = (data.events || []).filter((event) => attendingIds.has(event.id));
     renderEventList(userRsvpContainer, events, "No RSVP activity yet.");
   }
 

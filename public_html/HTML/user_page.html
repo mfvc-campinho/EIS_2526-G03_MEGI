@@ -17,19 +17,8 @@
   <link rel="stylesheet" href="../CSS/user_page.css">
   <link rel="stylesheet" href="../CSS/grid.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+  <script src="../JS/theme-toggle.js"></script>
 </head>
-
-<script>
-  (function () {
-    try {
-      if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.classList.add('dark-mode');
-      }
-    } catch (e) { }
-  })();
-</script>
-<script src="../JS/theme-toggle.js" defer></script>
 
 <body>
   <div id="content">
@@ -171,6 +160,23 @@
            USER COLLECTIONS
       =============================== -->
       <h2 id="my-collections-title">Collections</h2>
+      <div class="list-pagination" data-pagination-for="user-collections">
+        <label class="page-size-label">
+          Ver
+          <select data-page-size>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
+          coleções de cada vez
+        </label>
+        <div class="pagination-actions">
+          <span class="pagination-status" data-pagination-status>Mostrando 0</span>
+          <button type="button" class="explore-btn ghost" data-load-more>
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Ver mais
+          </button>
+        </div>
+      </div>
       <section id="user-collections" class="collection-container"></section>
 
       <h2 id="user-events-title">Collection Events</h2>
@@ -178,7 +184,7 @@
         <p class="notice-message">Loading events...</p>
       </section>
 
-      <h2 id="user-rsvp-title">Events I've RSVPed</h2>
+      <h2 id="user-rsvp-title">Eventos RSVP</h2>
       <section id="user-rsvp-events" class="user-events">
         <p class="notice-message">Loading RSVP events...</p>
       </section>

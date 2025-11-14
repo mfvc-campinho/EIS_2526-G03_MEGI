@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_OWNER_ID = "collector-main";
   const urlParams = new URLSearchParams(window.location.search);
   let deepLinkEventId = urlParams.get("id");
+  const deepLinkReturnUrl = urlParams.get("returnUrl");
   let deepLinkHandled = false;
   const sessionRatings = {};
   let modalReturnUrl = null;
@@ -83,9 +84,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function clearDeepLinkParams() {
     const currentUrl = new URL(window.location.href);
-    if (!currentUrl.searchParams.has("id")) return;
-    currentUrl.searchParams.delete("id");
-    history.replaceState(null, "", currentUrl.toString());
+    let modified = false;
+    if (currentUrl.searchParams.has("id")) {
+      currentUrl.searchParams.delete("id");
+      modified = true;
+    }
+    if (currentUrl.searchParams.has("returnUrl")) {
+      currentUrl.searchParams.delete("returnUrl");
+      modified = true;
+    }
+    if (modified) {
+      history.replaceState(null, "", currentUrl.toString());
+    }
   }
 
   function saveEntityUpdate(id, patch) {
@@ -302,12 +312,81 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter(Boolean);
   }
 
+  function getEventOwnerProfiles(event, data) {
+    if (!event) return [{ id: null, name: "Community host" }];
+    const dataset = data || loadData();
+    const users = Array.isArray(dataset?.users) ? dataset.users : [];
+    const ownerIds = getEventOwnerIds(event.id, dataset);
+    const uniqueOwnerIds = Array.from(new Set(ownerIds));
+
+    const ownerProfiles = uniqueOwnerIds
+      .map(ownerId => {
+        const user = users.find(u => u.id === ownerId || u["owner-id"] === ownerId);
+        const name = user?.["owner-name"] || ownerId;
+        return { id: ownerId, name };
+      })
+      .filter(profile => Boolean(profile?.name));
+
+    if (ownerProfiles.length) return ownerProfiles;
+
+    if (event.hostId) {
+      const hostUser = users.find(u => u.id === event.hostId || u["owner-id"] === event.hostId);
+      return [{
+        id: event.hostId,
+        name: hostUser?.["owner-name"] || event.host || event.hostId
+      }];
+    }
+
+    if (event.host) {
+      return [{ id: null, name: event.host }];
+    }
+
+    return [{ id: null, name: "Community host" }];
+  }
+
   function canCurrentUserManageEvent(eventId, data, user = getCurrentUser()) {
     const ownerId = getActiveOwnerId(user);
     if (!ownerId) return false;
     const owners = getEventOwnerIds(eventId, data);
     if (!owners.length) return false;
     return owners.includes(ownerId);
+  }
+
+  function getEventUserLinks(event, data) {
+    if (!event) return [];
+    const dataset = data || loadData();
+    if (window.appData?.getEventUsers) {
+      return window.appData.getEventUsers(event.id, dataset) || [];
+    }
+    if (Array.isArray(dataset?.eventsUsers)) {
+      return dataset.eventsUsers.filter(entry => entry.eventId === event.id);
+    }
+    const attendees = Array.isArray(event.attendees) ? event.attendees : [];
+    return attendees.map(userId => ({
+      eventId: event.id,
+      userId,
+      rating: typeof event.ratings?.[userId] === "number" ? event.ratings[userId] : null
+    }));
+  }
+
+  function getEventRatingStats(entries) {
+    const rated = entries.filter(entry => typeof entry.rating === "number");
+    if (!rated.length) {
+      return { count: 0, average: null };
+    }
+    const total = rated.reduce((sum, entry) => sum + entry.rating, 0);
+    return {
+      count: rated.length,
+      average: total / rated.length
+    };
+  }
+
+  function getUserRatingFromEntries(entries, user) {
+    if (!user) return null;
+    const userId = user.id || user["owner-id"];
+    if (!userId) return null;
+    const entry = entries.find(link => link.userId === userId);
+    return entry && typeof entry.rating === "number" ? entry.rating : null;
   }
 
   // ---------- CALENDAR WIDGET ----------
@@ -585,19 +664,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "event-card";
       const isPast = isPastEvent(ev.date);
-      const baseRatings = ev.ratings || {};
-      const ratingValues = Object.values(baseRatings);
-      const ratingCount = ratingValues.length;
-      const ratingAvg = ratingCount
-        ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
-        : null;
+      const eventLinks = getEventUserLinks(ev, data);
+      const { count: ratingCount, average: ratingAvg } = getEventRatingStats(eventLinks);
       const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
       const userCanRate = Boolean(currentUser && currentUser.active);
       const sessionValue = userCanRate ? sessionRatings[ev.id] : undefined;
-      const storedUserRating = currentUser ? baseRatings[currentUser.id] : null;
+      const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;
       const userRating = userCanRate
-        ? (sessionValue !== undefined ? sessionValue : storedUserRating || null)
-        : null;
+        ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
+        : storedUserRating ?? null;
 
       let ratingHtml = "";
       if (isPast) {
@@ -759,7 +834,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!deepLinkHandled && deepLinkEventId) {
       const exists = (data.events || []).some(ev => ev.id === deepLinkEventId);
       if (exists) {
-        const ref = document.referrer && document.referrer.length ? document.referrer : null;
+        const ref =
+          (deepLinkReturnUrl && deepLinkReturnUrl.length) ? decodeURIComponent(deepLinkReturnUrl) :
+          (document.referrer && document.referrer.length ? document.referrer : null);
         openEventDetail(deepLinkEventId, { returnUrl: ref });
         if (!ref) clearDeepLinkParams();
       } else {
@@ -792,21 +869,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Attendees
-    const attendees = ev.attendees || [];
-    modalAttendeesCountEl.textContent = attendees.length;
+    const eventLinks = getEventUserLinks(ev, data);
+    if (modalAttendeesCountEl) {
+      modalAttendeesCountEl.textContent = eventLinks.length;
+    }
 
     // Rating (only for past events)
     const isPast = isPastEvent(ev.date);
     const currentUser = getCurrentUser();
-    const baseRatings = ev.ratings || {};
-    const values = Object.values(baseRatings);
-    const count = values.length;
-    const avg = count ? values.reduce((a, b) => a + b, 0) / count : null;
+    const { count, average: avg } = getEventRatingStats(eventLinks);
     const sessionValue = currentUser && currentUser.active ? sessionRatings[ev.id] : undefined;
-    const storedUserRating = currentUser ? baseRatings[currentUser.id] : null;
+    const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;
     const userRating = currentUser && currentUser.active
-      ? (sessionValue !== undefined ? sessionValue : storedUserRating || null)
-      : storedUserRating || null;
+      ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
+      : storedUserRating ?? null;
 
     modalRatingStars.innerHTML = "";
 
@@ -1030,9 +1106,7 @@ document.addEventListener("DOMContentLoaded", () => {
         summary,
         description,
         type,
-        attendees: [],
-        hostId: currentUser.id || null,
-        ratings: {}
+        hostId: currentUser.id || null
       };
       addEntity(ev);
     }

@@ -1206,6 +1206,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === collectionModal) closeCollectionModal();
   });
 
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+
   if (addItemBtn) {
     addItemBtn.addEventListener("click", (event) => {
       event.preventDefault();

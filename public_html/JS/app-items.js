@@ -318,6 +318,121 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ===============================================
+  // Collection statistics: compute & render
+  // ===============================================
+  function computeCollectionStatistics(targetCollectionId) {
+    const cid = targetCollectionId || collectionId;
+    const data = appData.loadData();
+    if (!cid || !data) return {
+      totalItems: 0,
+      totalValue: 0,
+      avgWeight: null,
+      linkedEvents: 0,
+      oldestItem: null,
+      newestItem: null
+    };
+
+    const items = appData.getItemsByCollection(cid, data) || [];
+
+    const totalItems = items.length;
+
+    const totalValue = items.reduce((sum, it) => {
+      const v = Number(it.price);
+      return sum + (Number.isFinite(v) ? v : 0);
+    }, 0);
+
+    const weightValues = items
+      .map(it => {
+        const w = it && it.weight !== undefined && it.weight !== null ? Number(it.weight) : NaN;
+        return Number.isFinite(w) ? w : NaN;
+      })
+      .filter(w => !Number.isNaN(w));
+
+    const avgWeight = weightValues.length ? (weightValues.reduce((a, b) => a + b, 0) / weightValues.length) : null;
+
+    const events = appData.getEventsByCollection(cid, data) || [];
+    const linkedEvents = events.length;
+
+    // Oldest / Newest by acquisitionDate
+    const itemsWithDates = items
+      .map(it => ({
+        item: it,
+        ts: it && it.acquisitionDate ? new Date(it.acquisitionDate).getTime() : NaN
+      }))
+      .filter(x => Number.isFinite(x.ts));
+
+    let oldestItem = null;
+    let newestItem = null;
+    if (itemsWithDates.length) {
+      itemsWithDates.sort((a, b) => a.ts - b.ts);
+      const o = itemsWithDates[0].item;
+      const n = itemsWithDates[itemsWithDates.length - 1].item;
+      oldestItem = o ? { name: o.name || "—", date: o.acquisitionDate } : null;
+      newestItem = n ? { name: n.name || "—", date: n.acquisitionDate } : null;
+    }
+
+    return {
+      totalItems,
+      totalValue,
+      avgWeight,
+      linkedEvents,
+      oldestItem,
+      newestItem
+    };
+  }
+
+  function renderCollectionStats(statObj) {
+    const panel = document.getElementById("collection-stats");
+    if (!panel || !statObj) return;
+
+    // Helper to toggle hidden when null/undefined
+    function setCardValue(key, value, formatter) {
+      const card = panel.querySelector(`.stat-card[data-key="${key}"]`);
+      if (!card) return;
+      const valueEl = card.querySelector('.stat-value');
+      if (value === null || value === undefined || (typeof value === 'number' && Number.isNaN(value))) {
+        card.classList.add('hidden');
+        return;
+      }
+      card.classList.remove('hidden');
+      valueEl.textContent = formatter ? formatter(value) : String(value);
+    }
+
+    // Total items — show zero when empty
+    setCardValue('totalItems', statObj.totalItems, v => String(v));
+
+    // Total value — format as EUR with two decimals
+    setCardValue('totalValue', statObj.totalValue, v => {
+      try {
+        return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
+      } catch (e) {
+        return `€ ${Number(v).toFixed(2)}`;
+      }
+    });
+
+    // Average weight — hide if null, otherwise format to 2 decimals
+    setCardValue('avgWeight', statObj.avgWeight, v => `${Number(v).toFixed(2)} g`);
+
+    // Linked events — show zero when empty
+    setCardValue('linkedEvents', statObj.linkedEvents, v => String(v));
+
+    // Oldest / Newest
+    setCardValue('oldestItem', statObj.oldestItem, v => {
+      if (!v || !v.date) return '';
+      const d = new Date(v.date);
+      const dateStr = Number.isNaN(d.getTime()) ? v.date : d.toLocaleDateString();
+      return `${v.name} · ${dateStr}`;
+    });
+
+    setCardValue('newestItem', statObj.newestItem, v => {
+      if (!v || !v.date) return '';
+      const d = new Date(v.date);
+      const dateStr = Number.isNaN(d.getTime()) ? v.date : d.toLocaleDateString();
+      return `${v.name} · ${dateStr}`;
+    });
+  }
+
+  // ===============================================
   // Populate select with the current user's collections
   // ===============================================
   function populateCollectionsSelect() {
@@ -521,17 +636,37 @@ document.addEventListener("DOMContentLoaded", () => {
     highlightOwnedSection();
     renderCollectionEvents();
     renderItems();
+    try {
+      const stats = computeCollectionStatistics();
+      renderCollectionStats(stats);
+    } catch (err) {
+      console.error('Error updating collection stats', err);
+    }
   });
 
   // Initialization
   populateCollectionsSelect();  // Populate collections select (if present)
   if (hasCollectionPage) {
     renderCollectionDetails();   // Fill the collection details
+    // Compute and render collection statistics (keeps in sync with collection data)
+    try {
+      const stats = computeCollectionStatistics();
+      renderCollectionStats(stats);
+    } catch (e) {
+      console.error('Error computing collection stats', e);
+    }
     renderItems();               // Render items for the collection
     highlightOwnedSection();     // Highlight if owned by current user
   }
   renderCollectionEvents();      // List associated events (if container exists)
   handleItemActionParam();      // Execute actions coming from item_page
+  // Expose compute/render helpers for debugging and external triggers
+  try {
+    window.computeCollectionStatistics = computeCollectionStatistics;
+    window.renderCollectionStats = renderCollectionStats;
+  } catch (e) {
+    // ignore in constrained environments
+  }
 });
 
 

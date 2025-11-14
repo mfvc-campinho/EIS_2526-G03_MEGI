@@ -133,6 +133,91 @@
   color: #1e3a8a;
 }
 
+/* ===============================
+   🔹 COLLECTION STATISTICS PANEL
+   Matches project card style; responsive 2–3 column grid
+   =============================== */
+#collection-stats {
+  margin: 18px 0 26px;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  /* default 2 columns for medium screens */
+}
+
+.stat-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+  box-sizing: border-box;
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03));
+  color: #2563eb;
+  /* project blue */
+  font-size: 1.45rem;
+  flex: 0 0 56px;
+}
+
+.stat-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+/* Hide empty stats (rendered with .hidden by JS) */
+.stat-card.hidden {
+  display: none !important;
+}
+
+@media (min-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
+}
+
 /* Responsive behavior */
 @media (max-width: 700px) {
   #collection-meta {

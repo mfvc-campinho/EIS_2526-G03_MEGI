@@ -248,6 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (!links.length) {
       userEventsContainer.innerHTML = `<p class="notice-message">No collections linked to this user yet.</p>`;
+      updatePaginationStatus("user-events", 0);
       return;
     }
 
@@ -471,6 +472,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderLikedEvents(data, ownerId) {
     if (!likedEventsContainer) return;
+    const paginationKey = "user-liked-events";
     const eventLikesMap = buildOwnerEventLikesLookup(data);
     const likedSet = eventLikesMap[ownerId] || new Set();
     const sessionOverrides = eventsDemoState.voteState || {};
@@ -483,6 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!likedSet.size) {
       likedEventsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any events yet." : "This user hasn't liked any events yet."}</p>`;
+      updatePaginationStatus(paginationKey, 0);
       return;
     }
 
@@ -495,6 +498,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </a>
       </article>`);
     likedEventsContainer.innerHTML = cards.join("");
+    updatePaginationStatus(paginationKey, cards.length, 0, cards.length);
   }
 
   function showFollowSimulationMessage() {
@@ -534,6 +538,7 @@ document.addEventListener("DOMContentLoaded", () => {
         activeUser?.active &&
         followerId &&
         viewedOwnerId &&
+        !isViewingOwnProfile &&
         followerId !== viewedOwnerId
       );
     followUserBtn.hidden = !shouldShow;

@@ -555,14 +555,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (ownerProfiles.length) return ownerProfiles;
 
-    if (event.hostId) {
-      const hostUser = users.find(u => u.id === event.hostId || u["owner-id"] === event.hostId);
-      return [{
-        id: event.hostId,
-        name: hostUser?.["owner-name"] || event.host || event.hostId
-      }];
-    }
-
     if (event.host) {
       return [{ id: null, name: event.host }];
     }
@@ -1003,7 +995,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const ownerDisplayText = ownerProfiles
         .map(profile => escapeHtml(profile.name))
         .join(", ") || "Community host";
-      const ownerLinkId = ownerProfiles[0]?.id || ev.hostId || null;
+      const ownerLinkId = ownerProfiles[0]?.id || null;
       const ownerLinkHref = ownerLinkId
         ? `user_page.html?owner=${encodeURIComponent(ownerLinkId)}`
         : "user_page.html";
@@ -1226,7 +1218,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .map(profile => profile.name)
       .filter(Boolean)
       .join(", ") || ev.host || "Community host";
-    const modalOwnerId = modalOwnerProfiles[0]?.id || ev.hostId || null;
+    const modalOwnerId = modalOwnerProfiles[0]?.id || null;
     const modalOwnerHref = modalOwnerId
       ? `user_page.html?owner=${encodeURIComponent(modalOwnerId)}`
       : null;

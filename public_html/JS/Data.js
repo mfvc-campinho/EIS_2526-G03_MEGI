@@ -236,8 +236,7 @@ const collectionsData = {
       summary: "Annual showcase for Iberian coins, rare notes, and appraisal sessions.",
       description: "Dealers and historians gather to trade Escudo-era coins, host restoration demos, and discuss preservation techniques for metallic currencies.",
       createdAt: "2025-09-01T00:00:00Z",
-      updatedAt: "2025-11-20T00:00:00Z",
-      hostId: "collector-main",
+      updatedAt: "2025-11-13T00:00:00Z",
     },
     {
       id: "escudos-event-2",
@@ -249,7 +248,6 @@ const collectionsData = {
       description: "Collectors swap duplicates, share leads for reputable sellers, and review authentication tips for mid-century Portuguese currency.",
       createdAt: "2025-02-15T00:00:00Z",
       updatedAt: "2025-04-15T00:00:00Z",
-      hostId: "collector-main",
     },
 
     {
@@ -262,7 +260,6 @@ const collectionsData = {
       description: "Graphic designers and cultural historians walk through iconic spreads, cover redesigns, and interviews with former editorial staff.",
       createdAt: "2024-11-05T00:00:00Z",
       updatedAt: "2025-01-05T00:00:00Z",
-      hostId: "rui-frio",
     },
 
     {
@@ -275,7 +272,6 @@ const collectionsData = {
       description: "Includes PSA grading booths, artist signings, and a showcase of legendary cards from the Kanto through Paldea releases.",
       createdAt: "2024-12-01T00:00:00Z",
       updatedAt: "2025-02-01T00:00:00Z",
-      hostId: "rui-frio",
     },
     {
       id: "pokemon-event-2",
@@ -287,7 +283,6 @@ const collectionsData = {
       description: "Vendors curate showcase cases for first editions, while panels cover long-term storage, pricing data, and authenticity checks.",
       createdAt: "2025-01-20T00:00:00Z",
       updatedAt: "2025-03-15T00:00:00Z",
-      hostId: "rui-frio",
     },
 
     {
@@ -300,7 +295,6 @@ const collectionsData = {
       description: "Art critics discuss brush techniques, symbolism, and the tension between propaganda and documentation in 20th-century leadership portraits.",
       createdAt: "2024-10-10T00:00:00Z",
       updatedAt: "2024-12-12T00:00:00Z",
-      hostId: "rui-frio",
     },
 
     {
@@ -313,7 +307,6 @@ const collectionsData = {
       description: "Participants bring authenticated jerseys for signatures, while equipment managers talk about fabric care for long-term display.",
       createdAt: "2025-02-28T00:00:00Z",
       updatedAt: "2025-04-30T00:00:00Z",
-      hostId: "rui-frio",
     },
     {
       id: "jerseys-event-2",
@@ -325,7 +318,6 @@ const collectionsData = {
       description: "Workshops detail how to certify match-used kits, remove stains without damaging signatures, and insure valuable memorabilia.",
       createdAt: "2025-05-05T00:00:00Z",
       updatedAt: "2025-07-18T00:00:00Z",
-      host: "Liga Memorabilia",
     }
   ],
 

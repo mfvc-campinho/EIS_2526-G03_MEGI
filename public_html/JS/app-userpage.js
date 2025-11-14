@@ -560,7 +560,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (userEmailEl) {
       userEmailEl.textContent = isViewingOwnProfile ? user.email : "Private";
     }
-    userDobEl.textContent = user["date-of-birth"];
+    if (userDobEl) {
+        userDobEl.textContent = isViewingOwnProfile ? user["date-of-birth"] : "Private";
+    }
     if (userMemberSinceEl) {
       userMemberSinceEl.textContent = user["member-since"] || "N/A";
     }

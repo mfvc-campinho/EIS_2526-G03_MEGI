@@ -31,8 +31,8 @@
 <body>
     <div id="content">
         <!-- ===============================
-        ?? NAVIGATION BAR (kept consistent)
-        =============================== -->
+            ?? NAVIGATION BAR (kept consistent)
+            =============================== -->
         <header>
             <nav class="navbar">
                 <div class="nav-left">
@@ -54,7 +54,8 @@
                         <i class="bi bi-people-fill me-1"></i> About Us
                     </a>
 
-                    <a href="user_page.html" class="nav-link">\r\n                        <i class="bi bi-person-fill me-1"></i> Profile\r\n                    </a>\r\n\r\n                    <!-- Dark mode toggle -->
+                    <a href="user_page.html" class="nav-link">\r\n <i class="bi bi-person-fill me-1"></i> Profile\r\n
+                    </a>\r\n\r\n <!-- Dark mode toggle -->
                     <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
                         <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
                     </button>
@@ -77,8 +78,8 @@
         </header>
 
         <!-- ===============================
-         ?? MAIN CONTENT
-        =============================== -->
+             ?? MAIN CONTENT
+            =============================== -->
         <main>
             <!-- ?? Breadcrumb (standardized) -->
             <nav class="breadcrumb-nav" aria-label="Breadcrumb">
@@ -93,44 +94,120 @@
             <!-- ?? Page Title (filled by JS) -->
             <h1 id="collection-title" class="page-title">Collection</h1>
 
+
+
+
+
             <!-- ===============================
-           ?? COLLECTION OVERVIEW CARD
-            =============================== -->
-            <section class="collection-hero">
-                <div id="collection-meta">
-                    <!-- Owner photo -->
-                    <img id="owner-photo" src="../images/user.jpg" alt="Owner photo">
+               ?? ACTION BUTTONS
+                =============================== -->
+            <!-- Back button (history-based, centered on page) -->
+            <div class="center-block">
+                <a href="javascript:history.back()" class="explore-btn ghost centered-btn">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                    Back to Collections
+                </a>
+            </div>
 
-                    <!-- Main metadata (populated by JS) -->
-                    <div id="meta-text">
-                        <p>
-                            <strong>Owner:</strong>
-                            <span id="owner-name">�</span>
-                        </p>
-                        <p>
-                            <strong>Created:</strong>
-                            <span id="creation-date">�</span>
-                        </p>
-                        <p>
-                            <strong>Type:</strong>
-                            <span id="type">-</span>
-                        </p>
-                        <p>
-                            <strong>Items:</strong>
-                            <span id="items-count">-</span>
-                        </p>
-                        <p id="description-line">
-                            <strong>Description:</strong>
-                            <span id="description">-</span>
-                        </p>
+            <section id="buttons-bar">
+                <!-- Edit current collection -->
+                <button id="edit-collection" class="explore-btn warning" data-requires-login>
+                    <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+                    Edit Collection
+                </button>
 
+                <!-- Add item to this collection -->
+                <button id="add-item" class="explore-btn success" data-requires-login>
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                    Add Item
+                </button>
+            </section>
+
+
+            <!-- ===============================
+               ?? ITEMS FILTER
+                =============================== -->
+            <section class="filter-section items-filter" aria-label="Filter collection items">
+                <div class="filter-control">
+                    <label for="itemsFilter" class="filter-label">
+                        <i class="bi bi-funnel me-1" aria-hidden="true"></i>
+                        Show
+                    </label>
+                    <div class="filter-input">
+                        <select id="itemsFilter" class="filter-select">
+                            <option value="all">All items</option>
+                            <option value="liked">Liked by me</option>
+                            <option value="mostLiked">Most liked</option>
+                            <option value="recent">Recently acquired</option>
+                        </select>
+                        <button id="resetItemsFilter" class="filter-clear" type="button" title="Reset filters">
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
                     </div>
                 </div>
+                <div class="filter-control">
+                    <label for="importanceFilter" class="filter-label">
+                        <i class="bi bi-badge-ad me-1" aria-hidden="true"></i>
+                        Importance
+                    </label>
+                    <div class="filter-input">
+                        <select id="importanceFilter" class="filter-select">
+                            <option value="all">All importances</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Very High">Very High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-control">
+                    <label for="priceFilter" class="filter-label">
+                        <i class="bi bi-cash-stack me-1" aria-hidden="true"></i>
+                        Price
+                    </label>
+                    <div class="filter-input">
+                        <select id="priceFilter" class="filter-select">
+                            <option value="all">All prices</option>
+                            <option value="budget">Budget (&lt; EUR 100)</option>
+                            <option value="mid">Mid (EUR 100-500)</option>
+                            <option value="premium">Premium (&gt; EUR 500)</option>
+                        </select>
+                    </div>
+                </div>
+                <p id="items-filter-note" class="filter-note" aria-live="polite"></p>
             </section>
 
             <!-- ===============================
-           ?? COLLECTION STATISTICS
-            =============================== -->
+               ?? ITEMS GRID (filled by JS)
+                =============================== -->
+            <div class="list-pagination" data-pagination-for="collection-items">
+                <label class="page-size-label">
+                    Ver
+                    <select data-page-size>
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="50">50</option>
+                    </select>
+                    itens de cada vez
+                </label>
+                <div class="pagination-actions">
+                    <button type="button" class="explore-btn ghost icon-only" data-page-prev
+                        aria-label="Ver anteriores">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
+                    <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <section class="collection-container" id="collection-items"></section>
+
+
+
+            <!-- ===============================
+                      ?? COLLECTION STATISTICS
+                       =============================== -->
             <section id="collection-stats" aria-label="Collection statistics">
                 <h2 class="section-subtitle">Collection Statistics</h2>
                 <div class="stats-grid">
@@ -185,113 +262,45 @@
                 </div>
             </section>
 
-            <!-- ===============================
-           ?? ACTION BUTTONS
-            =============================== -->
-            <!-- Back button (history-based, centered on page) -->
-            <div class="center-block">
-                <a href="javascript:history.back()" class="explore-btn ghost centered-btn">
-                    <i class="bi bi-arrow-left" aria-hidden="true"></i>
-                    Back to Collections
-                </a>
-            </div>
-
-            <section id="buttons-bar">
-                <!-- Edit current collection -->
-                <button id="edit-collection" class="explore-btn warning" data-requires-login>
-                    <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
-                    Edit Collection
-                </button>
-
-                <!-- Add item to this collection -->
-                <button id="add-item" class="explore-btn success" data-requires-login>
-                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                    Add Item
-                </button>
-            </section>
-
 
             <!-- ===============================
-           ?? ITEMS FILTER
-            =============================== -->
-            <section class="filter-section items-filter" aria-label="Filter collection items">
-                <div class="filter-control">
-                    <label for="itemsFilter" class="filter-label">
-                        <i class="bi bi-funnel me-1" aria-hidden="true"></i>
-                        Show
-                    </label>
-                    <div class="filter-input">
-                        <select id="itemsFilter" class="filter-select">
-                            <option value="all">All items</option>
-                            <option value="liked">Liked by me</option>
-                            <option value="mostLiked">Most liked</option>
-                            <option value="recent">Recently acquired</option>
-                        </select>
-                        <button id="resetItemsFilter" class="filter-clear" type="button" title="Reset filters">
-                            <i class="bi bi-x-lg" aria-hidden="true"></i>
-                        </button>
+          ?? COLLECTION OVERVIEW CARD
+           =============================== -->
+            <section class="collection-hero">
+                <div id="collection-meta">
+                    <!-- Owner photo -->
+                    <img id="owner-photo" src="../images/user.jpg" alt="Owner photo">
+
+                    <!-- Main metadata (populated by JS) -->
+                    <div id="meta-text">
+                        <p>
+                            <strong>Owner:</strong>
+                            <span id="owner-name">�</span>
+                        </p>
+                        <p>
+                            <strong>Created:</strong>
+                            <span id="creation-date">�</span>
+                        </p>
+                        <p>
+                            <strong>Type:</strong>
+                            <span id="type">-</span>
+                        </p>
+                        <p>
+                            <strong>Items:</strong>
+                            <span id="items-count">-</span>
+                        </p>
+                        <p id="description-line">
+                            <strong>Description:</strong>
+                            <span id="description">-</span>
+                        </p>
+
                     </div>
                 </div>
-                <div class="filter-control">
-                    <label for="importanceFilter" class="filter-label">
-                        <i class="bi bi-badge-ad me-1" aria-hidden="true"></i>
-                        Importance
-                    </label>
-                    <div class="filter-input">
-                        <select id="importanceFilter" class="filter-select">
-                            <option value="all">All importances</option>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                            <option value="Very High">Very High</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="filter-control">
-                    <label for="priceFilter" class="filter-label">
-                        <i class="bi bi-cash-stack me-1" aria-hidden="true"></i>
-                        Price
-                    </label>
-                    <div class="filter-input">
-                        <select id="priceFilter" class="filter-select">
-                            <option value="all">All prices</option>
-                            <option value="budget">Budget (&lt; EUR 100)</option>
-                            <option value="mid">Mid (EUR 100-500)</option>
-                            <option value="premium">Premium (&gt; EUR 500)</option>
-                        </select>
-                    </div>
-                </div>
-                <p id="items-filter-note" class="filter-note" aria-live="polite"></p>
             </section>
 
             <!-- ===============================
-           ?? ITEMS GRID (filled by JS)
-            =============================== -->
-            <div class="list-pagination" data-pagination-for="collection-items">
-                <label class="page-size-label">
-                    Ver
-                    <select data-page-size>
-                        <option value="5">5</option>
-                        <option value="10" selected>10</option>
-                        <option value="50">50</option>
-                    </select>
-                    itens de cada vez
-                </label>
-                    <div class="pagination-actions">
-                        <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
-                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
-                        </button>
-                        <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
-                        <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
-                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                </div>
-            <section class="collection-container" id="collection-items"></section>
-
-            <!-- ===============================
-           ?? RELATED EVENTS
-            =============================== -->
+?? RELATED EVENTS
+=============================== -->
             <section class="collection-events">
                 <h2 class="section-subtitle">Collection Events</h2>
                 <div id="collection-events" class="collection-events-list">
@@ -300,10 +309,9 @@
             </section>
         </main>
     </div>
-
     <!-- ===============================
-       ?? MODAL: ADD / EDIT ITEM
-       =============================== -->
+           ?? MODAL: ADD / EDIT ITEM
+           =============================== -->
     <div id="item-modal" class="modal">
         <div class="modal-content">
             <span id="close-modal" class="close">&times;</span>
@@ -349,8 +357,8 @@
     </div>
 
     <!-- ===============================
-       ?? MODAL: EDIT COLLECTION
-       =============================== -->
+           ?? MODAL: EDIT COLLECTION
+           =============================== -->
     <div id="collection-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-collection-modal">&times;</span>
@@ -390,8 +398,8 @@
     </div>
 
     <!-- ===============================
-       ?? FOOTER (unchanged)
-       =============================== -->
+           ?? FOOTER (unchanged)
+           =============================== -->
     <footer>
         <div class="footer-content">
             <p>
@@ -413,8 +421,8 @@
     </footer>
 
     <!-- ===============================
-       ?? SCRIPTS (same IDs, same behavior)
-       =============================== -->
+           ?? SCRIPTS (same IDs, same behavior)
+           =============================== -->
     <div id="forgot-password-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-forgot-modal">&times;</span>
@@ -434,27 +442,29 @@
         <div class="modal-content">
             <span class="close-btn" id="close-account-modal">&times;</span>
             <h2>Create New Account</h2>
-            
+
             <form id="form-add-account">
-              <label for="acc-owner-id">Collector ID:</label>
-              <input type="text" id="acc-owner-id" name="acc-owner-id" required />
-              <label for="acc-name">Username:</label>
-              <input type="text" id="acc-name" name="acc-name" required />
-              <label for="acc-owner-photo">Photo URL:</label>
-              <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg" />
-              <label for="acc-dob">Date of Birth:</label>
-              <input type="date" id="acc-dob" name="acc-dob" />
-              <label for="acc-member-since">Member Since (YYYY):</label>
-              <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1" placeholder="2020" readonly />
-              <label for="acc-email">Email:</label>
-              <input type="email" id="acc-email" name="acc-email" required />
-              <label for="acc-password">Password:</label>
-              <input type="password" id="acc-password" name="acc-password" required />
-              <label for="acc-password-confirm">Confirm Password:</label>
-              <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
-              <div class="modal-actions">
-                <button type="submit" class="save-btn">Create Account</button>
-              </div>
+                <label for="acc-owner-id">Collector ID:</label>
+                <input type="text" id="acc-owner-id" name="acc-owner-id" required />
+                <label for="acc-name">Username:</label>
+                <input type="text" id="acc-name" name="acc-name" required />
+                <label for="acc-owner-photo">Photo URL:</label>
+                <input type="url" id="acc-owner-photo" name="acc-owner-photo"
+                    placeholder="https://example.com/photo.jpg" />
+                <label for="acc-dob">Date of Birth:</label>
+                <input type="date" id="acc-dob" name="acc-dob" />
+                <label for="acc-member-since">Member Since (YYYY):</label>
+                <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
+                    placeholder="2020" />
+                <label for="acc-email">Email:</label>
+                <input type="email" id="acc-email" name="acc-email" required />
+                <label for="acc-password">Password:</label>
+                <input type="password" id="acc-password" name="acc-password" required />
+                <label for="acc-password-confirm">Confirm Password:</label>
+                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Create Account</button>
+                </div>
             </form>
         </div>
     </div>
@@ -466,14 +476,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-

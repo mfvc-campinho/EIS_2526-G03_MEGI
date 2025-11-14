@@ -1206,6 +1206,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === collectionModal) closeCollectionModal();
   });
 
+  if (addItemBtn) {
+    addItemBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      populateCollectionsSelect();
+      openModal(false);
+    });
+  }
+
 
   // ===============================================
   // HANDLE URL ACTIONS (edit, delete, add)

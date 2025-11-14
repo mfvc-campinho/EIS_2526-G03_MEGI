@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         paginationControls.forEach(ctrl => {
             const status = ctrl.querySelector("[data-pagination-status]");
             if (status) {
-                status.textContent = `Mostrando ${rangeStart}-${rangeEnd} de ${cappedTotal}`;
+                status.textContent = `Showing ${rangeStart}-${rangeEnd} of ${cappedTotal}`;
             }
             const prevBtn = ctrl.querySelector("[data-page-prev]");
             if (prevBtn) {
@@ -518,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const ev = eventsMap[eventId];
                 if (!ev)
                     return;
-                const ts = getTimestamp(ev.updatedAt) ?? getTimestamp(ev.createdAt) ?? getTimestamp(ev.date);
+                const ts = getTimestamp(ev.updatedAt) ?? getTimestamp(ev.createdAt);
                 if (ts && (!latest || ts > latest))
                     latest = ts;
             });

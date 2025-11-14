@@ -114,6 +114,7 @@
             </div>
 
             <section id="buttons-bar">
+                <h2 class="sr-only">Collection actions</h2>
                 <!-- Edit current collection -->
                 <button id="edit-collection" class="explore-btn warning" data-requires-login>
                     <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
@@ -205,7 +206,9 @@
                     </button>
                 </div>
             </div>
-            <section class="collection-container" id="collection-items"></section>
+            <section class="collection-container" id="collection-items">
+                <h2 class="sr-only">Collection items</h2>
+            </section>
 
 
 
@@ -216,6 +219,7 @@
                 <h2 class="section-subtitle">Collection Statistics</h2>
                 <div class="stats-grid">
                     <article class="stat-card" data-key="totalItems">
+                        <h3 class="sr-only">Total items statistic</h3>
                         <div class="stat-icon"><i class="bi bi-list"></i></div>
                         <div class="stat-body">
                             <div class="stat-value">�</div>
@@ -224,6 +228,7 @@
                     </article>
 
                     <article class="stat-card" data-key="totalValue">
+                        <h3 class="sr-only">Total estimated value statistic</h3>
                         <div class="stat-icon"><i class="bi bi-currency-euro"></i></div>
                         <div class="stat-body">
                             <div class="stat-value">�</div>
@@ -232,6 +237,7 @@
                     </article>
 
                     <article class="stat-card" data-key="avgWeight">
+                        <h3 class="sr-only">Average item weight statistic</h3>
                         <div class="stat-icon"><i class="bi bi-123"></i>
                         </div>
                         <div class="stat-body">
@@ -241,6 +247,7 @@
                     </article>
 
                     <article class="stat-card" data-key="linkedEvents">
+                        <h3 class="sr-only">Linked events statistic</h3>
                         <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
                         <div class="stat-body">
                             <div class="stat-value">�</div>
@@ -249,6 +256,7 @@
                     </article>
 
                     <article class="stat-card" data-key="oldestItem">
+                        <h3 class="sr-only">Oldest item statistic</h3>
                         <div class="stat-icon"><i class="bi bi-calendar2-minus"></i></div>
                         <div class="stat-body">
                             <div class="stat-value">�</div>
@@ -257,6 +265,7 @@
                     </article>
 
                     <article class="stat-card" data-key="newestItem">
+                        <h3 class="sr-only">Newest item statistic</h3>
                         <div class="stat-icon"><i class="bi bi-calendar2-plus"></i></div>
                         <div class="stat-body">
                             <div class="stat-value">�</div>
@@ -271,6 +280,7 @@
         COLLECTION OVERVIEW CARD
            =============================== -->
             <section class="collection-hero">
+                <h2 class="section-subtitle sr-only">Collection overview</h2>
                 <div id="collection-meta">
                     <!-- Owner photo -->
                     <img id="owner-photo" src="../images/user.jpg" alt="Owner photo">

@@ -98,7 +98,7 @@
             <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
 
             <div class="profile-heading">
-              <h1 id="user-name">Collector</h1>
+              <h2 id="user-name">Collector</h2>
               <p class="user-sub">
                 This is your personal space to manage collections, items, and events.
               </p>
@@ -195,7 +195,7 @@
           </button>
         </div>
       </div>
-      <section id="user-liked-collections" class="liked-collections">
+      <section id="user-liked-collections" class="liked-collections" aria-labelledby="user-liked-title">
         <p class="notice-message">Sign in to see the collections you've starred.</p>
       </section>
 
@@ -223,7 +223,7 @@
         </div>
       </div>
       <section id="user-liked-items" class="liked-items collection-container" data-item-source="liked"
-        data-owner-context="true">
+        data-owner-context="true" aria-labelledby="user-liked-items-title">
         <p class="notice-message">You haven't liked any items yet.</p>
       </section>
 
@@ -250,7 +250,7 @@
           </button>
         </div>
       </div>
-      <section id="user-liked-events" class="liked-events collection-container">
+      <section id="user-liked-events" class="liked-events collection-container" aria-labelledby="user-liked-events-title">
         <p class="notice-message">You haven't liked any events yet.</p>
       </section>
 
@@ -280,7 +280,7 @@
           </button>
         </div>
       </div>
-      <section id="user-collections" class="collection-container"></section>
+      <section id="user-collections" class="collection-container" aria-labelledby="my-collections-title"></section>
 
       <h2 id="user-events-title">Collection Events</h2>
       <div class="list-pagination" data-pagination-for="user-events">
@@ -305,7 +305,7 @@
           </button>
         </div>
       </div>
-      <section id="user-events" class="user-events">
+      <section id="user-events" class="user-events" aria-labelledby="user-events-title">
         <p class="notice-message">Loading events...</p>
       </section>
 
@@ -332,7 +332,7 @@
           </button>
         </div>
       </div>
-      <section id="user-rsvp-events" class="user-events">
+      <section id="user-rsvp-events" class="user-events" aria-labelledby="user-rsvp-title">
         <p class="notice-message">Loading RSVP events...</p>
       </section>
     </main>

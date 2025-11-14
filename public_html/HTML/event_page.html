@@ -127,7 +127,8 @@
            (Tabs control the hidden select used by JS)
       =============================== -->
             <section class="events-toggle-wrapper">
-                <div class="events-toggle" aria-label="Filter events">
+                <h2 class="sr-only">Event timeframe controls</h2>
+                <div class="events-toggle" role="group" aria-label="Filter events">
                     <button id="tabUpcoming" class="toggle-pill active" type="button">
                         Upcoming <span class="toggle-count" id="upcomingCount">(0)</span>
                     </button>
@@ -190,6 +191,7 @@
            Actions (New Event)
       =============================== -->
             <section class="events-actions">
+                <h2 class="sr-only">Event actions</h2>
                 <p class="actions-hint">
                     Filter using the tabs above. Logged-in collectors can propose new events for the community.
                 </p>
@@ -200,6 +202,7 @@
          (Cards injected by app-events.js into #eventsList)
      =============================== -->
             <section class="events-section">
+                <h2 class="sr-only">Event listings</h2>
                 <div class="list-pagination" data-pagination-for="eventsList">
                     <label class="page-size-label">
                         Ver

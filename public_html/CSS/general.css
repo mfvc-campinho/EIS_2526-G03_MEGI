@@ -122,6 +122,19 @@ option {
   line-height: 1.4;
 }
 
+/* Accessibility helpers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .navbar {
   background-color: var(--nav-bg);
   /* dark/navy (from variable) */

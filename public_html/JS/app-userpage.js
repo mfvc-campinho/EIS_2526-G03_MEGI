@@ -37,6 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let isViewingOwnProfile = false;
   let ownerLikesLookup = {};
 
+  function normalizeOwnerId(ownerId) {
+    if (ownerId === undefined || ownerId === null) return "";
+    return String(ownerId).trim().toLowerCase();
+  }
+
 
   if (!window.demoCollectionsState) {
     window.demoCollectionsState = { voteState: {}, userChosenState: {} };
@@ -532,16 +537,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderFollowButton(ownerName) {
     if (!followUserBtn) return;
-    const followerId = activeUser?.id;
-    const shouldShow =
-      Boolean(
-        activeUser?.active &&
-        followerId &&
-        viewedOwnerId &&
-        !isViewingOwnProfile &&
-        followerId !== viewedOwnerId
-      );
+    const followerId = normalizeOwnerId(activeUser?.id);
+    const ownerId = normalizeOwnerId(viewedOwnerId);
+    const isSelfProfile = Boolean(followerId && ownerId && followerId === ownerId);
+    const shouldShow = Boolean(
+      activeUser?.active &&
+      followerId &&
+      ownerId &&
+      !isSelfProfile
+    );
     followUserBtn.hidden = !shouldShow;
+    followUserBtn.style.display = shouldShow ? "" : "none";
     if (!shouldShow) return;
     const following = isFollowingUser(viewedOwnerId, followerId);
     followUserBtn.classList.toggle("following", following);
@@ -592,9 +598,14 @@ document.addEventListener("DOMContentLoaded", () => {
     activeUser = storedUser;
     ownerLikesLookup = buildOwnerLikesLookup(latestData);
     const params = new URLSearchParams(window.location.search);
-    const ownerParam = params.get("owner");
-    viewedOwnerId = ownerParam || storedUser?.id || "collector-main";
-    isViewingOwnProfile = Boolean(storedUser && storedUser.id === viewedOwnerId && storedUser.active);
+    const ownerParam = (params.get("owner") || "").trim();
+    const storedUserId = (storedUser?.id || "").trim();
+    const resolvedOwnerId = ownerParam || storedUserId || "collector-main";
+    viewedOwnerId = resolvedOwnerId;
+    const activeOwnerId = normalizeOwnerId(activeUser?.id);
+    const resolvedOwnerNormalized = normalizeOwnerId(resolvedOwnerId);
+    isViewingOwnProfile =
+      Boolean(activeUser?.active && activeOwnerId && resolvedOwnerNormalized && activeOwnerId === resolvedOwnerNormalized);
     const user = latestData.users.find((u) => u["owner-id"] === viewedOwnerId);
 
     if (!user) {

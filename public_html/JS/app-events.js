@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hasEventsPagination = eventsPaginationControls.length > 0;
   const defaultEventsPageSize = hasEventsPagination ? getInitialPageSizeFromControls(eventsPaginationControls) : null;
   const eventsPaginationState = hasEventsPagination
-    ? { pageSize: defaultEventsPageSize, visible: defaultEventsPageSize }
+    ? { pageSize: defaultEventsPageSize, pageIndex: 0 }
     : null;
 
   // Tabs + counts
@@ -110,21 +110,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function updateEventsPaginationUI(total, shown) {
+  function updateEventsPaginationUI(total, start = 0, shown = 0) {
     if (!hasEventsPagination) return;
     const totalSafe = Math.max(total || 0, 0);
-    const shownSafe = Math.min(shown || 0, totalSafe);
+    const shownSafe = Math.max(Math.min(shown || 0, totalSafe), 0);
+    const startSafe = totalSafe === 0 ? 0 : Math.min(Math.max(start || 0, 0), Math.max(totalSafe - 1, 0));
+    const rangeStart = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + 1;
+    const rangeEnd = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + shownSafe;
+    const effectiveSize = eventsPaginationState ? Math.max(eventsPaginationState.pageSize || defaultEventsPageSize || 1, 1) : 1;
+    const totalPages = totalSafe === 0 ? 0 : Math.ceil(totalSafe / effectiveSize);
+    const currentPage = eventsPaginationState ? eventsPaginationState.pageIndex : 0;
+    const atStart = !totalSafe || currentPage <= 0;
+    const atEnd = !totalSafe || currentPage >= Math.max(totalPages - 1, 0);
     eventsPaginationControls.forEach(ctrl => {
       const status = ctrl.querySelector("[data-pagination-status]");
       if (status) {
-        status.textContent = `Mostrando ${shownSafe} de ${totalSafe}`;
+        status.textContent = `Mostrando ${rangeStart}-${rangeEnd} de ${totalSafe}`;
       }
-      const loadBtn = ctrl.querySelector("[data-load-more]");
-      if (loadBtn) {
-        const finished = shownSafe >= totalSafe;
-        loadBtn.disabled = finished;
-        loadBtn.setAttribute("aria-disabled", finished ? "true" : "false");
-        loadBtn.classList.toggle("disabled", finished);
+      const prevBtn = ctrl.querySelector("[data-page-prev]");
+      if (prevBtn) {
+        prevBtn.disabled = atStart;
+        prevBtn.setAttribute("aria-disabled", atStart ? "true" : "false");
+        prevBtn.classList.toggle("disabled", atStart);
+      }
+      const nextBtn = ctrl.querySelector("[data-page-next]");
+      if (nextBtn) {
+        nextBtn.disabled = atEnd;
+        nextBtn.setAttribute("aria-disabled", atEnd ? "true" : "false");
+        nextBtn.classList.toggle("disabled", atEnd);
       }
     });
   }
@@ -139,15 +152,24 @@ document.addEventListener("DOMContentLoaded", () => {
           const next = parseInt(event.target.value, 10);
           if (Number.isNaN(next) || next <= 0) return;
           eventsPaginationState.pageSize = next;
-          eventsPaginationState.visible = next;
+          eventsPaginationState.pageIndex = 0;
           syncEventsPageSizeSelects(next);
           renderEvents();
         });
       }
-      const loadBtn = ctrl.querySelector("[data-load-more]");
-      if (loadBtn) {
-        loadBtn.addEventListener("click", () => {
-          eventsPaginationState.visible += eventsPaginationState.pageSize;
+      const prevBtn = ctrl.querySelector("[data-page-prev]");
+      if (prevBtn) {
+        prevBtn.addEventListener("click", () => {
+          if (eventsPaginationState.pageIndex > 0) {
+            eventsPaginationState.pageIndex -= 1;
+            renderEvents();
+          }
+        });
+      }
+      const nextBtn = ctrl.querySelector("[data-page-next]");
+      if (nextBtn) {
+        nextBtn.addEventListener("click", () => {
+          eventsPaginationState.pageIndex += 1;
           renderEvents();
         });
       }
@@ -724,11 +746,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const totalMatches = filtered.length;
     let eventsToRender = filtered;
-    if (hasEventsPagination && eventsPaginationState && eventsPaginationState.visible > 0) {
-      const limit = Math.min(eventsPaginationState.visible, totalMatches);
-      eventsToRender = filtered.slice(0, limit);
+    let startIndexForPage = 0;
+    if (hasEventsPagination && eventsPaginationState && eventsPaginationState.pageSize > 0) {
+      const effectiveSize = Math.max(eventsPaginationState.pageSize || defaultEventsPageSize || 1, 1);
+      eventsPaginationState.pageSize = effectiveSize;
+      const totalPages = effectiveSize > 0 ? Math.ceil((totalMatches || 0) / effectiveSize) : 0;
+      if (totalPages === 0) {
+        eventsPaginationState.pageIndex = 0;
+      } else if (eventsPaginationState.pageIndex >= totalPages) {
+        eventsPaginationState.pageIndex = totalPages - 1;
+      } else if (eventsPaginationState.pageIndex < 0) {
+        eventsPaginationState.pageIndex = 0;
+      }
+      startIndexForPage = eventsPaginationState.pageIndex * effectiveSize;
+      const endIndex = startIndexForPage + effectiveSize;
+      eventsToRender = filtered.slice(startIndexForPage, endIndex);
     }
-    updateEventsPaginationUI(totalMatches, eventsToRender.length);
+    updateEventsPaginationUI(totalMatches, startIndexForPage, eventsToRender.length);
 
     if (eventsToRender.length === 0) {
       eventsList.innerHTML = '<p class="muted">No events found for this filter.</p>';

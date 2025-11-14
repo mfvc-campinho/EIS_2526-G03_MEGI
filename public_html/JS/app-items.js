@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hasItemsPagination = itemsPaginationControls.length > 0;
   const defaultItemsPageSize = hasItemsPagination ? getInitialPageSizeFromControls(itemsPaginationControls) : null;
   const itemsPaginationState = hasItemsPagination
-    ? { pageSize: defaultItemsPageSize, visible: defaultItemsPageSize }
+    ? { pageSize: defaultItemsPageSize, pageIndex: 0 }
     : null;
   // Get collection ID from URL
   const params = new URLSearchParams(window.location.search);
@@ -82,21 +82,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function updateItemsPaginationSummary(total, shown) {
+  function updateItemsPaginationSummary(total, start = 0, shown = 0) {
     if (!hasItemsPagination) return;
     const totalSafe = Math.max(total || 0, 0);
-    const shownSafe = Math.min(shown || 0, totalSafe);
+    const shownSafe = Math.max(Math.min(shown || 0, totalSafe), 0);
+    const startSafe = totalSafe === 0 ? 0 : Math.min(Math.max(start || 0, 0), Math.max(totalSafe - 1, 0));
+    const rangeStart = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + 1;
+    const rangeEnd = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + shownSafe;
+    const effectiveSize = itemsPaginationState ? Math.max(itemsPaginationState.pageSize || defaultItemsPageSize || 1, 1) : 1;
+    const totalPages = totalSafe === 0 ? 0 : Math.ceil(totalSafe / effectiveSize);
+    const currentPage = itemsPaginationState ? itemsPaginationState.pageIndex : 0;
+    const atStart = !totalSafe || currentPage <= 0;
+    const atEnd = !totalSafe || currentPage >= Math.max(totalPages - 1, 0);
     itemsPaginationControls.forEach(ctrl => {
       const status = ctrl.querySelector("[data-pagination-status]");
       if (status) {
-        status.textContent = `Mostrando ${shownSafe} de ${totalSafe}`;
+        status.textContent = `Mostrando ${rangeStart}-${rangeEnd} de ${totalSafe}`;
       }
-      const loadBtn = ctrl.querySelector("[data-load-more]");
-      if (loadBtn) {
-        const finished = shownSafe >= totalSafe;
-        loadBtn.disabled = finished;
-        loadBtn.setAttribute("aria-disabled", finished ? "true" : "false");
-        loadBtn.classList.toggle("disabled", finished);
+      const prevBtn = ctrl.querySelector("[data-page-prev]");
+      if (prevBtn) {
+        prevBtn.disabled = atStart;
+        prevBtn.setAttribute("aria-disabled", atStart ? "true" : "false");
+        prevBtn.classList.toggle("disabled", atStart);
+      }
+      const nextBtn = ctrl.querySelector("[data-page-next]");
+      if (nextBtn) {
+        nextBtn.disabled = atEnd;
+        nextBtn.setAttribute("aria-disabled", atEnd ? "true" : "false");
+        nextBtn.classList.toggle("disabled", atEnd);
       }
     });
   }
@@ -111,15 +124,24 @@ document.addEventListener("DOMContentLoaded", () => {
           const next = parseInt(event.target.value, 10);
           if (Number.isNaN(next) || next <= 0) return;
           itemsPaginationState.pageSize = next;
-          itemsPaginationState.visible = next;
+          itemsPaginationState.pageIndex = 0;
           syncItemsPageSizeSelects(next);
           renderItems();
         });
       }
-      const loadBtn = ctrl.querySelector("[data-load-more]");
-      if (loadBtn) {
-        loadBtn.addEventListener("click", () => {
-          itemsPaginationState.visible += itemsPaginationState.pageSize;
+      const prevBtn = ctrl.querySelector("[data-page-prev]");
+      if (prevBtn) {
+        prevBtn.addEventListener("click", () => {
+          if (itemsPaginationState.pageIndex > 0) {
+            itemsPaginationState.pageIndex -= 1;
+            renderItems();
+          }
+        });
+      }
+      const nextBtn = ctrl.querySelector("[data-page-next]");
+      if (nextBtn) {
+        nextBtn.addEventListener("click", () => {
+          itemsPaginationState.pageIndex += 1;
           renderItems();
         });
       }
@@ -350,20 +372,56 @@ document.addEventListener("DOMContentLoaded", () => {
     return likedSet.size;
   }
 
-  function toggleItemLike(itemId) {
+  function refreshItemLikesState() {
+    const data = appData.loadData();
+    buildItemLikesMaps(data);
+    return data;
+  }
+
+  function getItemLikeSnapshot(itemId, options = {}) {
+    const { reload = true } = options || {};
+    if (reload) {
+      refreshItemLikesState();
+    }
+    const ownerId = getEffectiveOwnerId();
+    if (!itemId) {
+      return {
+        likeCount: 0,
+        liked: false,
+        ownerId,
+        isActiveUser: Boolean(isActiveUser && ownerId)
+      };
+    }
+    return {
+      likeCount: getItemDisplayLikes(itemId, ownerId),
+      liked: ownerId ? getEffectiveItemLike(itemId, ownerId) : false,
+      ownerId,
+      isActiveUser: Boolean(isActiveUser && ownerId)
+    };
+  }
+
+  function toggleItemLike(itemId, options = {}) {
+    const { skipRender = false, suppressAlert = false, onUpdate } = options || {};
     if (!isActiveUser) {
       alert("Sign in to like items.");
       return;
     }
     const ownerId = getEffectiveOwnerId();
     if (!ownerId) return;
-    const data = appData.loadData();
-    buildItemLikesMaps(data);
+    refreshItemLikesState();
     const currentState = getEffectiveItemLike(itemId, ownerId);
     itemVoteState[itemId] = !currentState;
-    renderItems();
+    if (!skipRender) {
+      renderItems();
+    }
     notifyItemLikesChange(ownerId);
-    alert("Simulation only: liking an item here is not saved to local storage.");
+    if (typeof onUpdate === "function") {
+      const snapshot = getItemLikeSnapshot(itemId, { reload: false });
+      onUpdate(snapshot);
+    }
+    if (!suppressAlert) {
+      alert("Simulation only: liking an item here is not saved to local storage.");
+    }
   }
 
   function attachItemLikeHandlers() {
@@ -447,8 +505,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===============================================
   window.renderItems = function renderItems() {
     if (!hasCollectionPage) return;
-    const data = appData.loadData();
-    buildItemLikesMaps(data);
+    const data = refreshItemLikesState();
     const collection = getCurrentCollection(data);
 
     itemsContainer.innerHTML = "";
@@ -458,7 +515,7 @@ document.addEventListener("DOMContentLoaded", () => {
       missingMessage.className = "notice-message";
       missingMessage.textContent = "Collection not found.";
       itemsContainer.appendChild(missingMessage);
-      updateItemsPaginationSummary(0, 0);
+      updateItemsPaginationSummary(0, 0, 0);
       return;
     }
 
@@ -468,7 +525,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateItemsFilterNote(filterResult.note);
 
     if (filterResult.requiresLogin) {
-      updateItemsPaginationSummary(0, 0);
+      updateItemsPaginationSummary(0, 0, 0);
       const loginMessage = document.createElement("p");
       loginMessage.className = "notice-message";
       loginMessage.textContent = filterResult.note || "Sign in to use this filter.";
@@ -478,13 +535,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let items = filterResult.items || [];
     const totalItems = items.length;
+    let startIndexForPage = 0;
 
-    if (hasItemsPagination && itemsPaginationState && itemsPaginationState.visible > 0) {
-      const limit = Math.min(itemsPaginationState.visible, totalItems);
-      items = items.slice(0, limit);
+    if (hasItemsPagination && itemsPaginationState && itemsPaginationState.pageSize > 0) {
+      const effectiveSize = Math.max(itemsPaginationState.pageSize || defaultItemsPageSize || 1, 1);
+      itemsPaginationState.pageSize = effectiveSize;
+      const totalPages = effectiveSize > 0 ? Math.ceil((totalItems || 0) / effectiveSize) : 0;
+      if (totalPages === 0) {
+        itemsPaginationState.pageIndex = 0;
+      } else if (itemsPaginationState.pageIndex >= totalPages) {
+        itemsPaginationState.pageIndex = totalPages - 1;
+      } else if (itemsPaginationState.pageIndex < 0) {
+        itemsPaginationState.pageIndex = 0;
+      }
+      startIndexForPage = itemsPaginationState.pageIndex * effectiveSize;
+      const endIndex = startIndexForPage + effectiveSize;
+      items = items.slice(startIndexForPage, endIndex);
     }
 
-    updateItemsPaginationSummary(totalItems, items.length);
+    updateItemsPaginationSummary(totalItems, startIndexForPage, items.length);
 
     if (!items.length) {
       const emptyMessage = document.createElement("p");
@@ -562,6 +631,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Start the rendering process
     renderChunk();
+  };
+
+  window.itemLikeHelpers = {
+    snapshot: (itemId, options) => getItemLikeSnapshot(itemId, options),
+    toggle: (itemId, options) => toggleItemLike(itemId, options),
+    refresh: () => refreshItemLikesState(),
+    getOwnerId: () => getEffectiveOwnerId(),
+    isUserActive: () => Boolean(isActiveUser)
   };
 
   function renderCollectionEvents() {

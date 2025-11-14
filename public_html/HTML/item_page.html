@@ -89,6 +89,13 @@
                 <p><strong>Weight:</strong> <span id="item-weight-display">—</span> g</p>
                 <p><strong>Price:</strong> €<span id="item-price-display">—</span></p>
                 <p><strong>Acquisition Date:</strong> <span id="item-date-display">—</span></p>
+                <div class="item-like-wrapper">
+                    <button id="item-like-btn" type="button" class="item-like-btn" aria-pressed="false" aria-label="Toggle like for this item">
+                        <i class="bi bi-heart"></i>
+                        <span class="like-count" id="item-like-count">0</span>
+                    </button>
+                    <p id="item-like-helper" class="item-like-helper">Sign in to like this item.</p>
+                </div>
                 <div class="item-action-buttons">
                     <button id="add-item-btn" class="explore-btn success">
                         <i class="bi bi-plus-circle"></i> Add Another Item

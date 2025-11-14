@@ -202,6 +202,128 @@ document.addEventListener("DOMContentLoaded", () => {
     saveData(data);
   }
 
+  // ============================================================
+  // 4. Demo rating helpers (items & collections)
+  // ============================================================
+  const RATING_STORAGE_KEY = "gc-demo-product-ratings";
+  const ratingSeedCache = {};
+  let ratingStore = loadRatingStore();
+
+  function loadRatingStore() {
+    try {
+      const raw = sessionStorage.getItem(RATING_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.warn("Unable to load rating session store", err);
+      return {};
+    }
+  }
+
+  function persistRatingStore() {
+    try {
+      sessionStorage.setItem(RATING_STORAGE_KEY, JSON.stringify(ratingStore));
+    } catch (err) {
+      console.warn("Unable to persist rating session store", err);
+    }
+  }
+
+  function normalizeProductType(type) {
+    if (!type) return "item";
+    const trimmed = String(type).toLowerCase();
+    if (trimmed.startsWith("col")) return "collection";
+    if (trimmed.startsWith("even")) return "event";
+    return "item";
+  }
+
+  function getRatingBucket(ownerId, type) {
+    if (!ownerId) return null;
+    const normalizedType = normalizeProductType(type);
+    if (!ratingStore[ownerId]) ratingStore[ownerId] = {};
+    if (!ratingStore[ownerId][normalizedType]) {
+      ratingStore[ownerId][normalizedType] = {};
+    }
+    return ratingStore[ownerId][normalizedType];
+  }
+
+  function computeSeededRating(type, id) {
+    const normalizedType = normalizeProductType(type);
+    const key = `${normalizedType}::${id || "unknown"}`;
+    if (ratingSeedCache[key]) return ratingSeedCache[key];
+
+    let hash = 0;
+    for (let i = 0; i < key.length; i += 1) {
+      hash = (hash * 31 + key.charCodeAt(i)) % 1000003;
+    }
+    const baseAverage = 3 + (hash % 20) / 10; // 3.0 - 4.9
+    const count = 8 + (hash % 32); // 8 - 39 ratings
+    const result = {
+      average: Number(baseAverage.toFixed(1)),
+      count
+    };
+    ratingSeedCache[key] = result;
+    return result;
+  }
+
+  function clampRating(value) {
+    if (typeof value !== "number" || Number.isNaN(value)) return null;
+    return Math.min(5, Math.max(1, Math.round(value)));
+  }
+
+  function getStoredProductRating(type, id, options = {}) {
+    const ownerId = options.ownerId || null;
+    if (!ownerId) return null;
+    const bucket = getRatingBucket(ownerId, type);
+    if (!bucket) return null;
+    const stored = bucket[id];
+    return typeof stored === "number" ? clampRating(stored) : null;
+  }
+
+  function getProductRatingSnapshot(type, id, options = {}) {
+    const ownerId = options.ownerId || null;
+    const normalizedType = normalizeProductType(type);
+    const baseline = computeSeededRating(normalizedType, id);
+    const storedRating = getStoredProductRating(normalizedType, id, { ownerId });
+    let count = baseline.count;
+    let average = baseline.average;
+
+    if (typeof storedRating === "number") {
+      average = ((baseline.average * baseline.count) + storedRating) / (baseline.count + 1);
+      count = baseline.count + 1;
+    }
+
+    return {
+      type: normalizedType,
+      id,
+      average,
+      count,
+      baseAverage: baseline.average,
+      baseCount: baseline.count,
+      userRating: storedRating,
+      ownerId,
+      canRate: Boolean(ownerId)
+    };
+  }
+
+  function setProductRating(type, id, value, options = {}) {
+    const ownerId = options.ownerId || null;
+    const normalizedType = normalizeProductType(type);
+    const ratingValue = clampRating(value);
+    if (!ownerId || ratingValue === null) return null;
+    const bucket = getRatingBucket(ownerId, normalizedType);
+    if (!bucket) return null;
+    bucket[id] = ratingValue;
+    persistRatingStore();
+    const snapshot = getProductRatingSnapshot(normalizedType, id, { ownerId });
+    try {
+      window.dispatchEvent(new CustomEvent("productRatingChange", {
+        detail: { type: normalizedType, id, ownerId, rating: ratingValue }
+      }));
+    } catch (err) {
+      console.warn("Unable to dispatch rating change event", err);
+    }
+    return snapshot;
+  }
+
   function migrateEventsUsersStructure() {
     const data = loadData();
     if (!data) return;
@@ -290,6 +412,9 @@ document.addEventListener("DOMContentLoaded", () => {
     linkEventToCollection,
     addEntity,
     updateEntity,
-    deleteEntity
+    deleteEntity,
+    getProductRatingSnapshot,
+    setProductRating,
+    getStoredProductRating
   };
 });

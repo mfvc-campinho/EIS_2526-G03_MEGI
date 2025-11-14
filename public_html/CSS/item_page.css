@@ -102,6 +102,58 @@ body {
   font-weight: 600;
 }
 
+.item-like-wrapper {
+  margin: 16px 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.item-like-btn {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  min-width: 120px;
+}
+
+.item-like-btn .like-count {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.item-like-btn:hover {
+  border-color: #c7d2fe;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.item-like-btn.active {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.item-like-btn:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.item-like-helper {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
 .item-action-buttons {
   display: flex;
   flex-wrap: wrap;

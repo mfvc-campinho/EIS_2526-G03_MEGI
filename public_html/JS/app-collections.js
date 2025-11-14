@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const paginationState = hasPaginationControls
         ? {
             pageSize: defaultPageSize,
-            visible: defaultPageSize
+            pageIndex: 0
         }
         : null;
 
@@ -150,7 +150,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let defaultShowcaseMap = {};
     let showcaseInitialized = false;
     let lastRenderCriteria = "lastAdded";
-    let lastRenderLimit = hasPaginationControls ? paginationState?.visible : null;
     let lastRenderData = null;
     let topPickModalElements = null;
     let topPickModalHandlers = null;
@@ -189,21 +188,34 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function updatePaginationSummary(total, shown) {
+    function updatePaginationSummary(total, startIndex = 0, shown = 0) {
         if (!hasPaginationControls) return;
         const cappedTotal = Math.max(total || 0, 0);
-        const cappedShown = Math.min(shown || 0, cappedTotal);
+        const cappedShown = Math.max(Math.min(shown || 0, cappedTotal), 0);
+        const cappedStart = cappedTotal === 0 ? 0 : Math.min(Math.max(startIndex || 0, 0), Math.max(cappedTotal - 1, 0));
+        const rangeStart = cappedTotal === 0 || cappedShown === 0 ? 0 : cappedStart + 1;
+        const rangeEnd = cappedTotal === 0 || cappedShown === 0 ? 0 : cappedStart + cappedShown;
+        const effectivePageSize = paginationState ? Math.max(paginationState.pageSize || defaultPageSize || 1, 1) : 1;
+        const totalPages = cappedTotal === 0 ? 0 : Math.ceil(cappedTotal / effectivePageSize);
+        const currentPage = paginationState ? paginationState.pageIndex : 0;
+        const atStart = !cappedTotal || currentPage <= 0;
+        const atEnd = !cappedTotal || currentPage >= Math.max(totalPages - 1, 0);
         paginationControls.forEach(ctrl => {
             const status = ctrl.querySelector("[data-pagination-status]");
             if (status) {
-                status.textContent = `Mostrando ${cappedShown} de ${cappedTotal}`;
+                status.textContent = `Mostrando ${rangeStart}-${rangeEnd} de ${cappedTotal}`;
             }
-            const loadBtn = ctrl.querySelector("[data-load-more]");
-            if (loadBtn) {
-                const finished = cappedShown >= cappedTotal;
-                loadBtn.disabled = finished;
-                loadBtn.setAttribute("aria-disabled", finished ? "true" : "false");
-                loadBtn.classList.toggle("disabled", finished);
+            const prevBtn = ctrl.querySelector("[data-page-prev]");
+            if (prevBtn) {
+                prevBtn.disabled = atStart;
+                prevBtn.setAttribute("aria-disabled", atStart ? "true" : "false");
+                prevBtn.classList.toggle("disabled", atStart);
+            }
+            const nextBtn = ctrl.querySelector("[data-page-next]");
+            if (nextBtn) {
+                nextBtn.disabled = atEnd;
+                nextBtn.setAttribute("aria-disabled", atEnd ? "true" : "false");
+                nextBtn.classList.toggle("disabled", atEnd);
             }
         });
     }
@@ -218,15 +230,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     const next = parseInt(event.target.value, 10);
                     if (Number.isNaN(next) || next <= 0) return;
                     paginationState.pageSize = next;
-                    paginationState.visible = next;
+                    paginationState.pageIndex = 0;
                     syncPaginationSelects(next);
                     renderCollections(lastRenderCriteria);
                 });
             }
-            const loadBtn = ctrl.querySelector("[data-load-more]");
-            if (loadBtn) {
-                loadBtn.addEventListener("click", () => {
-                    paginationState.visible += paginationState.pageSize;
+            const prevBtn = ctrl.querySelector("[data-page-prev]");
+            if (prevBtn) {
+                prevBtn.addEventListener("click", () => {
+                    if (paginationState.pageIndex > 0) {
+                        paginationState.pageIndex -= 1;
+                        renderCollections(lastRenderCriteria);
+                    }
+                });
+            }
+            const nextBtn = ctrl.querySelector("[data-page-next]");
+            if (nextBtn) {
+                nextBtn.addEventListener("click", () => {
+                    paginationState.pageIndex += 1;
                     renderCollections(lastRenderCriteria);
                 });
             }
@@ -518,21 +539,6 @@ document.addEventListener("DOMContentLoaded", () => {
         buildLikesMaps(data);
         let collections = data.collections || [];
         lastRenderCriteria = criteria;
-        let limitToUse = limitOverride;
-        if (limitToUse === undefined) {
-            if (hasPaginationControls && paginationState) {
-                limitToUse = paginationState.visible;
-            } else {
-                limitToUse = lastRenderLimit;
-            }
-        } else if (hasPaginationControls && paginationState && typeof limitToUse === "number") {
-            paginationState.visible = limitToUse;
-        }
-        if (limitToUse === undefined) {
-            limitToUse = null;
-        }
-        lastRenderLimit = limitToUse;
-
         if (isUserPage) {
             const ownerId = resolveUserPageOwnerId();
             if (!ownerId) {
@@ -571,11 +577,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const totalAvailable = collections.length;
-        if (typeof limitToUse === "number" && limitToUse > 0) {
-            const sliceLimit = Math.min(limitToUse, totalAvailable);
-            collections = collections.slice(0, sliceLimit);
+        const limitOverridden = typeof limitOverride === "number" && limitOverride > 0;
+        let startIndex = 0;
+        let sliceSize = limitOverridden
+            ? limitOverride
+            : totalAvailable;
+        const usingPagination = hasPaginationControls && paginationState && !limitOverridden;
+
+        if (usingPagination) {
+            const effectiveSize = Math.max(paginationState.pageSize || defaultPageSize || 1, 1);
+            paginationState.pageSize = effectiveSize;
+            const totalPages = effectiveSize > 0 ? Math.ceil((totalAvailable || 0) / effectiveSize) : 0;
+            if (totalPages === 0) {
+                paginationState.pageIndex = 0;
+            } else if (paginationState.pageIndex >= totalPages) {
+                paginationState.pageIndex = totalPages - 1;
+            } else if (paginationState.pageIndex < 0) {
+                paginationState.pageIndex = 0;
+            }
+            startIndex = paginationState.pageIndex * effectiveSize;
+            sliceSize = effectiveSize;
         }
-        updatePaginationSummary(totalAvailable, collections.length);
+
+        const endIndex = sliceSize > 0 ? startIndex + sliceSize : startIndex;
+        collections = collections.slice(startIndex, endIndex);
+        updatePaginationSummary(totalAvailable, startIndex, collections.length);
 
         if (!collections.length) {
             list.innerHTML = `<p class="notice-message">No collections found.</p>`;

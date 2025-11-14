@@ -761,6 +761,15 @@ footer .heart {
   text-decoration: none;
 }
 
+.explore-btn.icon-only {
+  padding: 8px 12px;
+  min-width: auto;
+}
+
+.explore-btn.icon-only i {
+  margin-right: 0;
+}
+
 .explore-btn:hover {
   background: #f9fafb;
   color: #2563eb;

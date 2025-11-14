@@ -97,19 +97,22 @@
 
       <!-- Listas -->
       <div class="list-pagination" data-pagination-for="collections-list">
-        <label class="page-size-label">
-          Ver
-          <select data-page-size>
+          <label class="page-size-label">
+            Ver
+            <select data-page-size>
+            <option value="5">5</option>
             <option value="10" selected>10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-          </select>
+            <option value="50">50</option>
+            </select>
           coleções de cada vez
         </label>
         <div class="pagination-actions">
-          <span class="pagination-status" data-pagination-status>Mostrando 0</span>
-          <button type="button" class="explore-btn ghost" data-load-more>
-            <i class="bi bi-plus-lg" aria-hidden="true"></i> Ver mais
+          <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
+          <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
       </div>

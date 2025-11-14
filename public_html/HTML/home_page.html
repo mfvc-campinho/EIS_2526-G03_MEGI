@@ -362,21 +362,6 @@
   <script src="../JS/features.js"></script>
   <script src="../JS/search-toggle.js"></script>
 
-  <!-- Script: Fix for filter state on back/forward navigation -->
-  <script>
-    window.addEventListener('pageshow', function () {
-      // Always reset the homepage filter to its default state on any page load or back/forward navigation.
-      // Use a timeout to ensure this runs after other scripts have finished their initial rendering.
-      setTimeout(function () {
-        const rankingFilter = document.getElementById('rankingFilter');
-        if (rankingFilter && rankingFilter.value !== 'lastAdded') {
-          rankingFilter.value = 'lastAdded';
-          rankingFilter.dispatchEvent(new Event('change'));
-        }
-      }, 10);
-    });
-  </script>
-
 </body>
 
 </html>

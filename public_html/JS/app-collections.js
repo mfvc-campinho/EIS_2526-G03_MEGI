@@ -778,6 +778,19 @@ document.addEventListener("DOMContentLoaded", () => {
             renderCollections(e.target.value)
         );
     }
+
+    function resetFilterOnPageShow() {
+        if (!isHomePage || !filter) return;
+        window.addEventListener("pageshow", function () {
+            setTimeout(function () {
+                if (filter.value !== "lastAdded") {
+                    filter.value = "lastAdded";
+                    filter.dispatchEvent(new Event("change"));
+                }
+            }, 10);
+        });
+    }
+    resetFilterOnPageShow();
     // Collection modal
     if (modal && form) {
         const modalTitle = document.getElementById("collection-modal-title");

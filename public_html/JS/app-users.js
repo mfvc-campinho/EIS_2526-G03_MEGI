@@ -10,6 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const profileButton = document.querySelector(".profile-btn");
   const profileDropdown = document.querySelector(".profile-dropdown");
   let dropdownToggleReady = false;
+  const formMemberSinceId = "acc-member-since";
+
+  // Always set the member-since inputs to the current year when the DOM is ready or the form is opened.
+  const setMemberSinceYear = () => {
+    const year = new Date().getFullYear().toString();
+    document.querySelectorAll(`#${formMemberSinceId}`).forEach((input) => {
+      input.value = year;
+      input.defaultValue = year;
+    });
+  };
 
   // =======================================================
   // 1. Render profile menu based on current user state
@@ -191,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (accountModal) {
           accountModal.style.display = "flex";
         }
+        setMemberSinceYear();
       });
       closeAccount?.addEventListener("click", () => {
         if (accountModal) {
@@ -236,6 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
           accountModal.style.display = "none";
         }
         accountForm.reset();
+        setMemberSinceYear();
       });
     }
 
@@ -254,6 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // =======================================================
   // 6. Initialization
   // =======================================================
+  setMemberSinceYear();
   renderProfileMenu();
   window.appUsers = { currentUser };
 

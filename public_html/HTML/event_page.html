@@ -94,10 +94,6 @@
             <section class="page-header">
                 <div class="page-header-actions">
                     <h1 class="page-title">Events</h1>
-                    <button id="newEventBtn" class="explore-btn success events-new-btn" data-requires-login>
-                        <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                        New Event
-                    </button>
                 </div>
                 <p class="page-subtitle">
                     Browse upcoming and past events related to your collections.
@@ -140,6 +136,7 @@
                     </button>
                 </div>
 
+
                 <!-- Hidden native controls used by app-events.js -->
                 <div class="hidden-filters">
                     <label for="eventFilter" class="sr-only">Show</label>
@@ -149,7 +146,12 @@
                         <option value="past">Past</option>
                     </select>
                 </div>
+
             </section>
+            <button id="newEventBtn" class="explore-btn success events-new-btn" data-requires-login>
+                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                New Event
+            </button>
 
             <!-- Visible advanced filters -->
             <section class="events-advanced-filters" aria-label="Additional filters">
@@ -199,21 +201,23 @@
      =============================== -->
             <section class="events-section">
                 <div class="list-pagination" data-pagination-for="eventsList">
-                <label class="page-size-label">
-                    Ver
-                    <select data-page-size>
-                        <option value="5">5</option>
-                        <option value="10" selected>10</option>
-                        <option value="50">50</option>
-                    </select>
+                    <label class="page-size-label">
+                        Ver
+                        <select data-page-size>
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="50">50</option>
+                        </select>
                         eventos de cada vez
                     </label>
                     <div class="pagination-actions">
-                        <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
+                        <button type="button" class="explore-btn ghost icon-only" data-page-prev
+                            aria-label="Ver anteriores">
                             <i class="bi bi-chevron-left" aria-hidden="true"></i>
                         </button>
                         <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
-                        <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+                        <button type="button" class="explore-btn ghost icon-only" data-page-next
+                            aria-label="Ver seguintes">
                             <i class="bi bi-chevron-right" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -376,26 +380,28 @@
         <div class="modal-content">
             <span class="close-btn" id="close-account-modal">&times;</span>
             <h2>Create New Account</h2>
-            
+
             <form id="form-add-account">
-              
-              <label for="acc-name">Username:</label>
-              <input type="text" id="acc-name" name="acc-name" required />
-              <label for="acc-owner-photo">Photo URL:</label>
-              <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg" />
-              <label for="acc-dob">Date of Birth:</label>
-              <input type="date" id="acc-dob" name="acc-dob" />
-              <label for="acc-member-since">Member Since (YYYY):</label>
-              <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1" placeholder="2020" readonly />
-              <label for="acc-email">Email:</label>
-              <input type="email" id="acc-email" name="acc-email" required />
-              <label for="acc-password">Password:</label>
-              <input type="password" id="acc-password" name="acc-password" required />
-              <label for="acc-password-confirm">Confirm Password:</label>
-              <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
-              <div class="modal-actions">
-                <button type="submit" class="save-btn">Create Account</button>
-              </div>
+
+                <label for="acc-name">Username:</label>
+                <input type="text" id="acc-name" name="acc-name" required />
+                <label for="acc-owner-photo">Photo URL:</label>
+                <input type="url" id="acc-owner-photo" name="acc-owner-photo"
+                    placeholder="https://example.com/photo.jpg" />
+                <label for="acc-dob">Date of Birth:</label>
+                <input type="date" id="acc-dob" name="acc-dob" />
+                <label for="acc-member-since">Member Since (YYYY):</label>
+                <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
+                    placeholder="2020" readonly />
+                <label for="acc-email">Email:</label>
+                <input type="email" id="acc-email" name="acc-email" required />
+                <label for="acc-password">Password:</label>
+                <input type="password" id="acc-password" name="acc-password" required />
+                <label for="acc-password-confirm">Confirm Password:</label>
+                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Create Account</button>
+                </div>
             </form>
         </div>
     </div>

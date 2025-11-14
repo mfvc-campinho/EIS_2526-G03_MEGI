@@ -7,7 +7,6 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   // ---------- ELEMENTS ----------
-
   const DEFAULT_OWNER_ID = "collector-main";
   const urlParams = new URLSearchParams(window.location.search);
   let deepLinkEventId = urlParams.get("id");
@@ -966,7 +965,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (exists) {
         const ref =
           (deepLinkReturnUrl && deepLinkReturnUrl.length) ? decodeURIComponent(deepLinkReturnUrl) :
-          (document.referrer && document.referrer.length ? document.referrer : null);
+            (document.referrer && document.referrer.length ? document.referrer : null);
         openEventDetail(deepLinkEventId, { returnUrl: ref });
         if (!ref) clearDeepLinkParams();
       } else {

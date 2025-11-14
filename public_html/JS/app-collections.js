@@ -651,7 +651,12 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="card-info">
             <h3>${col.name}</h3>
             <p>${col.summary || ""}</p>
-            <div class="items-preview" id="preview-${col.id}" style="display:none;">${itemsHTML}</div>
+            <div class="items-preview" id="preview-${col.id}" style="display:none;">
+              ${itemsHTML}
+              <div class="collection-preview-meta muted" id="meta-${col.id}">
+                <!-- This will be populated by togglePreview -->
+              </div>
+            </div>
             <div class="collection-metrics">
               <button class="metric-btn vote-toggle ${isStarred ? "active" : ""}" data-collection-id="${col.id}">
                 <i class="bi ${isStarred ? "bi-star-fill" : "bi-star"}"></i>
@@ -674,13 +679,32 @@ document.addEventListener("DOMContentLoaded", () => {
     window.togglePreview = (id, btn) => {
         const img = document.getElementById(`img-${id}`);
         const prev = document.getElementById(`preview-${id}`);
+        const meta = document.getElementById(`meta-${id}`);
         const isShowingPreview = prev.style.display === "block";
-        prev.style.display = isShowingPreview ? "none" : "block";
-        img.style.display = isShowingPreview ? "block" : "none";
-        // Use innerHTML to include Bootstrap Icon markup and readable text
-        btn.innerHTML = isShowingPreview
-            ? '<i class="bi bi-eye"></i> Show Preview'
-            : '<i class="bi bi-eye-slash"></i> Hide Preview';
+
+        if (isShowingPreview) {
+            // Hide the preview
+            prev.style.display = "none";
+            img.style.display = "block";
+            btn.innerHTML = '<i class="bi bi-eye"></i> Show Preview';
+        } else {
+            // Show the preview and populate meta-data
+            const data = lastRenderData || appData.loadData();
+            const col = data.collections.find(c => c.id === id);
+            if (!col) return;
+
+            const { latestMap, itemsByCollection } = buildCollectionDerivedMaps(data);
+            const itemCount = (itemsByCollection[col.id] || []).length;
+            const lastUpdatedDate = latestMap[id] ? new Date(latestMap[id]).toLocaleDateString() : "N/A";
+
+            meta.innerHTML = `
+                <span class="meta-item"><i class="bi bi-list-ol me-1"></i> ${itemCount} items</span>
+                <span class="meta-item"><i class="bi bi-clock-history me-1"></i> Last updated: ${lastUpdatedDate}</span>`;
+
+            prev.style.display = "block";
+            img.style.display = "none";
+            btn.innerHTML = '<i class="bi bi-eye-slash"></i> Hide Preview';
+        }
     };
 
     window.editCollection = id => {
@@ -804,6 +828,3 @@ document.addEventListener("DOMContentLoaded", () => {
     updateUserState();
     renderCollections("lastAdded");
 });
-
-
-

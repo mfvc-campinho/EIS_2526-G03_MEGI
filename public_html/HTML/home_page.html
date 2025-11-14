@@ -141,7 +141,7 @@
         <div class="filter-control">
           <label for="rankingFilter" class="filter-label"><i class="bi bi-funnel me-1" aria-hidden="true"></i>Sort
             by</label>
-          <div class="filter-input">
+          <div class="filter-input" data-filter-for="homeCollections">
             <select id="rankingFilter" class="filter-select">
               <option value="lastAdded">Last Added</option>
               <option value="userChosen">Chosen by User</option>
@@ -155,27 +155,13 @@
 
       <!-- 🔹 Collections Container -->
       <section class="ranking-section">
-        <div class="list-pagination" data-pagination-for="homeCollections">
-          <label class="page-size-label">
-            Ver
-            <select data-page-size>
-              <option value="5">5</option>
-              <option value="10" selected>10</option>
-              <option value="50">50</option>
-            </select>
-            coleções de cada vez
-          </label>
-        <div class="pagination-actions">
-          <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
-            <i class="bi bi-chevron-left" aria-hidden="true"></i>
-          </button>
-          <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
-          <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
-            <i class="bi bi-chevron-right" aria-hidden="true"></i>
-          </button>
+        <!-- Hidden pagination control to enforce a page size of 5 for the script -->
+        <div class="list-pagination" data-pagination-for="homeCollections" style="display: none;">
+          <select data-page-size>
+            <option value="5" selected>5</option>
+          </select>
         </div>
-      </div>
-        <div class="collection-container" id="homeCollections"></div>
+        <div class="collection-container" id="homeCollections" data-limit="5"></div>
       </section>
 
     </main>
@@ -357,6 +343,21 @@
   <!-- Script: trigger features entrance animation when in viewport -->
   <script src="../JS/features.js"></script>
   <script src="../JS/search-toggle.js"></script>
+
+  <!-- Script: Fix for filter state on back/forward navigation -->
+  <script>
+    window.addEventListener('pageshow', function () {
+      // Always reset the homepage filter to its default state on any page load or back/forward navigation.
+      // Use a timeout to ensure this runs after other scripts have finished their initial rendering.
+      setTimeout(function () {
+        const rankingFilter = document.getElementById('rankingFilter');
+        if (rankingFilter && rankingFilter.value !== 'lastAdded') {
+          rankingFilter.value = 'lastAdded';
+          rankingFilter.dispatchEvent(new Event('change'));
+        }
+      }, 10);
+    });
+  </script>
 
 </body>
 

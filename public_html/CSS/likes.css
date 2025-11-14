@@ -1,0 +1,86 @@
+/* ===============================
+ * Likes and Ratings System
+ * =============================== */
+
+.like-and-rating-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: var(--background-color-secondary);
+    border-top: 1px solid var(--border-color);
+    margin-top: auto; /* Pushes the container to the bottom of the card */
+}
+
+/* Star Rating */
+.rating-stars {
+    display: flex;
+    flex-direction: row-reverse; /* Makes the stars fill from right to left */
+    gap: 4px;
+}
+
+.rating-stars .star {
+    font-size: 20px;
+    color: var(--text-color-muted);
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+/* The :hover ~ .star selector is what makes the stars light up on hover */
+.rating-stars:hover .star {
+    color: var(--primary-color-hover);
+}
+
+.rating-stars .star:hover,
+.rating-stars .star:hover ~ .star {
+    color: var(--primary-color-hover);
+}
+
+/* Style for stars that are "selected" */
+.rating-stars .star.selected,
+.rating-stars .star.selected ~ .star {
+    color: var(--primary-color);
+}
+
+
+/* Like Button */
+.like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-color-secondary);
+    padding: 4px;
+}
+
+.like-button .bi-heart,
+.like-button .bi-heart-fill {
+    font-size: 18px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.like-button .bi-heart {
+    color: var(--text-color-muted);
+}
+
+.like-button .bi-heart-fill {
+    color: var(--danger-color);
+    display: none; /* Hidden by default */
+}
+
+/* When the button is pressed (liked) */
+.like-button.liked .bi-heart {
+    display: none;
+}
+
+.like-button.liked .bi-heart-fill {
+    display: inline-block;
+    transform: scale(1.1);
+}
+
+.like-button:hover .bi-heart {
+    color: var(--danger-color);
+}

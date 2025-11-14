@@ -93,6 +93,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Events associated with users (attendance + ratings)
+  function ensureEventsUsersArray(data) {
+    if (!data.eventsUsers) data.eventsUsers = [];
+    return data.eventsUsers;
+  }
+
+  function getEventUsers(eventId, data) {
+    if (!eventId) return [];
+    if (!data) data = loadData();
+    const entries = ensureEventsUsersArray(data);
+    return entries.filter(entry => entry.eventId === eventId);
+  }
+
+  function getEventUserEntry(eventId, userId, data) {
+    if (!eventId || !userId) return null;
+    if (!data) data = loadData();
+    const entries = ensureEventsUsersArray(data);
+    return entries.find(entry => entry.eventId === eventId && entry.userId === userId) || null;
+  }
+
+  function getEventsByUser(userId, data) {
+    if (!userId) return [];
+    if (!data) data = loadData();
+    const entries = ensureEventsUsersArray(data);
+    const eventIds = entries
+      .filter(entry => entry.userId === userId)
+      .map(entry => entry.eventId);
+    const unique = Array.from(new Set(eventIds));
+    return (data.events || []).filter(event => unique.includes(event.id));
+  }
+
+  function getEventRatingSummary(eventId, data) {
+    const entries = getEventUsers(eventId, data);
+    const ratingEntries = entries.filter(entry => typeof entry.rating === "number");
+    if (!ratingEntries.length) {
+      return { count: 0, average: null };
+    }
+    const total = ratingEntries.reduce((sum, entry) => sum + entry.rating, 0);
+    return {
+      count: ratingEntries.length,
+      average: total / ratingEntries.length
+    };
+  }
+
   // Owner associated with a collection
   function getCollectionOwnerId(collectionId, data) {
     if (!collectionId) return null;
@@ -148,13 +192,207 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (type === "events") {
       data.collectionEvents = data.collectionEvents.filter(r => r.eventId !== id);
+      data.eventsUsers = data.eventsUsers?.filter(r => r.eventId !== id) || [];
     }
     if (type === "users") {
       data.collectionsUsers = data.collectionsUsers?.filter(r => r.ownerId !== id) || [];
+      data.eventsUsers = data.eventsUsers?.filter(r => r.userId !== id) || [];
     }
 
     saveData(data);
   }
+
+  // ============================================================
+  // 4. Demo rating helpers (items & collections)
+  // ============================================================
+  const RATING_STORAGE_KEY = "gc-demo-product-ratings";
+  const ratingSeedCache = {};
+  let ratingStore = loadRatingStore();
+
+  function loadRatingStore() {
+    try {
+      const raw = sessionStorage.getItem(RATING_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (err) {
+      console.warn("Unable to load rating session store", err);
+      return {};
+    }
+  }
+
+  function persistRatingStore() {
+    try {
+      sessionStorage.setItem(RATING_STORAGE_KEY, JSON.stringify(ratingStore));
+    } catch (err) {
+      console.warn("Unable to persist rating session store", err);
+    }
+  }
+
+  function normalizeProductType(type) {
+    if (!type) return "item";
+    const trimmed = String(type).toLowerCase();
+    if (trimmed.startsWith("col")) return "collection";
+    if (trimmed.startsWith("even")) return "event";
+    return "item";
+  }
+
+  function getRatingBucket(ownerId, type) {
+    if (!ownerId) return null;
+    const normalizedType = normalizeProductType(type);
+    if (!ratingStore[ownerId]) ratingStore[ownerId] = {};
+    if (!ratingStore[ownerId][normalizedType]) {
+      ratingStore[ownerId][normalizedType] = {};
+    }
+    return ratingStore[ownerId][normalizedType];
+  }
+
+  function computeSeededRating(type, id) {
+    const normalizedType = normalizeProductType(type);
+    const key = `${normalizedType}::${id || "unknown"}`;
+    if (ratingSeedCache[key]) return ratingSeedCache[key];
+
+    let hash = 0;
+    for (let i = 0; i < key.length; i += 1) {
+      hash = (hash * 31 + key.charCodeAt(i)) % 1000003;
+    }
+    const baseAverage = 3 + (hash % 20) / 10; // 3.0 - 4.9
+    const count = 8 + (hash % 32); // 8 - 39 ratings
+    const result = {
+      average: Number(baseAverage.toFixed(1)),
+      count
+    };
+    ratingSeedCache[key] = result;
+    return result;
+  }
+
+  function clampRating(value) {
+    if (typeof value !== "number" || Number.isNaN(value)) return null;
+    return Math.min(5, Math.max(1, Math.round(value)));
+  }
+
+  function getStoredProductRating(type, id, options = {}) {
+    const ownerId = options.ownerId || null;
+    if (!ownerId) return null;
+    const bucket = getRatingBucket(ownerId, type);
+    if (!bucket) return null;
+    const stored = bucket[id];
+    return typeof stored === "number" ? clampRating(stored) : null;
+  }
+
+  function getProductRatingSnapshot(type, id, options = {}) {
+    const ownerId = options.ownerId || null;
+    const normalizedType = normalizeProductType(type);
+    const baseline = computeSeededRating(normalizedType, id);
+    const storedRating = getStoredProductRating(normalizedType, id, { ownerId });
+    let count = baseline.count;
+    let average = baseline.average;
+
+    if (typeof storedRating === "number") {
+      average = ((baseline.average * baseline.count) + storedRating) / (baseline.count + 1);
+      count = baseline.count + 1;
+    }
+
+    return {
+      type: normalizedType,
+      id,
+      average,
+      count,
+      baseAverage: baseline.average,
+      baseCount: baseline.count,
+      userRating: storedRating,
+      ownerId,
+      canRate: Boolean(ownerId)
+    };
+  }
+
+  function setProductRating(type, id, value, options = {}) {
+    const ownerId = options.ownerId || null;
+    const normalizedType = normalizeProductType(type);
+    const ratingValue = clampRating(value);
+    if (!ownerId || ratingValue === null) return null;
+    const bucket = getRatingBucket(ownerId, normalizedType);
+    if (!bucket) return null;
+    bucket[id] = ratingValue;
+    persistRatingStore();
+    const snapshot = getProductRatingSnapshot(normalizedType, id, { ownerId });
+    try {
+      window.dispatchEvent(new CustomEvent("productRatingChange", {
+        detail: { type: normalizedType, id, ownerId, rating: ratingValue }
+      }));
+    } catch (err) {
+      console.warn("Unable to dispatch rating change event", err);
+    }
+    return snapshot;
+  }
+
+  function migrateEventsUsersStructure() {
+    const data = loadData();
+    if (!data) return;
+    if (!Array.isArray(data.eventsUsers)) {
+      data.eventsUsers = [];
+    }
+
+    let mutated = false;
+    const existingKey = new Set(
+      data.eventsUsers.map(entry => `${entry.eventId}::${entry.userId}`)
+    );
+
+    (data.events || []).forEach(event => {
+      if (Array.isArray(event.attendees) && event.attendees.length) {
+        event.attendees.forEach(userId => {
+          const key = `${event.id}::${userId}`;
+          if (!existingKey.has(key)) {
+            data.eventsUsers.push({
+              eventId: event.id,
+              userId,
+              rating: typeof event.ratings?.[userId] === "number"
+                ? event.ratings[userId]
+                : null
+            });
+            existingKey.add(key);
+            mutated = true;
+          }
+        });
+      }
+
+      if (event.ratings && typeof event.ratings === "object") {
+        Object.entries(event.ratings).forEach(([userId, ratingValue]) => {
+          const key = `${event.id}::${userId}`;
+          if (!existingKey.has(key)) {
+            data.eventsUsers.push({
+              eventId: event.id,
+              userId,
+              rating: typeof ratingValue === "number" ? ratingValue : null
+            });
+            existingKey.add(key);
+            mutated = true;
+          } else {
+            const entry = data.eventsUsers.find(
+              link => link.eventId === event.id && link.userId === userId
+            );
+            if (entry && entry.rating !== ratingValue && typeof ratingValue === "number") {
+              entry.rating = ratingValue;
+              mutated = true;
+            }
+          }
+        });
+      }
+
+      if ("attendees" in event) {
+        delete event.attendees;
+        mutated = true;
+      }
+      if ("ratings" in event) {
+        delete event.ratings;
+        mutated = true;
+      }
+    });
+
+    if (mutated) {
+      saveData(data);
+    }
+  }
+
+  migrateEventsUsersStructure();
 
   // ============================================================
   // 5. Export global API (window.appData)
@@ -164,12 +402,19 @@ document.addEventListener("DOMContentLoaded", () => {
     saveData,
     getItemsByCollection,
     getEventsByCollection,
+    getEventUsers,
+    getEventUserEntry,
+    getEventsByUser,
+    getEventRatingSummary,
     getCollectionOwnerId,
     getCollectionOwner,
     linkItemToCollection,
     linkEventToCollection,
     addEntity,
     updateEntity,
-    deleteEntity
+    deleteEntity,
+    getProductRatingSnapshot,
+    setProductRating,
+    getStoredProductRating
   };
 });

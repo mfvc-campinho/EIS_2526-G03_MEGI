@@ -4,7 +4,11 @@
   const container = document.getElementById('upcomingEvents');
   if (!container) return;
 
-  const dataEvents = (window.collectionsData && Array.isArray(collectionsData.events)) ? collectionsData.events.slice() : [];
+  const sourceData = (window.appData && typeof window.appData.loadData === 'function')
+    ? window.appData.loadData()
+    : (typeof collectionsData !== 'undefined' ? collectionsData : null);
+
+  const dataEvents = (sourceData && Array.isArray(sourceData.events)) ? sourceData.events.slice() : [];
 
   if (!dataEvents.length) {
     container.innerHTML = '<p class="no-events">No events available. <a href="event_page.html">See all events</a></p>';

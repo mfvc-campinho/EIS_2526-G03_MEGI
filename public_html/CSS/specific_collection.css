@@ -133,6 +133,91 @@
   color: #1e3a8a;
 }
 
+/* ===============================
+   🔹 COLLECTION STATISTICS PANEL
+   Matches project card style; responsive 2–3 column grid
+   =============================== */
+#collection-stats {
+  margin: 18px 0 26px;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  /* default 2 columns for medium screens */
+}
+
+.stat-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+  box-sizing: border-box;
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03));
+  color: #2563eb;
+  /* project blue */
+  font-size: 1.45rem;
+  flex: 0 0 56px;
+}
+
+.stat-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+/* Hide empty stats (rendered with .hidden by JS) */
+.stat-card.hidden {
+  display: none !important;
+}
+
+@media (min-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
+}
+
 /* Responsive behavior */
 @media (max-width: 700px) {
   #collection-meta {
@@ -183,20 +268,20 @@
 /* If your JS creates elements with a specific class (e.g., .item-card),
    you can style them here. Example (safe & generic): */
 .collection-container>div {
-  background: #ffffff;
-  border-radius: 14px;
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
   /* slightly more internal padding for better vertical spacing */
-  padding: 16px 14px 14px;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e5e7eb;
+  padding: 18px 16px 16px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
   box-sizing: border-box;
 }
 
-/* Simple hover feedback for item cards */
+/* Simple hover feedback for item cards (smoother / stronger) */
 .collection-container>div:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  transition: all 0.18s ease;
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+  transition: all 0.22s ease;
 }
 
 .item-buttons {
@@ -212,6 +297,82 @@
   gap: 6px;
   padding: 6px 12px;
   font-size: 0.85rem;
+}
+
+/* Items filter panel */
+.items-filter {
+  margin: 28px 0 12px;
+  padding: 22px 26px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.items-filter .filter-control {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.items-filter .filter-label {
+  font-weight: 600;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.items-filter .filter-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.items-filter .filter-select {
+  min-width: 210px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid #cbd5f5;
+  background: #f8fafc;
+  font-size: 0.95rem;
+  color: #0f172a;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.items-filter .filter-select:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.items-filter .filter-clear {
+  border: none;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.items-filter .filter-clear:hover {
+  background: #dbeafe;
+  transform: rotate(90deg);
+}
+
+.filter-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #475569;
 }
 
 /* Center item card title and action buttons inside the collection grid
@@ -230,6 +391,8 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+  gap: 12px;
+  flex-direction: column;
 }
 
 /* Smaller spacing on narrow screens to avoid overflow */
@@ -396,6 +559,45 @@
 .item-actions {
   margin-top: 30px;
   text-align: center;
+}
+
+.item-like-btn {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.92rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  min-width: 110px;
+}
+
+.item-like-btn .like-count {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.item-like-btn:hover {
+  border-color: #c7d2fe;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.item-like-btn.active {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.item-like-btn:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
 }
 
 .view-btn {

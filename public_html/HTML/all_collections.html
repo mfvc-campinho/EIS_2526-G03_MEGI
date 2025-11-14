@@ -19,8 +19,8 @@
   <link rel="stylesheet" href="../CSS/general.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../CSS/grid.css" />
-
-
+  <link rel="stylesheet" href="../CSS/likes.css" />
+  <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
@@ -48,6 +48,11 @@
           <a href="team_page.html" class="nav-link">
             <i class="bi bi-people-fill me-1"></i> About Us
           </a>
+
+          <!-- Dark mode toggle -->
+          <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
+            <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
+          </button>
 
           <!-- Login dropdown -->
           <div class="dropdown profile-dropdown">
@@ -90,9 +95,63 @@
 
       </div>
 
+      <!-- 🔹 Filter (from home_page.html) -->
+      <section class="filter-section">
+        <div class="filter-control">
+          <label for="rankingFilter" class="filter-label"><i class="bi bi-funnel me-1" aria-hidden="true"></i>Sort
+            by</label>
+          <div class="filter-input" data-filter-for="collections-list">
+            <select id="rankingFilter" class="filter-select">
+              <option value="lastAdded">Last Added</option>
+              <option value="userChosen">Chosen by User</option>
+              <option value="itemCount">Number of Items</option>
+            </select>
+            <button id="clearFilter" class="filter-clear" title="Reset filter"><i class="bi bi-x-lg"
+                aria-hidden="true"></i></button>
+          </div>
+        </div>
+      </section>
+
 
       <!-- Listas -->
-      <section class="collection-container" id="collections-list"></section>
+      <div class="list-pagination" data-pagination-for="collections-list">
+        <label class="page-size-label">
+          Ver
+          <select data-page-size>
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="50">50</option>
+          </select>
+          coleções de cada vez
+        </label>
+        <div class="pagination-actions">
+          <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
+          <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+      <section id="collections-list-wrapper">
+        <div class="collection-preview" id="collection-preview-area" style="display: none;">
+          <div class="collection-preview-content">
+            <p id="collection-preview-summary"></p>
+            <div class="collection-preview-meta muted">
+              <span id="collection-preview-items" class="meta-item">
+                <i class="bi bi-list-ol me-1"></i>
+                <!-- JS will fill this -->
+              </span>
+              <span id="collection-preview-updated" class="meta-item">
+                <i class="bi bi-clock-history me-1"></i>
+                <!-- JS will fill this -->
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="collection-container" id="collections-list"></div>
+      </section>
     </main>
 
     <!-- ===============================

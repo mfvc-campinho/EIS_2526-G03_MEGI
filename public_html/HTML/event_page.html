@@ -22,7 +22,8 @@
     <link rel="stylesheet" href="../CSS/general.css" />
     <link rel="stylesheet" href="../CSS/events.css" />
     <link rel="stylesheet" href="../CSS/grid.css" />
-
+    <link rel="stylesheet" href="../CSS/likes.css" />
+    <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
@@ -50,6 +51,11 @@
                     <a href="team_page.html" class="nav-link">
                         <i class="bi bi-people-fill me-1"></i> About Us
                     </a>
+
+                    <!-- Dark mode toggle -->
+                    <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
+                        <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
+                    </button>
 
                     <!-- Login dropdown -->
                     <div class="dropdown profile-dropdown">
@@ -188,6 +194,26 @@
          (Cards injected by app-events.js into #eventsList)
      =============================== -->
             <section class="events-section">
+                <div class="list-pagination" data-pagination-for="eventsList">
+                <label class="page-size-label">
+                    Ver
+                    <select data-page-size>
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="50">50</option>
+                    </select>
+                        eventos de cada vez
+                    </label>
+                    <div class="pagination-actions">
+                        <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
+                        <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
                 <div id="eventsList" class="events-grid">
                     <!-- JS will populate event cards here -->
                 </div>
@@ -233,7 +259,7 @@
                         </button>
                         <button id="modal-add-calendar" class="explore-btn" style="display:none;">
                             <i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i>
-                            📅 Add to My Calendar
+                            Add to My Calendar
                         </button>
                     </div>
                 </div>

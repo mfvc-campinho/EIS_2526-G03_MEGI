@@ -57,12 +57,57 @@ h1.page-title::after {
    🔹 NAVIGATION BAR (GLOBAL)
 =============================== */
 
+/* CSS Variables — core theme tokens (light theme defaults) */
+:root {
+  --bg-color: whitesmoke;
+  --text-color: #333333;
+  --muted-color: #6b7280;
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --nav-bg: #0d1320;
+  --nav-text: #ffffff;
+  --footer-bg: #0d1320;
+  --footer-text: #ffffff;
+  --input-bg: #ffffff;
+  --input-text: #111111;
+  --btn-bg: #ffffff;
+  --btn-text: #1e3a8a;
+  /* Button variant tokens */
+  --success-btn-bg: #ffffff;
+  --success-btn-text: #047857;
+  --success-btn-bg-hover: #f0fdf4;
+  --success-btn-text-hover: #065f46;
+
+  --danger-btn-bg: #ffffff;
+  --danger-btn-text: #b91c1c;
+  --danger-btn-bg-hover: #fef2f2;
+  --danger-btn-text-hover: #991b1b;
+
+  --warning-btn-bg: #ffffff;
+  --warning-btn-text: #92400e;
+  --warning-btn-bg-hover: #fffbeb;
+  --warning-btn-text-hover: #78350f;
+
+  --save-btn-bg: linear-gradient(90deg, #16a34a, #4ade80);
+  --save-btn-text: #ffffff;
+  --modal-bg: #ffffff;
+  --overlay-bg: rgba(17, 24, 39, 0.6);
+  /* New semantic aliases used by updated card styles */
+  --text-main: var(--text-color);
+  --text-muted: var(--muted-color);
+  --border-color: #e5e7eb;
+  --shadow-elevated: 0 8px 22px rgba(0, 0, 0, 0.12);
+  --card-radius: 16px;
+}
+
+/* Dark mode overrides will be defined in .dark-mode (applied to <html> or <body>) */
+
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: whitesmoke;
+  background-color: var(--bg-color);
   margin: 0;
   padding: 0;
-  color: #333;
+  color: var(--text-color);
 }
 
 /* Ensure all form controls inherit the site's font stack so modals and other
@@ -78,9 +123,9 @@ option {
 }
 
 .navbar {
-  background-color: #0d1320;
-  /* dark navy */
-  color: white;
+  background-color: var(--nav-bg);
+  /* dark/navy (from variable) */
+  color: var(--nav-text);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -716,6 +761,15 @@ footer .heart {
   text-decoration: none;
 }
 
+.explore-btn.icon-only {
+  padding: 8px 12px;
+  min-width: auto;
+}
+
+.explore-btn.icon-only i {
+  margin-right: 0;
+}
+
 .explore-btn:hover {
   background: #f9fafb;
   color: #2563eb;
@@ -733,15 +787,15 @@ footer .heart {
    🔹 SUCCESS VARIANT (used for “Add” or “New” actions)
    ============================================ */
 .explore-btn.success {
-  background: #ffffff;
-  color: #047857;
-  border: 1px solid #d1fae5;
+  background: var(--success-btn-bg);
+  color: var(--success-btn-text);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .explore-btn.success:hover {
-  background: #f0fdf4;
-  border-color: #6ee7b7;
-  color: #065f46;
+  background: var(--success-btn-bg-hover);
+  border-color: transparent;
+  color: var(--success-btn-text-hover);
   box-shadow: 0 4px 10px rgba(6, 95, 70, 0.08);
 }
 
@@ -749,15 +803,15 @@ footer .heart {
    🔹 DANGER VARIANT (used for delete/cancel)
    ============================================ */
 .explore-btn.danger {
-  background: #ffffff;
-  color: #b91c1c;
-  border: 1px solid #fee2e2;
+  background: var(--danger-btn-bg);
+  color: var(--danger-btn-text);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .explore-btn.danger:hover {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
+  background: var(--danger-btn-bg-hover);
+  color: var(--danger-btn-text-hover);
+  border-color: transparent;
   box-shadow: 0 4px 10px rgba(185, 28, 28, 0.08);
 }
 
@@ -765,15 +819,15 @@ footer .heart {
    🔹 WARNING VARIANT (optional, subtle yellow tone)
    ============================================ */
 .explore-btn.warning {
-  background: #ffffff;
-  color: #92400e;
-  border: 1px solid #fef3c7;
+  background: var(--warning-btn-bg);
+  color: var(--warning-btn-text);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .explore-btn.warning:hover {
-  background: #fffbeb;
-  border-color: #fde68a;
-  color: #78350f;
+  background: var(--warning-btn-bg-hover);
+  border-color: transparent;
+  color: var(--warning-btn-text-hover);
   box-shadow: 0 4px 10px rgba(146, 64, 14, 0.08);
 }
 
@@ -941,15 +995,15 @@ footer .heart {
    (Estilo comum para .collection-card e .item-card)
 =============================== */
 .card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
   width: calc(20% - 24px);
-  /* 5 por linha (ajustado ao gap) */
+  /* 5 per row (adjusted to gap) */
   min-width: 280px;
-  /* Increased slightly for better visibility */
-  height: 420px;
+  /* keep good minimum visual weight but allow flexible height */
+  min-height: 420px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -957,8 +1011,8 @@ footer .heart {
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
 }
 
 /* Specific adjustments for each card type */
@@ -977,7 +1031,7 @@ footer .heart {
   justify-content: space-between;
   border-radius: 16px;
   overflow: hidden;
-  background: #fff;
+  background: var(--card-bg);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   /* Stretch content to fill available height */
 }
@@ -994,15 +1048,16 @@ footer .heart {
 .item-image-wrapper {
   position: relative;
   width: 100%;
-  height: 190px;
-  background: #f8fafc;
+  /* Larger, more premium image area */
+  height: 240px;
+  background: var(--card-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-top-left-radius: var(--card-radius);
+  border-top-right-radius: var(--card-radius);
+  border-bottom: 1px solid var(--border-color);
   transition: all 0.4s ease;
 }
 
@@ -1042,11 +1097,11 @@ footer .heart {
 /* Empty state — graceful fallback */
 .card-image:empty,
 .item-image-wrapper:empty {
-  background: #f1f5f9;
+  background: var(--card-bg);
   color: #94a3b8;
   font-style: italic;
   font-size: 0.9rem;
-  border: 1px dashed #e2e8f0;
+  border: 1px dashed var(--border-color);
 }
 
 .card-image:empty::after,
@@ -1080,16 +1135,17 @@ footer .heart {
    🔹 CARD INFO
 =============================== */
 .card-info {
-  padding: 20px;
+  padding: 22px 20px 24px;
   text-align: center;
   flex-grow: 1;
 }
 
 .card-info h3 {
-  font-size: 1.2rem;
+  font-size: 1.18rem;
   margin-bottom: 8px;
-  color: #222;
-  font-weight: 600;
+  color: var(--text-main);
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 /* Ensure collection/item card titles are visually centered
@@ -1100,9 +1156,33 @@ footer .heart {
 }
 
 .card-info p {
-  font-size: 0.95rem;
-  color: #777;
+  font-size: 0.98rem;
+  color: var(--text-muted);
   margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Support project-specific internal classes without changing HTML structure
+   .item-info is used by JS-generated cards; make sure it matches the new card body style */
+.item-info {
+  padding: 22px 18px 24px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.item-info h3 {
+  font-size: 1.18rem;
+  margin-bottom: 8px;
+  color: var(--text-main);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.item-info p {
+  font-size: 0.98rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
 }
 
 .collection-metrics {
@@ -1201,6 +1281,28 @@ footer .heart {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 18px;
+}
+
+/* Standardize small action buttons inside cards (rating, preview, top5) */
+.card-actions button,
+.card-buttons .explore-btn,
+.card-actions .explore-btn {
+  height: 36px;
+  border-radius: 50px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.card-actions {
+  gap: 12px;
+}
+
+.card-rating {
+  gap: 10px;
 }
 
 /* Make sure Edit / Delete (and other action buttons) are centered
@@ -1633,8 +1735,8 @@ button {
 /* Save (primary) - global for any element with class .save-btn
    Changed from blue to greenish tones so all "Save" buttons match a green theme. */
 .save-btn {
-  background: linear-gradient(90deg, #16a34a, #4ade80);
-  color: #ffffff;
+  background: var(--save-btn-bg);
+  color: var(--save-btn-text);
   border-color: transparent;
 }
 
@@ -1960,6 +2062,95 @@ button {
     border-radius: 12px;
   }
 
+
+.list-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color, rgba(15, 23, 42, 0.08));
+  border-radius: 16px;
+  background: var(--card-bg, #ffffff);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+}
+
+.list-pagination .page-size-label {
+  font-weight: 500;
+  color: var(--text-color, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-pagination .page-size-label select {
+  min-width: 72px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: var(--input-bg, #ffffff);
+  color: var(--text-color, #0f172a);
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pagination-status {
+  font-size: 0.95rem;
+  color: var(--muted-color, #6b7280);
+}
+
+.list-pagination .explore-btn:disabled,
+.list-pagination .explore-btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .list-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pagination-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+  /* Responsive image heights for cards: larger on desktop, scale down on small devices */
+  @media (max-width: 900px) {
+
+    .card-image,
+    .item-image-wrapper {
+      height: 220px;
+    }
+  }
+
+  @media (max-width: 700px) {
+
+    .card-image,
+    .item-image-wrapper {
+      height: 220px;
+    }
+  }
+
+  @media (max-width: 480px) {
+
+    .card-image,
+    .item-image-wrapper {
+      height: 180px;
+      max-height: 180px;
+    }
+  }
+
   /* Card image reduced height to preserve vertical space */
   .card-image,
   .item-image-wrapper {
@@ -2004,4 +2195,127 @@ button {
     font-size: 0.95rem;
     padding: 0 12px;
   }
+}
+
+/* ======================================
+   Theme helpers and dark-mode overrides
+   ====================================== */
+
+/* Use variables for important components so toggling themes is consistent */
+
+.card {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+}
+
+.nav-link {
+  color: var(--nav-text);
+}
+
+.page-subtitle,
+.card-info p,
+.mini-item-list li,
+.top-pick-form p {
+  color: var(--muted-color);
+}
+
+.card-info h3,
+h1.page-title {
+  color: var(--text-color);
+}
+
+.search-bar {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
+
+.modal {
+  background: var(--overlay-bg);
+}
+
+.modal-content {
+  background-color: var(--modal-bg);
+}
+
+/* Base button now uses variables so buttons follow theme by default */
+.explore-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Toggle pill (navbar button) */
+.toggle-pill {
+  background: transparent;
+  border: none;
+  color: var(--nav-text);
+  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.toggle-pill:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Dark mode variables — applied when .dark-mode is present on <html> or <body> */
+.dark-mode {
+  --bg-color: #0d1117;
+  --text-color: #e6edf3;
+  --muted-color: #9aa4b2;
+  --card-bg: #161b22;
+  --card-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+  --nav-bg: #0d1117;
+  --nav-text: #e6edf3;
+  --footer-bg: #0d1117;
+  --footer-text: #dfe8f3;
+  --input-bg: #0f1720;
+  --input-text: #e6edf3;
+  --btn-bg: #0f1720;
+  --btn-text: #e6edf3;
+  --modal-bg: #0f1720;
+  --overlay-bg: rgba(2, 6, 23, 0.6);
+  /* Dark variants for button tokens */
+  --success-btn-bg: rgba(16, 185, 129, 0.04);
+  --success-btn-text: #7ee6a8;
+  --success-btn-bg-hover: rgba(16, 185, 129, 0.08);
+  --success-btn-text-hover: #bff0d8;
+
+  --danger-btn-bg: rgba(185, 28, 28, 0.04);
+  --danger-btn-text: #ffb4b4;
+  --danger-btn-bg-hover: rgba(185, 28, 28, 0.10);
+  --danger-btn-text-hover: #ffdede;
+
+  --warning-btn-bg: rgba(146, 64, 14, 0.04);
+  --warning-btn-text: #ffd8a8;
+  --warning-btn-bg-hover: rgba(146, 64, 14, 0.1);
+  --warning-btn-text-hover: #ffe9c8;
+
+  --save-btn-bg: linear-gradient(90deg, #0e8750, #2f9f6b);
+  --save-btn-text: #e6edf3;
+  /* Dark-mode aliases for the new variables */
+  --text-main: var(--text-color);
+  --text-muted: var(--muted-color);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --shadow-elevated: 0 12px 30px rgba(0, 0, 0, 0.5);
+  --card-radius: 16px;
+}
+
+/* Ensure interactive elements keep accessible contrast in dark mode */
+.dark-mode .explore-btn.ghost {
+  color: #9ed0ff;
+  border-color: rgba(158, 208, 255, 0.12);
+}
+
+.dark-mode .profile-menu {
+  background: #0b1220;
 }

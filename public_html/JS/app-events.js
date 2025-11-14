@@ -7,15 +7,26 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   // ---------- ELEMENTS ----------
-
   const DEFAULT_OWNER_ID = "collector-main";
   const urlParams = new URLSearchParams(window.location.search);
   let deepLinkEventId = urlParams.get("id");
+  const deepLinkReturnUrl = urlParams.get("returnUrl");
   let deepLinkHandled = false;
+  const sessionState = window.demoEventsState || (window.demoEventsState = {});
+  const voteState = sessionState.voteState || (sessionState.voteState = {});
+  let likesByEventMap = {};
+  let ownerLikesMap = {};
+
   const sessionRatings = {};
   let modalReturnUrl = null;
   const eventsList = document.getElementById("eventsList");
   const newEventBtn = document.getElementById("newEventBtn");
+  const eventsPaginationControls = Array.from(document.querySelectorAll('[data-pagination-for="eventsList"]'));
+  const hasEventsPagination = eventsPaginationControls.length > 0;
+  const defaultEventsPageSize = hasEventsPagination ? getInitialPageSizeFromControls(eventsPaginationControls) : null;
+  const eventsPaginationState = hasEventsPagination
+    ? { pageSize: defaultEventsPageSize, pageIndex: 0 }
+    : null;
 
   // Tabs + counts
   const tabUpcoming = document.getElementById("tabUpcoming");
@@ -81,11 +92,108 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function getInitialPageSizeFromControls(controls) {
+    for (const ctrl of controls) {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (!select) continue;
+      const parsed = parseInt(select.value, 10);
+      if (!Number.isNaN(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+    return 10;
+  }
+
+  function syncEventsPageSizeSelects(value) {
+    if (!hasEventsPagination) return;
+    eventsPaginationControls.forEach(ctrl => {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (select) {
+        select.value = String(value);
+      }
+    });
+  }
+
+  function updateEventsPaginationUI(total, start = 0, shown = 0) {
+    if (!hasEventsPagination) return;
+    const totalSafe = Math.max(total || 0, 0);
+    const shownSafe = Math.max(Math.min(shown || 0, totalSafe), 0);
+    const startSafe = totalSafe === 0 ? 0 : Math.min(Math.max(start || 0, 0), Math.max(totalSafe - 1, 0));
+    const rangeStart = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + 1;
+    const rangeEnd = totalSafe === 0 || shownSafe === 0 ? 0 : startSafe + shownSafe;
+    const effectiveSize = eventsPaginationState ? Math.max(eventsPaginationState.pageSize || defaultEventsPageSize || 1, 1) : 1;
+    const totalPages = totalSafe === 0 ? 0 : Math.ceil(totalSafe / effectiveSize);
+    const currentPage = eventsPaginationState ? eventsPaginationState.pageIndex : 0;
+    const atStart = !totalSafe || currentPage <= 0;
+    const atEnd = !totalSafe || currentPage >= Math.max(totalPages - 1, 0);
+    eventsPaginationControls.forEach(ctrl => {
+      const status = ctrl.querySelector("[data-pagination-status]");
+      if (status) {
+        status.textContent = `Mostrando ${rangeStart}-${rangeEnd} de ${totalSafe}`;
+      }
+      const prevBtn = ctrl.querySelector("[data-page-prev]");
+      if (prevBtn) {
+        prevBtn.disabled = atStart;
+        prevBtn.setAttribute("aria-disabled", atStart ? "true" : "false");
+        prevBtn.classList.toggle("disabled", atStart);
+      }
+      const nextBtn = ctrl.querySelector("[data-page-next]");
+      if (nextBtn) {
+        nextBtn.disabled = atEnd;
+        nextBtn.setAttribute("aria-disabled", atEnd ? "true" : "false");
+        nextBtn.classList.toggle("disabled", atEnd);
+      }
+    });
+  }
+
+  function initEventsPaginationControls() {
+    if (!hasEventsPagination || !eventsPaginationState) return;
+    syncEventsPageSizeSelects(eventsPaginationState.pageSize);
+    eventsPaginationControls.forEach(ctrl => {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (select) {
+        select.addEventListener("change", event => {
+          const next = parseInt(event.target.value, 10);
+          if (Number.isNaN(next) || next <= 0) return;
+          eventsPaginationState.pageSize = next;
+          eventsPaginationState.pageIndex = 0;
+          syncEventsPageSizeSelects(next);
+          renderEvents();
+        });
+      }
+      const prevBtn = ctrl.querySelector("[data-page-prev]");
+      if (prevBtn) {
+        prevBtn.addEventListener("click", () => {
+          if (eventsPaginationState.pageIndex > 0) {
+            eventsPaginationState.pageIndex -= 1;
+            renderEvents();
+          }
+        });
+      }
+      const nextBtn = ctrl.querySelector("[data-page-next]");
+      if (nextBtn) {
+        nextBtn.addEventListener("click", () => {
+          eventsPaginationState.pageIndex += 1;
+          renderEvents();
+        });
+      }
+    });
+  }
+
   function clearDeepLinkParams() {
     const currentUrl = new URL(window.location.href);
-    if (!currentUrl.searchParams.has("id")) return;
-    currentUrl.searchParams.delete("id");
-    history.replaceState(null, "", currentUrl.toString());
+    let modified = false;
+    if (currentUrl.searchParams.has("id")) {
+      currentUrl.searchParams.delete("id");
+      modified = true;
+    }
+    if (currentUrl.searchParams.has("returnUrl")) {
+      currentUrl.searchParams.delete("returnUrl");
+      modified = true;
+    }
+    if (modified) {
+      history.replaceState(null, "", currentUrl.toString());
+    }
   }
 
   function saveEntityUpdate(id, patch) {
@@ -302,12 +410,154 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter(Boolean);
   }
 
+  function getEventOwnerProfiles(event, data) {
+    if (!event) return [{ id: null, name: "Community host" }];
+    const dataset = data || loadData();
+    const users = Array.isArray(dataset?.users) ? dataset.users : [];
+    const ownerIds = getEventOwnerIds(event.id, dataset);
+    const uniqueOwnerIds = Array.from(new Set(ownerIds));
+
+    const ownerProfiles = uniqueOwnerIds
+      .map(ownerId => {
+        const user = users.find(u => u.id === ownerId || u["owner-id"] === ownerId);
+        const name = user?.["owner-name"] || ownerId;
+        return { id: ownerId, name };
+      })
+      .filter(profile => Boolean(profile?.name));
+
+    if (ownerProfiles.length) return ownerProfiles;
+
+    if (event.hostId) {
+      const hostUser = users.find(u => u.id === event.hostId || u["owner-id"] === event.hostId);
+      return [{
+        id: event.hostId,
+        name: hostUser?.["owner-name"] || event.host || event.hostId
+      }];
+    }
+
+    if (event.host) {
+      return [{ id: null, name: event.host }];
+    }
+
+    return [{ id: null, name: "Community host" }];
+  }
+
   function canCurrentUserManageEvent(eventId, data, user = getCurrentUser()) {
     const ownerId = getActiveOwnerId(user);
     if (!ownerId) return false;
     const owners = getEventOwnerIds(eventId, data);
     if (!owners.length) return false;
     return owners.includes(ownerId);
+  }
+
+  function getEventUserLinks(event, data) {
+    if (!event) return [];
+    const dataset = data || loadData();
+    if (window.appData?.getEventUsers) {
+      return window.appData.getEventUsers(event.id, dataset) || [];
+    }
+    if (Array.isArray(dataset?.eventsUsers)) {
+      return dataset.eventsUsers.filter(entry => entry.eventId === event.id);
+    }
+    const attendees = Array.isArray(event.attendees) ? event.attendees : [];
+    return attendees.map(userId => ({
+      eventId: event.id,
+      userId,
+      rating: typeof event.ratings?.[userId] === "number" ? event.ratings[userId] : null
+    }));
+  }
+
+  function getEventRatingStats(entries) {
+    const rated = entries.filter(entry => typeof entry.rating === "number");
+    if (!rated.length) {
+      return { count: 0, average: null };
+    }
+    const total = rated.reduce((sum, entry) => sum + entry.rating, 0);
+    return {
+      count: rated.length,
+      average: total / rated.length
+    };
+  }
+
+  function getUserRatingFromEntries(entries, user) {
+    if (!user) return null;
+    const userId = user.id || user["owner-id"];
+    if (!userId) return null;
+    const entry = entries.find(link => link.userId === userId);
+    return entry && typeof entry.rating === "number" ? entry.rating : null;
+  }
+
+  function buildLikesMaps(data) {
+    likesByEventMap = {};
+    ownerLikesMap = {};
+    (data?.userShowcases || []).forEach(entry => {
+      const owner = entry.ownerId;
+      const likes = entry.likedEvents || [];
+      ownerLikesMap[owner] = new Set(likes);
+      likes.forEach(eventId => {
+        if (!likesByEventMap[eventId]) likesByEventMap[eventId] = new Set();
+        likesByEventMap[eventId].add(owner);
+      });
+    });
+  }
+
+  function getEventLikedBy(eventId) {
+    const set = likesByEventMap[eventId];
+    return set ? new Set(set) : new Set();
+  }
+
+  function getVoteOverride(eventId) {
+    return Object.prototype.hasOwnProperty.call(voteState, eventId)
+      ? voteState[eventId]
+      : undefined;
+  }
+
+  function getUserBaseLike(eventId, userId) {
+    if (!userId) return false;
+    const likedSet = ownerLikesMap[userId];
+    return likedSet ? likedSet.has(eventId) : false;
+  }
+
+  function getEffectiveUserLike(eventId, userId) {
+    if (!userId) return false;
+    const override = getVoteOverride(eventId);
+    if (override === undefined) return getUserBaseLike(eventId, userId);
+    return override;
+  }
+
+  function getDisplayLikes(eventId, userId) {
+    const likedSet = getEventLikedBy(eventId);
+    if (userId) {
+      const override = getVoteOverride(eventId);
+      const baseHas = likedSet.has(userId);
+      const finalState = override === undefined ? baseHas : override;
+      if (finalState) likedSet.add(userId);
+      else likedSet.delete(userId);
+    }
+    return likedSet.size;
+  }
+
+  function notifyEventLikesChange(ownerId) {
+    if (!ownerId) return;
+    window.dispatchEvent(new CustomEvent("userEventLikesChange", { detail: { ownerId } }));
+  }
+
+  function toggleEventLike(eventId) {
+    if (!isLoggedIn()) {
+      alert("Please sign in to like events.");
+      return;
+    }
+    const ownerId = getActiveOwnerId();
+    if (!ownerId) return;
+    const currentState = getEffectiveUserLike(eventId, ownerId);
+    voteState[eventId] = !currentState;
+    alert("Simulation only: your 'like' is not saved permanently.");
+    // Re-render the list and the modal if it's open
+    renderEvents();
+    if (eventDetailModal && eventDetailModal.style.display === "flex") {
+      openEventDetail(eventId);
+    }
+    notifyEventLikesChange(ownerId);
   }
 
   // ---------- CALENDAR WIDGET ----------
@@ -529,6 +779,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderEvents() {
     const data = loadData();
+    buildLikesMaps(data);
     if (!eventsList) return;
 
     eventsList.innerHTML = "";
@@ -571,12 +822,32 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
       });
 
-    if (filtered.length === 0) {
+    const totalMatches = filtered.length;
+    let eventsToRender = filtered;
+    let startIndexForPage = 0;
+    if (hasEventsPagination && eventsPaginationState && eventsPaginationState.pageSize > 0) {
+      const effectiveSize = Math.max(eventsPaginationState.pageSize || defaultEventsPageSize || 1, 1);
+      eventsPaginationState.pageSize = effectiveSize;
+      const totalPages = effectiveSize > 0 ? Math.ceil((totalMatches || 0) / effectiveSize) : 0;
+      if (totalPages === 0) {
+        eventsPaginationState.pageIndex = 0;
+      } else if (eventsPaginationState.pageIndex >= totalPages) {
+        eventsPaginationState.pageIndex = totalPages - 1;
+      } else if (eventsPaginationState.pageIndex < 0) {
+        eventsPaginationState.pageIndex = 0;
+      }
+      startIndexForPage = eventsPaginationState.pageIndex * effectiveSize;
+      const endIndex = startIndexForPage + effectiveSize;
+      eventsToRender = filtered.slice(startIndexForPage, endIndex);
+    }
+    updateEventsPaginationUI(totalMatches, startIndexForPage, eventsToRender.length);
+
+    if (eventsToRender.length === 0) {
       eventsList.innerHTML = '<p class="muted">No events found for this filter.</p>';
       return;
     }
 
-    filtered.forEach(ev => {
+    eventsToRender.forEach(ev => {
       // determine if event is happening within the next 7 days (inclusive)
       const today = todayStart();
       const in7 = new Date(today.getTime() + 7 * 24 * 3600 * 1000);
@@ -585,19 +856,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "event-card";
       const isPast = isPastEvent(ev.date);
-      const baseRatings = ev.ratings || {};
-      const ratingValues = Object.values(baseRatings);
-      const ratingCount = ratingValues.length;
-      const ratingAvg = ratingCount
-        ? ratingValues.reduce((a, b) => a + b, 0) / ratingCount
-        : null;
+      const eventLinks = getEventUserLinks(ev, data);
+      const { count: ratingCount, average: ratingAvg } = getEventRatingStats(eventLinks);
       const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
       const userCanRate = Boolean(currentUser && currentUser.active);
       const sessionValue = userCanRate ? sessionRatings[ev.id] : undefined;
-      const storedUserRating = currentUser ? baseRatings[currentUser.id] : null;
+      const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;
       const userRating = userCanRate
-        ? (sessionValue !== undefined ? sessionValue : storedUserRating || null)
-        : null;
+        ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
+        : storedUserRating ?? null;
+      const ownerProfiles = getEventOwnerProfiles(ev, data);
+      const ownerDisplayText = ownerProfiles
+        .map(profile => escapeHtml(profile.name))
+        .join(", ") || "Community host";
+      const ownerLinkHref = `user_page.html?id=${encodeURIComponent(ev.id)}`;
+      const ownerIdForDisplay = getActiveOwnerId(currentUser);
+      const isLiked = ownerIdForDisplay ? getEffectiveUserLike(ev.id, ownerIdForDisplay) : false;
+      const displayLikes = getDisplayLikes(ev.id, ownerIdForDisplay);
 
       let ratingHtml = "";
       if (isPast) {
@@ -637,6 +912,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const alertBadgeHtml = isSoon && !isPast ? `<span class="event-alert-badge" aria-hidden="true">⚠️ Soon</span>` : "";
+      const ownerHtml = `
+          <div class="event-meta-row event-owner-row">
+            <i class="bi bi-person-circle" aria-hidden="true"></i>
+            <span class="event-owner-label">Owner:</span>
+            <a class="event-owner-link" href="${ownerLinkHref}" data-event-id="${ev.id}">
+              ${ownerDisplayText}
+            </a>
+          </div>
+
+          <div class="event-meta-row">
+            <button class="metric-btn vote-toggle ${isLiked ? "active" : ""}" data-event-id="${ev.id}">
+              <i class="bi ${isLiked ? "bi-star-fill" : "bi-star"}"></i>
+              <span class="vote-count">${displayLikes}</span>
+            </button>
+          </div>
+        `;
 
       card.innerHTML = `
           <h3 class="card-title">${escapeHtml(ev.name)} ${alertBadgeHtml}</h3>
@@ -654,29 +945,31 @@ document.addEventListener("DOMContentLoaded", () => {
             <span>${escapeHtml(ev.localization || "To be announced")}</span>
           </div>
 
+          ${ownerHtml}
+
           ${ratingHtml}
 
           <div class="card-actions">
-            <button class="view-btn">
+            <button class="view-btn explore-btn ghost">
               <i class="bi bi-eye-fill" aria-hidden="true"></i> View
             </button>
-            <button class="rsvp-btn" data-id="${ev.id}" data-requires-login>
+            <button class="rsvp-btn explore-btn success" data-id="${ev.id}" data-requires-login>
               <i class="bi bi-calendar-check" aria-hidden="true"></i> RSVP
             </button>
             ${canManage ? `
-              <button class="edit-btn" data-id="${ev.id}" data-requires-login>
+              <button class="edit-btn explore-btn warning" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
               </button>
             ` : ``}
             ${canManage ? `
-              <button class="delete-btn" data-id="${ev.id}" data-requires-login>
+              <button class="delete-btn explore-btn danger" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-trash3" aria-hidden="true"></i> Delete
               </button>
             ` : ``}
           </div>
         `;
 
-      card.querySelector(".view-btn")
+      card.querySelector(".explore-btn")
         .addEventListener("click", () => openEventDetail(ev.id));
       card.querySelector(".rsvp-btn")
         .addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
@@ -688,6 +981,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (deleteBtn) {
         deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
       }
+      const likeBtn = card.querySelector(".vote-toggle");
+      if (likeBtn) {
+        likeBtn.addEventListener("click", () => toggleEventLike(ev.id));
+      }
+
 
       // Add 'Add to My Calendar' button for upcoming events
       if (!isPast) {
@@ -696,7 +994,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const calBtn = document.createElement('button');
           calBtn.className = 'explore-btn calendar-btn';
           calBtn.type = 'button';
-          calBtn.innerHTML = '<i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i> 📅 Add to My Calendar';
+          calBtn.innerHTML = '<i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i> Add to My Calendar';
           calBtn.addEventListener('click', (e) => {
             e.preventDefault();
             addEventToCalendar({
@@ -759,7 +1057,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!deepLinkHandled && deepLinkEventId) {
       const exists = (data.events || []).some(ev => ev.id === deepLinkEventId);
       if (exists) {
-        const ref = document.referrer && document.referrer.length ? document.referrer : null;
+        const ref =
+          (deepLinkReturnUrl && deepLinkReturnUrl.length) ? decodeURIComponent(deepLinkReturnUrl) :
+            (document.referrer && document.referrer.length ? document.referrer : null);
         openEventDetail(deepLinkEventId, { returnUrl: ref });
         if (!ref) clearDeepLinkParams();
       } else {
@@ -792,21 +1092,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Attendees
-    const attendees = ev.attendees || [];
-    modalAttendeesCountEl.textContent = attendees.length;
+    const eventLinks = getEventUserLinks(ev, data);
+    if (modalAttendeesCountEl) {
+      modalAttendeesCountEl.textContent = eventLinks.length;
+    }
 
     // Rating (only for past events)
     const isPast = isPastEvent(ev.date);
     const currentUser = getCurrentUser();
-    const baseRatings = ev.ratings || {};
-    const values = Object.values(baseRatings);
-    const count = values.length;
-    const avg = count ? values.reduce((a, b) => a + b, 0) / count : null;
+    const { count, average: avg } = getEventRatingStats(eventLinks);
     const sessionValue = currentUser && currentUser.active ? sessionRatings[ev.id] : undefined;
-    const storedUserRating = currentUser ? baseRatings[currentUser.id] : null;
+    const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;
     const userRating = currentUser && currentUser.active
-      ? (sessionValue !== undefined ? sessionValue : storedUserRating || null)
-      : storedUserRating || null;
+      ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
+      : storedUserRating ?? null;
 
     modalRatingStars.innerHTML = "";
 
@@ -867,6 +1166,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // RSVP button
     if (modalRsvpBtn) {
       modalRsvpBtn.onclick = () => rsvpEvent(id);
+    }
+
+    const ownerIdForDisplay = getActiveOwnerId(currentUser);
+    const isLiked = ownerIdForDisplay ? getEffectiveUserLike(ev.id, ownerIdForDisplay) : false;
+    const likeBtn = document.getElementById("modal-likeBtn");
+    if (likeBtn) {
+      likeBtn.classList.toggle("active", isLiked);
+      likeBtn.querySelector(".bi").className = `bi ${isLiked ? "bi-star-fill" : "bi-star"}`;
+      likeBtn.onclick = () => toggleEventLike(id);
     }
 
     // (Optional) share button: simple alert for now
@@ -1030,9 +1338,7 @@ document.addEventListener("DOMContentLoaded", () => {
         summary,
         description,
         type,
-        attendees: [],
-        hostId: currentUser.id || null,
-        ratings: {}
+        hostId: currentUser.id || null
       };
       addEntity(ev);
     }
@@ -1127,6 +1433,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("userStateChange", renderEvents);
 
   // ---------- INITIAL RENDER ----------
+  initEventsPaginationControls();
   // Initialize calendar and render events (calendar will refresh from renderEvents)
   try { initCalendar(); } catch (e) { /* ignore if calendar not present */ }
   renderEvents();

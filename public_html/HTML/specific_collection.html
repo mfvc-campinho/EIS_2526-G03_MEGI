@@ -1,6 +1,8 @@
 ﻿<!DOCTYPE html>
 <!--
     File: public_html/HTML/specific_collection.html
+
+
     Purpose: Collection details page — shows collection metadata, items grid and related events.
     Major sections: NAVIGATION, COLLECTION OVERVIEW, ITEM GRID (injected by app-items.js or app-collections.js), MODALS.
     Notes: JS expects IDs like #collection-title, #collection-items and #collection-events.
@@ -22,6 +24,8 @@
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../CSS/likes.css" />
+    <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
@@ -49,6 +53,11 @@
                     <a href="team_page.html" class="nav-link">
                         <i class="bi bi-people-fill me-1"></i> About Us
                     </a>
+
+                    <!-- Dark mode toggle -->
+                    <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
+                        <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
+                    </button>
 
                     <!-- Login dropdown -->
                     <div class="dropdown profile-dropdown">
@@ -120,6 +129,63 @@
             </section>
 
             <!-- ===============================
+           🔹 COLLECTION STATISTICS
+            =============================== -->
+            <section id="collection-stats" aria-label="Collection statistics">
+                <h2 class="section-subtitle">Collection Statistics</h2>
+                <div class="stats-grid">
+                    <article class="stat-card" data-key="totalItems">
+                        <div class="stat-icon"><i class="bi bi-list"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label">Total items</div>
+                        </div>
+                    </article>
+
+                    <article class="stat-card" data-key="totalValue">
+                        <div class="stat-icon"><i class="bi bi-currency-euro"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label">Total estimated value (€)</div>
+                        </div>
+                    </article>
+
+                    <article class="stat-card" data-key="avgWeight">
+                        <div class="stat-icon"><i class="bi bi-123"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label">Average item weight (g)</div>
+                        </div>
+                    </article>
+
+                    <article class="stat-card" data-key="linkedEvents">
+                        <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label">Linked events</div>
+                        </div>
+                    </article>
+
+                    <article class="stat-card" data-key="oldestItem">
+                        <div class="stat-icon"><i class="bi bi-calendar2-minus"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label">Oldest item (acquired)</div>
+                        </div>
+                    </article>
+
+                    <article class="stat-card" data-key="newestItem">
+                        <div class="stat-icon"><i class="bi bi-calendar2-plus"></i></div>
+                        <div class="stat-body">
+                            <div class="stat-value">—</div>
+                            <div class="stat-label">Newest item (acquired)</div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ===============================
            🔹 ACTION BUTTONS
             =============================== -->
             <!-- Back button (history-based, centered on page) -->
@@ -144,9 +210,54 @@
                 </button>
             </section>
 
+
+            <!-- ===============================
+           ?? ITEMS FILTER
+            =============================== -->
+            <section class="filter-section items-filter" aria-label="Filter collection items">
+                <div class="filter-control">
+                    <label for="itemsFilter" class="filter-label">
+                        <i class="bi bi-funnel me-1" aria-hidden="true"></i>
+                        Show
+                    </label>
+                    <div class="filter-input">
+                        <select id="itemsFilter" class="filter-select">
+                            <option value="all">All items</option>
+                            <option value="liked">Liked by me</option>
+                            <option value="mostLiked">Most liked</option>
+                            <option value="recent">Recently acquired</option>
+                        </select>
+                        <button id="resetItemsFilter" class="filter-clear" type="button" title="Reset filter">
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                <p id="items-filter-note" class="filter-note" aria-live="polite"></p>
+            </section>
+
             <!-- ===============================
            🔹 ITEMS GRID (filled by JS)
             =============================== -->
+            <div class="list-pagination" data-pagination-for="collection-items">
+                <label class="page-size-label">
+                    Ver
+                    <select data-page-size>
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="50">50</option>
+                    </select>
+                    itens de cada vez
+                </label>
+                    <div class="pagination-actions">
+                        <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
+                        <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
             <section class="collection-container" id="collection-items"></section>
 
             <!-- ===============================

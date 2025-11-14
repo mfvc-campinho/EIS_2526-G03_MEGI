@@ -83,7 +83,7 @@ const collectionsData = {
     {
       "owner-id": "rui-frio",
       "owner-name": "Rui Frio",
-      "owner-photo": "../images/cristina.jpg",
+      "owner-photo": "../images/rui.jpg",
       "date-of-birth": "1982-07-14",
       "email": "rui.frio@email.com",
       "password": "password123", // argument not used
@@ -232,8 +232,6 @@ const collectionsData = {
       createdAt: "2025-09-01T00:00:00Z",
       updatedAt: "2025-11-20T00:00:00Z",
       hostId: "collector-main",
-      attendees: ["collector-main", "rui-frio"],
-      ratings: { "collector-main": 5 }
     },
     {
       id: "escudos-event-2",
@@ -246,8 +244,6 @@ const collectionsData = {
       createdAt: "2025-02-15T00:00:00Z",
       updatedAt: "2025-04-15T00:00:00Z",
       hostId: "collector-main",
-      attendees: ["collector-main"],
-      ratings: {}
     },
 
     {
@@ -261,8 +257,6 @@ const collectionsData = {
       createdAt: "2024-11-05T00:00:00Z",
       updatedAt: "2025-01-05T00:00:00Z",
       hostId: "rui-frio",
-      attendees: ["rui-frio"],
-      ratings: { "rui-frio": 4 }
     },
 
     {
@@ -276,8 +270,6 @@ const collectionsData = {
       createdAt: "2024-12-01T00:00:00Z",
       updatedAt: "2025-02-01T00:00:00Z",
       hostId: "rui-frio",
-      attendees: ["rui-frio", "collector-main"],
-      ratings: { "collector-main": 5, "rui-frio": 5 }
     },
     {
       id: "pokemon-event-2",
@@ -290,8 +282,6 @@ const collectionsData = {
       createdAt: "2025-01-20T00:00:00Z",
       updatedAt: "2025-03-15T00:00:00Z",
       hostId: "rui-frio",
-      attendees: ["rui-frio"],
-      ratings: {}
     },
 
     {
@@ -305,8 +295,6 @@ const collectionsData = {
       createdAt: "2024-10-10T00:00:00Z",
       updatedAt: "2024-12-12T00:00:00Z",
       hostId: "rui-frio",
-      attendees: ["rui-frio"],
-      ratings: { "rui-frio": 3 }
     },
 
     {
@@ -320,8 +308,6 @@ const collectionsData = {
       createdAt: "2025-02-28T00:00:00Z",
       updatedAt: "2025-04-30T00:00:00Z",
       hostId: "rui-frio",
-      attendees: ["rui-frio"],
-      ratings: {}
     },
     {
       id: "jerseys-event-2",
@@ -334,8 +320,6 @@ const collectionsData = {
       createdAt: "2025-05-05T00:00:00Z",
       updatedAt: "2025-07-18T00:00:00Z",
       host: "Liga Memorabilia",
-      attendees: [],
-      ratings: {}
     }
   ],
 
@@ -377,6 +361,27 @@ const collectionsData = {
     { collectionId: "jerseys", eventId: "jerseys-event-1" },
     { collectionId: "jerseys", eventId: "jerseys-event-2" }
   ],
+
+  // ======================================================
+  // RELATIONSHIP N:N – EVENTS ↔ USERS
+  // ======================================================
+  eventsUsers: [
+    { eventId: "escudos-event-1", userId: "collector-main", rating: 5 },
+    { eventId: "escudos-event-1", userId: "rui-frio", rating: null },
+
+    { eventId: "escudos-event-2", userId: "collector-main", rating: null },
+
+    { eventId: "playboys-event-1", userId: "rui-frio", rating: 4 },
+
+    { eventId: "pokemon-event-1", userId: "collector-main", rating: 5 },
+    { eventId: "pokemon-event-1", userId: "rui-frio", rating: 5 },
+
+    { eventId: "pokemon-event-2", userId: "rui-frio", rating: null },
+
+    { eventId: "portraits-event-1", userId: "rui-frio", rating: 3 },
+
+    { eventId: "jerseys-event-1", userId: "rui-frio", rating: null }
+  ],
   // ======================================================
   // RELATIONSHIP N:1 COLLECTIONS ↔ USERS
   // ======================================================
@@ -403,7 +408,15 @@ const collectionsData = {
         { collectionId: "pokemon", order: 4 },
         { collectionId: "jerseys", order: 5 }
       ],
-      likes: ["escudos", "escudos-gold", "playboys", "jerseys"]
+      likes: ["escudos", "escudos-gold", "playboys", "jerseys"],
+      likedItems: [
+        "escudos-item-1",
+        "escudos-item-2",
+        "playboys-item-2",
+        "pokemon-item-1",
+        "jerseys-item-1"
+      ],
+      likedEvents: ["escudos-event-1", "pokemon-event-1"]
     },
     {
       ownerId: "rui-frio",
@@ -413,7 +426,14 @@ const collectionsData = {
         { collectionId: "portraits", order: 2 },
         { collectionId: "jerseys", order: 3 }
       ],
-      likes: ["pokemon", "jerseys", "escudos"]
+      likes: ["pokemon", "jerseys", "escudos"],
+      likedItems: [
+        "pokemon-item-1",
+        "pokemon-item-2",
+        "portraits-item-1",
+        "jerseys-item-2"
+      ],
+      likedEvents: ["playboys-event-1", "pokemon-event-1", "jerseys-event-2"]
     }
   ]
 };

@@ -17,7 +17,8 @@
   <link rel="stylesheet" href="../CSS/user_page.css">
   <link rel="stylesheet" href="../CSS/grid.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+  <link rel="stylesheet" href="../CSS/likes.css">
+  <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
@@ -45,6 +46,11 @@
           <a href="team_page.html" class="nav-link">
             <i class="bi bi-people-fill me-1"></i> About Us
           </a>
+
+          <!-- Dark mode toggle -->
+          <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
+            <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
+          </button>
 
           <!-- Login dropdown -->
           <div class="dropdown profile-dropdown">
@@ -118,7 +124,7 @@
           <!-- Actions: same style as Home/All Collections -->
           <div class="user-actions collection-actions">
             <button id="edit-profile-btn" class="explore-btn warning" data-requires-login>
-              <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+              <i class="bi bi-pencil-square-square me-1" aria-hidden="true"></i>
               Edit Profile
             </button>
 
@@ -151,10 +157,41 @@
         <p class="notice-message">Sign in to see the collections you've starred.</p>
       </section>
 
+      <h2 id="user-liked-items-title">Liked Items</h2>
+      <section id="user-liked-items" class="liked-items collection-container" data-item-source="liked"
+        data-owner-context="true">
+        <p class="notice-message">You haven't liked any items yet.</p>
+      </section>
+
+      <h2 id="user-liked-events-title">Liked Events</h2>
+      <section id="user-liked-events" class="liked-events collection-container">
+        <p class="notice-message">You haven't liked any events yet.</p>
+      </section>
+
       <!-- ===============================
            USER COLLECTIONS
       =============================== -->
       <h2 id="my-collections-title">Collections</h2>
+      <div class="list-pagination" data-pagination-for="user-collections">
+        <label class="page-size-label">
+          See
+          <select data-page-size>
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="50">50</option>
+          </select>
+          collections at the same time
+        </label>
+        <div class="pagination-actions">
+          <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
+          <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
       <section id="user-collections" class="collection-container"></section>
 
       <h2 id="user-events-title">Collection Events</h2>
@@ -162,7 +199,7 @@
         <p class="notice-message">Loading events...</p>
       </section>
 
-      <h2 id="user-rsvp-title">Events I've RSVPed</h2>
+      <h2 id="user-rsvp-title">Eventos RSVP</h2>
       <section id="user-rsvp-events" class="user-events">
         <p class="notice-message">Loading RSVP events...</p>
       </section>
@@ -188,7 +225,7 @@
         <input type="text" id="col-type" name="col-type" required>
 
         <div class="modal-actions">
-          <button type="submit" class="explore-btn success">Save</button>
+          <button type="submit" class="explore-btn success"> <i class="bi bi-save me-1"></i>Save</button>
           <button type="button" id="cancel-collection-modal" class="explore-btn danger delete-btn">Cancel</button>
         </div>
       </form>

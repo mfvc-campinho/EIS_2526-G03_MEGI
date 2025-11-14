@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const deleteBtn = document.getElementById("delete-item-btn");
   const collectionsListEl = document.getElementById("item-collections-list");
   const ownerLinksEl = document.getElementById("item-owner-links");
+  const itemLikeBtn = document.getElementById("item-like-btn");
+  const itemLikeCount = document.getElementById("item-like-count");
+  const itemLikeHelper = document.getElementById("item-like-helper");
 
   if (!itemId) {
     alert("No item selected.");
@@ -171,10 +174,72 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function getItemLikeHelpers() {
+    return window.itemLikeHelpers || null;
+  }
+
+  function updateItemLikeDisplay(snapshot) {
+    if (!itemLikeBtn || !itemLikeCount) return;
+    if (!snapshot) {
+      itemLikeBtn.disabled = true;
+      itemLikeBtn.classList.remove("active");
+      itemLikeBtn.setAttribute("aria-pressed", "false");
+      itemLikeBtn.title = "Likes unavailable right now.";
+      const icon = itemLikeBtn.querySelector("i");
+      if (icon) icon.className = "bi bi-heart";
+      itemLikeCount.textContent = "0";
+      if (itemLikeHelper) itemLikeHelper.textContent = "Likes unavailable right now.";
+      return;
+    }
+    const { likeCount = 0, liked = false, ownerId = null } = snapshot;
+    itemLikeBtn.disabled = false;
+    itemLikeBtn.classList.toggle("active", liked);
+    itemLikeBtn.setAttribute("aria-pressed", liked ? "true" : "false");
+    const icon = itemLikeBtn.querySelector("i");
+    if (icon) icon.className = liked ? "bi bi-heart-fill" : "bi bi-heart";
+    itemLikeCount.textContent = String(likeCount);
+    if (ownerId) {
+      itemLikeBtn.title = liked ? "Unlike this item" : "Like this item";
+      if (itemLikeHelper) itemLikeHelper.textContent = "Demo only: likes are not saved.";
+    } else {
+      itemLikeBtn.title = "Sign in to like this item.";
+      if (itemLikeHelper) itemLikeHelper.textContent = "Sign in to like this item.";
+    }
+  }
+
+  function refreshItemLikeState() {
+    if (!itemLikeBtn) return;
+    const helpers = getItemLikeHelpers();
+    if (!helpers || typeof helpers.snapshot !== "function") {
+      updateItemLikeDisplay(null);
+      return;
+    }
+    const snapshot = helpers.snapshot(itemId);
+    updateItemLikeDisplay(snapshot);
+  }
+
+  function initItemLikeButton() {
+    if (!itemLikeBtn) return;
+    itemLikeBtn.dataset.itemId = itemId;
+    refreshItemLikeState();
+    itemLikeBtn.addEventListener("click", () => {
+      const helpers = getItemLikeHelpers();
+      if (!helpers || typeof helpers.toggle !== "function") {
+        alert("Likes unavailable right now.");
+        return;
+      }
+      helpers.toggle(itemId, {
+        skipRender: true,
+        onUpdate: updateItemLikeDisplay
+      });
+    });
+  }
+
   // Render breadcrumb then collection/owner links
   renderBreadcrumb();
   renderCollectionLinks();
   renderOwnerLinks();
+  initItemLikeButton();
 
   if (canManage) {
     addBtn?.addEventListener("click", () => {
@@ -206,4 +271,14 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     actionsContainer?.classList.add("hidden");
   }
+
+  window.addEventListener("userStateChange", () => refreshItemLikeState());
+  window.addEventListener("userItemLikesChange", (event) => {
+    const changedOwner = event.detail?.ownerId;
+    const helpers = getItemLikeHelpers();
+    const activeOwner = helpers?.getOwnerId ? helpers.getOwnerId() : null;
+    if (!changedOwner || !activeOwner || changedOwner === activeOwner) {
+      refreshItemLikeState();
+    }
+  });
 });

@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Simulation only: voting here would change the collection's total.");
         const currentState = getEffectiveUserLike(collection, ownerId);
         voteState[collectionId] = !currentState;
-        renderCollections(lastRenderCriteria, lastRenderLimit);
+        renderCollections(lastRenderCriteria);
         notifyLikesChange(ownerId);
     }
 
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 updated.sort((a, b) => a.order - b.order);
                 userChosenState[ownerId] = updated;
                 closeTopPickModal();
-                renderCollections(lastRenderCriteria, lastRenderLimit);
+                renderCollections(lastRenderCriteria);
                 notifyShowcaseChange(ownerId);
             },
             onRemove: existing
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const filtered = entries.filter(entry => entry.collectionId !== collectionId);
                     userChosenState[ownerId] = filtered;
                     closeTopPickModal();
-                    renderCollections(lastRenderCriteria, lastRenderLimit);
+                    renderCollections(lastRenderCriteria);
                     notifyShowcaseChange(ownerId);
                 }
                 : null,
@@ -119,6 +119,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const isHomePage = list?.id === "homeCollections";
     const isUserPage = list?.id === "user-collections";
+    const paginationControls = Array.from(document.querySelectorAll(`[data-pagination-for="${list.id}"]`));
+    const hasPaginationControls = paginationControls.length > 0;
+    const defaultPageSize = hasPaginationControls ? readInitialPageSize(paginationControls) : null;
+    const paginationState = hasPaginationControls
+        ? {
+            pageSize: defaultPageSize,
+            pageIndex: 0
+        }
+        : null;
 
     // Elements that may or may not exist depending on the page
     const filter = document.getElementById("rankingFilter");
@@ -141,7 +150,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let defaultShowcaseMap = {};
     let showcaseInitialized = false;
     let lastRenderCriteria = "lastAdded";
-    let lastRenderLimit = null;
     let lastRenderData = null;
     let topPickModalElements = null;
     let topPickModalHandlers = null;
@@ -156,6 +164,94 @@ document.addEventListener("DOMContentLoaded", () => {
     function notifyLikesChange(ownerId) {
         if (!ownerId) return;
         window.dispatchEvent(new CustomEvent("userLikesChange", { detail: { ownerId } }));
+    }
+
+    function readInitialPageSize(controls) {
+        for (const ctrl of controls) {
+            const selector = ctrl.querySelector("[data-page-size]");
+            if (!selector) continue;
+            const parsed = parseInt(selector.value, 10);
+            if (!Number.isNaN(parsed) && parsed > 0) {
+                return parsed;
+            }
+        }
+        return 10;
+    }
+
+    function syncPaginationSelects(value) {
+        if (!hasPaginationControls) return;
+        paginationControls.forEach(ctrl => {
+            const selector = ctrl.querySelector("[data-page-size]");
+            if (selector) {
+                selector.value = String(value);
+            }
+        });
+    }
+
+    function updatePaginationSummary(total, startIndex = 0, shown = 0) {
+        if (!hasPaginationControls) return;
+        const cappedTotal = Math.max(total || 0, 0);
+        const cappedShown = Math.max(Math.min(shown || 0, cappedTotal), 0);
+        const cappedStart = cappedTotal === 0 ? 0 : Math.min(Math.max(startIndex || 0, 0), Math.max(cappedTotal - 1, 0));
+        const rangeStart = cappedTotal === 0 || cappedShown === 0 ? 0 : cappedStart + 1;
+        const rangeEnd = cappedTotal === 0 || cappedShown === 0 ? 0 : cappedStart + cappedShown;
+        const effectivePageSize = paginationState ? Math.max(paginationState.pageSize || defaultPageSize || 1, 1) : 1;
+        const totalPages = cappedTotal === 0 ? 0 : Math.ceil(cappedTotal / effectivePageSize);
+        const currentPage = paginationState ? paginationState.pageIndex : 0;
+        const atStart = !cappedTotal || currentPage <= 0;
+        const atEnd = !cappedTotal || currentPage >= Math.max(totalPages - 1, 0);
+        paginationControls.forEach(ctrl => {
+            const status = ctrl.querySelector("[data-pagination-status]");
+            if (status) {
+                status.textContent = `Showing ${rangeStart}-${rangeEnd} of ${cappedTotal}`;
+            }
+            const prevBtn = ctrl.querySelector("[data-page-prev]");
+            if (prevBtn) {
+                prevBtn.disabled = atStart;
+                prevBtn.setAttribute("aria-disabled", atStart ? "true" : "false");
+                prevBtn.classList.toggle("disabled", atStart);
+            }
+            const nextBtn = ctrl.querySelector("[data-page-next]");
+            if (nextBtn) {
+                nextBtn.disabled = atEnd;
+                nextBtn.setAttribute("aria-disabled", atEnd ? "true" : "false");
+                nextBtn.classList.toggle("disabled", atEnd);
+            }
+        });
+    }
+
+    function initializePaginationControls() {
+        if (!hasPaginationControls || !paginationState) return;
+        syncPaginationSelects(paginationState.pageSize);
+        paginationControls.forEach(ctrl => {
+            const selector = ctrl.querySelector("[data-page-size]");
+            if (selector) {
+                selector.addEventListener("change", event => {
+                    const next = parseInt(event.target.value, 10);
+                    if (Number.isNaN(next) || next <= 0) return;
+                    paginationState.pageSize = next;
+                    paginationState.pageIndex = 0;
+                    syncPaginationSelects(next);
+                    renderCollections(lastRenderCriteria);
+                });
+            }
+            const prevBtn = ctrl.querySelector("[data-page-prev]");
+            if (prevBtn) {
+                prevBtn.addEventListener("click", () => {
+                    if (paginationState.pageIndex > 0) {
+                        paginationState.pageIndex -= 1;
+                        renderCollections(lastRenderCriteria);
+                    }
+                });
+            }
+            const nextBtn = ctrl.querySelector("[data-page-next]");
+            if (nextBtn) {
+                nextBtn.addEventListener("click", () => {
+                    paginationState.pageIndex += 1;
+                    renderCollections(lastRenderCriteria);
+                });
+            }
+        });
     }
 
     function buildLikesMaps(data) {
@@ -422,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const ev = eventsMap[eventId];
                 if (!ev)
                     return;
-                const ts = getTimestamp(ev.updatedAt) ?? getTimestamp(ev.createdAt) ?? getTimestamp(ev.date);
+                const ts = getTimestamp(ev.updatedAt) ?? getTimestamp(ev.createdAt);
                 if (ts && (!latest || ts > latest))
                     latest = ts;
             });
@@ -435,7 +531,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================
     // 3. Collections rendering
     // ==========================================================
-    function renderCollections(criteria = "lastAdded", limit = null) {
+    function renderCollections(criteria = "lastAdded", limitOverride) {
         const data = appData.loadData();
         lastRenderData = data;
         ensureDefaultShowcases(data);
@@ -443,8 +539,6 @@ document.addEventListener("DOMContentLoaded", () => {
         buildLikesMaps(data);
         let collections = data.collections || [];
         lastRenderCriteria = criteria;
-        lastRenderLimit = limit;
-
         if (isUserPage) {
             const ownerId = resolveUserPageOwnerId();
             if (!ownerId) {
@@ -482,9 +576,32 @@ document.addEventListener("DOMContentLoaded", () => {
             collections.sort((a, b) => (itemCounts[b.id] || 0) - (itemCounts[a.id] || 0));
         }
 
-        if (limit) {
-            collections = collections.slice(0, limit);
+        const totalAvailable = collections.length;
+        const limitOverridden = typeof limitOverride === "number" && limitOverride > 0;
+        let startIndex = 0;
+        let sliceSize = limitOverridden
+            ? limitOverride
+            : totalAvailable;
+        const usingPagination = hasPaginationControls && paginationState && !limitOverridden;
+
+        if (usingPagination) {
+            const effectiveSize = Math.max(paginationState.pageSize || defaultPageSize || 1, 1);
+            paginationState.pageSize = effectiveSize;
+            const totalPages = effectiveSize > 0 ? Math.ceil((totalAvailable || 0) / effectiveSize) : 0;
+            if (totalPages === 0) {
+                paginationState.pageIndex = 0;
+            } else if (paginationState.pageIndex >= totalPages) {
+                paginationState.pageIndex = totalPages - 1;
+            } else if (paginationState.pageIndex < 0) {
+                paginationState.pageIndex = 0;
+            }
+            startIndex = paginationState.pageIndex * effectiveSize;
+            sliceSize = effectiveSize;
         }
+
+        const endIndex = sliceSize > 0 ? startIndex + sliceSize : startIndex;
+        collections = collections.slice(startIndex, endIndex);
+        updatePaginationSummary(totalAvailable, startIndex, collections.length);
 
         if (!collections.length) {
             list.innerHTML = `<p class="notice-message">No collections found.</p>`;
@@ -522,7 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const buttons = `
                 <button class="explore-btn" onclick="togglePreview('${col.id}', this)"><i class="bi bi-eye"></i> Show Preview</button>
                 <button class="explore-btn" onclick="window.location.href='specific_collection.html?id=${col.id}'"><i class="bi bi-search"></i> Explore More</button>
-                ${canEdit ? `<button class="explore-btn" onclick="editCollection('${col.id}')"><i class="bi bi-pencil"></i> Edit</button>` : ""}
+                ${canEdit ? `<button class="explore-btn warning" onclick="editCollection('${col.id}')"><i class="bi bi-pencil-square"></i> Edit</button>` : ""}
                 ${canEdit ? `<button class="explore-btn danger" onclick="deleteCollection('${col.id}')"><i class="bi bi-trash"></i> Delete</button>` : ""}
             `;
 
@@ -534,7 +651,12 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="card-info">
             <h3>${col.name}</h3>
             <p>${col.summary || ""}</p>
-            <div class="items-preview" id="preview-${col.id}" style="display:none;">${itemsHTML}</div>
+            <div class="items-preview" id="preview-${col.id}" style="display:none;">
+              ${itemsHTML}
+              <div class="collection-preview-meta muted" id="meta-${col.id}">
+                <!-- This will be populated by togglePreview -->
+              </div>
+            </div>
             <div class="collection-metrics">
               <button class="metric-btn vote-toggle ${isStarred ? "active" : ""}" data-collection-id="${col.id}">
                 <i class="bi ${isStarred ? "bi-star-fill" : "bi-star"}"></i>
@@ -557,13 +679,32 @@ document.addEventListener("DOMContentLoaded", () => {
     window.togglePreview = (id, btn) => {
         const img = document.getElementById(`img-${id}`);
         const prev = document.getElementById(`preview-${id}`);
+        const meta = document.getElementById(`meta-${id}`);
         const isShowingPreview = prev.style.display === "block";
-        prev.style.display = isShowingPreview ? "none" : "block";
-        img.style.display = isShowingPreview ? "block" : "none";
-        // Use innerHTML to include Bootstrap Icon markup and readable text
-        btn.innerHTML = isShowingPreview
-            ? '<i class="bi bi-eye"></i> Show Preview'
-            : '<i class="bi bi-eye-slash"></i> Hide Preview';
+
+        if (isShowingPreview) {
+            // Hide the preview
+            prev.style.display = "none";
+            img.style.display = "block";
+            btn.innerHTML = '<i class="bi bi-eye"></i> Show Preview';
+        } else {
+            // Show the preview and populate meta-data
+            const data = lastRenderData || appData.loadData();
+            const col = data.collections.find(c => c.id === id);
+            if (!col) return;
+
+            const { latestMap, itemsByCollection } = buildCollectionDerivedMaps(data);
+            const itemCount = (itemsByCollection[col.id] || []).length;
+            const lastUpdatedDate = latestMap[id] ? new Date(latestMap[id]).toLocaleDateString() : "N/A";
+
+            meta.innerHTML = `
+                <span class="meta-item"><i class="bi bi-list-ol me-1"></i> ${itemCount} items</span>
+                <span class="meta-item"><i class="bi bi-clock-history me-1"></i> Last updated: ${lastUpdatedDate}</span>`;
+
+            prev.style.display = "block";
+            img.style.display = "none";
+            btn.innerHTML = '<i class="bi bi-eye-slash"></i> Hide Preview';
+        }
     };
 
     window.editCollection = id => {
@@ -611,7 +752,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Homepage filter
     if (filter) {
         filter.addEventListener("change", e =>
-            renderCollections(e.target.value, isHomePage ? 5 : null)
+            renderCollections(e.target.value)
         );
     }
     // Collection modal
@@ -677,15 +818,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // React to global user state changes
     window.addEventListener("userStateChange", () => {
         updateUserState();
-        renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
+        renderCollections(filter ? filter.value : "lastAdded");
     });
 
     // ==========================================================
     // 6. Initialization
     // ==========================================================
+    initializePaginationControls();
     updateUserState();
-    renderCollections("lastAdded", isHomePage ? 5 : null);
+    renderCollections("lastAdded");
 });
-
-
-

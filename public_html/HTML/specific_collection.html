@@ -3,7 +3,7 @@
     File: public_html/HTML/specific_collection.html
 
 
-    Purpose: Collection details page � shows collection metadata, items grid and related events.
+    Purpose: Collection details page shows collection metadata, items grid and related events.
     Major sections: NAVIGATION, COLLECTION OVERVIEW, ITEM GRID (injected by app-items.js or app-collections.js), MODALS.
     Notes: JS expects IDs like #collection-title, #collection-items and #collection-events.
 -->
@@ -31,7 +31,7 @@
 <body>
     <div id="content">
         <!-- ===============================
-            ?? NAVIGATION BAR (kept consistent)
+            NAVIGATION BAR (kept consistent)
             =============================== -->
 
         <header>
@@ -82,10 +82,10 @@
         </header>
 
         <!-- ===============================
-             ?? MAIN CONTENT
+             MAIN CONTENT
             =============================== -->
         <main>
-            <!-- ?? Breadcrumb (standardized) -->
+            <!--  Breadcrumb (standardized) -->
             <nav class="breadcrumb-nav" aria-label="Breadcrumb">
                 <ol class="breadcrumb-list">
                     <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
@@ -95,7 +95,7 @@
                 </ol>
             </nav>
 
-            <!-- ?? Page Title (filled by JS) -->
+            <!-- Page Title (filled by JS) -->
             <h1 id="collection-title" class="page-title">Collection</h1>
 
 
@@ -103,7 +103,7 @@
 
 
             <!-- ===============================
-               ?? ACTION BUTTONS
+               ACTION BUTTONS
                 =============================== -->
             <!-- Back button (history-based, centered on page) -->
             <div class="center-block">
@@ -182,7 +182,7 @@
             </section>
 
             <!-- ===============================
-               ?? ITEMS GRID (filled by JS)
+                ITEMS GRID (filled by JS)
                 =============================== -->
             <div class="list-pagination" data-pagination-for="collection-items">
                 <label class="page-size-label">
@@ -210,7 +210,7 @@
 
 
             <!-- ===============================
-                      ?? COLLECTION STATISTICS
+                       COLLECTION STATISTICS
                        =============================== -->
             <section id="collection-stats" aria-label="Collection statistics">
                 <h2 class="section-subtitle">Collection Statistics</h2>
@@ -268,7 +268,7 @@
 
 
             <!-- ===============================
-          ?? COLLECTION OVERVIEW CARD
+        COLLECTION OVERVIEW CARD
            =============================== -->
             <section class="collection-hero">
                 <div id="collection-meta">
@@ -279,11 +279,11 @@
                     <div id="meta-text">
                         <p>
                             <strong>Owner:</strong>
-                            <span id="owner-name">�</span>
+                            <span id="owner-name"></span>
                         </p>
                         <p>
                             <strong>Created:</strong>
-                            <span id="creation-date">�</span>
+                            <span id="creation-date"></span>
                         </p>
                         <p>
                             <strong>Type:</strong>
@@ -303,8 +303,8 @@
             </section>
 
             <!-- ===============================
-?? RELATED EVENTS
-=============================== -->
+                RELATED EVENTS
+                =============================== -->
             <section class="collection-events">
                 <h2 class="section-subtitle">Collection Events</h2>
                 <div id="collection-events" class="collection-events-list">
@@ -314,7 +314,7 @@
         </main>
     </div>
     <!-- ===============================
-           ?? MODAL: ADD / EDIT ITEM
+            MODAL: ADD / EDIT ITEM
            =============================== -->
     <div id="item-modal" class="modal">
         <div class="modal-content">
@@ -361,7 +361,7 @@
     </div>
 
     <!-- ===============================
-           ?? MODAL: EDIT COLLECTION
+            MODAL: EDIT COLLECTION
            =============================== -->
     <div id="collection-modal" class="modal">
         <div class="modal-content">
@@ -402,18 +402,17 @@
     </div>
 
     <!-- ===============================
-           ?? FOOTER (unchanged)
+           FOOTER (unchanged)
            =============================== -->
     <footer>
         <div class="footer-content">
             <p>
-                Made with <span class="heart">??</span> by
+                Made with <span class="heart">❤️</span> by
                 <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
                     <i class="bi bi-github" aria-hidden="true"></i>
                     EIS_2526-G03_MEGI
                 </a>
             </p>
-
             <div class="footer-links">
                 <a href="home_page.html">Home Page</a>
                 <a href="all_collections.html">Collections</a>
@@ -424,8 +423,9 @@
         </div>
     </footer>
 
+
     <!-- ===============================
-           ?? SCRIPTS (same IDs, same behavior)
+           SCRIPTS (same IDs, same behavior)
            =============================== -->
     <div id="forgot-password-modal" class="modal">
         <div class="modal-content">

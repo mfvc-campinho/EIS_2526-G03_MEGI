@@ -140,6 +140,14 @@
               <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
               Add Collection
             </button>
+            <button id="profile-add-item-btn" class="explore-btn success" data-requires-login>
+              <i class="bi bi-box-seam me-1" aria-hidden="true"></i>
+              Add Item
+            </button>
+            <button id="profile-add-event-btn" class="explore-btn success" data-requires-login>
+              <i class="bi bi-calendar-plus me-1" aria-hidden="true"></i>
+              Add Event
+            </button>
             <button id="follow-user-btn" class="explore-btn success" type="button" data-requires-login hidden>
               <i class="bi bi-person-plus me-1" aria-hidden="true"></i>
               <span class="follow-label">Follow</span>
@@ -319,6 +327,51 @@
   </div>
 
   <!-- 🔹 MODALS PLACEHOLDER -->
+
+  <div id="item-modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <h2 id="modal-title">Add Item</h2>
+      <form id="item-form">
+        <input type="hidden" id="item-id" />
+
+        <div class="form-section form-section--required">
+          <h3>Required fields</h3>
+          <label for="item-name">Name:</label>
+          <input type="text" id="item-name" required />
+          <label for="item-price">Price (€):</label>
+          <input type="number" id="item-price" step="0.01" required />
+          <label for="item-collections">Collections:</label>
+          <select id="item-collections" name="item-collections" multiple required></select>
+          <small class="form-hint">
+            Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.
+          </small>
+        </div>
+
+        <div class="form-section form-section--optional">
+          <h3>Optional fields</h3>
+          <label for="item-importance">Importance:</label>
+          <input type="text" id="item-importance" />
+          <label for="item-weight">Weight (g):</label>
+          <input type="number" id="item-weight" step="0.01" />
+          <label for="item-date">Acquisition Date:</label>
+          <input type="date" id="item-date" />
+          <label for="item-image">Image (URL):</label>
+          <input type="text" id="item-image" placeholder="../images/default.jpg" />
+        </div>
+
+        <div class="modal-actions crud-controls">
+          <button type="submit" class="explore-btn">
+            <i class="bi bi-save me-1" aria-hidden="true"></i> Save
+          </button>
+          <button type="button" id="cancel-modal" class="explore-btn danger delete-btn">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="collection-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-collection-modal">&times;</span>

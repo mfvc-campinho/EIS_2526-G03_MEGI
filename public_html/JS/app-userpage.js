@@ -22,6 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const likedEventsContainer = document.getElementById("user-liked-events");
   const followUserBtn = document.getElementById("follow-user-btn");
   const userCollectionsTitleEl = document.getElementById("my-collections-title");
+  const itemModal = document.getElementById("item-modal");
+  const itemForm = document.getElementById("item-form");
+  const closeItemModalBtn = document.getElementById("close-modal");
+  const cancelItemModalBtn = document.getElementById("cancel-modal");
+  const itemCollectionsSelect = document.getElementById("item-collections");
+  const addItemProfileBtn = document.getElementById("profile-add-item-btn");
+  const addEventProfileBtn = document.getElementById("profile-add-event-btn");
 
   // Modal elements
   const profileModal = document.getElementById("user-profile-modal");
@@ -564,6 +571,55 @@ document.addEventListener("DOMContentLoaded", () => {
       : `Follow ${ownerName || "this collector"}`;
   }
 
+  function populateItemCollectionsSelect() {
+    if (!itemCollectionsSelect) return;
+    const data = appData?.loadData ? appData.loadData() : null;
+    const collections = Array.isArray(data?.collections) ? data.collections : [];
+    itemCollectionsSelect.innerHTML = "";
+    if (!collections.length) {
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      placeholder.textContent = "No collections available";
+      itemCollectionsSelect.appendChild(placeholder);
+      return;
+    }
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.textContent = "Select one or more collections";
+    itemCollectionsSelect.appendChild(placeholder);
+    collections.forEach(col => {
+      const option = document.createElement("option");
+      option.value = col.id || "";
+      option.textContent = col.name || col["collection-name"] || "Untitled collection";
+      itemCollectionsSelect.appendChild(option);
+    });
+  }
+
+  function openItemModal() {
+    if (!itemModal) return;
+    populateItemCollectionsSelect();
+    itemModal.style.display = "flex";
+  }
+
+  function closeItemModal() {
+    if (!itemModal) return;
+    itemForm?.reset();
+    if (itemCollectionsSelect) {
+      itemCollectionsSelect.selectedIndex = -1;
+    }
+    itemModal.style.display = "none";
+  }
+
+  function handleItemFormSubmit(event) {
+    event.preventDefault();
+    alert("This prototype only simulates adding items; no data is saved.");
+    closeItemModal();
+  }
+
   function handleTopPickAction(event) {
     const btn = event.target.closest("[data-top-pick-action]");
     if (!btn) return;
@@ -693,6 +749,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!viewedOwnerId || activeUser.id === viewedOwnerId) return;
     toggleFollowUser(viewedOwnerId);
     renderFollowButton(currentUserData?.["owner-name"] || viewedOwnerId);
+  });
+
+  addItemProfileBtn?.addEventListener("click", openItemModal);
+
+  closeItemModalBtn?.addEventListener("click", closeItemModal);
+  cancelItemModalBtn?.addEventListener("click", closeItemModal);
+  itemForm?.addEventListener("submit", handleItemFormSubmit);
+  window.addEventListener("click", (event) => {
+    if (event.target === itemModal) {
+      closeItemModal();
+    }
+  });
+
+  addEventProfileBtn?.addEventListener("click", () => {
+    const returnUrl = encodeURIComponent(window.location.href);
+    window.location.href = `event_page.html?newEvent=true&returnUrl=${returnUrl}`;
   });
 
   window.addEventListener("userShowcaseChange", (event) => {

@@ -289,23 +289,23 @@
                             <input type="text" id="evt-name" name="evt-name" required />
                             <label for="evt-date">Date &amp; Time:</label>
                             <input type="datetime-local" id="evt-date" name="evt-date" required />
+                            <label for="evt-location">Location:</label>
+                            <input type="text" id="evt-location" name="evt-location" required />
+                            <label for="evt-collections">Associated collections</label>
+                            <select id="evt-collections" name="evt-collections" multiple size="4" required>
+                                <!-- Filled via JavaScript -->
+                            </select>
+                            <small class="form-hint">Press Ctrl/Cmd (⌘) or Shift to select multiple collections.</small>
                         </div>
 
                         <div class="form-section form-section--optional">
                             <h3>Optional fields</h3>
-                            <label for="evt-location">Location:</label>
-                            <input type="text" id="evt-location" name="evt-location" />
                             <label for="evt-summary">Summary:</label>
                             <input type="text" id="evt-summary" name="evt-summary" />
                             <label for="evt-description">Description:</label>
                             <textarea id="evt-description" name="evt-description"></textarea>
                             <label for="evt-type">Type:</label>
                             <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop" />
-                            <label for="evt-collections">Associated collections</label>
-                            <select id="evt-collections" name="evt-collections" multiple size="4">
-                                <!-- Filled via JavaScript -->
-                            </select>
-                            <small class="form-hint">Press Ctrl/Cmd (⌘) or Shift to select multiple collections.</small>
                         </div>
 
                         <div class="modal-actions">

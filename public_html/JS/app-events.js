@@ -11,12 +11,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   let deepLinkEventId = urlParams.get("id");
   const deepLinkReturnUrl = urlParams.get("returnUrl");
+  const shouldOpenNewEventModal = urlParams.get("newEvent") === "true";
   const collectionIdParam = urlParams.get("collectionId");
   let deepLinkHandled = false;
   const sessionState = window.demoEventsState || (window.demoEventsState = {});
   const voteState = sessionState.voteState || (sessionState.voteState = {});
   let likesByEventMap = {};
   let ownerLikesMap = {};
+  let editModalReturnUrl = null;
 
   const sessionRatings = {};
   let modalReturnUrl = null;
@@ -80,18 +82,42 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelEditBtn = document.getElementById("cancel-event-edit");
 
   let locationFilterPopulated = false;
+  function toLocalDateTimeString(date) {
+    const pad = (value) => String(value).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+  if (fieldDate) {
+    const now = new Date();
+    fieldDate.setAttribute("min", toLocalDateTimeString(now));
+  }
 
   // ---------- HELPERS ----------
+
+  const DATA_STORAGE_KEY = "collectionsData";
+  let inMemoryCollectionsData = null;
 
   function loadData() {
     if (window.appData && typeof window.appData.loadData === "function") {
       return window.appData.loadData();
     }
-    try {
-      return JSON.parse(localStorage.getItem("collectionsData")) || { events: [] };
-    } catch {
-      return { events: [] };
+    if (inMemoryCollectionsData) return inMemoryCollectionsData;
+    if (typeof window !== "undefined" && window.localStorage) {
+      try {
+        const stored = JSON.parse(window.localStorage.getItem(DATA_STORAGE_KEY));
+        inMemoryCollectionsData = stored || { events: [] };
+      } catch {
+        inMemoryCollectionsData = { events: [] };
+      }
+    } else {
+      inMemoryCollectionsData = { events: [] };
     }
+    return inMemoryCollectionsData;
+  }
+
+  function persistCollectionsData(data) {
+    if (!data) return false;
+    inMemoryCollectionsData = data;
+    return true;
   }
 
   function getInitialPageSizeFromControls(controls) {
@@ -132,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     eventsPaginationControls.forEach(ctrl => {
       const status = ctrl.querySelector("[data-pagination-status]");
       if (status) {
-        status.textContent = `Mostrando ${rangeStart}-${rangeEnd} de ${totalSafe}`;
+        status.textContent = `Showing ${rangeStart}-${rangeEnd} of ${totalSafe}`;
       }
       const prevBtn = ctrl.querySelector("[data-page-prev]");
       if (prevBtn) {
@@ -203,38 +229,77 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function decodeReturnUrl(raw) {
+    if (!raw) return null;
+    try {
+      const decoded = decodeURIComponent(raw);
+      return decoded.length ? decoded : null;
+    } catch {
+      return raw;
+    }
+  }
+
+  function clearNewEventParam() {
+    const currentUrl = new URL(window.location.href);
+    if (!currentUrl.searchParams.has("newEvent")) return;
+    currentUrl.searchParams.delete("newEvent");
+    history.replaceState(null, "", currentUrl.toString());
+  }
+
+  function handleNewEventParam() {
+    if (!shouldOpenNewEventModal) return;
+    const user = getCurrentUser();
+    if (!user?.active) {
+      clearNewEventParam();
+      return;
+    }
+
+    const candidateReturnUrl =
+      decodeReturnUrl(deepLinkReturnUrl) ||
+      (document.referrer && document.referrer.length ? document.referrer : null);
+    if (candidateReturnUrl) {
+      editModalReturnUrl = candidateReturnUrl;
+    }
+    openEditModal(null);
+    clearNewEventParam();
+  }
+
   function saveEntityUpdate(id, patch) {
     if (window.appData && typeof window.appData.updateEntity === "function") {
       window.appData.updateEntity("events", id, patch);
+      return true;
     } else {
       // fallback: localStorage direct update (if needed)
       const data = loadData();
       const idx = (data.events || []).findIndex(e => e.id === id);
       if (idx !== -1) {
         data.events[idx] = { ...data.events[idx], ...patch };
-        localStorage.setItem("collectionsData", JSON.stringify(data));
+        return persistCollectionsData(data);
       }
     }
+    return false;
   }
 
   function addEntity(ev) {
     if (window.appData && typeof window.appData.addEntity === "function") {
       window.appData.addEntity("events", ev);
+      return true;
     } else {
       const data = loadData();
       data.events = data.events || [];
       data.events.push(ev);
-      localStorage.setItem("collectionsData", JSON.stringify(data));
+      return persistCollectionsData(data);
     }
   }
 
   function deleteEntity(id) {
     if (window.appData && typeof window.appData.deleteEntity === "function") {
       window.appData.deleteEntity("events", id);
+      return true;
     } else {
       const data = loadData();
       data.events = (data.events || []).filter(e => e.id !== id);
-      localStorage.setItem("collectionsData", JSON.stringify(data));
+      return persistCollectionsData(data);
     }
   }
 
@@ -1378,6 +1443,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function closeEditModal() {
     if (eventEditModal) eventEditModal.style.display = "none";
+    if (editModalReturnUrl) {
+      const target = editModalReturnUrl;
+      editModalReturnUrl = null;
+      window.location.href = target;
+      return;
+    }
   }
 
   function generateId(name) {
@@ -1386,26 +1457,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
     return `${slug}-${Date.now()}`;
-  }
-
-  function persistEventCollections(eventId, collectionIds = []) {
-    if (!eventId) return;
-    const ids = Array.isArray(collectionIds)
-      ? Array.from(new Set(collectionIds.filter(Boolean)))
-      : [];
-
-    if (window.appData?.setEventCollections) {
-      window.appData.setEventCollections(eventId, ids);
-      return;
-    }
-
-    const data = loadData();
-    if (!data.collectionEvents) data.collectionEvents = [];
-    data.collectionEvents = data.collectionEvents.filter(link => link.eventId !== eventId);
-    ids.forEach(collectionId => {
-      data.collectionEvents.push({ eventId, collectionId });
-    });
-    localStorage.setItem("collectionsData", JSON.stringify(data));
   }
 
   function saveEventFromForm(e) {
@@ -1436,33 +1487,25 @@ document.addEventListener("DOMContentLoaded", () => {
       dateIso = dateVal;
     }
 
-    if (id) {
-      saveEntityUpdate(id, {
-        name,
-        date: dateIso,
-        localization: location,
-        summary,
-        description,
-        type
-      });
-      persistEventCollections(id, selectedCollections);
-    } else {
-      const newId = generateId(name);
-      const currentUser = getCurrentUser() || {};
-      const ev = {
-        id: newId,
-        name,
-        date: dateIso,
-        localization: location,
-        summary,
-        description,
-        type,
-        hostId: currentUser.id || null
-      };
-      addEntity(ev);
-      persistEventCollections(newId, selectedCollections);
+    const parsedDate = parseEventDate(dateVal);
+    if (!parsedDate) {
+      alert("Please provide a valid date.");
+      return;
     }
 
+    const now = new Date();
+    const tenYearsLater = new Date(now);
+    tenYearsLater.setFullYear(tenYearsLater.getFullYear() + 10);
+    if (parsedDate < now) {
+      alert("Please choose a date from today onwards.");
+      return;
+    }
+    if (parsedDate > tenYearsLater) {
+      alert("Please choose a date within the next 10 years.");
+      return;
+    }
+
+    alert("This prototype only simulates event creation; no data is saved.");
     closeEditModal();
     renderEvents();
   }
@@ -1558,4 +1601,5 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize calendar and render events (calendar will refresh from renderEvents)
   try { initCalendar(); } catch (e) { /* ignore if calendar not present */ }
   renderEvents();
+  handleNewEventParam();
 });

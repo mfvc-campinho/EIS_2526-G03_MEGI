@@ -253,39 +253,6 @@
     </div>
     <script src="../JS/app-users.js"></script>
     <script src="../JS/search-toggle.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const BASE_SIGARRA_URL =
-                "https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=";
-
-            document.querySelectorAll(".member .id").forEach((idElement) => {
-                const rawText = (idElement.textContent || "").trim();
-                const numberOnly = rawText.startsWith("up")
-                    ? rawText.slice(2)
-                    : rawText.replace(/\D+/g, "");
-
-                if (!numberOnly || !/^\d+$/.test(numberOnly)) {
-                    return;
-                }
-
-                const sigarraUrl = `${BASE_SIGARRA_URL}${numberOnly}`;
-                const navigateToSigarra = () => {
-                    window.location.href = sigarraUrl;
-                };
-
-                idElement.dataset.sigarraUrl = sigarraUrl;
-                idElement.setAttribute("tabindex", "0");
-                idElement.setAttribute("role", "link");
-                idElement.addEventListener("click", navigateToSigarra);
-                idElement.addEventListener("keydown", (event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        navigateToSigarra();
-                    }
-                });
-            });
-        });
-    </script>
 
 </body>
 

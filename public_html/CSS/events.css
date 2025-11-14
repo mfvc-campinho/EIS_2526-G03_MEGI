@@ -161,7 +161,7 @@
   margin-top: 10px;
 }
 
-/* Main card style (large rounded like screenshots) */
+/* Main card style  */
 #eventsList .event-card,
 #eventsList .collection-card,
 #eventsList>div {
@@ -557,7 +557,7 @@
   background: #9ca3af;
 }
 
-/* Calendar day modal (reuse project's modal styles but smaller) */
+/* Calendar day modal (same as project's modal styles but smaller) */
 #calendar-day-modal {
   background: rgba(15, 23, 42, 0.6);
 }

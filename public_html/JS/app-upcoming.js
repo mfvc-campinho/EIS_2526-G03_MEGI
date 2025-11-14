@@ -1,5 +1,5 @@
 // app-upcoming.js
-// Popula a seção #upcomingEvents com os próximos eventos definidos em collectionsData.events
+// Populates the #upcomingEvents section with the upcoming events defined in collectionsData.events
 (function () {
   const container = document.getElementById('upcomingEvents');
   if (!container) return;

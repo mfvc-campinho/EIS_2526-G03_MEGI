@@ -49,6 +49,10 @@
             <i class="bi bi-people-fill me-1"></i> About Us
           </a>
 
+          <a href="user_page.html" class="nav-link">
+            <i class="bi bi-person-fill me-1"></i> Profile
+          </a>
+
           <!-- Dark mode toggle -->
           <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
             <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
@@ -116,20 +120,20 @@
       <!-- Listas -->
       <div class="list-pagination" data-pagination-for="collections-list">
         <label class="page-size-label">
-          Ver
+          Show
           <select data-page-size>
             <option value="5">5</option>
             <option value="10" selected>10</option>
             <option value="50">50</option>
           </select>
-          coleções de cada vez
+          collections per page
         </label>
         <div class="pagination-actions">
-          <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
+          <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Show previous results">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           </button>
-          <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
-          <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+          <span class="pagination-status" data-pagination-status>Showing 0-0 of 0</span>
+          <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Show next results">
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
@@ -187,7 +191,7 @@
         <input type="hidden" id="collection-id" name="collection-id" />
 
         <div class="form-section form-section--required">
-          <h3>Campos obrigatorios</h3>
+          <h3>Required fields</h3>
           <label for="col-name">Name:</label>
           <input type="text" id="col-name" name="col-name" required>
           <label for="col-summary">Summary:</label>
@@ -195,7 +199,7 @@
         </div>
 
         <div class="form-section form-section--optional">
-          <h3>Campos facultativos</h3>
+          <h3>Optional fields</h3>
           <label for="col-description">Full Description:</label>
           <textarea id="col-description" name="col-description"></textarea>
           <label for="col-image">Image (URL):</label>

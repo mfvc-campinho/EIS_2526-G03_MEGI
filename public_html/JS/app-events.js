@@ -452,11 +452,11 @@ document.addEventListener("DOMContentLoaded", () => {
     fieldCollections.innerHTML = "";
 
     if (!collections.length) {
-      const emptyOpt = document.createElement("option");
-      emptyOpt.value = "";
-      emptyOpt.textContent = "Nenhuma coleção disponível";
-      emptyOpt.selected = true;
-      fieldCollections.appendChild(emptyOpt);
+    const emptyOpt = document.createElement("option");
+    emptyOpt.value = "";
+    emptyOpt.textContent = "No collections available";
+    emptyOpt.selected = true;
+    fieldCollections.appendChild(emptyOpt);
       fieldCollections.disabled = true;
       return;
     }

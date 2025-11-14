@@ -52,6 +52,10 @@
                         <i class="bi bi-people-fill me-1"></i> About Us
                     </a>
 
+                    <a href="user_page.html" class="nav-link">
+                        <i class="bi bi-person-fill me-1"></i> Profile
+                    </a>
+
                     <!-- Dark mode toggle -->
                     <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
                         <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
@@ -280,7 +284,7 @@
                         <input type="hidden" id="event-id" />
 
                         <div class="form-section form-section--required">
-                            <h3>Campos obrigatorios</h3>
+                            <h3>Required fields</h3>
                             <label for="evt-name">Name:</label>
                             <input type="text" id="evt-name" name="evt-name" required />
                             <label for="evt-date">Date &amp; Time:</label>
@@ -288,7 +292,7 @@
                         </div>
 
                         <div class="form-section form-section--optional">
-                            <h3>Campos facultativos</h3>
+                            <h3>Optional fields</h3>
                             <label for="evt-location">Location:</label>
                             <input type="text" id="evt-location" name="evt-location" />
                             <label for="evt-summary">Summary:</label>
@@ -297,11 +301,11 @@
                             <textarea id="evt-description" name="evt-description"></textarea>
                             <label for="evt-type">Type:</label>
                             <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop" />
-                            <label for="evt-collections">Coleções associadas</label>
+                            <label for="evt-collections">Associated collections</label>
                             <select id="evt-collections" name="evt-collections" multiple size="4">
                                 <!-- Filled via JavaScript -->
                             </select>
-                            <small class="form-hint">Pressione Ctrl/Cmd (⌘) ou Shift para selecionar múltiplas coleções.</small>
+                            <small class="form-hint">Press Ctrl/Cmd (⌘) or Shift to select multiple collections.</small>
                         </div>
 
                         <div class="modal-actions">

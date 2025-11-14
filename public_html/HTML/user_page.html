@@ -47,6 +47,10 @@
             <i class="bi bi-people-fill me-1"></i> About Us
           </a>
 
+          <a href="user_page.html" class="nav-link" aria-current="page">
+            <i class="bi bi-person-fill me-1"></i> Profile
+          </a>
+
           <!-- Dark mode toggle -->
           <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
             <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
@@ -287,7 +291,7 @@
         <p class="notice-message">Loading events...</p>
       </section>
 
-      <h2 id="user-rsvp-title">Eventos RSVP</h2>
+      <h2 id="user-rsvp-title">Event RSVPs</h2>
       <div class="list-pagination" data-pagination-for="user-rsvp-events">
         <label class="page-size-label">
           See
@@ -323,7 +327,7 @@
         <input type="hidden" id="collection-id" name="collection-id" />
 
         <div class="form-section form-section--required">
-          <h3>Campos obrigatorios</h3>
+          <h3>Required fields</h3>
           <label for="col-name">Name:</label>
           <input type="text" id="col-name" name="col-name" required>
           <label for="col-summary">Summary:</label>
@@ -331,7 +335,7 @@
         </div>
 
         <div class="form-section form-section--optional">
-          <h3>Campos facultativos</h3>
+          <h3>Optional fields</h3>
           <label for="col-description">Full Description:</label>
           <textarea id="col-description" name="col-description"></textarea>
           <label for="col-image">Image (URL):</label>
@@ -449,3 +453,4 @@
 </body>
 
 </html>
+

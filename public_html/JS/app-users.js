@@ -203,10 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const ownerId = getValue("acc-owner-id");
         const ownerName = getValue("acc-name");
         const email = getValue("acc-email");
-        if (!ownerId) {
-          alert("Please provide a collector ID.");
-          return;
-        }
+        
         if (!ownerName) {
           alert("Please provide a username.");
           return;

@@ -106,13 +106,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. Logout (simulated)
   // =======================================================
   function logoutUser() {
-    if (confirm("Sign out?")) {
-      localStorage.setItem("currentUser", JSON.stringify({ active: false }));
-      currentUser = null;
-      notifyUserStateChange();
-      renderProfileMenu();
-    }
+  if (confirm("Sign out?")) {
+    localStorage.setItem("currentUser", JSON.stringify({ active: false }));
+    currentUser = null;
+    notifyUserStateChange();
+    renderProfileMenu();
+
+    // 🔹 Redirect to homepage after logout
+    window.location.href = "home_page.html"; // or "/" if your home is at the root
   }
+}
 
   // =======================================================
   // 4. Global notification helper

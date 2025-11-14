@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   let deepLinkEventId = urlParams.get("id");
   const deepLinkReturnUrl = urlParams.get("returnUrl");
+  const collectionIdParam = urlParams.get("collectionId");
   let deepLinkHandled = false;
   const sessionState = window.demoEventsState || (window.demoEventsState = {});
   const voteState = sessionState.voteState || (sessionState.voteState = {});
@@ -75,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fieldSummary = document.getElementById("evt-summary");
   const fieldDescription = document.getElementById("evt-description");
   const fieldType = document.getElementById("evt-type");
+  const fieldCollections = document.getElementById("evt-collections");
   const cancelEditBtn = document.getElementById("cancel-event-edit");
 
   let locationFilterPopulated = false;
@@ -413,6 +415,62 @@ document.addEventListener("DOMContentLoaded", () => {
     return collectionIds
       .map(colId => appData.getCollectionOwnerId(colId, data))
       .filter(Boolean);
+  }
+
+  function getEventCollectionIds(eventId, data) {
+    if (window.appData?.getEventCollectionIds) {
+      return window.appData.getEventCollectionIds(eventId, data);
+    }
+    if (!eventId) return [];
+    const dataset = data || loadData();
+    const links = dataset.collectionEvents || [];
+    return Array.from(new Set(
+      links
+        .filter(link => link.eventId === eventId)
+        .map(link => link.collectionId)
+        .filter(Boolean)
+    ));
+  }
+
+  function getAllCollections(data) {
+    const dataset = data || loadData();
+    return Array.isArray(dataset?.collections) ? dataset.collections : [];
+  }
+
+  function getDefaultCollectionSelection(data) {
+    const collections = getAllCollections(data);
+    if (!collectionIdParam) return [];
+    if (collections.some(col => col.id === collectionIdParam)) {
+      return [collectionIdParam];
+    }
+    return [];
+  }
+
+  function populateCollectionSelector(selectedIds = []) {
+    if (!fieldCollections) return;
+    const collections = getAllCollections();
+    fieldCollections.innerHTML = "";
+
+    if (!collections.length) {
+      const emptyOpt = document.createElement("option");
+      emptyOpt.value = "";
+      emptyOpt.textContent = "Nenhuma coleção disponível";
+      emptyOpt.selected = true;
+      fieldCollections.appendChild(emptyOpt);
+      fieldCollections.disabled = true;
+      return;
+    }
+
+    fieldCollections.disabled = false;
+    collections.forEach(col => {
+      const option = document.createElement("option");
+      option.value = col.id;
+      option.textContent = col.name || col.id;
+      if (selectedIds.includes(col.id)) {
+        option.selected = true;
+      }
+      fieldCollections.appendChild(option);
+    });
   }
 
   function getEventOwnerProfiles(event, data) {
@@ -1284,6 +1342,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function openEditModal(id) {
     const data = loadData();
     const currentUser = getCurrentUser();
+    let selectionIds = [];
 
     if (id) {
       const ev = (data.events || []).find(x => x.id === id);
@@ -1305,12 +1364,15 @@ document.addEventListener("DOMContentLoaded", () => {
       fieldType.value = ev.type || "";
 
       document.getElementById("event-edit-title").textContent = "Edit Event";
+      selectionIds = getEventCollectionIds(ev.id, data);
     } else {
       form.reset();
       fieldId.value = "";
       document.getElementById("event-edit-title").textContent = "Create Event";
+      selectionIds = getDefaultCollectionSelection(data);
     }
 
+    populateCollectionSelector(selectionIds);
     eventEditModal.style.display = "flex";
   }
 
@@ -1326,6 +1388,26 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${slug}-${Date.now()}`;
   }
 
+  function persistEventCollections(eventId, collectionIds = []) {
+    if (!eventId) return;
+    const ids = Array.isArray(collectionIds)
+      ? Array.from(new Set(collectionIds.filter(Boolean)))
+      : [];
+
+    if (window.appData?.setEventCollections) {
+      window.appData.setEventCollections(eventId, ids);
+      return;
+    }
+
+    const data = loadData();
+    if (!data.collectionEvents) data.collectionEvents = [];
+    data.collectionEvents = data.collectionEvents.filter(link => link.eventId !== eventId);
+    ids.forEach(collectionId => {
+      data.collectionEvents.push({ eventId, collectionId });
+    });
+    localStorage.setItem("collectionsData", JSON.stringify(data));
+  }
+
   function saveEventFromForm(e) {
     e.preventDefault();
 
@@ -1336,6 +1418,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const summary = fieldSummary.value.trim();
     const description = fieldDescription.value.trim();
     const type = fieldType.value.trim();
+    const selectedCollections = fieldCollections
+      ? Array.from(fieldCollections.selectedOptions)
+          .map(option => option.value)
+          .filter(Boolean)
+      : [];
 
     if (!name || !dateVal) {
       alert("Please provide at least a name and date.");
@@ -1358,6 +1445,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description,
         type
       });
+      persistEventCollections(id, selectedCollections);
     } else {
       const newId = generateId(name);
       const currentUser = getCurrentUser() || {};
@@ -1372,6 +1460,7 @@ document.addEventListener("DOMContentLoaded", () => {
         hostId: currentUser.id || null
       };
       addEntity(ev);
+      persistEventCollections(newId, selectedCollections);
     }
 
     closeEditModal();
@@ -1444,6 +1533,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // New Event button
   newEventBtn?.addEventListener("click", () => openEditModal(null));
+  form?.addEventListener("submit", saveEventFromForm);
 
   // Close modals
   eventDetailClose?.addEventListener("click", closeEventDetail);

@@ -657,19 +657,19 @@ document.addEventListener("DOMContentLoaded", () => {
           ${ratingHtml}
 
           <div class="card-actions">
-            <button class="explore-btn">
+            <button class="view-btn explore-btn ghost">
               <i class="bi bi-eye-fill" aria-hidden="true"></i> View
             </button>
-            <button class="rsvp-btn" data-id="${ev.id}" data-requires-login>
+            <button class="rsvp-btn explore-btn success" data-id="${ev.id}" data-requires-login>
               <i class="bi bi-calendar-check" aria-hidden="true"></i> RSVP
             </button>
             ${canManage ? `
-              <button class="explore-btn warning" data-id="${ev.id}" data-requires-login>
+              <button class="edit-btn explore-btn warning" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
               </button>
             ` : ``}
             ${canManage ? `
-              <button class="explore-btn danger" data-id="${ev.id}" data-requires-login>
+              <button class="delete-btn explore-btn danger" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-trash3" aria-hidden="true"></i> Delete
               </button>
             ` : ``}

@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const ownerButtons = isItemOwner
           ? `
             <div class="item-buttons">
-              <button class="explore-btn warning" onclick="editItem('${item.id}')"><i class="bi bi-pencil"></i> Edit</button>
+              <button class="explore-btn warning" onclick="editItem('${item.id}')"><i class="bi bi-pencil-square"></i> Edit</button>
               <button class="explore-btn danger" onclick="deleteItem('${item.id}')"><i class="bi bi-trash"></i> Delete</button>
             </div>`
           : "";

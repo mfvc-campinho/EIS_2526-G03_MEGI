@@ -50,9 +50,81 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeCollectionModalBtn = document.getElementById("close-collection-modal");
   const cancelCollectionModalBtn = document.getElementById("cancel-collection-modal");
   const hasCollectionPage = Boolean(itemsContainer);
+  const itemsPaginationControls = Array.from(document.querySelectorAll('[data-pagination-for="collection-items"]'));
+  const hasItemsPagination = itemsPaginationControls.length > 0;
+  const defaultItemsPageSize = hasItemsPagination ? getInitialPageSizeFromControls(itemsPaginationControls) : null;
+  const itemsPaginationState = hasItemsPagination
+    ? { pageSize: defaultItemsPageSize, visible: defaultItemsPageSize }
+    : null;
   // Get collection ID from URL
   const params = new URLSearchParams(window.location.search);
   let collectionId = params.get("id");
+
+  function getInitialPageSizeFromControls(controls) {
+    for (const ctrl of controls) {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (!select) continue;
+      const parsed = parseInt(select.value, 10);
+      if (!Number.isNaN(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+    return 10;
+  }
+
+  function syncItemsPageSizeSelects(value) {
+    if (!hasItemsPagination) return;
+    itemsPaginationControls.forEach(ctrl => {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (select) {
+        select.value = String(value);
+      }
+    });
+  }
+
+  function updateItemsPaginationSummary(total, shown) {
+    if (!hasItemsPagination) return;
+    const totalSafe = Math.max(total || 0, 0);
+    const shownSafe = Math.min(shown || 0, totalSafe);
+    itemsPaginationControls.forEach(ctrl => {
+      const status = ctrl.querySelector("[data-pagination-status]");
+      if (status) {
+        status.textContent = `Mostrando ${shownSafe} de ${totalSafe}`;
+      }
+      const loadBtn = ctrl.querySelector("[data-load-more]");
+      if (loadBtn) {
+        const finished = shownSafe >= totalSafe;
+        loadBtn.disabled = finished;
+        loadBtn.setAttribute("aria-disabled", finished ? "true" : "false");
+        loadBtn.classList.toggle("disabled", finished);
+      }
+    });
+  }
+
+  function initItemsPaginationControls() {
+    if (!hasItemsPagination || !itemsPaginationState) return;
+    syncItemsPageSizeSelects(itemsPaginationState.pageSize);
+    itemsPaginationControls.forEach(ctrl => {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (select) {
+        select.addEventListener("change", event => {
+          const next = parseInt(event.target.value, 10);
+          if (Number.isNaN(next) || next <= 0) return;
+          itemsPaginationState.pageSize = next;
+          itemsPaginationState.visible = next;
+          syncItemsPageSizeSelects(next);
+          renderItems();
+        });
+      }
+      const loadBtn = ctrl.querySelector("[data-load-more]");
+      if (loadBtn) {
+        loadBtn.addEventListener("click", () => {
+          itemsPaginationState.visible += itemsPaginationState.pageSize;
+          renderItems();
+        });
+      }
+    });
+  }
 
   function getOwnerIdForCollection(target, data = appData.loadData()) {
     const id = typeof target === "string" ? target : target?.id;
@@ -386,6 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
       missingMessage.className = "notice-message";
       missingMessage.textContent = "Collection not found.";
       itemsContainer.appendChild(missingMessage);
+      updateItemsPaginationSummary(0, 0);
       return;
     }
 
@@ -395,6 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateItemsFilterNote(filterResult.note);
 
     if (filterResult.requiresLogin) {
+      updateItemsPaginationSummary(0, 0);
       const loginMessage = document.createElement("p");
       loginMessage.className = "notice-message";
       loginMessage.textContent = filterResult.note || "Sign in to use this filter.";
@@ -402,9 +476,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    let items = filterResult.items;
+    let items = filterResult.items || [];
+    const totalItems = items.length;
 
-    if (!items || items.length === 0) {
+    if (hasItemsPagination && itemsPaginationState && itemsPaginationState.visible > 0) {
+      const limit = Math.min(itemsPaginationState.visible, totalItems);
+      items = items.slice(0, limit);
+    }
+
+    updateItemsPaginationSummary(totalItems, items.length);
+
+    if (!items.length) {
       const emptyMessage = document.createElement("p");
       emptyMessage.className = "no-items-message";
       emptyMessage.textContent = filterResult.note || "This collection has no items yet.";
@@ -870,6 +952,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
       console.error('Error computing collection stats', e);
     }
+    initItemsPaginationControls();
     renderItems();               // Render items for the collection
     highlightOwnedSection();     // Highlight if owned by current user
   }

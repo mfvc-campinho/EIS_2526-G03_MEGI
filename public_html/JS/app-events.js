@@ -665,7 +665,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </button>
             ${canManage ? `
               <button class="edit-btn explore-btn warning" data-id="${ev.id}" data-requires-login>
-                <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
+                <i class="bi bi-pencil-square-square" aria-hidden="true"></i> Edit
               </button>
             ` : ``}
             ${canManage ? `

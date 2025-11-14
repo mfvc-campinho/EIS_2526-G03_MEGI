@@ -8,17 +8,13 @@
 document.addEventListener("DOMContentLoaded", () => {
     function attachCollectionInteractions(collections, data) {
         if (!list) return;
-        const map = collections.reduce((acc, col) => {
-            acc[col.id] = col;
-            return acc;
-        }, {});
         list.querySelectorAll(".vote-toggle").forEach(btn => {
             const id = btn.dataset.collectionId;
             btn.addEventListener("click", () => toggleVote(id));
         });
         list.querySelectorAll(".top-pick-btn").forEach(btn => {
             const id = btn.dataset.collectionId;
-            btn.addEventListener("click", () => handleTopPickSelection(id, map[id], data));
+            btn.addEventListener("click", () => promoteCollectionToFirstPick(id, data));
         });
     }
 
@@ -42,71 +38,38 @@ document.addEventListener("DOMContentLoaded", () => {
         notifyLikesChange(ownerId);
     }
 
-    function startTopPickFlow(ownerId, collectionId, collectionName, dataParam) {
-        if (!ownerId || !collectionId)
+    function promoteCollectionToFirstPick(collectionId, dataParam, ownerIdOverride) {
+        if (!collectionId)
+            return;
+        const ownerId = ownerIdOverride || getEffectiveOwnerId();
+        if (!ownerId)
             return;
         const data = dataParam || appData.loadData();
         if (!data)
             return;
         const entries = getActiveShowcase(ownerId, data);
-        const existing = entries.find(entry => entry.collectionId === collectionId);
-        if (!existing && entries.length >= MAX_USER_CHOICES) {
-            alert(`You already selected ${MAX_USER_CHOICES} collections. Remove one before adding another.`);
-            return;
+        const others = entries
+            .filter(entry => entry.collectionId !== collectionId)
+            .sort((a, b) => a.order - b.order);
+        const updated = [{ collectionId, order: 1 }];
+        let nextOrder = 2;
+        for (const entry of others) {
+            if (nextOrder > MAX_USER_CHOICES)
+                break;
+            updated.push({ collectionId: entry.collectionId, order: nextOrder });
+            nextOrder += 1;
         }
-        const defaultOrder = existing?.order || Math.min(MAX_USER_CHOICES, entries.length + 1);
-        openTopPickModal({
-            collectionName: collectionName || "this collection",
-            helperText: existing
-                ? `Update the position for "${collectionName || "this collection"}".`
-                : `Add "${collectionName || "this collection"}" to your Top ${MAX_USER_CHOICES}.`,
-            maxChoices: MAX_USER_CHOICES,
-            defaultOrder,
-            existingOrder: existing?.order || null,
-            onSubmit: order => {
-                if (!Number.isInteger(order) || order < 1 || order > MAX_USER_CHOICES) {
-                    alert(`Please enter a number between 1 and ${MAX_USER_CHOICES}.`);
-                    return;
-                }
-                const updated = entries.filter(entry => entry.collectionId !== collectionId);
-                const conflictIndex = updated.findIndex(entry => entry.order === order);
-                if (conflictIndex !== -1) {
-                    updated.splice(conflictIndex, 1);
-                }
-                updated.push({ collectionId, order });
-                updated.sort((a, b) => a.order - b.order);
-                userChosenState[ownerId] = updated;
-                closeTopPickModal();
-                renderCollections(lastRenderCriteria);
-                notifyShowcaseChange(ownerId);
-            },
-            onRemove: existing
-                ? () => {
-                    const filtered = entries.filter(entry => entry.collectionId !== collectionId);
-                    userChosenState[ownerId] = filtered;
-                    closeTopPickModal();
-                    renderCollections(lastRenderCriteria);
-                    notifyShowcaseChange(ownerId);
-                }
-                : null,
-        });
+        userChosenState[ownerId] = updated;
+        renderCollections(lastRenderCriteria);
+        notifyShowcaseChange(ownerId);
     }
 
     window.demoTopPickFlow = function (options = {}) {
-        const { ownerId, collectionId, collectionName } = options;
+        const { ownerId, collectionId } = options;
         const data = options.data || appData.loadData();
-        startTopPickFlow(ownerId, collectionId, collectionName, data);
+        promoteCollectionToFirstPick(collectionId, data, ownerId);
     };
 
-    function handleTopPickSelection(collectionId, collection, data) {
-        if (!isActiveUser) {
-            return;
-        }
-        const ownerId = getEffectiveOwnerId();
-        if (!ownerId)
-            return;
-        startTopPickFlow(ownerId, collectionId, collection?.name || "this collection", data);
-    }
     // ==========================================================
     // 1. Element selectors and page context
     // ==========================================================
@@ -147,12 +110,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const sessionState = window.demoCollectionsState || (window.demoCollectionsState = {});
     const voteState = sessionState.voteState || (sessionState.voteState = {});
     const userChosenState = sessionState.userChosenState || (sessionState.userChosenState = {});
+    const sessionCollectionRatings = sessionState.collectionRatings || (sessionState.collectionRatings = {});
     let defaultShowcaseMap = {};
     let showcaseInitialized = false;
     let lastRenderCriteria = "lastAdded";
     let lastRenderData = null;
-    let topPickModalElements = null;
-    let topPickModalHandlers = null;
     let likesByCollectionMap = {};
     let ownerLikesMap = {};
 
@@ -268,6 +230,126 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function getRatingStats(entries) {
+        const rated = (entries || []).filter(entry => typeof entry.rating === "number");
+        if (!rated.length) {
+            return { count: 0, average: null };
+        }
+        const total = rated.reduce((sum, entry) => sum + entry.rating, 0);
+        return { count: rated.length, average: total / rated.length };
+    }
+
+    function getUserRatingFromEntries(entries, userId) {
+        if (!userId) return null;
+        const entry = (entries || []).find(link => link.userId === userId);
+        return entry && typeof entry.rating === "number" ? entry.rating : null;
+    }
+
+    function getCollectionRatingEntries(collection, data) {
+        if (!collection) return [];
+        return (data?.collectionRatings || []).filter(entry => entry.collectionId === collection.id);
+    }
+
+    function buildRatingStarsMarkup(entityId, average, userRating, allowRate, dataAttr) {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            let classes = "star";
+            if (average && i <= Math.round(average)) classes += " filled";
+            if (userRating && i <= userRating) classes += " user-rating";
+            if (allowRate) classes += " clickable";
+            stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
+        }
+        return `<div class="rating-stars" data-${dataAttr}="${entityId}" data-rateable="${allowRate ? "true" : "false"}">${stars.join("")}</div>`;
+    }
+
+    function buildRatingSummary(average, count, userRating, sessionValue, allowRate) {
+        const parts = [];
+        if (average) {
+            parts.push(`<span class="muted">★ ${average.toFixed(1)}</span> <span>(${count})</span>`);
+        }
+        else {
+            parts.push(`<span class="muted">No ratings yet</span>`);
+        }
+
+        if (sessionValue !== undefined) {
+            parts.push(`<span class="demo-rating-note">Your demo rating: ${sessionValue}/5 (not saved)</span>`);
+        }
+        else if (userRating) {
+            parts.push(`<span class="demo-rating-note">You rated this ${userRating}/5</span>`);
+        }
+        else if (allowRate) {
+            parts.push(`<span class="demo-rating-note">Click a star to rate this collection.</span>`);
+        }
+
+        return parts.join(" ");
+    }
+
+    function setCollectionRating(collectionId, value) {
+        if (!isActiveUser) {
+            alert("Sign in to rate collections.");
+            return;
+        }
+        const ownerId = getEffectiveOwnerId();
+        if (!ownerId || !collectionId) {
+            return;
+        }
+        const numericValue = Number(value);
+        if (!Number.isInteger(numericValue) || numericValue < 1 || numericValue > 5) {
+            return;
+        }
+        sessionCollectionRatings[collectionId] = numericValue;
+        alert("Demo only: rating stored for this session.");
+        renderCollections(lastRenderCriteria);
+    }
+
+    function attachCollectionRatingHandlers() {
+        if (!list) return;
+        const containers = list.querySelectorAll('.rating-stars[data-collection-id]');
+        containers.forEach(container => {
+            if (container.dataset.rateable !== "true") return;
+            const id = container.dataset.collectionId;
+            if (!id) return;
+            const stars = Array.from(container.querySelectorAll(".star"));
+
+            function clearHover() {
+                stars.forEach(star => star.classList.remove("hovered"));
+            }
+
+            function highlightTo(value) {
+                stars.forEach(star => {
+                    const numeric = Number(star.dataset.value);
+                    if (numeric <= value) {
+                        star.classList.add("hovered");
+                    }
+                    else {
+                        star.classList.remove("hovered");
+                    }
+                });
+            }
+
+            stars.forEach(star => {
+                const val = Number(star.dataset.value);
+                const rate = () => setCollectionRating(id, val);
+                star.addEventListener("mouseenter", () => highlightTo(val));
+                star.addEventListener("focus", () => highlightTo(val));
+                star.addEventListener("mouseleave", clearHover);
+                star.addEventListener("blur", clearHover);
+                star.addEventListener("click", rate);
+                star.addEventListener("keydown", ev => {
+                    if (ev.key === "Enter" || ev.key === " ") {
+                        ev.preventDefault();
+                        rate();
+                    }
+                });
+                star.setAttribute("tabindex", "0");
+                star.setAttribute("role", "button");
+                star.setAttribute("aria-label", `Rate ${val} out of 5`);
+            });
+
+            container.addEventListener("mouseleave", clearHover);
+        });
+    }
+
     function getCollectionLikedBy(collection) {
         if (!collection) return new Set();
         const set = likesByCollectionMap[collection.id];
@@ -303,89 +385,6 @@ document.addEventListener("DOMContentLoaded", () => {
             else likedSet.delete(userId);
         }
         return likedSet.size;
-    }
-
-    function ensureTopPickModal() {
-        if (topPickModalElements) return;
-        const backdrop = document.createElement("div");
-        backdrop.className = "top-pick-modal-backdrop";
-        backdrop.innerHTML = `
-      <div class="top-pick-modal" role="dialog" aria-modal="true">
-        <form class="top-pick-form">
-          <h3>Select a position</h3>
-          <p class="top-pick-message">Choose where this collection should appear in your Top 5.</p>
-          <label for="top-pick-select">Position</label>
-          <select id="top-pick-select"></select>
-          <div class="top-pick-actions">
-            <button type="submit" class="primary">Save</button>
-            <button type="button" class="remove-btn">Remove from Top 5</button>
-            <button type="button" class="ghost cancel-btn">Cancel</button>
-          </div>
-        </form>
-      </div>
-    `;
-        document.body.appendChild(backdrop);
-        const modal = backdrop.querySelector(".top-pick-modal");
-        const form = modal.querySelector(".top-pick-form");
-        const message = modal.querySelector(".top-pick-message");
-        const select = modal.querySelector("#top-pick-select");
-        const removeBtn = modal.querySelector(".remove-btn");
-        const cancelBtn = modal.querySelector(".cancel-btn");
-        topPickModalElements = {
-            backdrop,
-            modal,
-            form,
-            message,
-            select,
-            removeBtn,
-            cancelBtn,
-        };
-        form.addEventListener("submit", e => {
-            e.preventDefault();
-            if (!topPickModalHandlers?.onSubmit) return;
-            const order = Number(select.value);
-            topPickModalHandlers.onSubmit(order);
-        });
-        removeBtn.addEventListener("click", () => {
-            if (topPickModalHandlers?.onRemove) {
-                topPickModalHandlers.onRemove();
-            }
-        });
-        cancelBtn.addEventListener("click", () => closeTopPickModal());
-        backdrop.addEventListener("click", e => {
-            if (e.target === backdrop) closeTopPickModal();
-        });
-        window.addEventListener("keydown", e => {
-            if (e.key === "Escape" && backdrop.classList.contains("visible")) {
-                closeTopPickModal();
-            }
-        });
-    }
-
-    function openTopPickModal(options) {
-        ensureTopPickModal();
-        const { backdrop, select, message, removeBtn } = topPickModalElements;
-        const { collectionName, helperText, maxChoices, defaultOrder, existingOrder, onSubmit, onRemove } = options;
-        message.textContent = helperText || `Choose where "${collectionName}" should appear (1 is the top).`;
-        select.innerHTML = "";
-        for (let i = 1; i <= maxChoices; i++) {
-            const option = document.createElement("option");
-            option.value = String(i);
-            option.textContent = `#${i}`;
-            select.appendChild(option);
-        }
-        select.value = String(defaultOrder);
-        removeBtn.style.display = existingOrder ? "inline-flex" : "none";
-        removeBtn.disabled = !onRemove;
-        topPickModalHandlers = { onSubmit, onRemove };
-        backdrop.classList.add("visible");
-        select.focus();
-    }
-
-    function closeTopPickModal() {
-        if (!topPickModalElements) return;
-        topPickModalElements.backdrop.classList.remove("visible");
-        topPickModalHandlers = null;
     }
 
     function hydrateCollectionOwnerMap(data) {
@@ -628,7 +627,22 @@ document.addEventListener("DOMContentLoaded", () => {
             const displayVotes = getDisplayLikes(col, ownerIdForDisplay);
             const userPickOrder = getUserChosenOrderForCollection(col.id);
             const isStarred = ownerIdForDisplay ? getEffectiveUserLike(col, ownerIdForDisplay) : false;
-            const pickLabel = userPickOrder ? `My pick #${userPickOrder}` : "Add to My Top 5";
+            const pickLabel = userPickOrder ? `My pick #${userPickOrder}` : "Promote to #1";
+            const ratingEntries = getCollectionRatingEntries(col, data);
+            const { count: ratingCount, average: ratingAvg } = getRatingStats(ratingEntries);
+            const sessionValue = ownerIdForDisplay && isActiveUser ? sessionCollectionRatings[col.id] : undefined;
+            const storedUserRating = ownerIdForDisplay ? getUserRatingFromEntries(ratingEntries, ownerIdForDisplay) : null;
+            const userRating = ownerIdForDisplay
+                ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
+                : storedUserRating ?? null;
+            const allowRating = Boolean(ownerIdForDisplay && isActiveUser);
+            const ratingStars = buildRatingStarsMarkup(col.id, ratingAvg, userRating, allowRating, "collection-id");
+            const ratingSummary = buildRatingSummary(ratingAvg, ratingCount, userRating, sessionValue, allowRating);
+            const ratingBlock = `
+                <div class="card-rating">
+                  ${ratingStars}
+                  <div class="rating-summary">${ratingSummary}</div>
+                </div>`;
             const topPickBtn = isActiveUser
                 ? `<button class="metric-btn top-pick-btn ${userPickOrder ? "active" : ""}" data-collection-id="${col.id}">
                 <i class="bi bi-award"></i>
@@ -664,6 +678,7 @@ document.addEventListener("DOMContentLoaded", () => {
               </button>
               ${topPickBtn}
             </div>
+            ${ratingBlock}
             <div class="card-buttons">${buttons}</div>
           </div>
         </div>`;
@@ -672,6 +687,7 @@ document.addEventListener("DOMContentLoaded", () => {
         list.innerHTML = cardsHTML;
         // Attach interaction handlers after DOM insertion
         attachCollectionInteractions(collections, data);
+        attachCollectionRatingHandlers();
     }// ==========================================================
     // ==========================================================
     // 4. Global functions (accessible from HTML)

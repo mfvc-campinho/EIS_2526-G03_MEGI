@@ -234,7 +234,10 @@
                             Full event description goes here. It can include agenda, host,
                             requirements and links.
                         </p>
-                        <p><strong>Host:</strong> <span id="modal-event-host"></span></p>
+                        <p>
+                            <strong>Host:</strong>
+                            <a id="modal-event-host" class="event-owner-link" href="#" target="_self"></a>
+                        </p>
                         <p><strong>Attendees:</strong>
                             <span id="modal-event-attendees-count">0</span>
                         </p>
@@ -276,23 +279,25 @@
                     <form id="form-event">
                         <input type="hidden" id="event-id" />
 
-                        <label for="evt-name">Name:</label>
-                        <input type="text" id="evt-name" name="evt-name" required />
+                        <div class="form-section form-section--required">
+                            <h3>Campos obrigatorios</h3>
+                            <label for="evt-name">Name:</label>
+                            <input type="text" id="evt-name" name="evt-name" required />
+                            <label for="evt-date">Date &amp; Time:</label>
+                            <input type="datetime-local" id="evt-date" name="evt-date" required />
+                        </div>
 
-                        <label for="evt-date">Date &amp; Time:</label>
-                        <input type="datetime-local" id="evt-date" name="evt-date" required />
-
-                        <label for="evt-location">Location:</label>
-                        <input type="text" id="evt-location" name="evt-location" />
-
-                        <label for="evt-summary">Summary:</label>
-                        <input type="text" id="evt-summary" name="evt-summary" />
-
-                        <label for="evt-description">Description:</label>
-                        <textarea id="evt-description" name="evt-description"></textarea>
-
-                        <label for="evt-type">Type:</label>
-                        <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop" />
+                        <div class="form-section form-section--optional">
+                            <h3>Campos facultativos</h3>
+                            <label for="evt-location">Location:</label>
+                            <input type="text" id="evt-location" name="evt-location" />
+                            <label for="evt-summary">Summary:</label>
+                            <input type="text" id="evt-summary" name="evt-summary" />
+                            <label for="evt-description">Description:</label>
+                            <textarea id="evt-description" name="evt-description"></textarea>
+                            <label for="evt-type">Type:</label>
+                            <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop" />
+                        </div>
 
                         <div class="modal-actions">
                             <button type="submit" class="explore-btn success">
@@ -362,18 +367,27 @@
         <div class="modal-content">
             <span class="close-btn" id="close-account-modal">&times;</span>
             <h2>Create New Account</h2>
+            
             <form id="form-add-account">
-                <label for="acc-name">Username:</label>
-                <input type="text" id="acc-name" name="acc-name" required />
-                <label for="acc-email">Email:</label>
-                <input type="email" id="acc-email" name="acc-email" required />
-                <label for="acc-password">Password:</label>
-                <input type="password" id="acc-password" name="acc-password" required />
-                <label for="acc-password-confirm">Confirm Password:</label>
-                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
-                <div class="modal-actions">
-                    <button type="submit" class="save-btn">Create Account</button>
-                </div>
+              <label for="acc-owner-id">Collector ID:</label>
+              <input type="text" id="acc-owner-id" name="acc-owner-id" required />
+              <label for="acc-name">Username:</label>
+              <input type="text" id="acc-name" name="acc-name" required />
+              <label for="acc-owner-photo">Photo URL:</label>
+              <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg" />
+              <label for="acc-dob">Date of Birth:</label>
+              <input type="date" id="acc-dob" name="acc-dob" />
+              <label for="acc-member-since">Member Since (YYYY):</label>
+              <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1" placeholder="2020" />
+              <label for="acc-email">Email:</label>
+              <input type="email" id="acc-email" name="acc-email" required />
+              <label for="acc-password">Password:</label>
+              <input type="password" id="acc-password" name="acc-password" required />
+              <label for="acc-password-confirm">Confirm Password:</label>
+              <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+              <div class="modal-actions">
+                <button type="submit" class="save-btn">Create Account</button>
+              </div>
             </form>
         </div>
     </div>

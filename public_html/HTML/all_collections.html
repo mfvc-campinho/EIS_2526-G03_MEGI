@@ -185,16 +185,24 @@
       <h2 id="collection-modal-title">New Collection</h2>
       <form id="form-collection">
         <input type="hidden" id="collection-id" name="collection-id" />
-        <label for="col-name">Name:</label>
-        <input type="text" id="col-name" name="col-name" required>
-        <label for="col-summary">Summary:</label>
-        <textarea id="col-summary" name="col-summary" required></textarea>
-        <label for="col-description">Full Description:</label>
-        <textarea id="col-description" name="col-description"></textarea>
-        <label for="col-image">Image (URL):</label>
-        <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg">
-        <label for="col-type">Type:</label>
-        <input type="text" id="col-type" name="col-type" required>
+
+        <div class="form-section form-section--required">
+          <h3>Campos obrigatorios</h3>
+          <label for="col-name">Name:</label>
+          <input type="text" id="col-name" name="col-name" required>
+          <label for="col-summary">Summary:</label>
+          <textarea id="col-summary" name="col-summary" required></textarea>
+        </div>
+
+        <div class="form-section form-section--optional">
+          <h3>Campos facultativos</h3>
+          <label for="col-description">Full Description:</label>
+          <textarea id="col-description" name="col-description"></textarea>
+          <label for="col-image">Image (URL):</label>
+          <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg">
+          <label for="col-type">Type:</label>
+          <input type="text" id="col-type" name="col-type">
+        </div>
         <div class="modal-actions">
           <button type="submit" class="explore-btn success">
             <i class="bi bi-save me-1"></i>Save</button>
@@ -221,9 +229,18 @@
     <div class="modal-content">
       <span class="close-btn" id="close-account-modal">&times;</span>
       <h2>Create New Account</h2>
+      
       <form id="form-add-account">
+        <label for="acc-owner-id">Collector ID:</label>
+        <input type="text" id="acc-owner-id" name="acc-owner-id" required />
         <label for="acc-name">Username:</label>
         <input type="text" id="acc-name" name="acc-name" required />
+        <label for="acc-owner-photo">Photo URL:</label>
+        <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg" />
+        <label for="acc-dob">Date of Birth:</label>
+        <input type="date" id="acc-dob" name="acc-dob" />
+        <label for="acc-member-since">Member Since (YYYY):</label>
+        <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1" placeholder="2020" />
         <label for="acc-email">Email:</label>
         <input type="email" id="acc-email" name="acc-email" required />
         <label for="acc-password">Password:</label>

@@ -182,20 +182,60 @@ document.addEventListener("DOMContentLoaded", () => {
     if (addAccountBtn) {
       const accountModal = document.getElementById("add-account-modal");
       const closeAccount = document.getElementById("close-account-modal");
+      const accountForm = document.getElementById("form-add-account");
       addAccountBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        if (accountModal) accountModal.style.display = "flex";
-      });
-      closeAccount?.addEventListener("click", () => accountModal.style.display = "none");
-      document.getElementById("form-add-account")?.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const pass1 = document.getElementById("acc-password").value;
-        const pass2 = document.getElementById("acc-password-confirm").value;
-        if (pass1 !== pass2) {
-          return alert("Passwords do not match!");
+        if (accountModal) {
+          accountModal.style.display = "flex";
         }
-        alert("✅ Account created successfully!\n\n(This is a simulation. No data was saved.)");
-        accountModal.style.display = "none";
+      });
+      closeAccount?.addEventListener("click", () => {
+        if (accountModal) {
+          accountModal.style.display = "none";
+        }
+      });
+      accountForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const getValue = (id) => document.getElementById(id)?.value?.trim() || "";
+        const ownerId = getValue("acc-owner-id");
+        const ownerName = getValue("acc-name");
+        const email = getValue("acc-email");
+        if (!ownerId) {
+          alert("Please provide a collector ID.");
+          return;
+        }
+        if (!ownerName) {
+          alert("Please provide a username.");
+          return;
+        }
+        if (!email) {
+          alert("Please provide an email.");
+          return;
+        }
+        const password = document.getElementById("acc-password")?.value || "";
+        const confirmPassword = document.getElementById("acc-password-confirm")?.value || "";
+        if (password !== confirmPassword) {
+          alert("Passwords do not match!");
+          return;
+        }
+        const ownerPhoto = document.getElementById("acc-owner-photo")?.value?.trim() || "";
+        const dateOfBirth = document.getElementById("acc-dob")?.value || "";
+        const memberSince = document.getElementById("acc-member-since")?.value?.trim() || "";
+
+        const summaryLines = [
+          `Collector ID: ${ownerId}`,
+          `Name: ${ownerName}`,
+          ownerPhoto ? `Photo URL: ${ownerPhoto}` : "",
+          dateOfBirth ? `Date of Birth: ${dateOfBirth}` : "",
+          memberSince ? `Member Since: ${memberSince}` : "",
+          `Email: ${email}`,
+        ].filter(Boolean);
+
+        alert(`✅ Simulation successful. Account details:\n${summaryLines.join("\n")}\n\n(This is a simulation. No data was saved.)`);
+        if (accountModal) {
+          accountModal.style.display = "none";
+        }
+        accountForm.reset();
       });
     }
 

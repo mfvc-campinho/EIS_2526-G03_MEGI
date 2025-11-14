@@ -15,33 +15,81 @@
 /* Star Rating */
 .rating-stars {
     display: flex;
-    flex-direction: row-reverse; /* Makes the stars fill from right to left */
     gap: 4px;
+    margin-top: 4px;
 }
 
 .rating-stars .star {
-    font-size: 20px;
-    color: var(--text-color-muted);
+    font-size: 1.2rem;
+    color: #d1d5db;
+    cursor: default;
+    user-select: none;
+    transform: translateY(0) scale(1);
+    will-change: transform, color;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.rating-stars .star.filled,
+.rating-stars .star.user-rating {
+    color: #fbbf24;
+}
+
+.rating-stars .star.clickable {
     cursor: pointer;
-    transition: color 0.2s ease-in-out;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* The :hover ~ .star selector is what makes the stars light up on hover */
-.rating-stars:hover .star {
-    color: var(--primary-color-hover);
+.rating-stars .star.clickable:hover {
+    transform: translateY(-5px);
 }
 
-.rating-stars .star:hover,
-.rating-stars .star:hover ~ .star {
-    color: var(--primary-color-hover);
+.rating-stars .star.hovered {
+    color: #fbbf24;
+    transform: translateY(-5px) scale(1.08);
+    animation: rating-star-lift 260ms ease forwards;
 }
 
-/* Style for stars that are "selected" */
-.rating-stars .star.selected,
-.rating-stars .star.selected ~ .star {
-    color: var(--primary-color);
+.rating-stars .star.clickable:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.45);
+    border-radius: 0.35rem;
 }
 
+.rating-stars .star.clickable:active {
+    transform: translateY(-2px) scale(1.04);
+}
+
+@keyframes rating-star-lift {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    55% {
+        transform: translateY(-10px) scale(1.18);
+    }
+    100% {
+        transform: translateY(-5px) scale(1.08);
+    }
+}
+
+.card-rating {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.86rem;
+    color: #6b7280;
+}
+
+.card-rating .rating-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.card-rating .demo-rating-note {
+    font-size: 0.8rem;
+    color: #475569;
+}
 
 /* Like Button */
 .like-button {

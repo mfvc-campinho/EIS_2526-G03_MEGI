@@ -132,6 +132,10 @@
               <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
               Add Collection
             </button>
+            <button id="follow-user-btn" class="explore-btn success" type="button" data-requires-login hidden>
+              <i class="bi bi-person-plus me-1" aria-hidden="true"></i>
+              <span class="follow-label">Follow</span>
+            </button>
           </div>
         </div>
       </section>
@@ -153,17 +157,77 @@
       </section>
 
       <h2 id="user-liked-title">Liked Collections</h2>
+      <div class="list-pagination" data-pagination-for="user-liked-collections">
+        <label class="page-size-label">
+          See
+          <select data-page-size="">
+            <option value="5">5</option>
+            <option value="10" selected="">10</option>
+            <option value="50">50</option>
+          </select>
+          collections at the same time
+        </label>
+        <div class="pagination-actions">
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev="" aria-label="Ver anteriores" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <span class="pagination-status" data-pagination-status="">Showing 0-0 of 0</span>
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-next="" aria-label="Ver seguintes" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
       <section id="user-liked-collections" class="liked-collections">
         <p class="notice-message">Sign in to see the collections you've starred.</p>
       </section>
 
       <h2 id="user-liked-items-title">Liked Items</h2>
+      <div class="list-pagination" data-pagination-for="user-liked-items">
+        <label class="page-size-label">
+          See
+          <select data-page-size="">
+            <option value="5">5</option>
+            <option value="10" selected="">10</option>
+            <option value="50">50</option>
+          </select>
+          collections at the same time
+        </label>
+        <div class="pagination-actions">
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev="" aria-label="Ver anteriores" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <span class="pagination-status" data-pagination-status="">Showing 0-0 of 0</span>
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-next="" aria-label="Ver seguintes" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
       <section id="user-liked-items" class="liked-items collection-container" data-item-source="liked"
         data-owner-context="true">
         <p class="notice-message">You haven't liked any items yet.</p>
       </section>
 
       <h2 id="user-liked-events-title">Liked Events</h2>
+      <div class="list-pagination" data-pagination-for="user-liked-events">
+        <label class="page-size-label">
+          See
+          <select data-page-size="">
+            <option value="5">5</option>
+            <option value="10" selected="">10</option>
+            <option value="50">50</option>
+          </select>
+          collections at the same time
+        </label>
+        <div class="pagination-actions">
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev="" aria-label="Ver anteriores" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <span class="pagination-status" data-pagination-status="">Showing 0-0 of 0</span>
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-next="" aria-label="Ver seguintes" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
       <section id="user-liked-events" class="liked-events collection-container">
         <p class="notice-message">You haven't liked any events yet.</p>
       </section>
@@ -175,19 +239,19 @@
       <div class="list-pagination" data-pagination-for="user-collections">
         <label class="page-size-label">
           See
-          <select data-page-size>
+          <select data-page-size="">
             <option value="5">5</option>
-            <option value="10" selected>10</option>
+            <option value="10" selected="">10</option>
             <option value="50">50</option>
           </select>
           collections at the same time
         </label>
         <div class="pagination-actions">
-          <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Ver anteriores">
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev="" aria-label="Ver anteriores" disabled="" aria-disabled="true">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           </button>
-          <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
-          <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Ver seguintes">
+          <span class="pagination-status" data-pagination-status="">Showing 0-0 of 0</span>
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-next="" aria-label="Ver seguintes" disabled="" aria-disabled="true">
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
@@ -195,11 +259,51 @@
       <section id="user-collections" class="collection-container"></section>
 
       <h2 id="user-events-title">Collection Events</h2>
+      <div class="list-pagination" data-pagination-for="user-events">
+        <label class="page-size-label">
+          See
+          <select data-page-size="">
+            <option value="5">5</option>
+            <option value="10" selected="">10</option>
+            <option value="50">50</option>
+          </select>
+          collections at the same time
+        </label>
+        <div class="pagination-actions">
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev="" aria-label="Ver anteriores" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <span class="pagination-status" data-pagination-status="">Showing 0-0 of 0</span>
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-next="" aria-label="Ver seguintes" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
       <section id="user-events" class="user-events">
         <p class="notice-message">Loading events...</p>
       </section>
 
       <h2 id="user-rsvp-title">Eventos RSVP</h2>
+      <div class="list-pagination" data-pagination-for="user-rsvp-events">
+        <label class="page-size-label">
+          See
+          <select data-page-size="">
+            <option value="5">5</option>
+            <option value="10" selected="">10</option>
+            <option value="50">50</option>
+          </select>
+          collections at the same time
+        </label>
+        <div class="pagination-actions">
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev="" aria-label="Ver anteriores" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          </button>
+          <span class="pagination-status" data-pagination-status="">Showing 0-0 of 0</span>
+          <button type="button" class="explore-btn ghost icon-only disabled" data-page-next="" aria-label="Ver seguintes" disabled="" aria-disabled="true">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
       <section id="user-rsvp-events" class="user-events">
         <p class="notice-message">Loading RSVP events...</p>
       </section>
@@ -213,16 +317,24 @@
       <h2 id="collection-modal-title">New Collection</h2>
       <form id="form-collection">
         <input type="hidden" id="collection-id" name="collection-id" />
-        <label for="col-name">Name:</label>
-        <input type="text" id="col-name" name="col-name" required>
-        <label for="col-summary">Summary:</label>
-        <textarea id="col-summary" name="col-summary" required></textarea>
-        <label for="col-description">Full Description:</label>
-        <textarea id="col-description" name="col-description"></textarea>
-        <label for="col-image">Image (URL):</label>
-        <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg">
-        <label for="col-type">Type:</label>
-        <input type="text" id="col-type" name="col-type" required>
+
+        <div class="form-section form-section--required">
+          <h3>Campos obrigatorios</h3>
+          <label for="col-name">Name:</label>
+          <input type="text" id="col-name" name="col-name" required>
+          <label for="col-summary">Summary:</label>
+          <textarea id="col-summary" name="col-summary" required></textarea>
+        </div>
+
+        <div class="form-section form-section--optional">
+          <h3>Campos facultativos</h3>
+          <label for="col-description">Full Description:</label>
+          <textarea id="col-description" name="col-description"></textarea>
+          <label for="col-image">Image (URL):</label>
+          <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg">
+          <label for="col-type">Type:</label>
+          <input type="text" id="col-type" name="col-type">
+        </div>
 
         <div class="modal-actions">
           <button type="submit" class="explore-btn success"> <i class="bi bi-save me-1"></i>Save</button>
@@ -273,9 +385,18 @@
     <div class="modal-content">
       <span class="close-btn" id="close-account-modal">&times;</span>
       <h2>Create New Account</h2>
+      
       <form id="form-add-account">
+        <label for="acc-owner-id">Collector ID:</label>
+        <input type="text" id="acc-owner-id" name="acc-owner-id" required />
         <label for="acc-name">Username:</label>
         <input type="text" id="acc-name" name="acc-name" required />
+        <label for="acc-owner-photo">Photo URL:</label>
+        <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg" />
+        <label for="acc-dob">Date of Birth:</label>
+        <input type="date" id="acc-dob" name="acc-dob" />
+        <label for="acc-member-since">Member Since (YYYY):</label>
+        <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1" placeholder="2020" />
         <label for="acc-email">Email:</label>
         <input type="email" id="acc-email" name="acc-email" required />
         <label for="acc-password">Password:</label>

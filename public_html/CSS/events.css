@@ -313,6 +313,11 @@
   font-size: 1.2rem;
   color: #d1d5db;
   cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
   transition: color 0.15s ease, transform 0.15s ease;
 }
 
@@ -327,6 +332,7 @@
 
 .rating-stars .star.clickable {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .rating-stars .star.clickable:hover {
@@ -339,9 +345,15 @@
   transform: translateY(-5px) scale(1.08);
 }
 
-/* Slight transition for hovered/selected states */
-.rating-stars .star {
-  transition: color 0.12s ease, transform 0.12s ease;
+/* Improve focus and press feedback so the active state feels intentional. */
+.rating-stars .star.clickable:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.45);
+  border-radius: 0.35rem;
+}
+
+.rating-stars .star.clickable:active {
+  transform: translateY(-2px) scale(1.04);
 }
 
 /* Modal width */

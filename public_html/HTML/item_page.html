@@ -162,23 +162,31 @@
             <h2 id="modal-title">Add Item</h2>
             <form id="item-form">
                 <input type="hidden" id="item-id">
-                <label for="item-name">Name:</label>
-                <input type="text" id="item-name" required>
-                <label for="item-importance">Importance:</label>
-                <input type="text" id="item-importance" required>
-                <label for="item-weight">Weight (g):</label>
-                <input type="number" id="item-weight" step="0.01">
-                <label for="item-price">Price (&euro;):</label>
-                <input type="number" id="item-price" step="0.01" required>
-                <label for="item-date">Acquisition Date:</label>
-                <input type="date" id="item-date">
-                <label for="item-image">Image (URL):</label>
-                <input type="text" id="item-image" placeholder="../images/default.jpg">
-                <label for="item-collections">Collections:</label>
-                <select id="item-collections" name="item-collections" multiple required></select>
-                <small class="form-hint">
-                    Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.
-                </small>
+
+                <div class="form-section form-section--required">
+                    <h3>Campos obrigatorios</h3>
+                    <label for="item-name">Name:</label>
+                    <input type="text" id="item-name" required>
+                    <label for="item-price">Price (&euro;):</label>
+                    <input type="number" id="item-price" step="0.01" required>
+                    <label for="item-collections">Collections:</label>
+                    <select id="item-collections" name="item-collections" multiple required></select>
+                    <small class="form-hint">
+                        Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.
+                    </small>
+                </div>
+
+                <div class="form-section form-section--optional">
+                    <h3>Campos facultativos</h3>
+                    <label for="item-importance">Importance:</label>
+                    <input type="text" id="item-importance">
+                    <label for="item-weight">Weight (g):</label>
+                    <input type="number" id="item-weight" step="0.01">
+                    <label for="item-date">Acquisition Date:</label>
+                    <input type="date" id="item-date">
+                    <label for="item-image">Image (URL):</label>
+                    <input type="text" id="item-image" placeholder="../images/default.jpg">
+                </div>
                 <div class="modal-actions crud-controls">
                     <button type="submit" class="explore-btn">
                         <i class="bi bi-save me-1" aria-hidden="true"></i> Save
@@ -210,18 +218,27 @@
         <div class="modal-content">
             <span class="close-btn" id="close-account-modal">&times;</span>
             <h2>Create New Account</h2>
+            
             <form id="form-add-account">
-                <label for="acc-name">Username:</label>
-                <input type="text" id="acc-name" name="acc-name" required />
-                <label for="acc-email">Email:</label>
-                <input type="email" id="acc-email" name="acc-email" required />
-                <label for="acc-password">Password:</label>
-                <input type="password" id="acc-password" name="acc-password" required />
-                <label for="acc-password-confirm">Confirm Password:</label>
-                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
-                <div class="modal-actions">
-                    <button type="submit" class="save-btn">Create Account</button>
-                </div>
+              <label for="acc-owner-id">Collector ID:</label>
+              <input type="text" id="acc-owner-id" name="acc-owner-id" required />
+              <label for="acc-name">Username:</label>
+              <input type="text" id="acc-name" name="acc-name" required />
+              <label for="acc-owner-photo">Photo URL:</label>
+              <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg" />
+              <label for="acc-dob">Date of Birth:</label>
+              <input type="date" id="acc-dob" name="acc-dob" />
+              <label for="acc-member-since">Member Since (YYYY):</label>
+              <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1" placeholder="2020" />
+              <label for="acc-email">Email:</label>
+              <input type="email" id="acc-email" name="acc-email" required />
+              <label for="acc-password">Password:</label>
+              <input type="password" id="acc-password" name="acc-password" required />
+              <label for="acc-password-confirm">Confirm Password:</label>
+              <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+              <div class="modal-actions">
+                <button type="submit" class="save-btn">Create Account</button>
+              </div>
             </form>
         </div>
     </div>

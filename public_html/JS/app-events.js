@@ -550,8 +550,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const ownerId = getActiveOwnerId();
     if (!ownerId) return;
     const currentState = getEffectiveUserLike(eventId, ownerId);
-    voteState[eventId] = !currentState;
-    alert("Simulation only: your 'like' is not saved permanently.");
+    const newState = !currentState;
+    voteState[eventId] = newState;
+
+    // Persist the change using the centralized appData function
+    if (window.appData && typeof window.appData.setUserEventLike === "function") {
+      window.appData.setUserEventLike(ownerId, eventId, newState);
+    }
+
     // Re-render the list and the modal if it's open
     renderEvents();
     if (eventDetailModal && eventDetailModal.style.display === "flex") {
@@ -869,7 +875,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const ownerDisplayText = ownerProfiles
         .map(profile => escapeHtml(profile.name))
         .join(", ") || "Community host";
-      const ownerLinkHref = `user_page.html?id=${encodeURIComponent(ev.id)}`;
+      const ownerLinkId = ownerProfiles[0]?.id || ev.hostId || null;
+      const ownerLinkHref = ownerLinkId
+        ? `user_page.html?owner=${encodeURIComponent(ownerLinkId)}`
+        : "user_page.html";
       const ownerIdForDisplay = getActiveOwnerId(currentUser);
       const isLiked = ownerIdForDisplay ? getEffectiveUserLike(ev.id, ownerIdForDisplay) : false;
       const displayLikes = getDisplayLikes(ev.id, ownerIdForDisplay);
@@ -1084,11 +1093,28 @@ document.addEventListener("DOMContentLoaded", () => {
     modalDescriptionEl.textContent = ev.description || ev.summary || "No description provided.";
 
     // Host
-    if (ev.hostId && Array.isArray(data.users)) {
-      const user = data.users.find(u => u.id === ev.hostId || u["owner-id"] === ev.hostId);
-      modalHostEl.textContent = user ? (user["owner-name"] || ev.hostId) : ev.hostId;
-    } else {
-      modalHostEl.textContent = ev.host || "Community";
+    const modalOwnerProfiles = getEventOwnerProfiles(ev, data);
+    const modalOwnerLabel = modalOwnerProfiles
+      .map(profile => profile.name)
+      .filter(Boolean)
+      .join(", ") || ev.host || "Community host";
+    const modalOwnerId = modalOwnerProfiles[0]?.id || ev.hostId || null;
+    const modalOwnerHref = modalOwnerId
+      ? `user_page.html?owner=${encodeURIComponent(modalOwnerId)}`
+      : null;
+    if (modalHostEl) {
+      modalHostEl.textContent = modalOwnerLabel;
+      if (modalOwnerHref) {
+        modalHostEl.href = modalOwnerHref;
+        modalHostEl.removeAttribute("aria-disabled");
+        modalHostEl.classList.remove("disabled");
+        modalHostEl.tabIndex = 0;
+      } else {
+        modalHostEl.removeAttribute("href");
+        modalHostEl.setAttribute("aria-disabled", "true");
+        modalHostEl.classList.add("disabled");
+        modalHostEl.tabIndex = -1;
+      }
     }
 
     // Attendees

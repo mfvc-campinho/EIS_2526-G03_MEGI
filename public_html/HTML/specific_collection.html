@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!--
     File: public_html/HTML/specific_collection.html
 
 
-    Purpose: Collection details page — shows collection metadata, items grid and related events.
+    Purpose: Collection details page � shows collection metadata, items grid and related events.
     Major sections: NAVIGATION, COLLECTION OVERVIEW, ITEM GRID (injected by app-items.js or app-collections.js), MODALS.
     Notes: JS expects IDs like #collection-title, #collection-items and #collection-events.
 -->
@@ -11,7 +11,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Specific Collection — GoodCollections</title>
+    <title>Specific Collection � GoodCollections</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Font -->
@@ -31,7 +31,7 @@
 <body>
     <div id="content">
         <!-- ===============================
-        🔹 NAVIGATION BAR (kept consistent)
+        ?? NAVIGATION BAR (kept consistent)
         =============================== -->
         <header>
             <nav class="navbar">
@@ -62,7 +62,7 @@
                     <!-- Login dropdown -->
                     <div class="dropdown profile-dropdown">
                         <button class="dropbtn profile-btn">
-                            <i class="bi bi-person-circle me-1"></i> Log In ▾
+                            <i class="bi bi-person-circle me-1"></i> Log In ?
                         </button>
                         <div class="dropdown-content profile-menu"></div>
                     </div>
@@ -77,10 +77,10 @@
         </header>
 
         <!-- ===============================
-         🔹 MAIN CONTENT
+         ?? MAIN CONTENT
         =============================== -->
         <main>
-            <!-- 🔹 Breadcrumb (standardized) -->
+            <!-- ?? Breadcrumb (standardized) -->
             <nav class="breadcrumb-nav" aria-label="Breadcrumb">
                 <ol class="breadcrumb-list">
                     <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
@@ -90,11 +90,11 @@
                 </ol>
             </nav>
 
-            <!-- 🔹 Page Title (filled by JS) -->
+            <!-- ?? Page Title (filled by JS) -->
             <h1 id="collection-title" class="page-title">Collection</h1>
 
             <!-- ===============================
-           🔹 COLLECTION OVERVIEW CARD
+           ?? COLLECTION OVERVIEW CARD
             =============================== -->
             <section class="collection-hero">
                 <div id="collection-meta">
@@ -105,11 +105,11 @@
                     <div id="meta-text">
                         <p>
                             <strong>Owner:</strong>
-                            <span id="owner-name">—</span>
+                            <span id="owner-name">�</span>
                         </p>
                         <p>
                             <strong>Created:</strong>
-                            <span id="creation-date">—</span>
+                            <span id="creation-date">�</span>
                         </p>
                         <p>
                             <strong>Type:</strong>
@@ -129,7 +129,7 @@
             </section>
 
             <!-- ===============================
-           🔹 COLLECTION STATISTICS
+           ?? COLLECTION STATISTICS
             =============================== -->
             <section id="collection-stats" aria-label="Collection statistics">
                 <h2 class="section-subtitle">Collection Statistics</h2>
@@ -137,7 +137,7 @@
                     <article class="stat-card" data-key="totalItems">
                         <div class="stat-icon"><i class="bi bi-list"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">�</div>
                             <div class="stat-label">Total items</div>
                         </div>
                     </article>
@@ -145,8 +145,8 @@
                     <article class="stat-card" data-key="totalValue">
                         <div class="stat-icon"><i class="bi bi-currency-euro"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
-                            <div class="stat-label">Total estimated value (€)</div>
+                            <div class="stat-value">�</div>
+                            <div class="stat-label">Total estimated value (�)</div>
                         </div>
                     </article>
 
@@ -154,7 +154,7 @@
                         <div class="stat-icon"><i class="bi bi-123"></i>
                         </div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">�</div>
                             <div class="stat-label">Average item weight (g)</div>
                         </div>
                     </article>
@@ -162,7 +162,7 @@
                     <article class="stat-card" data-key="linkedEvents">
                         <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">�</div>
                             <div class="stat-label">Linked events</div>
                         </div>
                     </article>
@@ -170,7 +170,7 @@
                     <article class="stat-card" data-key="oldestItem">
                         <div class="stat-icon"><i class="bi bi-calendar2-minus"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">�</div>
                             <div class="stat-label">Oldest item (acquired)</div>
                         </div>
                     </article>
@@ -178,7 +178,7 @@
                     <article class="stat-card" data-key="newestItem">
                         <div class="stat-icon"><i class="bi bi-calendar2-plus"></i></div>
                         <div class="stat-body">
-                            <div class="stat-value">—</div>
+                            <div class="stat-value">�</div>
                             <div class="stat-label">Newest item (acquired)</div>
                         </div>
                     </article>
@@ -186,7 +186,7 @@
             </section>
 
             <!-- ===============================
-           🔹 ACTION BUTTONS
+           ?? ACTION BUTTONS
             =============================== -->
             <!-- Back button (history-based, centered on page) -->
             <div class="center-block">
@@ -236,7 +236,7 @@
             </section>
 
             <!-- ===============================
-           🔹 ITEMS GRID (filled by JS)
+           ?? ITEMS GRID (filled by JS)
             =============================== -->
             <div class="list-pagination" data-pagination-for="collection-items">
                 <label class="page-size-label">
@@ -261,7 +261,7 @@
             <section class="collection-container" id="collection-items"></section>
 
             <!-- ===============================
-           🔹 RELATED EVENTS
+           ?? RELATED EVENTS
             =============================== -->
             <section class="collection-events">
                 <h2 class="section-subtitle">Collection Events</h2>
@@ -273,7 +273,7 @@
     </div>
 
     <!-- ===============================
-       🔹 MODAL: ADD / EDIT ITEM
+       ?? MODAL: ADD / EDIT ITEM
        =============================== -->
     <div id="item-modal" class="modal">
         <div class="modal-content">
@@ -283,30 +283,30 @@
             <form id="item-form">
                 <input type="hidden" id="item-id">
 
-                <label for="item-name">Name:</label>
-                <input type="text" id="item-name" required>
+                <div class="form-section form-section--required">
+                    <h3>Campos obrigatorios</h3>
+                    <label for="item-name">Name:</label>
+                    <input type="text" id="item-name" required>
+                    <label for="item-price">Price (?):</label>
+                    <input type="number" id="item-price" step="0.01" required>
+                    <label for="item-collections">Collections:</label>
+                    <select id="item-collections" name="item-collections" multiple required></select>
+                    <small class="form-hint">
+                        Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.
+                    </small>
+                </div>
 
-                <label for="item-importance">Importance:</label>
-                <input type="text" id="item-importance" required>
-
-                <label for="item-weight">Weight (g):</label>
-                <input type="number" id="item-weight" step="0.01">
-
-                <label for="item-price">Price (€):</label>
-                <input type="number" id="item-price" step="0.01" required>
-
-                <label for="item-date">Acquisition Date:</label>
-                <input type="date" id="item-date">
-
-                <label for="item-image">Image (URL):</label>
-                <input type="text" id="item-image" placeholder="../images/default.jpg">
-
-                <label for="item-collections">Collections:</label>
-                <select id="item-collections" name="item-collections" multiple required></select>
-                <small class="form-hint">
-                    Hold Ctrl (Windows) or Cmd (Mac) to select multiple collections.
-                </small>
-
+                <div class="form-section form-section--optional">
+                    <h3>Campos facultativos</h3>
+                    <label for="item-importance">Importance:</label>
+                    <input type="text" id="item-importance">
+                    <label for="item-weight">Weight (g):</label>
+                    <input type="number" id="item-weight" step="0.01">
+                    <label for="item-date">Acquisition Date:</label>
+                    <input type="date" id="item-date">
+                    <label for="item-image">Image (URL):</label>
+                    <input type="text" id="item-image" placeholder="../images/default.jpg">
+                </div>
                 <div class="modal-actions crud-controls">
                     <button type="submit" class="explore-btn success">
                         <i class="bi bi-save me-1" aria-hidden="true"></i> Save
@@ -320,7 +320,7 @@
     </div>
 
     <!-- ===============================
-       🔹 MODAL: EDIT COLLECTION
+       ?? MODAL: EDIT COLLECTION
        =============================== -->
     <div id="collection-modal" class="modal">
         <div class="modal-content">
@@ -330,20 +330,23 @@
             <form id="form-collection">
                 <input type="hidden" id="collection-id" />
 
-                <label for="col-name">Name:</label>
-                <input type="text" id="col-name" name="col-name" required />
+                <div class="form-section form-section--required">
+                    <h3>Campos obrigatorios</h3>
+                    <label for="col-name">Name:</label>
+                    <input type="text" id="col-name" name="col-name" required />
+                    <label for="col-summary">Summary:</label>
+                    <textarea id="col-summary" name="col-summary" required></textarea>
+                </div>
 
-                <label for="col-summary">Summary:</label>
-                <textarea id="col-summary" name="col-summary" required></textarea>
-
-                <label for="col-description">Full Description:</label>
-                <textarea id="col-description" name="col-description"></textarea>
-
-                <label for="col-image">Image (URL):</label>
-                <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg" />
-
-                <label for="col-type">Type:</label>
-                <input type="text" id="col-type" name="col-type" required />
+                <div class="form-section form-section--optional">
+                    <h3>Campos facultativos</h3>
+                    <label for="col-description">Full Description:</label>
+                    <textarea id="col-description" name="col-description"></textarea>
+                    <label for="col-image">Image (URL):</label>
+                    <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg" />
+                    <label for="col-type">Type:</label>
+                    <input type="text" id="col-type" name="col-type" />
+                </div>
 
                 <div class="modal-actions">
                     <button type="submit" class="explore-btn success">
@@ -358,12 +361,12 @@
     </div>
 
     <!-- ===============================
-       🔹 FOOTER (unchanged)
+       ?? FOOTER (unchanged)
        =============================== -->
     <footer>
         <div class="footer-content">
             <p>
-                Made with <span class="heart">❤️</span> by
+                Made with <span class="heart">??</span> by
                 <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
                     <i class="bi bi-github" aria-hidden="true"></i>
                     EIS_2526-G03_MEGI
@@ -381,7 +384,7 @@
     </footer>
 
     <!-- ===============================
-       🔹 SCRIPTS (same IDs, same behavior)
+       ?? SCRIPTS (same IDs, same behavior)
        =============================== -->
     <div id="forgot-password-modal" class="modal">
         <div class="modal-content">
@@ -402,18 +405,27 @@
         <div class="modal-content">
             <span class="close-btn" id="close-account-modal">&times;</span>
             <h2>Create New Account</h2>
+            
             <form id="form-add-account">
-                <label for="acc-name">Username:</label>
-                <input type="text" id="acc-name" name="acc-name" required />
-                <label for="acc-email">Email:</label>
-                <input type="email" id="acc-email" name="acc-email" required />
-                <label for="acc-password">Password:</label>
-                <input type="password" id="acc-password" name="acc-password" required />
-                <label for="acc-password-confirm">Confirm Password:</label>
-                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
-                <div class="modal-actions">
-                    <button type="submit" class="save-btn">Create Account</button>
-                </div>
+              <label for="acc-owner-id">Collector ID:</label>
+              <input type="text" id="acc-owner-id" name="acc-owner-id" required />
+              <label for="acc-name">Username:</label>
+              <input type="text" id="acc-name" name="acc-name" required />
+              <label for="acc-owner-photo">Photo URL:</label>
+              <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg" />
+              <label for="acc-dob">Date of Birth:</label>
+              <input type="date" id="acc-dob" name="acc-dob" />
+              <label for="acc-member-since">Member Since (YYYY):</label>
+              <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1" placeholder="2020" />
+              <label for="acc-email">Email:</label>
+              <input type="email" id="acc-email" name="acc-email" required />
+              <label for="acc-password">Password:</label>
+              <input type="password" id="acc-password" name="acc-password" required />
+              <label for="acc-password-confirm">Confirm Password:</label>
+              <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+              <div class="modal-actions">
+                <button type="submit" class="save-btn">Create Account</button>
+              </div>
             </form>
         </div>
     </div>
@@ -425,3 +437,12 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+

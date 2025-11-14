@@ -831,6 +831,18 @@ footer .heart {
   box-shadow: 0 4px 10px rgba(146, 64, 14, 0.08);
 }
 
+.explore-btn.following {
+  background: #047857;
+  color: #ffffff;
+  border-color: #047857;
+}
+
+.explore-btn.following:hover,
+.explore-btn.following:focus-visible {
+  background: #065f46;
+  color: #ffffff;
+}
+
 /* Set gradient accents for each button variant via CSS variables. This controls the
    small animated underline bar so it matches the button's color intent. */
 .explore-btn.success {
@@ -1655,6 +1667,34 @@ button {
 #item-form {
   display: grid;
   gap: 16px;
+}
+
+.form-section {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 18px;
+  background-color: #ffffff;
+  display: grid;
+  gap: 12px;
+}
+
+.form-section h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1f2937;
+}
+
+.form-section--optional {
+  background-color: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.form-section--optional label,
+.form-section--optional h3 {
+  color: #1d4ed8;
 }
 
 /* Labels */

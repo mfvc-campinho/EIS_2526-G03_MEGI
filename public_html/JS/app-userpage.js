@@ -17,7 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetTopPicksBtn = document.getElementById("reset-top-picks-btn");
   const topPicksContainer = document.getElementById("user-top-picks");
   const likedCollectionsContainer = document.getElementById("user-liked-collections");
+  const likedItemsContainer = document.getElementById("user-liked-items");
   const likedEventsContainer = document.getElementById("user-liked-events");
+  const followUserBtn = document.getElementById("follow-user-btn");
+  const userCollectionsTitleEl = document.getElementById("my-collections-title");
 
   // Modal elements
   const profileModal = document.getElementById("user-profile-modal");
@@ -43,7 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const demoState = window.demoCollectionsState;
   const eventsDemoState = window.demoEventsState || (window.demoEventsState = { voteState: {} });
 
-
+  const FOLLOW_SIMULATION_MESSAGE =
+    "Atenção: seguir colecionadores é apenas uma simulação de backend; não há persistência real.";
+  let followSimulationAlertShown = false;
 
 
 
@@ -85,6 +90,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return map;
   }
 
+  function getUserShowcaseEntry(data, ownerId) {
+    if (!ownerId || !data?.userShowcases) return null;
+    return data.userShowcases.find(entry => entry.ownerId === ownerId) || null;
+  }
+
+  function getOwnerLikedItems(data, ownerId) {
+    const entry = getUserShowcaseEntry(data, ownerId);
+    return entry?.likedItems || [];
+  }
+
   function doesUserLikeCollection(collection, ownerId) {
     if (!collection || !ownerId) return false;
     const likedSet = ownerLikesLookup[ownerId];
@@ -118,6 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .slice()
       .sort((a, b) => getEventTimestamp(a) - getEventTimestamp(b));
 
+    const encodedReturnUrl = encodeURIComponent(window.location.href);
     container.innerHTML = sorted
       .map(
         (ev) => `
@@ -126,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <h3>${ev.name}</h3>
           <p class="event-meta">${formatEventDate(ev.date)} &middot; ${ev.localization || "To be announced"}</p>
         </div>
-        <button class="explore-btn ghost" onclick="window.location.href='event_page.html#${ev.id}'">
+        <button class="explore-btn ghost" onclick="window.location.href='event_page.html?id=${ev.id}&returnUrl=${encodedReturnUrl}'">
           <i class="bi bi-calendar-event"></i> View event
         </button>
       </article>
@@ -262,9 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const controls = canEdit
           ? `
           <div class="pick-controls">
-            <button type="button" class="mini-btn" data-top-pick-action="reorder" data-collection-id="${col.id}">
-              Change order
-            </button>
+            <button type="button" class="mini-btn" data-top-pick-action="reorder" data-collection-id="${col.id}">Put in first position</button>
           </div>`
           : "";
         return `
@@ -329,6 +343,63 @@ document.addEventListener("DOMContentLoaded", () => {
     likedCollectionsContainer.innerHTML = cards.join("");
   }
 
+  function renderLikedItems(dataArg, ownerId) {
+    if (!likedItemsContainer) return;
+    const data = dataArg || latestData || appData.loadData();
+    if (!data) {
+      likedItemsContainer.innerHTML = `<p class="notice-message">Likes unavailable right now.</p>`;
+      return;
+    }
+    const targetOwner = ownerId || viewedOwnerId;
+    if (!targetOwner) {
+      likedItemsContainer.innerHTML = `<p class="notice-message">No user selected.</p>`;
+      return;
+    }
+    const likedIds = getOwnerLikedItems(data, targetOwner);
+    if (!likedIds.length) {
+      likedItemsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any items yet." : "This user hasn't liked any items yet."}</p>`;
+      return;
+    }
+
+    const itemsMap = (data.items || []).reduce((acc, item) => {
+      acc[item.id] = item;
+      return acc;
+    }, {});
+
+    const cards = likedIds
+      .map(id => itemsMap[id])
+      .filter(Boolean)
+      .map(item => {
+        const importanceText = item.importance ? `Importance: ${item.importance}` : "Importance not specified";
+        const priceText = typeof item.price === "number" ? `Value: €${item.price}` : "Value unknown";
+        const acquisitionLabel = formatReadableDate(item.acquisitionDate) || formatReadableDate(item.updatedAt) || "Date unknown";
+        const imageSrc = item.image || "../images/default.jpg";
+        const itemName = item.name || "Liked item";
+        const safeName = itemName.replace(/"/g, "&quot;");
+        return `
+          <article class="liked-item-card">
+            <a href="item_page.html?id=${encodeURIComponent(item.id)}">
+              <div class="liked-item-inner">
+                <img src="${imageSrc}" alt="${safeName}" loading="lazy">
+                <div>
+                  <h3>${itemName}</h3>
+                  <p class="muted">${importanceText}</p>
+                  <p class="muted">${priceText}</p>
+                  <p class="muted">Acquired ${acquisitionLabel}</p>
+                </div>
+              </div>
+            </a>
+          </article>`;
+      });
+
+    if (!cards.length) {
+      likedItemsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any items yet." : "This user hasn't liked any items yet."}</p>`;
+      return;
+    }
+
+    likedItemsContainer.innerHTML = cards.join("");
+  }
+
   function renderLikedEvents(data, ownerId) {
     if (!likedEventsContainer) return;
     const eventLikesMap = buildOwnerEventLikesLookup(data);
@@ -355,6 +426,62 @@ document.addEventListener("DOMContentLoaded", () => {
         </a>
       </article>`);
     likedEventsContainer.innerHTML = cards.join("");
+  }
+
+  function showFollowSimulationMessage() {
+    if (followSimulationAlertShown) return;
+    alert(FOLLOW_SIMULATION_MESSAGE);
+    followSimulationAlertShown = true;
+  }
+
+  function getFollowerList(followerId) {
+    if (!followerId) return [];
+    if (typeof appData?.getUserFollowing === "function") {
+      return appData.getUserFollowing(followerId);
+    }
+    return [];
+  }
+
+  function isFollowingUser(targetOwnerId, followerId = activeUser?.id) {
+    if (!targetOwnerId || !followerId) return false;
+    if (typeof appData?.isUserFollowing === "function") {
+      return appData.isUserFollowing(followerId, targetOwnerId);
+    }
+    return getFollowerList(followerId).includes(targetOwnerId);
+  }
+
+  function toggleFollowUser(targetOwnerId) {
+    if (!targetOwnerId || !activeUser?.id || typeof appData?.toggleUserFollow !== "function") return false;
+    const following = appData.toggleUserFollow(activeUser.id, targetOwnerId);
+    showFollowSimulationMessage();
+    return following;
+  }
+
+  function renderFollowButton(ownerName) {
+    if (!followUserBtn) return;
+    const followerId = activeUser?.id;
+    const shouldShow =
+      Boolean(
+        activeUser?.active &&
+        followerId &&
+        viewedOwnerId &&
+        followerId !== viewedOwnerId
+      );
+    followUserBtn.hidden = !shouldShow;
+    if (!shouldShow) return;
+    const following = isFollowingUser(viewedOwnerId, followerId);
+    followUserBtn.classList.toggle("following", following);
+    followUserBtn.classList.toggle("success", !following);
+    followUserBtn.setAttribute("aria-pressed", String(following));
+    const iconClass = following ? "bi-person-check-fill" : "bi-person-plus";
+    const label = following ? "Following" : "Follow";
+    followUserBtn.innerHTML = `
+      <i class="bi ${iconClass} me-1" aria-hidden="true"></i>
+      <span class="follow-label">${label}</span>
+    `;
+    followUserBtn.title = following
+      ? `You are following ${ownerName || "this collector"}`
+      : `Follow ${ownerName || "this collector"}`;
   }
 
   function handleTopPickAction(event) {
@@ -407,6 +534,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const ownerName = user["owner-name"] || viewedOwnerId;
 
     userNameEl.textContent = ownerName;
+    if (userCollectionsTitleEl) {
+      userCollectionsTitleEl.textContent = `${ownerName} Collections`;
+    }
     // Only update the banner if it exists. We may use a static page title
     // (for example 'User Profile') in the markup so avoid throwing if
     // the element is missing.
@@ -432,7 +562,9 @@ document.addEventListener("DOMContentLoaded", () => {
     renderUserRsvpEvents(latestData, viewedOwnerId);
     renderUserChosenShowcase(latestData, viewedOwnerId);
     renderLikedCollections(latestData);
+    renderLikedItems(latestData, viewedOwnerId);
     renderLikedEvents(latestData, viewedOwnerId);
+    renderFollowButton(ownerName);
   }
 
   function openProfileModal() {
@@ -462,6 +594,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   resetTopPicksBtn?.addEventListener("click", handleResetTopPicks);
   topPicksContainer?.addEventListener("click", handleTopPickAction);
+  followUserBtn?.addEventListener("click", () => {
+    if (!activeUser?.active || !activeUser?.id) {
+      alert("Please log in to follow collectors.");
+      return;
+    }
+    if (!viewedOwnerId || activeUser.id === viewedOwnerId) return;
+    toggleFollowUser(viewedOwnerId);
+    renderFollowButton(currentUserData?.["owner-name"] || viewedOwnerId);
+  });
 
   window.addEventListener("userShowcaseChange", (event) => {
     const targetOwner = event?.detail?.ownerId;
@@ -482,6 +623,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (targetOwner && targetOwner !== viewedOwnerId) return;
     if (!latestData) latestData = appData.loadData();
     renderLikedEvents(latestData, viewedOwnerId);
+  });
+
+  window.addEventListener("userItemLikesChange", (event) => {
+    const targetOwner = event?.detail?.ownerId;
+    if (targetOwner && targetOwner !== viewedOwnerId) return;
+    latestData = appData.loadData();
+    renderLikedItems(latestData, viewedOwnerId);
+  });
+
+  window.addEventListener("userFollowChange", (event) => {
+    const followerId = event?.detail?.followerId;
+    if (!followerId || followerId !== activeUser?.id) return;
+    renderFollowButton(currentUserData?.["owner-name"] || viewedOwnerId);
+  });
+
+  window.addEventListener("userStateChange", () => {
+    loadAndRenderUserData();
   });
 
   loadAndRenderUserData();

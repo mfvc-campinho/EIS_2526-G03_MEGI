@@ -2098,6 +2098,12 @@ button {
   color: var(--muted-color, #6b7280);
 }
 
+.list-pagination .explore-btn:disabled,
+.list-pagination .explore-btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 @media (max-width: 700px) {
   .list-pagination {
     flex-direction: column;

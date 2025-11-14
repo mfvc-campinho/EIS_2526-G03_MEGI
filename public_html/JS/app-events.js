@@ -17,6 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let modalReturnUrl = null;
   const eventsList = document.getElementById("eventsList");
   const newEventBtn = document.getElementById("newEventBtn");
+  const eventsPaginationControls = Array.from(document.querySelectorAll('[data-pagination-for="eventsList"]'));
+  const hasEventsPagination = eventsPaginationControls.length > 0;
+  const defaultEventsPageSize = hasEventsPagination ? getInitialPageSizeFromControls(eventsPaginationControls) : null;
+  const eventsPaginationState = hasEventsPagination
+    ? { pageSize: defaultEventsPageSize, visible: defaultEventsPageSize }
+    : null;
 
   // Tabs + counts
   const tabUpcoming = document.getElementById("tabUpcoming");
@@ -80,6 +86,72 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch {
       return { events: [] };
     }
+  }
+
+  function getInitialPageSizeFromControls(controls) {
+    for (const ctrl of controls) {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (!select) continue;
+      const parsed = parseInt(select.value, 10);
+      if (!Number.isNaN(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+    return 10;
+  }
+
+  function syncEventsPageSizeSelects(value) {
+    if (!hasEventsPagination) return;
+    eventsPaginationControls.forEach(ctrl => {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (select) {
+        select.value = String(value);
+      }
+    });
+  }
+
+  function updateEventsPaginationUI(total, shown) {
+    if (!hasEventsPagination) return;
+    const totalSafe = Math.max(total || 0, 0);
+    const shownSafe = Math.min(shown || 0, totalSafe);
+    eventsPaginationControls.forEach(ctrl => {
+      const status = ctrl.querySelector("[data-pagination-status]");
+      if (status) {
+        status.textContent = `Mostrando ${shownSafe} de ${totalSafe}`;
+      }
+      const loadBtn = ctrl.querySelector("[data-load-more]");
+      if (loadBtn) {
+        const finished = shownSafe >= totalSafe;
+        loadBtn.disabled = finished;
+        loadBtn.setAttribute("aria-disabled", finished ? "true" : "false");
+        loadBtn.classList.toggle("disabled", finished);
+      }
+    });
+  }
+
+  function initEventsPaginationControls() {
+    if (!hasEventsPagination || !eventsPaginationState) return;
+    syncEventsPageSizeSelects(eventsPaginationState.pageSize);
+    eventsPaginationControls.forEach(ctrl => {
+      const select = ctrl.querySelector("[data-page-size]");
+      if (select) {
+        select.addEventListener("change", event => {
+          const next = parseInt(event.target.value, 10);
+          if (Number.isNaN(next) || next <= 0) return;
+          eventsPaginationState.pageSize = next;
+          eventsPaginationState.visible = next;
+          syncEventsPageSizeSelects(next);
+          renderEvents();
+        });
+      }
+      const loadBtn = ctrl.querySelector("[data-load-more]");
+      if (loadBtn) {
+        loadBtn.addEventListener("click", () => {
+          eventsPaginationState.visible += eventsPaginationState.pageSize;
+          renderEvents();
+        });
+      }
+    });
   }
 
   function clearDeepLinkParams() {
@@ -650,12 +722,20 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
       });
 
-    if (filtered.length === 0) {
+    const totalMatches = filtered.length;
+    let eventsToRender = filtered;
+    if (hasEventsPagination && eventsPaginationState && eventsPaginationState.visible > 0) {
+      const limit = Math.min(eventsPaginationState.visible, totalMatches);
+      eventsToRender = filtered.slice(0, limit);
+    }
+    updateEventsPaginationUI(totalMatches, eventsToRender.length);
+
+    if (eventsToRender.length === 0) {
       eventsList.innerHTML = '<p class="muted">No events found for this filter.</p>';
       return;
     }
 
-    filtered.forEach(ev => {
+    eventsToRender.forEach(ev => {
       // determine if event is happening within the next 7 days (inclusive)
       const today = todayStart();
       const in7 = new Date(today.getTime() + 7 * 24 * 3600 * 1000);
@@ -673,6 +753,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const userRating = userCanRate
         ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
         : storedUserRating ?? null;
+      const ownerProfiles = getEventOwnerProfiles(ev, data);
+      const ownerDisplayText = ownerProfiles
+        .map(profile => escapeHtml(profile.name))
+        .join(", ") || "Community host";
+      const ownerLinkHref = `event_page.html?id=${encodeURIComponent(ev.id)}`;
 
       let ratingHtml = "";
       if (isPast) {
@@ -712,6 +797,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const alertBadgeHtml = isSoon && !isPast ? `<span class="event-alert-badge" aria-hidden="true">⚠️ Soon</span>` : "";
+      const ownerHtml = `
+          <div class="event-meta-row event-owner-row">
+            <i class="bi bi-person-circle" aria-hidden="true"></i>
+            <span class="event-owner-label">Owner:</span>
+            <a class="event-owner-link" href="${ownerLinkHref}" data-event-id="${ev.id}">
+              ${ownerDisplayText}
+            </a>
+          </div>
+        `;
 
       card.innerHTML = `
           <h3 class="card-title">${escapeHtml(ev.name)} ${alertBadgeHtml}</h3>
@@ -728,6 +822,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
             <span>${escapeHtml(ev.localization || "To be announced")}</span>
           </div>
+
+          ${ownerHtml}
 
           ${ratingHtml}
 
@@ -1201,6 +1297,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("userStateChange", renderEvents);
 
   // ---------- INITIAL RENDER ----------
+  initEventsPaginationControls();
   // Initialize calendar and render events (calendar will refresh from renderEvents)
   try { initCalendar(); } catch (e) { /* ignore if calendar not present */ }
   renderEvents();

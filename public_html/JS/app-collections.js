@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Simulation only: voting here would change the collection's total.");
         const currentState = getEffectiveUserLike(collection, ownerId);
         voteState[collectionId] = !currentState;
-        renderCollections(lastRenderCriteria, lastRenderLimit);
+        renderCollections(lastRenderCriteria);
         notifyLikesChange(ownerId);
     }
 
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 updated.sort((a, b) => a.order - b.order);
                 userChosenState[ownerId] = updated;
                 closeTopPickModal();
-                renderCollections(lastRenderCriteria, lastRenderLimit);
+                renderCollections(lastRenderCriteria);
                 notifyShowcaseChange(ownerId);
             },
             onRemove: existing
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const filtered = entries.filter(entry => entry.collectionId !== collectionId);
                     userChosenState[ownerId] = filtered;
                     closeTopPickModal();
-                    renderCollections(lastRenderCriteria, lastRenderLimit);
+                    renderCollections(lastRenderCriteria);
                     notifyShowcaseChange(ownerId);
                 }
                 : null,
@@ -119,6 +119,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const isHomePage = list?.id === "homeCollections";
     const isUserPage = list?.id === "user-collections";
+    const paginationControls = Array.from(document.querySelectorAll(`[data-pagination-for="${list.id}"]`));
+    const hasPaginationControls = paginationControls.length > 0;
+    const defaultPageSize = hasPaginationControls ? readInitialPageSize(paginationControls) : null;
+    const paginationState = hasPaginationControls
+        ? {
+            pageSize: defaultPageSize,
+            visible: defaultPageSize
+        }
+        : null;
 
     // Elements that may or may not exist depending on the page
     const filter = document.getElementById("rankingFilter");
@@ -141,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let defaultShowcaseMap = {};
     let showcaseInitialized = false;
     let lastRenderCriteria = "lastAdded";
-    let lastRenderLimit = null;
+    let lastRenderLimit = hasPaginationControls ? paginationState?.visible : null;
     let lastRenderData = null;
     let topPickModalElements = null;
     let topPickModalHandlers = null;
@@ -156,6 +165,72 @@ document.addEventListener("DOMContentLoaded", () => {
     function notifyLikesChange(ownerId) {
         if (!ownerId) return;
         window.dispatchEvent(new CustomEvent("userLikesChange", { detail: { ownerId } }));
+    }
+
+    function readInitialPageSize(controls) {
+        for (const ctrl of controls) {
+            const selector = ctrl.querySelector("[data-page-size]");
+            if (!selector) continue;
+            const parsed = parseInt(selector.value, 10);
+            if (!Number.isNaN(parsed) && parsed > 0) {
+                return parsed;
+            }
+        }
+        return 10;
+    }
+
+    function syncPaginationSelects(value) {
+        if (!hasPaginationControls) return;
+        paginationControls.forEach(ctrl => {
+            const selector = ctrl.querySelector("[data-page-size]");
+            if (selector) {
+                selector.value = String(value);
+            }
+        });
+    }
+
+    function updatePaginationSummary(total, shown) {
+        if (!hasPaginationControls) return;
+        const cappedTotal = Math.max(total || 0, 0);
+        const cappedShown = Math.min(shown || 0, cappedTotal);
+        paginationControls.forEach(ctrl => {
+            const status = ctrl.querySelector("[data-pagination-status]");
+            if (status) {
+                status.textContent = `Mostrando ${cappedShown} de ${cappedTotal}`;
+            }
+            const loadBtn = ctrl.querySelector("[data-load-more]");
+            if (loadBtn) {
+                const finished = cappedShown >= cappedTotal;
+                loadBtn.disabled = finished;
+                loadBtn.setAttribute("aria-disabled", finished ? "true" : "false");
+                loadBtn.classList.toggle("disabled", finished);
+            }
+        });
+    }
+
+    function initializePaginationControls() {
+        if (!hasPaginationControls || !paginationState) return;
+        syncPaginationSelects(paginationState.pageSize);
+        paginationControls.forEach(ctrl => {
+            const selector = ctrl.querySelector("[data-page-size]");
+            if (selector) {
+                selector.addEventListener("change", event => {
+                    const next = parseInt(event.target.value, 10);
+                    if (Number.isNaN(next) || next <= 0) return;
+                    paginationState.pageSize = next;
+                    paginationState.visible = next;
+                    syncPaginationSelects(next);
+                    renderCollections(lastRenderCriteria);
+                });
+            }
+            const loadBtn = ctrl.querySelector("[data-load-more]");
+            if (loadBtn) {
+                loadBtn.addEventListener("click", () => {
+                    paginationState.visible += paginationState.pageSize;
+                    renderCollections(lastRenderCriteria);
+                });
+            }
+        });
     }
 
     function buildLikesMaps(data) {
@@ -435,7 +510,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================
     // 3. Collections rendering
     // ==========================================================
-    function renderCollections(criteria = "lastAdded", limit = null) {
+    function renderCollections(criteria = "lastAdded", limitOverride) {
         const data = appData.loadData();
         lastRenderData = data;
         ensureDefaultShowcases(data);
@@ -443,7 +518,20 @@ document.addEventListener("DOMContentLoaded", () => {
         buildLikesMaps(data);
         let collections = data.collections || [];
         lastRenderCriteria = criteria;
-        lastRenderLimit = limit;
+        let limitToUse = limitOverride;
+        if (limitToUse === undefined) {
+            if (hasPaginationControls && paginationState) {
+                limitToUse = paginationState.visible;
+            } else {
+                limitToUse = lastRenderLimit;
+            }
+        } else if (hasPaginationControls && paginationState && typeof limitToUse === "number") {
+            paginationState.visible = limitToUse;
+        }
+        if (limitToUse === undefined) {
+            limitToUse = null;
+        }
+        lastRenderLimit = limitToUse;
 
         if (isUserPage) {
             const ownerId = resolveUserPageOwnerId();
@@ -482,9 +570,12 @@ document.addEventListener("DOMContentLoaded", () => {
             collections.sort((a, b) => (itemCounts[b.id] || 0) - (itemCounts[a.id] || 0));
         }
 
-        if (limit) {
-            collections = collections.slice(0, limit);
+        const totalAvailable = collections.length;
+        if (typeof limitToUse === "number" && limitToUse > 0) {
+            const sliceLimit = Math.min(limitToUse, totalAvailable);
+            collections = collections.slice(0, sliceLimit);
         }
+        updatePaginationSummary(totalAvailable, collections.length);
 
         if (!collections.length) {
             list.innerHTML = `<p class="notice-message">No collections found.</p>`;
@@ -611,7 +702,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Homepage filter
     if (filter) {
         filter.addEventListener("change", e =>
-            renderCollections(e.target.value, isHomePage ? 5 : null)
+            renderCollections(e.target.value)
         );
     }
     // Collection modal
@@ -677,14 +768,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // React to global user state changes
     window.addEventListener("userStateChange", () => {
         updateUserState();
-        renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
+        renderCollections(filter ? filter.value : "lastAdded");
     });
 
     // ==========================================================
     // 6. Initialization
     // ==========================================================
+    initializePaginationControls();
     updateUserState();
-    renderCollections("lastAdded", isHomePage ? 5 : null);
+    renderCollections("lastAdded");
 });
 
 

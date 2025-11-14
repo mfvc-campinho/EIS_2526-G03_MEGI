@@ -88,7 +88,13 @@
 
             <!-- Page header -->
             <section class="page-header">
-                <h1 class="page-title">Events</h1>
+                <div class="page-header-actions">
+                    <h1 class="page-title">Events</h1>
+                    <button id="newEventBtn" class="explore-btn success events-new-btn" data-requires-login>
+                        <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                        New Event
+                    </button>
+                </div>
                 <p class="page-subtitle">
                     Browse upcoming and past events related to your collections.
                     View details, register (RSVP), and receive alerts for upcoming dates.
@@ -181,12 +187,6 @@
                 <p class="actions-hint">
                     Filter using the tabs above. Logged-in collectors can propose new events for the community.
                 </p>
-
-                <!-- Left-aligned, below the text -->
-                <button id="newEventBtn" class="explore-btn success events-new-btn" data-requires-login>
-                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
-                    New Event
-                </button>
             </section>
 
             <!-- ===============================
@@ -297,6 +297,11 @@
                             <textarea id="evt-description" name="evt-description"></textarea>
                             <label for="evt-type">Type:</label>
                             <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop" />
+                            <label for="evt-collections">Coleções associadas</label>
+                            <select id="evt-collections" name="evt-collections" multiple size="4">
+                                <!-- Filled via JavaScript -->
+                            </select>
+                            <small class="form-hint">Pressione Ctrl/Cmd (⌘) ou Shift para selecionar múltiplas coleções.</small>
                         </div>
 
                         <div class="modal-actions">

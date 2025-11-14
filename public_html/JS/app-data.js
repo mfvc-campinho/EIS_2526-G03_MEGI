@@ -212,6 +212,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function getEventCollectionIds(eventId, data) {
+    if (!eventId) return [];
+    const dataset = data || loadData();
+    const links = dataset.collectionEvents || [];
+    return Array.from(new Set(
+      links
+        .filter(link => link.eventId === eventId)
+        .map(link => link.collectionId)
+        .filter(Boolean)
+    ));
+  }
+
+  function setEventCollections(eventId, collectionIds = []) {
+    if (!eventId) return;
+    const data = loadData();
+    if (!data.collectionEvents) data.collectionEvents = [];
+
+    const normalizedIds = Array.isArray(collectionIds)
+      ? Array.from(new Set(collectionIds.filter(Boolean)))
+      : [];
+
+    data.collectionEvents = data.collectionEvents.filter(link => link.eventId !== eventId);
+    normalizedIds.forEach(collectionId => {
+      data.collectionEvents.push({ eventId, collectionId });
+    });
+    saveData(data);
+  }
+
   // Events associated with users (attendance + ratings)
   function ensureEventsUsersArray(data) {
     if (!data.eventsUsers) data.eventsUsers = [];
@@ -529,6 +557,8 @@ document.addEventListener("DOMContentLoaded", () => {
     getCollectionOwner,
     linkItemToCollection,
     linkEventToCollection,
+    getEventCollectionIds,
+    setEventCollections,
     addEntity,
     updateEntity,
     deleteEntity,

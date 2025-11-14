@@ -369,7 +369,20 @@ const collectionsData = {
   ],
 
   // ======================================================
-  // RELATIONSHIP N:N – EVENTS ↔ USERS
+  // RELATIONSHIP N:1 COLLECTIONS ↔ USERS
+  // ======================================================
+  collectionsUsers: [
+    { collectionId: "escudos", ownerId: "collector-main" },
+    { collectionId: "escudos-gold", ownerId: "collector-main" },
+    { collectionId: "playboys", ownerId: "rui-frio" },
+    { collectionId: "pokemon", ownerId: "rui-frio" },
+    { collectionId: "portraits", ownerId: "rui-frio" },
+    { collectionId: "jerseys", ownerId: "rui-frio" }
+  ],
+
+
+  // ======================================================
+  // Events Rating
   // ======================================================
   eventsUsers: [
     { eventId: "escudos-event-1", userId: "collector-main", rating: 5 },
@@ -410,18 +423,6 @@ const collectionsData = {
     { itemId: "pokemon-item-2", userId: "rui-frio", rating: 5 },
     { itemId: "jerseys-item-1", userId: "collector-main", rating: 3 }
   ],
-  // ======================================================
-  // RELATIONSHIP N:1 COLLECTIONS ↔ USERS
-  // ======================================================
-  collectionsUsers: [
-    { collectionId: "escudos", ownerId: "collector-main" },
-    { collectionId: "escudos-gold", ownerId: "collector-main" },
-    { collectionId: "playboys", ownerId: "rui-frio" },
-    { collectionId: "pokemon", ownerId: "rui-frio" },
-    { collectionId: "portraits", ownerId: "rui-frio" },
-    { collectionId: "jerseys", ownerId: "rui-frio" }
-  ],
-
   // ======================================================
   // SHOWCASES
   // ======================================================

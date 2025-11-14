@@ -128,6 +128,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function setPaginationVisibility(controlKey, visible) {
+    const controls = getPaginationControls(controlKey);
+    if (!controls.length) return;
+
+    controls.forEach((ctrl) => {
+      ctrl.hidden = !visible;
+      ctrl.style.display = visible ? "" : "none";
+    });
+  }
+
   function buildOwnerLikesLookup(data) {
     const map = {};
     (data?.userShowcases || []).forEach(entry => {
@@ -200,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!normalizedEvents.length) {
       container.innerHTML = `<p class="notice-message">${emptyMessage}</p>`;
       updatePaginationStatus(paginationKey, 0);
+      setPaginationVisibility(paginationKey, false);
       return;
     }
 
@@ -223,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `
       )
       .join("");
+    setPaginationVisibility(paginationKey, true);
     updatePaginationStatus(paginationKey, sorted.length, 0, sorted.length);
   }
 
@@ -234,6 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
       userRsvpContainer.hidden = !showSection;
       if (!showSection) {
         userRsvpContainer.innerHTML = "";
+        setPaginationVisibility("user-rsvp-events", false);
       }
     }
   }

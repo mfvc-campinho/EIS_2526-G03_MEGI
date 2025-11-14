@@ -9,7 +9,8 @@
     padding: 8px 12px;
     background-color: var(--background-color-secondary);
     border-top: 1px solid var(--border-color);
-    margin-top: auto; /* Pushes the container to the bottom of the card */
+    margin-top: auto;
+    /* Pushes the container to the bottom of the card */
 }
 
 /* Star Rating */
@@ -67,9 +68,11 @@
     0% {
         transform: translateY(0) scale(1);
     }
+
     55% {
         transform: translateY(-10px) scale(1.18);
     }
+
     100% {
         transform: translateY(-5px) scale(1.08);
     }
@@ -120,7 +123,8 @@
 
 .like-button .bi-heart-fill {
     color: var(--danger-color);
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
 }
 
 /* When the button is pressed (liked) */

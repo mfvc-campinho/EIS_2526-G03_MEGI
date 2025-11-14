@@ -311,8 +311,10 @@
 
   display: flex;
   align-items: center;
-  gap: 24px;       /* space between each block */
-  flex-wrap: nowrap;   /* ⬅️ important: keep all in one line */
+  gap: 24px;
+  /* space between each block */
+  flex-wrap: nowrap;
+  /* ⬅️ important: keep all in one line */
 }
 
 .items-filter .filter-control {
@@ -373,24 +375,29 @@
 }
 
 .list-pagination {
-    display: flex;
-    align-items: center;
-    gap: 16px;         /* space between label and arrows */
-    flex-wrap: nowrap; /* keep everything on one line */
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* space between label and arrows */
+  flex-wrap: nowrap;
+  /* keep everything on one line */
 }
 
 .page-size-label {
-    display: flex;
-    align-items: center;
-    gap: 4px;          /* space between "Ver", select, and text */
-    margin: 0;
-    white-space: nowrap;  /* avoid line breaks inside the label */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* space between "Ver", select, and text */
+  margin: 0;
+  white-space: nowrap;
+  /* avoid line breaks inside the label */
 }
 
 .pagination-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;          /* space between prev, text, next */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* space between prev, text, next */
 }
 
 

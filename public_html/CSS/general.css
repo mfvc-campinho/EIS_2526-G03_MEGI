@@ -2103,67 +2103,67 @@ button {
   }
 
 
-.list-pagination {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border-color, rgba(15, 23, 42, 0.08));
-  border-radius: 16px;
-  background: var(--card-bg, #ffffff);
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
-}
-
-.list-pagination .page-size-label {
-  font-weight: 500;
-  color: var(--text-color, #0f172a);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.list-pagination .page-size-label select {
-  min-width: 72px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  background: var(--input-bg, #ffffff);
-  color: var(--text-color, #0f172a);
-}
-
-.pagination-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.pagination-status {
-  font-size: 0.95rem;
-  color: var(--muted-color, #6b7280);
-}
-
-.list-pagination .explore-btn:disabled,
-.list-pagination .explore-btn.disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-@media (max-width: 700px) {
   .list-pagination {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color, rgba(15, 23, 42, 0.08));
+    border-radius: 16px;
+    background: var(--card-bg, #ffffff);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+  }
+
+  .list-pagination .page-size-label {
+    font-weight: 500;
+    color: var(--text-color, #0f172a);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .list-pagination .page-size-label select {
+    min-width: 72px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: var(--input-bg, #ffffff);
+    color: var(--text-color, #0f172a);
   }
 
   .pagination-actions {
-    width: 100%;
-    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
-}
+
+  .pagination-status {
+    font-size: 0.95rem;
+    color: var(--muted-color, #6b7280);
+  }
+
+  .list-pagination .explore-btn:disabled,
+  .list-pagination .explore-btn.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 700px) {
+    .list-pagination {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .pagination-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
 
   /* Responsive image heights for cards: larger on desktop, scale down on small devices */
   @media (max-width: 900px) {
@@ -2362,22 +2362,27 @@ h1.page-title {
 
 
 .list-pagination {
-    display: flex;
-    align-items: center;
-    gap: 20px;         /* space between label and arrows */
-    flex-wrap: nowrap; /* keep everything on one line */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  /* space between label and arrows */
+  flex-wrap: nowrap;
+  /* keep everything on one line */
 }
 
 .page-size-label {
-    display: flex;
-    align-items: center;
-    gap: 4px;          /* space between "Ver", select, and text */
-    margin: 0;
-    white-space: nowrap;  /* avoid line breaks inside the label */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* space between "Ver", select, and text */
+  margin: 0;
+  white-space: nowrap;
+  /* avoid line breaks inside the label */
 }
 
 .pagination-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;          /* space between prev, text, next */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* space between prev, text, next */
 }

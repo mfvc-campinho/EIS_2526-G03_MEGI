@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const itemCollectionsSelect = document.getElementById("item-collections");
   const addItemProfileBtn = document.getElementById("profile-add-item-btn");
   const addEventProfileBtn = document.getElementById("profile-add-event-btn");
+  const addCollectionProfileBtn = document.getElementById("open-collection-modal");
 
   // Modal elements
   const profileModal = document.getElementById("user-profile-modal");
@@ -47,6 +48,20 @@ document.addEventListener("DOMContentLoaded", () => {
   function normalizeOwnerId(ownerId) {
     if (ownerId === undefined || ownerId === null) return "";
     return String(ownerId).trim().toLowerCase();
+  }
+
+  function updateOwnerActionButtonsVisibility() {
+    const showOwnerActions = Boolean(isViewingOwnProfile && activeUser?.active);
+    [
+      addCollectionProfileBtn,
+      addItemProfileBtn,
+      addEventProfileBtn,
+      editProfileBtn
+    ].forEach((btn) => {
+      if (!btn) return;
+      btn.hidden = !showOwnerActions;
+      btn.style.display = showOwnerActions ? "" : "none";
+    });
   }
 
 
@@ -662,6 +677,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const resolvedOwnerNormalized = normalizeOwnerId(resolvedOwnerId);
     isViewingOwnProfile =
       Boolean(activeUser?.active && activeOwnerId && resolvedOwnerNormalized && activeOwnerId === resolvedOwnerNormalized);
+    updateOwnerActionButtonsVisibility();
     const user = latestData.users.find((u) => u["owner-id"] === viewedOwnerId);
 
     if (!user) {

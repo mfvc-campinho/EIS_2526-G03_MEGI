@@ -163,14 +163,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const atStart = !cappedTotal || currentPage <= 0;
         const atEnd = !cappedTotal || currentPage >= Math.max(totalPages - 1, 0);
         paginationControls.forEach(ctrl => {
-        const status = ctrl.querySelector("[data-pagination-status]");
-        if (status) {
-            status.textContent = `Showing ${rangeStart}-${rangeEnd} of ${cappedTotal}`;
-        }
-        const actions = ctrl.querySelector(".pagination-actions");
-        if (actions) {
-            actions.hidden = cappedTotal === 0;
-        }
+            const status = ctrl.querySelector("[data-pagination-status]");
+            if (status) {
+                status.textContent = `Showing ${rangeStart}-${rangeEnd} of ${cappedTotal}`;
+            }
+            const actions = ctrl.querySelector(".pagination-actions");
+            if (actions) {
+                actions.hidden = cappedTotal === 0;
+            }
             const prevBtn = ctrl.querySelector("[data-page-prev]");
             if (prevBtn) {
                 prevBtn.disabled = atStart;
@@ -310,48 +310,48 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!list) return;
         const containers = list.querySelectorAll('.rating-stars[data-collection-id]');
         containers.forEach(container => {
-        const id = container.dataset.collectionId;
-        if (!id) return;
-        const allowRate = container.dataset.rateable === "true";
-        const stars = Array.from(container.querySelectorAll(".star"));
+            const id = container.dataset.collectionId;
+            if (!id) return;
+            const allowRate = container.dataset.rateable === "true";
+            const stars = Array.from(container.querySelectorAll(".star"));
 
-        function clearHover() {
-            stars.forEach(star => {
-                star.classList.remove("hovered", "dimmed");
-            });
-        }
-
-        function highlightTo(value) {
-            if (!allowRate) {
-                return;
+            function clearHover() {
+                stars.forEach(star => {
+                    star.classList.remove("hovered", "dimmed");
+                });
             }
-            const ratingValue = Number(value) || 0;
-            stars.forEach(star => {
-                const numeric = Number(star.dataset.value);
-                const isActive = numeric <= ratingValue;
-                star.classList.toggle("hovered", isActive);
-                star.classList.toggle("dimmed", !isActive);
-            });
-        }
 
-        stars.forEach(star => {
-            const val = Number(star.dataset.value);
-            const rate = () => setCollectionRating(id, val);
-            star.addEventListener("mouseenter", () => highlightTo(val));
-            star.addEventListener("focus", () => highlightTo(val));
-            star.addEventListener("mouseleave", clearHover);
-            star.addEventListener("blur", clearHover);
-            star.addEventListener("click", rate);
-            star.addEventListener("keydown", ev => {
-                if (ev.key === "Enter" || ev.key === " ") {
-                    ev.preventDefault();
-                    rate();
+            function highlightTo(value) {
+                if (!allowRate) {
+                    return;
                 }
+                const ratingValue = Number(value) || 0;
+                stars.forEach(star => {
+                    const numeric = Number(star.dataset.value);
+                    const isActive = numeric <= ratingValue;
+                    star.classList.toggle("hovered", isActive);
+                    star.classList.toggle("dimmed", !isActive);
+                });
+            }
+
+            stars.forEach(star => {
+                const val = Number(star.dataset.value);
+                const rate = () => setCollectionRating(id, val);
+                star.addEventListener("mouseenter", () => highlightTo(val));
+                star.addEventListener("focus", () => highlightTo(val));
+                star.addEventListener("mouseleave", clearHover);
+                star.addEventListener("blur", clearHover);
+                star.addEventListener("click", rate);
+                star.addEventListener("keydown", ev => {
+                    if (ev.key === "Enter" || ev.key === " ") {
+                        ev.preventDefault();
+                        rate();
+                    }
+                });
+                star.setAttribute("tabindex", "0");
+                star.setAttribute("role", "button");
+                star.setAttribute("aria-label", `Rate ${val} out of 5`);
             });
-            star.setAttribute("tabindex", "0");
-            star.setAttribute("role", "button");
-            star.setAttribute("aria-label", `Rate ${val} out of 5`);
-        });
 
             container.addEventListener("mouseleave", clearHover);
         });

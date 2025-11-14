@@ -517,11 +517,11 @@ document.addEventListener("DOMContentLoaded", () => {
     fieldCollections.innerHTML = "";
 
     if (!collections.length) {
-    const emptyOpt = document.createElement("option");
-    emptyOpt.value = "";
-    emptyOpt.textContent = "No collections available";
-    emptyOpt.selected = true;
-    fieldCollections.appendChild(emptyOpt);
+      const emptyOpt = document.createElement("option");
+      emptyOpt.value = "";
+      emptyOpt.textContent = "No collections available";
+      emptyOpt.selected = true;
+      fieldCollections.appendChild(emptyOpt);
       fieldCollections.disabled = true;
       return;
     }
@@ -1463,8 +1463,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const type = fieldType.value.trim();
     const selectedCollections = fieldCollections
       ? Array.from(fieldCollections.selectedOptions)
-          .map(option => option.value)
-          .filter(Boolean)
+        .map(option => option.value)
+        .filter(Boolean)
       : [];
 
     if (!name || !dateVal) {

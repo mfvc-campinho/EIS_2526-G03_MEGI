@@ -716,7 +716,7 @@ document.addEventListener("DOMContentLoaded", () => {
       userEmailEl.textContent = isViewingOwnProfile ? user.email : "Private";
     }
     if (userDobEl) {
-        userDobEl.textContent = isViewingOwnProfile ? user["date-of-birth"] : "Private";
+      userDobEl.textContent = isViewingOwnProfile ? user["date-of-birth"] : "Private";
     }
     if (userMemberSinceEl) {
       userMemberSinceEl.textContent = user["member-since"] || "N/A";

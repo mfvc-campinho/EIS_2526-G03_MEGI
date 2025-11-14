@@ -1,4 +1,4 @@
-// features.js — triggers the features section entrance animation
+// features.js — triggers the features section entrance animation on home_page.html
 (function () {
   function onReady(fn) {
     if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn);

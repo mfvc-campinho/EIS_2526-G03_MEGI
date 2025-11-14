@@ -33,6 +33,7 @@
         <!-- ===============================
             ?? NAVIGATION BAR (kept consistent)
             =============================== -->
+
         <header>
             <nav class="navbar">
                 <div class="nav-left">
@@ -42,7 +43,7 @@
                 </div>
 
                 <div class="nav-right">
-                    <a href="all_collections.html" class="nav-link" aria-current="page">
+                    <a href="all_collections.html" class="nav-link">
                         <i class="bi bi-box-seam-fill me-1"></i> Collections
                     </a>
 
@@ -50,12 +51,15 @@
                         <i class="bi bi-calendar-event-fill me-1"></i> Events
                     </a>
 
-                    <a href="team_page.html" class="nav-link">
+                    <a href="team_page.html" class="nav-link" aria-current="page">
                         <i class="bi bi-people-fill me-1"></i> About Us
                     </a>
 
-                    <a href="user_page.html" class="nav-link">\r\n <i class="bi bi-person-fill me-1"></i> Profile\r\n
-                    </a>\r\n\r\n <!-- Dark mode toggle -->
+                    <a href="user_page.html" class="nav-link">
+                        <i class="bi bi-person-fill me-1"></i> Profile
+                    </a>
+
+                    <!-- Dark mode toggle -->
                     <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
                         <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
                     </button>
@@ -63,7 +67,7 @@
                     <!-- Login dropdown -->
                     <div class="dropdown profile-dropdown">
                         <button class="dropbtn profile-btn">
-                            <i class="bi bi-person-circle me-1"></i> Log In ?
+                            <i class="bi bi-person-circle me-1"></i> Log In ▾
                         </button>
                         <div class="dropdown-content profile-menu"></div>
                     </div>
@@ -444,7 +448,7 @@
             <h2>Create New Account</h2>
 
             <form id="form-add-account">
-                
+
                 <label for="acc-name">Username:</label>
                 <input type="text" id="acc-name" name="acc-name" required />
                 <label for="acc-owner-photo">Photo URL:</label>

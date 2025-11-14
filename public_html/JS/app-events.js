@@ -511,15 +511,31 @@ document.addEventListener("DOMContentLoaded", () => {
     return [];
   }
 
-  function populateCollectionSelector(selectedIds = []) {
+  function filterCollectionsByOwner(collections, ownerId, data) {
+    if (!ownerId || !collections.length) return collections;
+    const dataset = data || loadData();
+    const ownerLookup = window.appData?.getCollectionOwnerId;
+    if (typeof ownerLookup !== "function") return collections;
+    return collections.filter(col => ownerLookup(col.id, dataset) === ownerId);
+  }
+
+  function populateCollectionSelector(selectedIds = [], options = {}) {
     if (!fieldCollections) return;
-    const collections = getAllCollections();
+    const dataset = options.data || loadData();
+    const ownerId = options.ownerId;
+    let collections = Array.isArray(options.collections)
+      ? options.collections.slice()
+      : getAllCollections(dataset);
+    collections = filterCollectionsByOwner(collections, ownerId, dataset);
+
     fieldCollections.innerHTML = "";
 
     if (!collections.length) {
       const emptyOpt = document.createElement("option");
       emptyOpt.value = "";
-      emptyOpt.textContent = "No collections available";
+      emptyOpt.textContent = ownerId
+        ? "No collections available for your profile"
+        : "No collections available";
       emptyOpt.selected = true;
       fieldCollections.appendChild(emptyOpt);
       fieldCollections.disabled = true;
@@ -1399,6 +1415,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function openEditModal(id) {
     const data = loadData();
     const currentUser = getCurrentUser();
+    const ownerId = getActiveOwnerId(currentUser);
     let selectionIds = [];
 
     if (id) {
@@ -1429,7 +1446,7 @@ document.addEventListener("DOMContentLoaded", () => {
       selectionIds = getDefaultCollectionSelection(data);
     }
 
-    populateCollectionSelector(selectionIds);
+    populateCollectionSelector(selectionIds, { ownerId, data });
     eventEditModal.style.display = "flex";
   }
 

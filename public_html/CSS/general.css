@@ -1,5 +1,5 @@
 /* ===============================
-  🔹 SECTION TITLE (Our Collections)
+  🔹 SECTION TITLE 
 =============================== */
 /* Base layout: same spacing logic as other pages */
 main {
@@ -796,6 +796,10 @@ footer .heart {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
+button {
+  cursor: pointer;
+}
+
 /* ============================================
    🔹 SUCCESS VARIANT (used for “Add” or “New” actions)
    ============================================ */
@@ -1517,47 +1521,6 @@ section#buttons-bar .explore-btn.ghost {
 }
 
 /* ===============================
-   🔹 MODALS (CRUD)
-=============================== */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  background: white;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 12px;
-  width: 400px;
-  position: relative;
-}
-
-.close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.crud-controls {
-  margin: 15px 0;
-  display: flex;
-  gap: 10px;
-}
-
-button {
-  cursor: pointer;
-}
-
-/* ===============================
    🔹 DETAILS LIST (EXPLORE MORE)
 =============================== */
 .details-list {
@@ -1628,7 +1591,7 @@ button {
   /* Escondido por defeito, JS controla a visibilidade */
   position: fixed;
   inset: 0;
-  background-color: rgba(17, 24, 39, 0.6);
+  background-color: var(--overlay-bg);
   /* Fundo semi-transparente */
   z-index: 1000;
   align-items: center;
@@ -1641,7 +1604,7 @@ button {
 
 /* 🔹 Modal content */
 .modal-content {
-  background-color: #ffffff;
+  background-color: var(--modal-bg);
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   width: 100%;
@@ -2285,14 +2248,6 @@ h1.page-title {
 .search-bar {
   background-color: var(--input-bg);
   color: var(--input-text);
-}
-
-.modal {
-  background: var(--overlay-bg);
-}
-
-.modal-content {
-  background-color: var(--modal-bg);
 }
 
 /* Base button now uses variables so buttons follow theme by default */

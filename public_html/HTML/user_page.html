@@ -9,23 +9,27 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>User Profile — GoodCollections</title>
 
-  <!-- 🔹 Fonts & CSS -->
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Styles (CSS) -->
   <link rel="stylesheet" href="../CSS/general.css">
   <link rel="stylesheet" href="../CSS/user_page.css">
-  <link rel="stylesheet" href="../CSS/grid.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../CSS/likes.css">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Scripts -->
   <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
   <div id="content">
-    <!-- ===============================
-    🔹 NAVIGATION BAR (Enhanced)
-    =============================== -->
+    <!-- NAVIGATION -->
     <header>
       <nav class="navbar">
         <div class="nav-left">
@@ -67,17 +71,15 @@
           <!-- Search -->
           <div class="search-wrapper">
             <i class="bi bi-search search-icon"></i>
-            <input type="search" class="search-bar" placeholder="Search..." />
+            <input type="search" class="search-bar" placeholder="Search...">
           </div>
         </div>
       </nav>
     </header>
-    <!-- ========================================================= -->
-    <!-- 🔹 MAIN CONTENT -->
-    <!-- ========================================================= -->
+    <!-- MAIN CONTENT -->
     <main>
 
-      <!-- 🔹 Breadcrumb (standardized) -->
+      <!-- Breadcrumb (standardized) -->
       <nav class="breadcrumb-nav" aria-label="Breadcrumb">
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
@@ -85,9 +87,7 @@
         </ol>
       </nav>
 
-      <!-- ===============================
-           PROFILE OVERVIEW
-        =============================== -->
+      <!-- PROFILE OVERVIEW -->
       <!-- Use the same page title style as other pages and show a static label -->
       <h1 id="user-page-title" class="page-title">User Profile</h1>
 
@@ -95,8 +95,7 @@
         <div class="profile-card">
           <!-- Top row: avatar + welcome + name -->
           <div class="profile-top">
-            <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88" />
-
+            <img id="user-avatar" class="avatar" src="../images/user.jpg" alt="User avatar" width="88" height="88">
             <div class="profile-heading">
               <h2 id="user-name">Collector</h2>
               <p class="user-sub">
@@ -148,9 +147,7 @@
         </div>
       </section>
 
-      <!-- ===============================
-           USER SHOWCASE
-      =============================== -->
+      <!-- USER SHOWCASE -->
       <section class="user-top-picks">
         <div class="section-header">
           <h2 class="section-title">Featured Collections</h2>
@@ -247,9 +244,7 @@
         <p class="notice-message">You haven't liked any events yet.</p>
       </section>
 
-      <!-- ===============================
-           USER COLLECTIONS
-      =============================== -->
+      <!-- USER COLLECTIONS -->
       <h2 id="my-collections-title">Collections</h2>
       <div class="list-pagination" data-pagination-for="user-collections">
         <label class="page-size-label">
@@ -331,15 +326,14 @@
     </main>
   </div>
 
-  <!-- 🔹 MODALS PLACEHOLDER -->
+  <!-- MODALS PLACEHOLDER -->
 
   <div id="collection-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-collection-modal">&times;</span>
       <h2 id="collection-modal-title">New Collection</h2>
       <form id="form-collection">
-        <input type="hidden" id="collection-id" name="collection-id" />
-
+        <input type="hidden" id="collection-id" name="collection-id">
         <div class="form-section form-section--required">
           <h3>Required fields</h3>
           <label for="col-name">Name:</label>
@@ -366,20 +360,20 @@
     </div>
   </div>
 
-  <!-- 🔹 MODAL: EDIT USER PROFILE -->
+  <!-- MODAL: EDIT USER PROFILE -->
   <div id="user-profile-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-user-modal">&times;</span>
       <h2>Edit Profile</h2>
       <form id="form-user-profile">
         <label for="user-form-name">Username:</label>
-        <input type="text" id="user-form-name" name="user-form-name" required />
+        <input type="text" id="user-form-name" name="user-form-name" required>
         <label for="user-form-email">Email:</label>
-        <input type="email" id="user-form-email" name="user-form-email" required />
+        <input type="email" id="user-form-email" name="user-form-email" required>
         <label for="user-form-dob">Date of Birth:</label>
-        <input type="date" id="user-form-dob" name="user-form-dob" />
+        <input type="date" id="user-form-dob" name="user-form-dob">
         <label for="user-form-photo">Photo URL:</label>
-        <input type="text" id="user-form-photo" name="user-form-photo" />
+        <input type="text" id="user-form-photo" name="user-form-photo">
         <div class="modal-actions">
           <button type="submit" class="explore-btn success">
             <i class="bi bi-save me-1"></i>Save Changes</button>
@@ -396,7 +390,7 @@
       <form id="form-forgot-password">
         <p>Enter your email address and we'll send you a link to reset your password.</p>
         <label for="forgot-email">Email:</label>
-        <input type="email" id="forgot-email" name="forgot-email" required />
+        <input type="email" id="forgot-email" name="forgot-email" required>
         <div class="modal-actions">
           <button type="submit" class="save-btn">Send Reset Link</button>
         </div>
@@ -411,20 +405,20 @@
       <form id="form-add-account">
 
         <label for="acc-name">Username:</label>
-        <input type="text" id="acc-name" name="acc-name" required />
+        <input type="text" id="acc-name" name="acc-name" required>
         <label for="acc-owner-photo">Photo URL:</label>
-        <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg" />
+        <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg">
         <label for="acc-dob">Date of Birth:</label>
-        <input type="date" id="acc-dob" name="acc-dob" />
+        <input type="date" id="acc-dob" name="acc-dob">
         <label for="acc-member-since">Member Since (YYYY):</label>
         <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
-          placeholder="2020" readonly />
+          placeholder="2020" readonly>
         <label for="acc-email">Email:</label>
-        <input type="email" id="acc-email" name="acc-email" required />
+        <input type="email" id="acc-email" name="acc-email" required>
         <label for="acc-password">Password:</label>
-        <input type="password" id="acc-password" name="acc-password" required />
+        <input type="password" id="acc-password" name="acc-password" required>
         <label for="acc-password-confirm">Confirm Password:</label>
-        <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+        <input type="password" id="acc-password-confirm" name="acc-password-confirm" required>
         <div class="modal-actions">
           <button type="submit" class="save-btn">Create Account</button>
         </div>
@@ -432,9 +426,7 @@
     </div>
   </div>
 
-  <!-- ===============================
-         🔹 FOOTER
-    =============================== -->
+  <!-- FOOTER -->
   <footer>
     <div class="footer-content">
       <p>
@@ -455,9 +447,7 @@
     </div>
   </footer>
 
-  <!-- ========================================================= -->
-  <!-- 🔹 SCRIPTS -->
-  <!-- ========================================================= -->
+  <!-- SCRIPTS -->
   <script src="../JS/Data.js"></script>
   <script src="../JS/app-data.js"></script>
   <script src="../JS/app-users.js"></script>
@@ -468,4 +458,3 @@
 </body>
 
 </html>
-

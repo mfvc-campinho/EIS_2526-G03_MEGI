@@ -8,29 +8,28 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Events — GoodCollections</title>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap Icons -->
+    <!-- Styles (CSS) -->
+    <link rel="stylesheet" href="../CSS/general.css">
+    <link rel="stylesheet" href="../CSS/events.css">
+    <link rel="stylesheet" href="../CSS/likes.css">
+
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Project CSS -->
-    <link rel="stylesheet" href="../CSS/general.css" />
-    <link rel="stylesheet" href="../CSS/events.css" />
-    <link rel="stylesheet" href="../CSS/grid.css" />
-    <link rel="stylesheet" href="../CSS/likes.css" />
+    <!-- Scripts -->
     <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
     <div id="content">
-        <!-- ===============================
-          NAVIGATION BAR
-    =============================== -->
+        <!-- NAVIGATION -->
         <header>
             <nav class="navbar">
                 <div class="nav-left">
@@ -72,17 +71,15 @@
                     <!-- Search -->
                     <div class="search-wrapper">
                         <i class="bi bi-search search-icon"></i>
-                        <input type="search" class="search-bar" placeholder="Search..." />
+                        <input type="search" class="search-bar" placeholder="Search...">
                     </div>
                 </div>
             </nav>
         </header>
 
-        <!-- ===============================
-        MAIN CONTENT
-    =============================== -->
+        <!-- MAIN CONTENT -->
         <main>
-            <!-- Breadcrumb (standardized) -->
+            <!-- BREADCRUMB -->
             <nav class="breadcrumb-nav" aria-label="Breadcrumb">
                 <ol class="breadcrumb-list">
                     <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
@@ -122,10 +119,8 @@
                 </div>
             </section>
 
-            <!-- ===============================
-           Toggle: Upcoming / Past
-           (Tabs control the hidden select used by JS)
-      =============================== -->
+            <!-- TOGGLE: UPCOMING / PAST
+           (Tabs control the hidden select used by JS) -->
             <section class="events-toggle-wrapper">
                 <h2 class="sr-only">Event timeframe controls</h2>
                 <div class="events-toggle" role="group" aria-label="Filter events">
@@ -187,9 +182,7 @@
                 </div>
             </section>
 
-            <!-- ===============================
-           Actions (New Event)
-      =============================== -->
+            <!-- ACTIONS (NEW EVENT) -->
             <section class="events-actions">
                 <h2 class="sr-only">Event actions</h2>
                 <p class="actions-hint">
@@ -197,10 +190,8 @@
                 </p>
             </section>
 
-            <!-- ===============================
-         Events Grid
-         (Cards injected by app-events.js into #eventsList)
-     =============================== -->
+            <!-- EVENTS GRID
+            (Cards injected by app-events.js into #eventsList)-->
             <section class="events-section">
                 <h2 class="sr-only">Event listings</h2>
                 <div class="list-pagination" data-pagination-for="eventsList">
@@ -230,9 +221,7 @@
                 </div>
             </section>
 
-            <!-- ===============================
-           EVENT DETAIL MODAL
-      =============================== -->
+            <!-- EVENT DETAIL MODAL -->
             <div id="event-modal" class="modal">
                 <div class="modal-content">
                     <span class="close-btn" id="close-event-modal">&times;</span>
@@ -279,25 +268,23 @@
                 </div>
             </div>
 
-            <!-- ===============================
-         CREATE / EDIT EVENT MODAL
-     =============================== -->
+            <!-- CREATE / EDIT EVENT MODAL -->
             <div id="event-edit-modal" class="modal">
                 <div class="modal-content">
                     <span class="close-btn" id="close-event-edit-modal">&times;</span>
                     <h2 id="event-edit-title">Create Event</h2>
 
                     <form id="form-event">
-                        <input type="hidden" id="event-id" />
+                        <input type="hidden" id="event-id">
 
                         <div class="form-section form-section--required">
                             <h3>Required fields</h3>
                             <label for="evt-name">Name:</label>
-                            <input type="text" id="evt-name" name="evt-name" required />
+                            <input type="text" id="evt-name" name="evt-name" required>
                             <label for="evt-date">Date &amp; Time:</label>
-                            <input type="datetime-local" id="evt-date" name="evt-date" required />
+                            <input type="datetime-local" id="evt-date" name="evt-date" required>
                             <label for="evt-location">Location:</label>
-                            <input type="text" id="evt-location" name="evt-location" required />
+                            <input type="text" id="evt-location" name="evt-location" required>
                             <label for="evt-collections">Associated collections</label>
                             <select id="evt-collections" name="evt-collections" multiple size="4" required>
                                 <!-- Filled via JavaScript -->
@@ -308,11 +295,11 @@
                         <div class="form-section form-section--optional">
                             <h3>Optional fields</h3>
                             <label for="evt-summary">Summary:</label>
-                            <input type="text" id="evt-summary" name="evt-summary" />
+                            <input type="text" id="evt-summary" name="evt-summary">
                             <label for="evt-description">Description:</label>
                             <textarea id="evt-description" name="evt-description"></textarea>
                             <label for="evt-type">Type:</label>
-                            <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop" />
+                            <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop">
                         </div>
 
                         <div class="modal-actions">
@@ -336,9 +323,7 @@
             </div>
         </main>
 
-        <!-- ===============================
-          FOOTER
-    =============================== -->
+        <!-- FOOTER -->
         <footer>
             <div class="footer-content">
                 <p>
@@ -361,9 +346,7 @@
         </footer>
     </div>
 
-    <!-- ===============================
-         SCRIPTS
-  =============================== -->
+    <!-- SCRIPTS -->
     <div id="forgot-password-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-forgot-modal">&times;</span>
@@ -371,7 +354,7 @@
             <form id="form-forgot-password">
                 <p>Enter your email address and we'll send you a link to reset your password.</p>
                 <label for="forgot-email">Email:</label>
-                <input type="email" id="forgot-email" name="forgot-email" required />
+                <input type="email" id="forgot-email" name="forgot-email" required>
                 <div class="modal-actions">
                     <button type="submit" class="save-btn">Send Reset Link</button>
                 </div>
@@ -387,27 +370,29 @@
             <form id="form-add-account">
 
                 <label for="acc-name">Username:</label>
-                <input type="text" id="acc-name" name="acc-name" required />
+                <input type="text" id="acc-name" name="acc-name" required>
                 <label for="acc-owner-photo">Photo URL:</label>
                 <input type="url" id="acc-owner-photo" name="acc-owner-photo"
-                    placeholder="https://example.com/photo.jpg" />
+                    placeholder="https://example.com/photo.jpg">
                 <label for="acc-dob">Date of Birth:</label>
-                <input type="date" id="acc-dob" name="acc-dob" />
+                <input type="date" id="acc-dob" name="acc-dob">
                 <label for="acc-member-since">Member Since (YYYY):</label>
                 <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
-                    placeholder="2020" readonly />
+                    placeholder="2020" readonly>
                 <label for="acc-email">Email:</label>
-                <input type="email" id="acc-email" name="acc-email" required />
+                <input type="email" id="acc-email" name="acc-email" required>
                 <label for="acc-password">Password:</label>
-                <input type="password" id="acc-password" name="acc-password" required />
+                <input type="password" id="acc-password" name="acc-password" required>
                 <label for="acc-password-confirm">Confirm Password:</label>
-                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required>
                 <div class="modal-actions">
                     <button type="submit" class="save-btn">Create Account</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Scripts -->
     <script src="../JS/Data.js"></script>
     <script src="../JS/app-data.js"></script>
     <script src="../JS/app-users.js"></script>

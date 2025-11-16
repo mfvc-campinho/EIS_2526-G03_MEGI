@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!--
     File: public_html/HTML/specific_collection.html
 
@@ -10,30 +10,28 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Collection — GoodCollections</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Global & Page Styles -->
-    <link rel="stylesheet" href="../CSS/general.css" />
-    <link rel="stylesheet" href="../CSS/specific_collection.css" />
-    <link rel="stylesheet" href="../CSS/grid.css" />
+    <!-- Styles (CSS) -->
+    <link rel="stylesheet" href="../CSS/general.css">
+    <link rel="stylesheet" href="../CSS/specific_collection.css">
+    <link rel="stylesheet" href="../CSS/likes.css">
 
-    <!-- Bootstrap Icons -->
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../CSS/likes.css" />
+
+    <!-- Scripts -->
     <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
     <div id="content">
-        <!-- ===============================
-            NAVIGATION BAR (kept consistent)
-            =============================== -->
-
+        <!-- NAVIGATION BAR -->
         <header>
             <nav class="navbar">
                 <div class="nav-left">
@@ -75,15 +73,13 @@
                     <!-- Search -->
                     <div class="search-wrapper">
                         <i class="bi bi-search search-icon"></i>
-                        <input type="search" class="search-bar" placeholder="Search..." />
+                        <input type="search" class="search-bar" placeholder="Search...">
                     </div>
                 </div>
             </nav>
         </header>
 
-        <!-- ===============================
-             MAIN CONTENT
-            =============================== -->
+        <!-- MAIN CONTENT -->
         <main>
             <!--  Breadcrumb (standardized) -->
             <nav class="breadcrumb-nav" aria-label="Breadcrumb">
@@ -98,13 +94,7 @@
             <!-- Page Title (filled by JS) -->
             <h1 id="collection-title" class="page-title">Collection</h1>
 
-
-
-
-
-            <!-- ===============================
-               ACTION BUTTONS
-                =============================== -->
+            <!-- ACTION BUTTONS -->
             <!-- Back button (history-based, centered on page) -->
             <div class="center-block">
                 <a href="javascript:history.back()" class="explore-btn ghost centered-btn">
@@ -129,9 +119,7 @@
             </section>
 
 
-            <!-- ===============================
-               ITEMS FILTER
-                =============================== -->
+            <!-- ITEMS FILTER -->
             <section class="filter-section items-filter" aria-label="Filter collection items">
                 <div class="filter-control">
                     <label for="itemsFilter" class="filter-label">
@@ -182,9 +170,7 @@
                 <p id="items-filter-note" class="filter-note" aria-live="polite"></p>
             </section>
 
-            <!-- ===============================
-                ITEMS GRID (filled by JS)
-                =============================== -->
+            <!-- ITEMS GRID (filled by JS) -->
             <div class="list-pagination" data-pagination-for="collection-items">
                 <label class="page-size-label">
                     Ver
@@ -210,11 +196,7 @@
                 <h2 class="sr-only">Collection items</h2>
             </section>
 
-
-
-            <!-- ===============================
-                       COLLECTION STATISTICS
-                       =============================== -->
+            <!-- COLLECTION STATISTICS -->
             <section id="collection-stats" aria-label="Collection statistics">
                 <h2 class="section-subtitle">Collection Statistics</h2>
                 <div class="stats-grid">
@@ -275,10 +257,7 @@
                 </div>
             </section>
 
-
-            <!-- ===============================
-        COLLECTION OVERVIEW CARD
-           =============================== -->
+            <!-- COLLECTION OVERVIEW CARD -->
             <section class="collection-hero">
                 <h2 class="section-subtitle sr-only">Collection overview</h2>
                 <div id="collection-meta">
@@ -312,9 +291,7 @@
                 </div>
             </section>
 
-            <!-- ===============================
-                RELATED EVENTS
-                =============================== -->
+            <!-- RELATED EVENTS -->
             <section class="collection-events">
                 <h2 class="section-subtitle">Collection Events</h2>
                 <div id="collection-events" class="collection-events-list">
@@ -323,9 +300,8 @@
             </section>
         </main>
     </div>
-    <!-- ===============================
-            MODAL: ADD / EDIT ITEM
-           =============================== -->
+
+    <!-- MODAL: ADD / EDIT ITEM -->
     <div id="item-modal" class="modal">
         <div class="modal-content">
             <span id="close-modal" class="close">&times;</span>
@@ -370,21 +346,19 @@
         </div>
     </div>
 
-    <!-- ===============================
-            MODAL: EDIT COLLECTION
-           =============================== -->
+    <!-- MODAL: EDIT COLLECTION -->
     <div id="collection-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-collection-modal">&times;</span>
             <h2 id="collection-modal-title">Edit Collection</h2>
 
             <form id="form-collection">
-                <input type="hidden" id="collection-id" />
+                <input type="hidden" id="collection-id">
 
                 <div class="form-section form-section--required">
                     <h3>Required fields</h3>
                     <label for="col-name">Name:</label>
-                    <input type="text" id="col-name" name="col-name" required />
+                    <input type="text" id="col-name" name="col-name" required>
                     <label for="col-summary">Summary:</label>
                     <textarea id="col-summary" name="col-summary" required></textarea>
                 </div>
@@ -394,9 +368,9 @@
                     <label for="col-description">Full Description:</label>
                     <textarea id="col-description" name="col-description"></textarea>
                     <label for="col-image">Image (URL):</label>
-                    <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg" />
+                    <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg">
                     <label for="col-type">Type:</label>
-                    <input type="text" id="col-type" name="col-type" />
+                    <input type="text" id="col-type" name="col-type">
                 </div>
 
                 <div class="modal-actions">
@@ -411,9 +385,7 @@
         </div>
     </div>
 
-    <!-- ===============================
-           FOOTER (unchanged)
-           =============================== -->
+    <!-- FOOTER -->
     <footer>
         <div class="footer-content">
             <p>
@@ -434,9 +406,7 @@
     </footer>
 
 
-    <!-- ===============================
-           SCRIPTS (same IDs, same behavior)
-           =============================== -->
+    <!-- SCRIPTS (same IDs, same behavior) -->
     <div id="forgot-password-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-forgot-modal">&times;</span>
@@ -444,7 +414,7 @@
             <form id="form-forgot-password">
                 <p>Enter your email address and we'll send you a link to reset your password.</p>
                 <label for="forgot-email">Email:</label>
-                <input type="email" id="forgot-email" name="forgot-email" required />
+                <input type="email" id="forgot-email" name="forgot-email" required>
                 <div class="modal-actions">
                     <button type="submit" class="save-btn">Send Reset Link</button>
                 </div>
@@ -460,27 +430,29 @@
             <form id="form-add-account">
 
                 <label for="acc-name">Username:</label>
-                <input type="text" id="acc-name" name="acc-name" required />
+                <input type="text" id="acc-name" name="acc-name" required>
                 <label for="acc-owner-photo">Photo URL:</label>
                 <input type="url" id="acc-owner-photo" name="acc-owner-photo"
-                    placeholder="https://example.com/photo.jpg" />
+                    placeholder="https://example.com/photo.jpg">
                 <label for="acc-dob">Date of Birth:</label>
-                <input type="date" id="acc-dob" name="acc-dob" />
+                <input type="date" id="acc-dob" name="acc-dob">
                 <label for="acc-member-since">Member Since (YYYY):</label>
                 <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
-                    placeholder="2020" />
+                    placeholder="2020">
                 <label for="acc-email">Email:</label>
-                <input type="email" id="acc-email" name="acc-email" required />
+                <input type="email" id="acc-email" name="acc-email" required>
                 <label for="acc-password">Password:</label>
-                <input type="password" id="acc-password" name="acc-password" required />
+                <input type="password" id="acc-password" name="acc-password" required>
                 <label for="acc-password-confirm">Confirm Password:</label>
-                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required>
                 <div class="modal-actions">
                     <button type="submit" class="save-btn">Create Account</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Scripts -->
     <script src="../JS/app-data.js"></script>
     <script src="../JS/app-users.js"></script>
     <script src="../JS/app-items.js"></script>

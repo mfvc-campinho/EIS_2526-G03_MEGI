@@ -8,21 +8,22 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Item Details — GoodCollections</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="../CSS/general.css" />
-    <link rel="stylesheet" href="../CSS/item_page.css" />
-    <link rel="stylesheet" href="../CSS/grid.css" />
+    <!-- Styles (CSS) -->
+    <link rel="stylesheet" href="../CSS/general.css">
+    <link rel="stylesheet" href="../CSS/item_page.css">
+    <link rel="stylesheet" href="../CSS/likes.css">
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../CSS/likes.css" />
+
+    <!-- Scripts -->
     <script src="../JS/theme-toggle.js"></script>
 </head>
 
@@ -69,7 +70,7 @@
                 <!-- Search -->
                 <div class="search-wrapper">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="search" class="search-bar" placeholder="Search events..." />
+                    <input type="search" class="search-bar" placeholder="Search events...">
                 </div>
             </div>
         </nav>
@@ -139,6 +140,8 @@
             </a>
         </div>
     </main>
+
+    <!-- FOOTER -->
     <footer>
         <div class="footer-content">
             <p>
@@ -211,7 +214,7 @@
             <form id="form-forgot-password">
                 <p>Enter your email address and we'll send you a link to reset your password.</p>
                 <label for="forgot-email">Email:</label>
-                <input type="email" id="forgot-email" name="forgot-email" required />
+                <input type="email" id="forgot-email" name="forgot-email" required>
                 <div class="modal-actions">
                     <button type="submit" class="save-btn">Send Reset Link</button>
                 </div>
@@ -227,27 +230,29 @@
             <form id="form-add-account">
 
                 <label for="acc-name">Username:</label>
-                <input type="text" id="acc-name" name="acc-name" required />
+                <input type="text" id="acc-name" name="acc-name" required>
                 <label for="acc-owner-photo">Photo URL:</label>
                 <input type="url" id="acc-owner-photo" name="acc-owner-photo"
-                    placeholder="https://example.com/photo.jpg" />
+                    placeholder="https://example.com/photo.jpg">
                 <label for="acc-dob">Date of Birth:</label>
-                <input type="date" id="acc-dob" name="acc-dob" />
+                <input type="date" id="acc-dob" name="acc-dob">
                 <label for="acc-member-since">Member Since (YYYY):</label>
                 <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
-                    placeholder="2020" readonly />
+                    placeholder="2020" readonly>
                 <label for="acc-email">Email:</label>
-                <input type="email" id="acc-email" name="acc-email" required />
+                <input type="email" id="acc-email" name="acc-email" required>
                 <label for="acc-password">Password:</label>
-                <input type="password" id="acc-password" name="acc-password" required />
+                <input type="password" id="acc-password" name="acc-password" required>
                 <label for="acc-password-confirm">Confirm Password:</label>
-                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required />
+                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required>
                 <div class="modal-actions">
                     <button type="submit" class="save-btn">Create Account</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Scripts -->
     <script src="../JS/app-data.js"></script>
     <script src="../JS/app-items.js"></script>
     <script src="../JS/item_page.js"></script>

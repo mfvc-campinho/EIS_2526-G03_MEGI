@@ -1,0 +1,657 @@
+/*
+  File: public_html/CSS/specific_collection.css
+  Purpose: Styles for specific collection pages — overview card, items grid, buttons and modals.
+  Major selector groups: collection-hero, collection-container, item-card, collection-events, modals.
+*/
+
+/* ============================================
+  SPECIFIC COLLECTION PAGE
+  Consistent with GoodCollections design system
+  ============================================ */
+
+/* ===============================
+   🔹 COLLECTION OVERVIEW CARD — Modern Photo Hover
+   =============================== */
+
+.collection-hero {
+  margin-bottom: 24px;
+}
+
+/* Card with owner + metadata */
+#collection-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px 36px;
+  padding: 28px 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+#collection-meta:hover {
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.08);
+  transform: translateY(-3px);
+  border-color: #dbeafe;
+}
+
+/* Owner avatar — modernized hover */
+#owner-photo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e5e7eb;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08);
+  transition: all 0.4s ease;
+  transform-origin: center;
+  background: #f9fafb;
+}
+
+#owner-photo:hover {
+  transform: scale(1.08) rotate(2deg);
+  border-color: #bfdbfe;
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.18);
+  filter: brightness(1.05) contrast(1.05);
+}
+
+/* Subtle pulse glow when hovered */
+#owner-photo:hover::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(37, 99, 235, 0.1), transparent 70%);
+  animation: pulseGlow 1.4s ease-out;
+}
+
+@keyframes pulseGlow {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+/* Text block */
+#meta-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 32px;
+  align-items: center;
+  flex: 1;
+}
+
+#meta-text p {
+  margin: 0;
+  font-size: 1rem;
+  color: #374151;
+  transition: color 0.2s ease;
+}
+
+#meta-text strong {
+  font-weight: 600;
+  color: #2563eb;
+  margin-right: 6px;
+}
+
+.owner-link {
+  color: #1d4ed8;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.owner-link:hover,
+.owner-link:focus-visible {
+  color: #0f172a;
+  text-decoration-color: #0f172a;
+  outline: none;
+}
+
+/* Description full width with subtle top border */
+#meta-text p#description-line {
+  flex-basis: 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.96rem;
+  color: #4b5563;
+  line-height: 1.6;
+  transition: color 0.2s ease;
+}
+
+#meta-text p#description-line:hover {
+  color: #1e3a8a;
+}
+
+/* ===============================
+   🔹 COLLECTION STATISTICS PANEL
+   Matches project card style; responsive 2–3 column grid
+   =============================== */
+#collection-stats {
+  margin: 18px 0 26px;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  /* default 2 columns for medium screens */
+}
+
+.stat-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+  box-sizing: border-box;
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03));
+  color: #2563eb;
+  /* project blue */
+  font-size: 1.45rem;
+  flex: 0 0 56px;
+}
+
+.stat-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+/* Hide empty stats (rendered with .hidden by JS) */
+.stat-card.hidden {
+  display: none !important;
+}
+
+@media (min-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
+}
+
+/* Responsive behavior */
+@media (max-width: 700px) {
+  #collection-meta {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 18px;
+  }
+
+  #meta-text {
+    justify-content: center;
+  }
+
+  #owner-photo {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+/* ===============================
+   🔹 ACTION BUTTONS
+   =============================== */
+
+#buttons-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px auto 26px;
+}
+
+/* ===============================
+   🔹 ITEMS GRID
+   =============================== */
+
+
+/* Container for items inserted by JS */
+.collection-container {
+  display: grid;
+  /* increase the minimum card width to give more horizontal breathing room */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+  /* increased gap between cards */
+  margin-bottom: 40px;
+  align-items: start;
+}
+
+/* If your JS creates elements with a specific class (e.g., .item-card),
+   you can style them here. Example (safe & generic): */
+.collection-container>div {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  /* slightly more internal padding for better vertical spacing */
+  padding: 18px 16px 16px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;
+}
+
+/* Simple hover feedback for item cards (smoother / stronger) */
+.collection-container>div:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+  transition: all 0.22s ease;
+}
+
+.item-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.item-buttons .explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+/* Items filter panel */
+/* SECTION: everything side-by-side */
+.items-filter {
+  margin: 28px 0 12px;
+  padding: 22px 26px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  /* space between each block */
+  flex-wrap: nowrap;
+  /* ⬅️ important: keep all in one line */
+}
+
+.items-filter .filter-control {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.items-filter .filter-label {
+  font-weight: 600;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.items-filter .filter-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.items-filter .filter-select {
+  min-width: 210px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid #cbd5f5;
+  background: #f8fafc;
+  font-size: 0.95rem;
+  color: #0f172a;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.items-filter .filter-select:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.items-filter .filter-clear {
+  border: none;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.items-filter .filter-clear:hover {
+  background: #dbeafe;
+  transform: rotate(90deg);
+}
+
+.list-pagination {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* space between label and arrows */
+  flex-wrap: nowrap;
+  /* keep everything on one line */
+}
+
+.page-size-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* space between "Ver", select, and text */
+  margin: 0;
+  white-space: nowrap;
+  /* avoid line breaks inside the label */
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* space between prev, text, next */
+}
+
+
+
+.filter-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+/* Center item card title and action buttons inside the collection grid
+   These selectors target the structure generated by `app-items.js`:
+   .collection-container > div.card.item-card > .item-info
+   This ensures the item name and both the View / Edit / Delete buttons
+   are horizontally centered on the specific collection page. */
+.collection-container>div .item-info h3 {
+  text-align: center;
+  margin: 10px 0 8px;
+}
+
+.collection-container>div .item-actions,
+.collection-container>div .item-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  flex-direction: column;
+}
+
+/* Smaller spacing on narrow screens to avoid overflow */
+@media (max-width: 480px) {
+
+  .collection-container>div .item-buttons,
+  .collection-container>div .item-actions {
+    gap: 8px;
+    padding: 0 6px;
+  }
+}
+
+.collection-events {
+  margin-top: 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.section-subtitle {
+  margin: 0 0 18px;
+  font-size: 1.4rem;
+  color: #0f172a;
+  text-align: center;
+}
+
+.collection-events-list {
+  display: grid;
+  gap: 16px;
+}
+
+.collection-event-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.collection-event-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.collection-event-card p {
+  margin: 2px 0 0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.collection-event-card .event-meta {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* ===============================
+   🔹 MODALS (local tweaks only)
+   =============================== */
+
+.modal .modal-content {
+  max-width: 720px;
+}
+
+.modal-actions.crud-controls {
+  justify-content: center;
+}
+
+/* Cancel inside item modal (delete-btn is JS hook, we only style) */
+.delete-btn {
+  border: none;
+}
+
+/* ===============================
+   🔹 SMALL SCREENS
+   =============================== */
+
+@media (max-width: 700px) {
+  .collection-container {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  #buttons-bar {
+    margin-top: 14px;
+    gap: 8px;
+  }
+
+  .collection-container {
+    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+
+
+
+/* ===============================
+   🔹 VOTING SECTION (Simplified & Neutral Blue)
+   =============================== */
+.vote-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.vote-section:hover {
+  background: #f8fafc;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+}
+
+/* Vote buttons — minimalist style */
+.vote-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #cbd5e1;
+  /* neutral bluish-gray */
+  transition: transform 0.2s ease, color 0.25s ease;
+}
+
+.vote-btn:hover {
+  transform: translateY(-2px);
+  color: #93c5fd;
+  /* light blue hover */
+}
+
+/* Active vote states */
+.vote-btn.upvote.active-up i {
+  color: #60a5fa;
+  /* light blue for upvote */
+}
+
+.vote-btn.downvote.active-down i {
+  color: #2563eb;
+  /* darker blue for downvote */
+}
+
+/* Smooth press animation */
+.vote-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===============================
+   🔹 VIEW ITEM BUTTON (kept minimal & white)
+   =============================== */
+.item-actions {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.item-like-btn {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.92rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  min-width: 110px;
+}
+
+.item-like-btn .like-count {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.item-like-btn:hover {
+  border-color: #c7d2fe;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.item-like-btn.active {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.item-like-btn:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.view-btn {
+  background: linear-gradient(90deg, #ffffff, #f9fafb);
+  border: 1px solid #e2e8f0;
+  color: #1e3a8a;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.view-btn:hover {
+  background: #f1f5f9;
+  color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+}

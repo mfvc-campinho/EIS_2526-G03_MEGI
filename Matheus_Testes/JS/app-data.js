@@ -315,10 +315,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const ownerId = getCollectionOwnerId(collectionId, data);
     if (!ownerId) return null;
     const users = data.users || [];
-    return users.find(user =>
-      user["owner-id"] === ownerId ||
-      user.id === ownerId
-    ) || null;
+    return users.find(user => {
+      const uid = String(user?.id || user?.user_id || user?.['owner-id'] || '');
+      const uname = String(user?.['owner-name'] || user?.user_name || user?.['user_name'] || '');
+      return uid === ownerId || uname === ownerId;
+    }) || null;
   }
 
   // ============================================================

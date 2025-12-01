@@ -34,6 +34,81 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateUserState();
 
+  // ============================================================
+  // Server data loader (module-level)
+  // - Fetches `../PHP/get_all.php` asynchronously and keeps a local copy
+  // - Overrides `appData.loadData` to return server data when available
+  // ============================================================
+  let serverData = null;
+  const _originalLoadData = window.appData && typeof window.appData.loadData === 'function'
+    ? window.appData.loadData
+    : null;
+
+  if (window.appData && _originalLoadData) {
+    try {
+      window.appData.loadData = function () {
+        return serverData || _originalLoadData();
+      };
+    } catch (e) {
+      console.warn('Unable to override appData.loadData()', e);
+    }
+  }
+
+  async function fetchServerData() {
+    try {
+      const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
+      if (!res.ok) throw new Error(res.statusText || res.status);
+      const json = await res.json();
+      serverData = json || serverData;
+      try {
+        buildItemLikesMaps(serverData);
+      } catch (e) {
+        console.warn('Failed to build likes map from server data', e);
+      }
+      return serverData;
+    } catch (err) {
+      console.error('Failed to fetch server data for items module:', err);
+      // fallback to existing data if available
+      serverData = _originalLoadData ? _originalLoadData() : serverData;
+      return serverData;
+    }
+  }
+
+  // ============================================================
+  // Relation helpers (server-backed)
+  // ============================================================
+  async function linkItemToCollectionServer(itemId, collectionId) {
+    if (!itemId || !collectionId) return { success: false, error: 'missing params' };
+    try {
+      const body = new URLSearchParams();
+      body.append('action', 'linkItem');
+      body.append('itemId', itemId);
+      body.append('collectionId', collectionId);
+      const res = await fetch('../PHP/crud/relations.php', { method: 'POST', body });
+      const json = await res.json();
+      return json;
+    } catch (err) {
+      console.error('linkItemToCollectionServer error', err);
+      return { success: false, error: String(err) };
+    }
+  }
+
+  async function unlinkItemFromCollectionServer(itemId, collectionId) {
+    if (!itemId || !collectionId) return { success: false, error: 'missing params' };
+    try {
+      const body = new URLSearchParams();
+      body.append('action', 'unlinkItem');
+      body.append('itemId', itemId);
+      body.append('collectionId', collectionId);
+      const res = await fetch('../PHP/crud/relations.php', { method: 'POST', body });
+      const json = await res.json();
+      return json;
+    } catch (err) {
+      console.error('unlinkItemFromCollectionServer error', err);
+      return { success: false, error: String(err) };
+    }
+  }
+
 
   // ===============================================
   // MAIN SELECTORS
@@ -1106,9 +1181,35 @@ document.addEventListener("DOMContentLoaded", () => {
       return alert("You can only delete your own items.");
     }
 
-    if (confirm("Delete this item?\n\n(This is a demonstration.)")) {
-      alert("Simulation: item deleted (not really).");
-    }
+    if (!confirm("Delete this item?\n\nThis will remove the item from the server.")) return;
+
+    (async () => {
+      try {
+        const body = new URLSearchParams();
+        body.append('action', 'delete');
+        body.append('id', id);
+
+        const res = await fetch('../PHP/crud/items.php', {
+          method: 'POST',
+          body
+        });
+        const json = await res.json();
+        if (!res.ok || json.error || !json.success) {
+          console.error('Delete failed', json);
+          alert('Failed to delete item. See console for details.');
+          return;
+        }
+
+        // refresh server data and UI
+        await fetchServerData();
+        try { renderItems(); } catch (e) { console.warn(e); }
+        try { renderCollectionEvents(); } catch (e) { console.warn(e); }
+        try { const stats = computeCollectionStatistics(); renderCollectionStats(stats); } catch (e) { console.warn(e); }
+      } catch (err) {
+        console.error('Error deleting item', err);
+        alert('Error deleting item. See console.');
+      }
+    })();
   };
 
 
@@ -1173,6 +1274,93 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       closeModal();
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!isActiveUser) return alert('You must be logged in to add items.');
+
+      const id = idField.value.trim();
+      const isUpdate = Boolean(id);
+      // capture previous collection id for updates so we can unlink if changed
+      let prevCollectionId = null;
+      if (isUpdate) {
+        try {
+          const dataBefore = serverData || (typeof appData !== 'undefined' ? appData.loadData() : null);
+          const existing = dataBefore && Array.isArray(dataBefore.items) ? dataBefore.items.find(i => i.id === id) : null;
+          prevCollectionId = existing ? (existing.collectionId || existing.collection_id || '') : null;
+        } catch (e) { prevCollectionId = null; }
+      }
+      const body = new URLSearchParams();
+      body.append('action', isUpdate ? 'update' : 'create');
+      if (isUpdate) body.append('id', id);
+
+      const name = (form['item-name'] && form['item-name'].value) || '';
+      const importance = (form['item-importance'] && form['item-importance'].value) || '';
+      const weight = (form['item-weight'] && form['item-weight'].value) || '';
+      const price = (form['item-price'] && form['item-price'].value) || '';
+      const acq = (form['item-date'] && form['item-date'].value) || '';
+      const image = (form['item-image'] && form['item-image'].value) || '';
+      const collectionSelect = document.getElementById('item-collections');
+      const collectionIdVal = collectionSelect && collectionSelect.value ? collectionSelect.value : '';
+
+      body.append('name', name);
+      body.append('importance', importance);
+      body.append('weight', weight);
+      body.append('price', price);
+      body.append('acquisition_date', acq);
+      body.append('image', image);
+      if (collectionIdVal) body.append('collection_id', collectionIdVal);
+
+      try {
+        const res = await fetch('../PHP/crud/items.php', {
+          method: 'POST',
+          body
+        });
+        const json = await res.json();
+        if (!res.ok || json.error || !json.success) {
+          console.error('Save item failed', json);
+          alert('Failed to save item. See console for details.');
+          return;
+        }
+
+        // Determine the final item id (server may return generated id)
+        const itemId = isUpdate ? id : (json.id || null);
+        if (!itemId) {
+          console.warn('No item id returned after save, skipping relation sync');
+        } else {
+          // sync relation: if collection selected, link it; if removed, unlink previous
+          try {
+            if (isUpdate) {
+              if (prevCollectionId && prevCollectionId !== collectionIdVal) {
+                await unlinkItemFromCollectionServer(itemId, prevCollectionId);
+              }
+              if (collectionIdVal) {
+                await linkItemToCollectionServer(itemId, collectionIdVal);
+              }
+            } else {
+              // created
+              if (collectionIdVal) {
+                await linkItemToCollectionServer(itemId, collectionIdVal);
+              }
+            }
+          } catch (relErr) {
+            console.warn('Relation sync error', relErr);
+          }
+        }
+
+        // refresh server data and UI
+        await fetchServerData();
+        closeModal();
+        try { renderItems(); } catch (e) { console.warn(e); }
+        try { renderCollectionEvents(); } catch (e) { console.warn(e); }
+        try { const stats = computeCollectionStatistics(); renderCollectionStats(stats); } catch (e) { console.warn(e); }
+      } catch (err) {
+        console.error('Error saving item', err);
+        alert('Error saving item. See console.');
+      }
     });
   }
 
@@ -1276,65 +1464,82 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ===============================================
-  // INITIALIZATION
+  // INITIALIZATION (async server-backed)
+  // - Fetch server data first, then initialise UI using that data.
+  // - If fetch fails, fall back to existing localData behavior.
   // ===============================================
-  populateCollectionsSelect();
+  (async function initItemsModule() {
+    await fetchServerData();
 
-  if (isCollectionPage) {
-    if (collectionId) renderCollectionDetails();
+    // Populate selects and wire pagination after data is available
+    populateCollectionsSelect();
 
+    if (isCollectionPage) {
+      if (collectionId) renderCollectionDetails();
+
+      try {
+        const stats = computeCollectionStatistics();
+        renderCollectionStats(stats);
+      } catch (err) {
+        console.error("Error computing stats:", err);
+      }
+
+      if (hasPagination) {
+        syncPageSizeSelects(paginationState.pageSize);
+        paginationControls.forEach(ctrl => {
+          const s = ctrl.querySelector("[data-page-size]");
+          if (s) {
+            s.addEventListener("change", (ev) => {
+              const next = parseInt(ev.target.value, 10);
+              if (!Number.isNaN(next) && next > 0) {
+                paginationState.pageSize = next;
+                paginationState.pageIndex = 0;
+                syncPageSizeSelects(next);
+                renderItems();
+              }
+            });
+          }
+
+          const prev = ctrl.querySelector("[data-page-prev]");
+          if (prev)
+            prev.addEventListener("click", () => {
+              if (paginationState.pageIndex > 0) {
+                paginationState.pageIndex--;
+                renderItems();
+              }
+            });
+
+          const nextBtn = ctrl.querySelector("[data-page-next]");
+          if (nextBtn)
+            nextBtn.addEventListener("click", () => {
+              paginationState.pageIndex++;
+              renderItems();
+            });
+        });
+      }
+
+      renderItems();
+      highlightOwnedSection();
+
+    } else if (itemsContainer) {
+      // user_page: only liked items
+      renderItems();
+    }
+
+    renderCollectionEvents();
+    handleItemActionParam();
+  })().catch(err => {
+    console.error('Initialization failed (items module):', err);
+    // Best effort fallback to previous synchronous behavior
     try {
-      const stats = computeCollectionStatistics();
-      renderCollectionStats(stats);
-    } catch (err) {
-      console.error("Error computing stats:", err);
+      populateCollectionsSelect();
+      renderItems();
+      renderCollectionEvents();
+      handleItemActionParam();
+    } catch (e) {
+      console.warn('Fallback initialization failed:', e);
     }
-
-    if (hasPagination) {
-      syncPageSizeSelects(paginationState.pageSize);
-      paginationControls.forEach(ctrl => {
-        const s = ctrl.querySelector("[data-page-size]");
-        if (s) {
-          s.addEventListener("change", (ev) => {
-            const next = parseInt(ev.target.value, 10);
-            if (!Number.isNaN(next) && next > 0) {
-              paginationState.pageSize = next;
-              paginationState.pageIndex = 0;
-              syncPageSizeSelects(next);
-              renderItems();
-            }
-          });
-        }
-
-        const prev = ctrl.querySelector("[data-page-prev]");
-        if (prev)
-          prev.addEventListener("click", () => {
-            if (paginationState.pageIndex > 0) {
-              paginationState.pageIndex--;
-              renderItems();
-            }
-          });
-
-        const nextBtn = ctrl.querySelector("[data-page-next]");
-        if (nextBtn)
-          nextBtn.addEventListener("click", () => {
-            paginationState.pageIndex++;
-            renderItems();
-          });
-      });
-    }
-
-    renderItems();
-    highlightOwnedSection();
-
-  } else if (itemsContainer) {
-    // user_page: only liked items
-    renderItems();
-  }
-
-  renderCollectionEvents();
-  handleItemActionParam();
-
+  });
 
   // Expose stats helpers
   window.computeCollectionStatistics = computeCollectionStatistics;

@@ -691,7 +691,11 @@ document.addEventListener("DOMContentLoaded", () => {
     isViewingOwnProfile =
       Boolean(activeUser?.active && activeOwnerId && resolvedOwnerNormalized && activeOwnerId === resolvedOwnerNormalized);
     updateOwnerActionButtonsVisibility();
-    const user = latestData.users.find((u) => u["owner-id"] === viewedOwnerId);
+    const user = (latestData.users || []).find((u) => {
+      const uid = String(u?.id || u?.user_id || u?.['owner-id'] || "");
+      const uname = String(u?.['owner-name'] || u?.user_name || u?.['user_name'] || u?.['user-name'] || "");
+      return uid === viewedOwnerId || uname === viewedOwnerId;
+    });
 
     if (!user) {
       document.querySelector("main").innerHTML = `
@@ -701,9 +705,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentUserData = user;
-    const ownerName = user["owner-name"] || viewedOwnerId;
+    const ownerName = user["owner-name"] || user.user_name || user['user_name'] || viewedOwnerId;
 
-    userNameEl.textContent = ownerName;
+    if (userNameEl) userNameEl.textContent = ownerName;
     if (userCollectionsTitleEl) {
       userCollectionsTitleEl.textContent = `${ownerName} Collections`;
     }
@@ -711,15 +715,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // (for example 'User Profile') in the markup so avoid throwing if
     // the element is missing.
     if (usernameBannerEl) usernameBannerEl.textContent = ownerName;
-    userAvatarEl.src = user["owner-photo"];
+    // Avatar / contact info: tolerate multiple field names from server
+    const avatar = user['owner-photo'] || user.user_photo || user['user_photo'] || '';
+    userAvatarEl.src = avatar || '../images/user.jpg';
     if (userEmailEl) {
-      userEmailEl.textContent = isViewingOwnProfile ? user.email : "Private";
+      userEmailEl.textContent = isViewingOwnProfile ? (user.email || user.email_address || 'N/A') : "Private";
     }
     if (userDobEl) {
-      userDobEl.textContent = isViewingOwnProfile ? user["date-of-birth"] : "Private";
+      userDobEl.textContent = isViewingOwnProfile ? (user['date-of-birth'] || user.date_of_birth || 'N/A') : "Private";
     }
     if (userMemberSinceEl) {
-      userMemberSinceEl.textContent = user["member-since"] || "N/A";
+      userMemberSinceEl.textContent = user['member-since'] || user.member_since || "N/A";
     }
 
     const collectionCount =

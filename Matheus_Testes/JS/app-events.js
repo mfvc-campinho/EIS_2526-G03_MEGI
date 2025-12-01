@@ -563,7 +563,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const ownerProfiles = uniqueOwnerIds
       .map(ownerId => {
-        const user = users.find(u => u.id === ownerId || u["owner-id"] === ownerId);
+        const user = users.find(u => {
+          const uid = String(u?.id || u?.user_id || u?.['owner-id'] || '');
+          const uname = String(u?.user_name || u?.['owner-name'] || u?.['user_name'] || '');
+          return uid === ownerId || uname === ownerId;
+        });
         const name = user?.["owner-name"] || ownerId;
         return { id: ownerId, name };
       })
@@ -617,7 +621,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getUserRatingFromEntries(entries, user) {
     if (!user) return null;
-    const userId = user.id || user["owner-id"];
+    const userId = user?.id || user?.user_id || user?.['owner-id'] || null;
     if (!userId) return null;
     const entry = entries.find(link => link.userId === userId);
     return entry && typeof entry.rating === "number" ? entry.rating : null;

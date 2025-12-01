@@ -158,10 +158,14 @@ document.addEventListener("DOMContentLoaded", () => {
     collections.forEach(col => {
       const ownerId = resolveOwnerIdForCollection(col.id);
       if (!ownerId || ownersMap.has(ownerId)) return;
-      const profile = (data.users || []).find(u => u["owner-id"] === ownerId);
+      const profile = (data.users || []).find(u => {
+        const uid = String(u?.id || u?.user_id || u?.['owner-id'] || '');
+        const uname = String(u?.['owner-name'] || u?.user_name || u?.['user_name'] || '');
+        return uid === ownerId || uname === ownerId;
+      });
       ownersMap.set(ownerId, {
         id: ownerId,
-        name: profile?.["owner-name"] || ownerId
+        name: profile?.['owner-name'] || profile?.user_name || ownerId
       });
     });
 

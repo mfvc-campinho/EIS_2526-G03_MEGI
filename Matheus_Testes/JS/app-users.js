@@ -115,7 +115,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!data && typeof collectionsData !== "undefined") {
       data = collectionsData;
     }
-    return data?.users?.find(user => user["owner-id"] === ownerId) || null;
+    return (data?.users || []).find(user => {
+      const uid = String(user?.id || user?.user_id || user?.['owner-id'] || '');
+      const uname = String(user?.['owner-name'] || user?.user_name || user?.['user_name'] || '');
+      return uid === ownerId || uname === ownerId;
+    }) || null;
   }
 
   function loginUser() {

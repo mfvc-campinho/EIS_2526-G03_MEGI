@@ -76,11 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById("collections-list") ||
         document.getElementById("homeCollections") ||
         document.getElementById("user-collections");
-    // If there is no collections container on this page, or it is server-rendered, stop early.
-    if (!list)
-        return;
-    if (list.dataset && list.dataset.serverRendered === '1')
-        return;
+    // If there is no collections container on this page, stop early.
+    if (!list) return;
+    // Detect server-rendered container: when present we should NOT re-render the list,
+    // but still define the global functions (togglePreview, editCollection, deleteCollection)
+    const isServerRendered = Boolean(list.dataset && list.dataset.serverRendered === '1');
 
     const isHomePage = list?.id === "homeCollections";
     const isUserPage = list?.id === "user-collections";
@@ -705,6 +705,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const img = document.getElementById(`img-${id}`);
         const prev = document.getElementById(`preview-${id}`);
         const meta = document.getElementById(`meta-${id}`);
+        if (!prev || !img || !meta) return;
         const isShowingPreview = prev.style.display === "block";
 
         if (isShowingPreview) {
@@ -712,24 +713,37 @@ document.addEventListener("DOMContentLoaded", () => {
             prev.style.display = "none";
             img.style.display = "block";
             btn.innerHTML = '<i class="bi bi-eye"></i> Show Preview';
-        } else {
-            // Show the preview and populate meta-data
-            const data = lastRenderData || appData.loadData();
-            const col = data.collections.find(c => c.id === id);
-            if (!col) return;
-
-            const { latestMap, itemsByCollection } = buildCollectionDerivedMaps(data);
-            const itemCount = (itemsByCollection[col.id] || []).length;
-            const lastUpdatedDate = latestMap[id] ? new Date(latestMap[id]).toLocaleDateString() : "N/A";
-
-            meta.innerHTML = `
-                <span class="meta-item"><i class="bi bi-list-ol me-1"></i> ${itemCount} items</span>
-                <span class="meta-item"><i class="bi bi-clock-history me-1"></i> Last updated: ${lastUpdatedDate}</span>`;
-
-            prev.style.display = "block";
-            img.style.display = "none";
-            btn.innerHTML = '<i class="bi bi-eye-slash"></i> Hide Preview';
+            return;
         }
+
+        // Try to populate meta-data from client data; if not available (server-rendered), fallback to DOM-based info
+        let itemCount = 0;
+        let lastUpdatedDate = "N/A";
+        try {
+            if (typeof appData !== 'undefined') {
+                const data = lastRenderData || appData.loadData();
+                const col = (data.collections || []).find(c => c.id === id);
+                if (col) {
+                    const { latestMap, itemsByCollection } = buildCollectionDerivedMaps(data);
+                    itemCount = (itemsByCollection[col.id] || []).length;
+                    lastUpdatedDate = latestMap[id] ? new Date(latestMap[id]).toLocaleDateString() : "N/A";
+                }
+            }
+        } catch (e) {
+            // ignore and fallback to DOM
+        }
+
+        if (itemCount === 0) {
+            // Try to count preview items already present in DOM
+            const listItems = prev.querySelectorAll('.mini-item-list li, .mini-item-link');
+            if (listItems && listItems.length) itemCount = listItems.length;
+        }
+
+        meta.innerHTML = `\n                <span class="meta-item"><i class="bi bi-list-ol me-1"></i> ${itemCount} items</span>\n                <span class="meta-item"><i class="bi bi-clock-history me-1"></i> Last updated: ${lastUpdatedDate}</span>`;
+
+        prev.style.display = "block";
+        img.style.display = "none";
+        btn.innerHTML = '<i class="bi bi-eye-slash"></i> Hide Preview';
     };
 
     window.editCollection = id => {
@@ -846,7 +860,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // React to global user state changes
     window.addEventListener("userStateChange", () => {
         updateUserState();
-        renderCollections(filter ? filter.value : "lastAdded");
+        if (!isServerRendered) renderCollections(filter ? filter.value : "lastAdded");
     });
 
     // ==========================================================
@@ -854,5 +868,5 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================
     initializePaginationControls();
     updateUserState();
-    renderCollections("lastAdded");
+    if (!isServerRendered) renderCollections("lastAdded");
 });

@@ -563,11 +563,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return getFollowerList(followerId).includes(targetOwnerId);
   }
 
-  function toggleFollowUser(targetOwnerId) {
+  async function toggleFollowUser(targetOwnerId) {
     if (!targetOwnerId || !activeUser?.id || typeof appData?.toggleUserFollow !== "function") return false;
-    const following = appData.toggleUserFollow(activeUser.id, targetOwnerId);
-    showFollowSimulationMessage();
-    return following;
+    try {
+      const following = await appData.toggleUserFollow(activeUser.id, targetOwnerId);
+      return following;
+    } catch (err) {
+      console.warn('toggleFollowUser error', err);
+      return false;
+    }
   }
 
   function renderFollowButton(ownerName) {
@@ -776,13 +780,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   resetTopPicksBtn?.addEventListener("click", handleResetTopPicks);
   topPicksContainer?.addEventListener("click", handleTopPickAction);
-  followUserBtn?.addEventListener("click", () => {
+  followUserBtn?.addEventListener("click", async () => {
     if (!activeUser?.active || !activeUser?.id) {
       alert("Please sign in to follow collectors.");
       return;
     }
     if (!viewedOwnerId || activeUser.id === viewedOwnerId) return;
-    toggleFollowUser(viewedOwnerId);
+    await toggleFollowUser(viewedOwnerId);
     renderFollowButton(currentUserData?.["owner-name"] || viewedOwnerId);
   });
 

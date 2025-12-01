@@ -32,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!collection)
             return;
         // Informative notice about prototype behavior
-        alert("Note: this prototype may simulate some vote behaviors; sign in to persist changes when available.");
         const currentState = getEffectiveUserLike(collection, ownerId);
         const newState = !currentState;
         voteState[collectionId] = newState;

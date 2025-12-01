@@ -185,24 +185,87 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function toggleUserFollow(followerId, targetOwnerId) {
-    if (!followerId || !targetOwnerId || followerId === targetOwnerId) return false;
-    const data = loadData();
-    if (!data) return false;
-    const followsMap = ensureUserFollowsMap(data);
-    const existingFollows = Array.isArray(followsMap[followerId]) ? [...followsMap[followerId]] : [];
-    const followIndex = existingFollows.indexOf(targetOwnerId);
-    const following = followIndex === -1;
+    // New behavior: perform optimistic local update and persist server-side.
+    // Returns a Promise that resolves to `true` when following, `false` when unfollowed.
+    return new Promise((resolve) => {
+      if (!followerId || !targetOwnerId || followerId === targetOwnerId) return resolve(false);
+      const data = loadData();
+      if (!data) return resolve(false);
+      const followsMap = ensureUserFollowsMap(data);
+      const existingFollows = Array.isArray(followsMap[followerId]) ? [...followsMap[followerId]] : [];
+      const followIndex = existingFollows.indexOf(targetOwnerId);
+      const willFollow = followIndex === -1;
 
-    if (following) {
-      existingFollows.push(targetOwnerId);
-    } else {
-      existingFollows.splice(followIndex, 1);
-    }
+      // Apply optimistic change locally
+      if (willFollow) {
+        existingFollows.push(targetOwnerId);
+      } else {
+        existingFollows.splice(followIndex, 1);
+      }
+      followsMap[followerId] = existingFollows;
+      saveData(data);
+      dispatchFollowChangeEvent({ followerId, targetOwnerId, following: willFollow });
 
-    followsMap[followerId] = existingFollows;
-    saveData(data);
-    dispatchFollowChangeEvent({ followerId, targetOwnerId, following });
-    return following;
+      // Persist to server
+      try {
+        fetch('../PHP/crud/follows.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ action: willFollow ? 'follow' : 'unfollow', targetId: targetOwnerId })
+        })
+          .then(resp => {
+            if (resp.status === 401) {
+              // revert optimistic change
+              const d = loadData();
+              const map = ensureUserFollowsMap(d);
+              const cur = Array.isArray(map[followerId]) ? [...map[followerId]] : [];
+              if (willFollow) {
+                const idx = cur.indexOf(targetOwnerId);
+                if (idx !== -1) cur.splice(idx, 1);
+              } else {
+                if (!cur.includes(targetOwnerId)) cur.push(targetOwnerId);
+              }
+              map[followerId] = cur;
+              saveData(d);
+              dispatchFollowChangeEvent({ followerId, targetOwnerId, following: !willFollow });
+              alert('Please sign in to follow collectors.');
+              resolve(!willFollow);
+              return null;
+            }
+            return resp.json().catch(() => null);
+          })
+          .then(json => {
+            if (!json) return resolve(willFollow);
+            if (json.success) {
+              resolve(willFollow);
+            } else {
+              // revert optimistic change on server error
+              const d = loadData();
+              const map = ensureUserFollowsMap(d);
+              const cur = Array.isArray(map[followerId]) ? [...map[followerId]] : [];
+              if (willFollow) {
+                const idx = cur.indexOf(targetOwnerId);
+                if (idx !== -1) cur.splice(idx, 1);
+              } else {
+                if (!cur.includes(targetOwnerId)) cur.push(targetOwnerId);
+              }
+              map[followerId] = cur;
+              saveData(d);
+              dispatchFollowChangeEvent({ followerId, targetOwnerId, following: !willFollow });
+              console.warn('follows: server error', json);
+              resolve(!willFollow);
+            }
+          })
+          .catch(err => {
+            console.warn('follows: network error', err);
+            // keep optimistic state (best-effort)
+            resolve(willFollow);
+          });
+      } catch (e) {
+        console.warn('follows: unable to POST', e);
+        resolve(willFollow);
+      }
+    });
   }
 
   function getUserFollowers(ownerId) {

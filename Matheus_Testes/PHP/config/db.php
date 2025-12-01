@@ -1,17 +1,25 @@
 <?php
-// Simple DB config for XAMPP + MySQL (adjust credentials if needed)
-$DB_HOST = '127.0.0.1';
-$DB_NAME = 'sie_db';
-$DB_USER = 'root';
-$DB_PASS = '';
+// public_html/PHP/db.php
 
-// Create mysqli connection
-$mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
-if ($mysqli->connect_errno) {
-  header('Content-Type: application/json');
-  http_response_code(500);
-  echo json_encode(['error' => 'Database connection failed', 'details' => $mysqli->connect_error]);
-  exit;
+// ⚙️ CONFIGURAÇÃO DA LIGAÇÃO
+$dbHost = '127.0.0.1';   // ou 'localhost'
+$dbName = 'sie_db';      // <-- o nome que disseste
+$dbUser = 'root';        // XAMPP default
+$dbPass = '';            // normalmente vazio no XAMPP
+
+$dsn = "mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4";
+
+try {
+    $pdo = new PDO($dsn, $dbUser, $dbPass, [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+} catch (PDOException $e) {
+    // Modo simples de ver o erro em desenvolvimento
+    die('Database connection failed: ' . htmlspecialchars($e->getMessage()));
 }
-// Set charset
-$mysqli->set_charset('utf8mb4');
+
+function redirect(string $path): void {
+    header('Location: ' . $path);
+    exit;
+}

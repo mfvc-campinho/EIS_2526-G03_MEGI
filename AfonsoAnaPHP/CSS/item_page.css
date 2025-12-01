@@ -1,0 +1,348 @@
+/*
+  File: public_html/CSS/item_page.css
+  Purpose: Styles for item detail page and related item cards (layout, image, actions, relations).
+  Major selector groups: item-details-card, item image, item-relations, responsiveness, animations.
+*/
+
+/* ===============================
+  🔹 ITEM PAGE 
+  =============================== */
+
+body {
+  background: #f9fafb;
+  font-family: 'Poppins', sans-serif;
+  color: #1f2937;
+  line-height: 1.6;
+  transition: background 0.3s ease;
+}
+
+/* ===============================
+   🔹 CARD CONTAINER
+   =============================== */
+.item-details-card {
+  max-width: 900px;
+  margin: 50px auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s ease;
+}
+
+.item-details-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+  background: #fefeff;
+}
+
+/* ===============================
+   🔹 IMAGE
+   =============================== */
+.item-details-card img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 16px;
+  object-fit: cover;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.item-details-card img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ===============================
+   🔹 TEXT CONTENT
+   =============================== */
+.item-details-text {
+  flex: 1;
+  font-size: 1rem;
+  color: #374151;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.item-details-text h1 {
+  margin-bottom: 12px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #111827;
+  position: relative;
+}
+
+.item-details-text h1::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+  border-radius: 2px;
+}
+
+.item-details-text p {
+  font-size: 1rem;
+  color: #4b5563;
+  margin: 8px 0;
+  transition: color 0.2s ease;
+}
+
+.item-details-text p strong {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.item-like-wrapper {
+  margin: 16px 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.item-like-btn {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  min-width: 120px;
+}
+
+.item-like-btn .like-count {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.item-like-btn:hover {
+  border-color: #c7d2fe;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.item-like-btn.active {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.item-like-btn:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.item-like-helper {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.item-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.item-action-buttons .explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+}
+
+.item-action-buttons.hidden {
+  display: none;
+}
+
+/* Hover glow on info lines */
+.item-details-text p:hover {
+  color: #1d4ed8;
+}
+
+/* ===============================
+   🔹 BACK BUTTON
+   =============================== */
+.back-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px auto 26px;
+}
+
+.back-section .explore-btn:not(.ghost) {
+  background: linear-gradient(90deg, #ffffff, #f9fafb);
+  border: 1px solid #e2e8f0;
+  color: #1e3a8a;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.back-section .explore-btn:hover {
+  background: #f1f5f9;
+  color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+}
+
+.back-section .explore-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+/* When used inside .back-section and the button is the ghost variant,
+   force the pill appearance (match general.css / specific_collection) */
+/* Ghost appearance is defined globally in general.css */
+
+/* Ghost variant moved to general.css (global) */
+
+/* ===============================
+   🔹 RESPONSIVENESS
+   =============================== */
+/* ===============================
+   🔗 RELATED LINKS
+   =============================== */
+.item-relations {
+  max-width: 900px;
+  margin: 10px auto 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.item-relations-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.item-relations-card .card-header {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.item-relations-card .card-header i {
+  font-size: 1.8rem;
+  color: #2563eb;
+  background: #eff6ff;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.eyebrow-label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.item-relations-card h2 {
+  margin: 2px 0 0;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 38px;
+}
+
+.pill-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1d4ed8;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.pill-link i {
+  font-size: 1rem;
+}
+
+.pill-link:hover {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+  color: #1e3a8a;
+  transform: translateY(-1px);
+}
+
+.pill-placeholder {
+  color: #6b7280;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ===============================
+   🔁 RESPONSIVENESS
+   =============================== */
+@media (max-width: 820px) {
+  .item-details-card {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 24px;
+  }
+
+  .item-details-card img {
+    max-width: 80%;
+  }
+
+  .item-details-text h1::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* ===============================
+   🔹 ANIMATIONS
+   =============================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

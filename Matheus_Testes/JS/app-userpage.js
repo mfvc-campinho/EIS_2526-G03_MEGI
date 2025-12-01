@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const eventsDemoState = window.demoEventsState || (window.demoEventsState = { voteState: {} });
 
   const FOLLOW_SIMULATION_MESSAGE =
-    "Attention: following collectors is just a backend simulation; there is no real persistence.";
+    "Following collectors is simulated in this prototype and will not be saved.";
   let followSimulationAlertShown = false;
 
 
@@ -563,11 +563,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return getFollowerList(followerId).includes(targetOwnerId);
   }
 
-  function toggleFollowUser(targetOwnerId) {
+  async function toggleFollowUser(targetOwnerId) {
     if (!targetOwnerId || !activeUser?.id || typeof appData?.toggleUserFollow !== "function") return false;
-    const following = appData.toggleUserFollow(activeUser.id, targetOwnerId);
-    showFollowSimulationMessage();
-    return following;
+    try {
+      const following = await appData.toggleUserFollow(activeUser.id, targetOwnerId);
+      return following;
+    } catch (err) {
+      console.warn('toggleFollowUser error', err);
+      return false;
+    }
   }
 
   function renderFollowButton(ownerName) {
@@ -597,6 +601,15 @@ document.addEventListener("DOMContentLoaded", () => {
     followUserBtn.title = following
       ? `You are following ${ownerName || "this collector"}`
       : `Follow ${ownerName || "this collector"}`;
+    // Update follower count display using the freshest data available
+    try {
+      const count = typeof (appData?.getUserFollowerCount) === 'function'
+        ? appData.getUserFollowerCount(viewedOwnerId)
+        : resolveFollowerCount(latestData, viewedOwnerId);
+      if (userFollowersEl) userFollowersEl.textContent = count;
+    } catch (err) {
+      // ignore silently
+    }
   }
 
   function populateItemCollectionsSelect() {
@@ -769,20 +782,83 @@ document.addEventListener("DOMContentLoaded", () => {
   editProfileBtn.addEventListener("click", openProfileModal);
   closeUserModalBtn.addEventListener("click", closeProfileModal);
   cancelUserModalBtn.addEventListener("click", closeProfileModal);
-  profileForm.addEventListener("submit", (e) => {
+  profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    alert("Demo only: profile changes are not saved.");
-    closeProfileModal();
+    if (!activeUser?.active || !activeUser?.id) {
+      alert('Please sign in to edit your profile.');
+      return;
+    }
+    const id = activeUser.id;
+    const name = profileForm.querySelector('#user-form-name')?.value || '';
+    const photo = profileForm.querySelector('#user-form-photo')?.value || '';
+    const dob = profileForm.querySelector('#user-form-dob')?.value || '';
+
+    try {
+      const resp = await fetch('../PHP/crud/users.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action: 'update', id, name, photo, dob })
+      });
+      if (resp.status === 401) {
+        alert('Not authorized. Please sign in again.');
+        return;
+      }
+      const json = await resp.json().catch(() => null);
+      if (!json || !json.success) {
+        alert('Unable to save profile. Please try again.');
+        console.warn('Profile update error', json);
+        return;
+      }
+
+      // Update local state: latestData (collectionsData) and currentUser in localStorage
+      latestData = latestData || (window.appData && window.appData.loadData ? window.appData.loadData() : null);
+      if (latestData && Array.isArray(latestData.users)) {
+        const u = latestData.users.find(u => String(u.id || u.user_id || u['owner-id'] || '') === String(id));
+        if (u) {
+          u['owner-name'] = name;
+          u.user_name = name;
+          u['owner-photo'] = photo;
+          u.user_photo = photo;
+          u['date-of-birth'] = dob;
+          u.date_of_birth = dob;
+        }
+        try { window.appData.saveData(latestData); } catch (err) { localStorage.setItem('collectionsData', JSON.stringify(latestData)); }
+      }
+
+      // Update currentUser in localStorage so UI reflects change
+      const stored = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (stored && stored.id === id) {
+        stored.name = name;
+        stored.photo = photo;
+        localStorage.setItem('currentUser', JSON.stringify(stored));
+      }
+
+      // If server returned updated session user, merge
+      if (json.user) {
+        const s = JSON.parse(localStorage.getItem('currentUser') || 'null') || {};
+        s.name = json.user.name || s.name;
+        s.photo = json.user.photo || s.photo;
+        localStorage.setItem('currentUser', JSON.stringify(s));
+      }
+
+      closeProfileModal();
+      // Re-render the profile to show updated values
+      loadAndRenderUserData();
+      alert('Profile updated successfully.');
+    } catch (err) {
+      console.error('Profile update failed', err);
+      alert('Network error saving profile.');
+    }
   });
   resetTopPicksBtn?.addEventListener("click", handleResetTopPicks);
   topPicksContainer?.addEventListener("click", handleTopPickAction);
-  followUserBtn?.addEventListener("click", () => {
+  followUserBtn?.addEventListener("click", async () => {
     if (!activeUser?.active || !activeUser?.id) {
-      alert("Please log in to follow collectors.");
+      alert("Please sign in to follow collectors.");
       return;
     }
     if (!viewedOwnerId || activeUser.id === viewedOwnerId) return;
-    toggleFollowUser(viewedOwnerId);
+    await toggleFollowUser(viewedOwnerId);
     renderFollowButton(currentUserData?.["owner-name"] || viewedOwnerId);
   });
 

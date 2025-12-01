@@ -211,10 +211,10 @@ document.addEventListener("DOMContentLoaded", () => {
     itemLikeCount.textContent = String(likeCount);
     if (ownerId) {
       itemLikeBtn.title = liked ? "Unlike this item" : "Like this item";
-      if (itemLikeHelper) itemLikeHelper.textContent = "Demo only: likes are not saved.";
+      if (itemLikeHelper) itemLikeHelper.textContent = "Likes are stored locally in this prototype and may not persist.";
     } else {
-      itemLikeBtn.title = "Sign in to like this item.";
-      if (itemLikeHelper) itemLikeHelper.textContent = "Sign in to like this item.";
+      itemLikeBtn.title = "Please sign in to like this item.";
+      if (itemLikeHelper) itemLikeHelper.textContent = "Please sign in to like this item.";
     }
   }
 

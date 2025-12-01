@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function toggleVote(collectionId) {
         if (!isActiveUser) {
-            alert("To do that, login.");
+            alert("Please sign in to like or vote. Use the profile menu to sign in.");
             return;
         }
         const ownerId = getEffectiveOwnerId();
@@ -31,9 +31,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const collection = data?.collections?.find(c => c.id === collectionId);
         if (!collection)
             return;
-        alert("Simulation only: voting here would change the collection's total.");
+        // Informative notice about prototype behavior
         const currentState = getEffectiveUserLike(collection, ownerId);
-        voteState[collectionId] = !currentState;
+        const newState = !currentState;
+        voteState[collectionId] = newState;
+        // Persist the like/unlike via appData if available
+        if (window.appData && typeof window.appData.setUserCollectionLike === "function") {
+            try {
+                window.appData.setUserCollectionLike(ownerId, collectionId, newState);
+            } catch (err) {
+                console.warn('setUserCollectionLike failed', err);
+            }
+        }
         renderCollections(lastRenderCriteria);
         notifyLikesChange(ownerId);
     }
@@ -295,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setCollectionRating(collectionId, value) {
         if (!isActiveUser) {
-            alert("Sign in to rate collections.");
+            alert("Please sign in to rate collections.");
             return;
         }
         const ownerId = getEffectiveOwnerId();
@@ -307,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         sessionCollectionRatings[collectionId] = numericValue;
-        alert("Demo only: rating stored for this session.");
+        alert("This prototype stores ratings locally in your browser and they are not persisted to the server.");
         renderCollections(lastRenderCriteria);
     }
 
@@ -765,8 +774,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!col || !isCollectionOwnedByCurrentUser(col, data))
             return alert("❌ You can only delete your own collections.");
 
-        if (confirm(`⚠️ Delete "${col.name}"?\n\n(This is a demonstration. No data will be changed.)`)) {
-            alert("✅ Simulation successful. No data was deleted.");
+        if (confirm(`⚠️ Delete "${col.name}"?\n\n(Prototype: no data will be changed.)`)) {
+            alert("✅ Prototype: no data was deleted.");
             // appData.deleteEntity("collections", id);
             // alert(`🗑️ Collection "${col.name}" deleted.`);
             // renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
@@ -817,7 +826,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (openBtn) {
             openBtn.addEventListener("click", () => {
                 if (!isActiveUser)
-                    return alert("🚫 You must be logged in to add collections.");
+                    return alert("Please sign in to add collections.");
                 openModal(false);
             });
         }

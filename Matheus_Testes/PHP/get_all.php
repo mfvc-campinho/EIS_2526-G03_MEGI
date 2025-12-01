@@ -20,28 +20,40 @@ function fetch_all($mysqli, $sql, $types = null, $params = [])
 // 1) Collections
 $cols = fetch_all($mysqli, "SELECT collection_id,name,type,cover_image,summary,description,created_at,user_id FROM collections ORDER BY created_at DESC");
 $collections = array_map(function ($r) {
+  $owner = $r['user_id'] ?? null;
   return [
-    'id' => $r['collection_id'],
-    'name' => $r['name'],
-    'type' => $r['type'],
+    'id' => $r['collection_id'] ?? null,
+    'name' => $r['name'] ?? null,
+    'type' => $r['type'] ?? null,
     'coverImage' => $r['cover_image'] ?: '../images/default.jpg',
-    'summary' => $r['summary'],
-    'description' => $r['description'],
-    'createdAt' => $r['created_at'],
-    'ownerId' => $r['user_id']
+    'summary' => $r['summary'] ?? null,
+    'description' => $r['description'] ?? null,
+    'createdAt' => $r['created_at'] ?? null,
+    'ownerId' => $owner,
+    // legacy client compatibility
+    'owner-id' => $owner
   ];
 }, $cols);
 
 // 2) Users
 $usersRows = fetch_all($mysqli, "SELECT user_id,user_name,user_photo,date_of_birth,email,member_since FROM users");
 $users = array_map(function ($r) {
+  $uid = $r['user_id'] ?? null;
+  $uname = $r['user_name'] ?? null;
   return [
-    'id' => $r['user_id'],
-    'user_name' => $r['user_name'],
-    'user_photo' => $r['user_photo'],
-    'date_of_birth' => $r['date_of_birth'],
-    'email' => $r['email'],
-    'member_since' => $r['member_since']
+    'id' => $uid,
+    'user_id' => $uid,
+    'user_name' => $uname,
+    'user_photo' => $r['user_photo'] ?? null,
+    'date_of_birth' => $r['date_of_birth'] ?? null,
+    'email' => $r['email'] ?? null,
+    'member_since' => $r['member_since'] ?? null,
+    // legacy keys expected by client
+    'owner-id' => $uid,
+    'owner-name' => $uname,
+    'owner-photo' => $r['user_photo'] ?? null,
+    'date-of-birth' => $r['date_of_birth'] ?? null,
+    'member-since' => $r['member_since'] ?? null
   ];
 }, $usersRows);
 
@@ -49,34 +61,39 @@ $users = array_map(function ($r) {
 $itemsRows = fetch_all($mysqli, "SELECT item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image,collection_id FROM items");
 $items = array_map(function ($r) {
   return [
-    'id' => $r['item_id'],
-    'name' => $r['name'],
-    'importance' => $r['importance'],
-    'weight' => $r['weight'],
-    'price' => $r['price'],
-    'acquisitionDate' => $r['acquisition_date'],
-    'createdAt' => $r['created_at'],
-    'updatedAt' => $r['updated_at'],
-    'image' => $r['image'],
-    'collectionId' => $r['collection_id']
+    'id' => $r['item_id'] ?? null,
+    'name' => $r['name'] ?? null,
+    'importance' => $r['importance'] ?? null,
+    'weight' => $r['weight'] ?? null,
+    'price' => $r['price'] ?? null,
+    'acquisitionDate' => $r['acquisition_date'] ?? null,
+    'createdAt' => $r['created_at'] ?? null,
+    'updatedAt' => $r['updated_at'] ?? null,
+    'image' => $r['image'] ?? null,
+    'collectionId' => $r['collection_id'] ?? null,
+    // legacy alias
+    'collection_id' => $r['collection_id'] ?? null
   ];
 }, $itemsRows);
 
 // 4) Events
 $eventsRows = fetch_all($mysqli, "SELECT event_id,name,localization,event_date,type,summary,description,created_at,updated_at,host_user_id,collection_id FROM events");
 $events = array_map(function ($r) {
+  $host = $r['host_user_id'] ?? null;
   return [
-    'id' => $r['event_id'],
-    'name' => $r['name'],
-    'localization' => $r['localization'],
-    'date' => $r['event_date'],
-    'type' => $r['type'],
-    'summary' => $r['summary'],
-    'description' => $r['description'],
-    'createdAt' => $r['created_at'],
-    'updatedAt' => $r['updated_at'],
-    'hostUserId' => $r['host_user_id'],
-    'collectionId' => $r['collection_id']
+    'id' => $r['event_id'] ?? null,
+    'name' => $r['name'] ?? null,
+    'localization' => $r['localization'] ?? null,
+    'date' => $r['event_date'] ?? null,
+    'type' => $r['type'] ?? null,
+    'summary' => $r['summary'] ?? null,
+    'description' => $r['description'] ?? null,
+    'createdAt' => $r['created_at'] ?? null,
+    'updatedAt' => $r['updated_at'] ?? null,
+    'hostUserId' => $host,
+    'collectionId' => $r['collection_id'] ?? null,
+    // legacy aliases
+    'host_user_id' => $host
   ];
 }, $eventsRows);
 
@@ -103,39 +120,66 @@ $eventsUsers = array_map(function ($r) {
   return ['eventId' => $r['event_id'], 'userId' => $r['user_id'], 'rating' => $r['rating'], 'collectionId' => $r['collection_id']];
 }, $erRows);
 
-// 9) userShowcases (from user_ratings JSON columns if available)
-$urRows = fetch_all($mysqli, "SELECT user_id,last_updated,picks,liked_collections,liked_items,liked_events FROM user_ratings");
+// 9) userShowcases (migrated to separate tables)
+// Combine data from user_ratings_collections, user_ratings_events, user_ratings_items
 $userShowcases = [];
-foreach ($urRows as $r) {
-  $ownerId = $r['user_id'];
-  $picks = [];
-  $likes = [];
-  $likedItems = [];
-  $likedEvents = [];
-  if ($r['picks']) {
-    $decoded = json_decode($r['picks'], true);
-    if (is_array($decoded)) $picks = $decoded;
+$showcaseMap = []; // ownerId => ['ownerId'=>..., 'lastUpdated'=>..., 'picks'=>[], 'likes'=>[], 'likedItems'=>[], 'likedEvents'=>[]]
+
+// collections
+$urc = fetch_all($mysqli, "SELECT user_id,last_updated,liked_collections FROM user_ratings_collections");
+foreach ($urc as $r) {
+  $uid = $r['user_id'] ?? null;
+  if (!$uid) continue;
+  if (!isset($showcaseMap[$uid])) {
+    $showcaseMap[$uid] = ['ownerId' => $uid, 'lastUpdated' => $r['last_updated'] ?? null, 'picks' => [], 'likes' => [], 'likedItems' => [], 'likedEvents' => []];
   }
-  if ($r['liked_collections']) {
+  // prefer the most recent last_updated
+  if (!empty($r['last_updated']) && (empty($showcaseMap[$uid]['lastUpdated']) || strtotime($r['last_updated']) > strtotime($showcaseMap[$uid]['lastUpdated']))) {
+    $showcaseMap[$uid]['lastUpdated'] = $r['last_updated'];
+  }
+  if (!empty($r['liked_collections'])) {
     $decoded = json_decode($r['liked_collections'], true);
-    if (is_array($decoded)) $likes = $decoded;
+    if (is_array($decoded)) $showcaseMap[$uid]['likes'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likes'], $decoded)));
   }
-  if ($r['liked_items']) {
-    $decoded = json_decode($r['liked_items'], true);
-    if (is_array($decoded)) $likedItems = $decoded;
+}
+
+// events
+$ure = fetch_all($mysqli, "SELECT user_id,last_updated,liked_events FROM user_ratings_events");
+foreach ($ure as $r) {
+  $uid = $r['user_id'] ?? null;
+  if (!$uid) continue;
+  if (!isset($showcaseMap[$uid])) {
+    $showcaseMap[$uid] = ['ownerId' => $uid, 'lastUpdated' => $r['last_updated'] ?? null, 'picks' => [], 'likes' => [], 'likedItems' => [], 'likedEvents' => []];
   }
-  if ($r['liked_events']) {
+  if (!empty($r['last_updated']) && (empty($showcaseMap[$uid]['lastUpdated']) || strtotime($r['last_updated']) > strtotime($showcaseMap[$uid]['lastUpdated']))) {
+    $showcaseMap[$uid]['lastUpdated'] = $r['last_updated'];
+  }
+  if (!empty($r['liked_events'])) {
     $decoded = json_decode($r['liked_events'], true);
-    if (is_array($decoded)) $likedEvents = $decoded;
+    if (is_array($decoded)) $showcaseMap[$uid]['likedEvents'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedEvents'], $decoded)));
   }
-  $userShowcases[] = [
-    'ownerId' => $ownerId,
-    'lastUpdated' => $r['last_updated'],
-    'picks' => $picks,
-    'likes' => $likes,
-    'likedItems' => $likedItems,
-    'likedEvents' => $likedEvents
-  ];
+}
+
+// items
+$uri = fetch_all($mysqli, "SELECT user_id,last_updated,liked_items FROM user_ratings_items");
+foreach ($uri as $r) {
+  $uid = $r['user_id'] ?? null;
+  if (!$uid) continue;
+  if (!isset($showcaseMap[$uid])) {
+    $showcaseMap[$uid] = ['ownerId' => $uid, 'lastUpdated' => $r['last_updated'] ?? null, 'picks' => [], 'likes' => [], 'likedItems' => [], 'likedEvents' => []];
+  }
+  if (!empty($r['last_updated']) && (empty($showcaseMap[$uid]['lastUpdated']) || strtotime($r['last_updated']) > strtotime($showcaseMap[$uid]['lastUpdated']))) {
+    $showcaseMap[$uid]['lastUpdated'] = $r['last_updated'];
+  }
+  if (!empty($r['liked_items'])) {
+    $decoded = json_decode($r['liked_items'], true);
+    if (is_array($decoded)) $showcaseMap[$uid]['likedItems'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedItems'], $decoded)));
+  }
+}
+
+// Convert map to indexed array
+foreach ($showcaseMap as $entry) {
+  $userShowcases[] = $entry;
 }
 
 // 10) collectionRatings and itemRatings: DB lacks dedicated tables; return empty arrays for now

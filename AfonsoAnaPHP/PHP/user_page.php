@@ -134,12 +134,12 @@ session_start();
         </label>
         <div class="pagination-actions">
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev
-                  aria-label="Ver anteriores" disabled aria-disabled="true">
+            aria-label="Ver anteriores" disabled aria-disabled="true">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           </button>
           <span class="pagination-status" data-pagination-status>Showing 0-0 of 0</span>
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-next
-                  aria-label="Ver seguintes" disabled aria-disabled="true">
+            aria-label="Ver seguintes" disabled aria-disabled="true">
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
@@ -162,19 +162,19 @@ session_start();
         </label>
         <div class="pagination-actions">
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev
-                  aria-label="Ver anteriores" disabled aria-disabled="true">
+            aria-label="Ver anteriores" disabled aria-disabled="true">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           </button>
           <span class="pagination-status" data-pagination-status>Showing 0-0 of 0</span>
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-next
-                  aria-label="Ver seguintes" disabled aria-disabled="true">
+            aria-label="Ver seguintes" disabled aria-disabled="true">
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
       </div>
       <section id="user-liked-items" class="liked-items collection-container"
-               data-item-source="liked" data-owner-context="true"
-               aria-labelledby="user-liked-items-title">
+        data-item-source="liked" data-owner-context="true"
+        aria-labelledby="user-liked-items-title">
         <p class="notice-message">You haven't liked any items yet.</p>
       </section>
 
@@ -192,18 +192,18 @@ session_start();
         </label>
         <div class="pagination-actions">
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev
-                  aria-label="Ver anteriores" disabled aria-disabled="true">
+            aria-label="Ver anteriores" disabled aria-disabled="true">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           </button>
           <span class="pagination-status" data-pagination-status>Showing 0-0 of 0</span>
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-next
-                  aria-label="Ver seguintes" disabled aria-disabled="true">
+            aria-label="Ver seguintes" disabled aria-disabled="true">
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
       </div>
       <section id="user-liked-events" class="liked-events collection-container"
-               aria-labelledby="user-liked-events-title">
+        aria-labelledby="user-liked-events-title">
         <p class="notice-message">You haven't liked any events yet.</p>
       </section>
 
@@ -221,12 +221,12 @@ session_start();
         </label>
         <div class="pagination-actions">
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev
-                  aria-label="Ver anteriores" disabled aria-disabled="true">
+            aria-label="Ver anteriores" disabled aria-disabled="true">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           </button>
           <span class="pagination-status" data-pagination-status>Showing 0-0 of 0</span>
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-next
-                  aria-label="Ver seguintes" disabled aria-disabled="true">
+            aria-label="Ver seguintes" disabled aria-disabled="true">
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
@@ -247,12 +247,12 @@ session_start();
         </label>
         <div class="pagination-actions">
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev
-                  aria-label="Ver anteriores" disabled aria-disabled="true">
+            aria-label="Ver anteriores" disabled aria-disabled="true">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           </button>
           <span class="pagination-status" data-pagination-status>Showing 0-0 of 0</span>
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-next
-                  aria-label="Ver seguintes" disabled aria-disabled="true">
+            aria-label="Ver seguintes" disabled aria-disabled="true">
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
@@ -275,12 +275,12 @@ session_start();
         </label>
         <div class="pagination-actions">
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-prev
-                  aria-label="Ver anteriores" disabled aria-disabled="true">
+            aria-label="Ver anteriores" disabled aria-disabled="true">
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           </button>
           <span class="pagination-status" data-pagination-status>Showing 0-0 of 0</span>
           <button type="button" class="explore-btn ghost icon-only disabled" data-page-next
-                  aria-label="Ver seguintes" disabled aria-disabled="true">
+            aria-label="Ver seguintes" disabled aria-disabled="true">
             <i class="bi bi-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
@@ -299,8 +299,8 @@ session_start();
       <span class="close-btn" id="close-collection-modal">&times;</span>
       <h2 id="collection-modal-title">New Collection</h2>
       <form id="form-collection"
-            method="post"
-            action="../PHP/add_collection.php">
+        method="post"
+        action="../PHP/add_collection.php">
         <input type="hidden" id="collection-id" name="collection-id">
         <div class="form-section form-section--required">
           <h3>Required fields</h3>
@@ -364,8 +364,8 @@ session_start();
       <span class="close-btn" id="close-forgot-modal">&times;</span>
       <h2>Forgot Password</h2>
       <form id="form-forgot-password"
-            method="post"
-            action="../PHP/forgot_password.php">
+        method="post"
+        action="../PHP/forgot_password.php">
         <p>Enter your email address and we'll send you a link to reset your password.</p>
         <label for="forgot-email">Email:</label>
         <input type="email" id="forgot-email" name="forgot-email" required>
@@ -383,8 +383,8 @@ session_start();
       <h2>Create New Account</h2>
 
       <form id="form-add-account"
-            method="post"
-            action="../PHP/register.php">
+        method="post"
+        action="../PHP/register.php">
 
         <label for="acc-name">Username:</label>
         <input type="text" id="acc-name" name="acc-name" required>
@@ -397,7 +397,7 @@ session_start();
 
         <label for="acc-member-since">Member Since (YYYY):</label>
         <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
-               placeholder="2020" readonly>
+          placeholder="2020" readonly>
 
         <label for="acc-email">Email:</label>
         <input type="email" id="acc-email" name="acc-email" required>

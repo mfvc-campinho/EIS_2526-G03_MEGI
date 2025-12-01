@@ -43,7 +43,6 @@ CREATE TABLE `collections` (
 --
 
 INSERT INTO `collections` (`collection_id`, `name`, `type`, `cover_image`, `summary`, `description`, `created_at`, `user_id`) VALUES
-('col-692dce98bc97d', 'Jogos de Tabuleiro', '', '', 'jashdfkajsfh kasjfhkasf', '', '2025-12-01 17:21:28', NULL),
 ('escudos', 'Portuguese Escudos', 'Coins', '../images/coins.png', 'A journey through Portugal’s historical coins.', 'This collection showcases Portugal’s numismatic legacy, featuring original Escudo coins minted before the euro era. It highlights their unique designs, materials, and historical significance in the country’s economy.', '2018-04-10 00:00:00', 'cristina_feira'),
 ('escudos-gold', 'Golden Escudos Vault', 'Coins', '../images/gold_coins.jpg', 'Handpicked gold Escudos from the monarchy to mid-century republic.', 'Focuses on premium gold-minted Escudo coins, documenting mint marks, alloys, and historical context tied to Portugal\'s treasury reforms.', '2020-11-18 00:00:00', 'cristina_feira'),
 ('jerseys', 'Autographed Portuguese Football Jerseys', 'Sports Memorabilia', '../images/benfica.jpg', 'Signed memorabilia from legendary players.', 'An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.', '2019-06-25 00:00:00', 'rui_frio'),

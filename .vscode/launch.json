@@ -2,6 +2,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch & Profile built-in server",
+            "type": "php",
+            "request": "launch",
+            "noDebug": true,
+            "profile": true,
+            "runtimeArgs": [
+                "-S",
+                "localhost:8000",
+                "-t",
+                "."
+            ],
+            "port": 9003,
+            "serverReadyAction": {
+                "action": "openExternally"
+            }
+        },
+        {
             "name": "Launch Chrome (Front-end)",
             "type": "pwa-chrome",
             "request": "launch",

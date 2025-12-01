@@ -100,6 +100,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     userShowcase.likedItems = Array.from(likedSet);
     saveData(data);
+    // Persist to server (best-effort, async). Backend: PHP/crud/ratings.php
+    try {
+      fetch('../PHP/crud/ratings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action: isLiked ? 'likeItem' : 'unlikeItem', userId: ownerId, itemId: itemId })
+      }).then(resp => resp.json()).then(j => {
+        if (!j || j.error || !j.success) console.warn('ratings: server responded with error', j);
+      }).catch(e => console.warn('ratings: network error', e));
+    } catch (e) {
+      console.warn('ratings: unable to POST', e);
+    }
   }
 
   function setUserEventLike(ownerId, eventId, isLiked) {
@@ -117,6 +129,45 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     userShowcase.likedEvents = Array.from(likedSet);
     saveData(data);
+    // Persist to server (best-effort, async)
+    try {
+      fetch('../PHP/crud/ratings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action: isLiked ? 'likeEvent' : 'unlikeEvent', userId: ownerId, eventId: eventId })
+      }).then(resp => resp.json()).then(j => {
+        if (!j || j.error || !j.success) console.warn('ratings: server responded with error', j);
+      }).catch(e => console.warn('ratings: network error', e));
+    } catch (e) {
+      console.warn('ratings: unable to POST', e);
+    }
+  }
+
+  // Like/unlike a collection for a user (mirror of items/events)
+  function setUserCollectionLike(ownerId, collectionId, isLiked) {
+    if (!ownerId || !collectionId) return;
+    const data = loadData();
+    const userShowcase = findOrCreateUserShowcase(data, ownerId);
+    if (!userShowcase) return;
+    userShowcase.likes = userShowcase.likes || [];
+    const likedSet = new Set(userShowcase.likes);
+
+    if (isLiked) likedSet.add(collectionId); else likedSet.delete(collectionId);
+    userShowcase.likes = Array.from(likedSet);
+    saveData(data);
+
+    // Persist to server (best-effort)
+    try {
+      fetch('../PHP/crud/ratings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action: isLiked ? 'likeCollection' : 'unlikeCollection', userId: ownerId, collectionId })
+      }).then(resp => resp.json()).then(j => {
+        if (!j || j.error || !j.success) console.warn('ratings: server responded with error', j);
+      }).catch(e => console.warn('ratings: network error', e));
+    } catch (e) {
+      console.warn('ratings: unable to POST', e);
+    }
   }
 
   function getUserFollowing(followerId) {
@@ -585,6 +636,7 @@ document.addEventListener("DOMContentLoaded", () => {
     getStoredProductRating,
     setUserItemLike,
     setUserEventLike,
+    setUserCollectionLike,
     getUserFollowing,
     getUserFollowers,
     getUserFollowerCount,

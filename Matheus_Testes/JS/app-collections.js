@@ -31,9 +31,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const collection = data?.collections?.find(c => c.id === collectionId);
         if (!collection)
             return;
+        // keep the existing simulation notice, but persist likes server-side
         alert("Simulation only: voting here would change the collection's total.");
         const currentState = getEffectiveUserLike(collection, ownerId);
-        voteState[collectionId] = !currentState;
+        const newState = !currentState;
+        voteState[collectionId] = newState;
+        // Persist the like/unlike via appData if available
+        if (window.appData && typeof window.appData.setUserCollectionLike === "function") {
+            try {
+                window.appData.setUserCollectionLike(ownerId, collectionId, newState);
+            } catch (err) {
+                console.warn('setUserCollectionLike failed', err);
+            }
+        }
         renderCollections(lastRenderCriteria);
         notifyLikesChange(ownerId);
     }

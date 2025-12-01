@@ -139,15 +139,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. Logout (simulated)
   // =======================================================
   function logoutUser() {
-    if (confirm("Sign out?")) {
-      localStorage.setItem("currentUser", JSON.stringify({ active: false }));
+    if (!confirm("Sign out?")) return;
+
+    (async () => {
+      // Attempt server-side logout when possible so PHP session is cleared
+      try {
+        await fetch('../PHP/auth.php?action=logout', { method: 'GET', cache: 'no-store' });
+      } catch (err) {
+        // ignore network errors (e.g., file://) and continue with client-side logout
+        console.warn('Server logout failed or unavailable', err);
+      }
+
+      // Clear client session state
+      try {
+        localStorage.setItem("currentUser", JSON.stringify({ active: false }));
+      } catch (e) {
+        console.warn('Unable to write localStorage during logout', e);
+      }
       currentUser = null;
       notifyUserStateChange();
       renderProfileMenu();
 
-      // 🔹 Redirect to homepage after logout
-      window.location.href = "home_page.html"; // or "/" if your home is at the root
-    }
+      // Redirect to homepage after logout
+      window.location.href = "home_page.html";
+    })();
   }
 
   // =======================================================

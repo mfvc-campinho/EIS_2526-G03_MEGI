@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 01-Dez-2025 às 11:04
+-- Tempo de geração: 01-Dez-2025 às 18:40
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.2.12
 
@@ -43,9 +43,10 @@ CREATE TABLE `collections` (
 --
 
 INSERT INTO `collections` (`collection_id`, `name`, `type`, `cover_image`, `summary`, `description`, `created_at`, `user_id`) VALUES
+('col-692dce98bc97d', 'Jogos de Tabuleiro', '', '', 'jashdfkajsfh kasjfhkasf', '', '2025-12-01 17:21:28', NULL),
 ('escudos', 'Portuguese Escudos', 'Coins', '../images/coins.png', 'A journey through Portugal’s historical coins.', 'This collection showcases Portugal’s numismatic legacy, featuring original Escudo coins minted before the euro era. It highlights their unique designs, materials, and historical significance in the country’s economy.', '2018-04-10 00:00:00', 'cristina_feira'),
 ('escudos-gold', 'Golden Escudos Vault', 'Coins', '../images/gold_coins.jpg', 'Handpicked gold Escudos from the monarchy to mid-century republic.', 'Focuses on premium gold-minted Escudo coins, documenting mint marks, alloys, and historical context tied to Portugal\'s treasury reforms.', '2020-11-18 00:00:00', 'cristina_feira'),
-('jerseys', 'Autographed Football Jerseys', 'Sports Memorabilia', '../images/benfica.jpg', 'Signed memorabilia from legendary players.', 'An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.', '2019-06-25 00:00:00', 'rui_frio'),
+('jerseys', 'Autographed Portuguese Football Jerseys', 'Sports Memorabilia', '../images/benfica.jpg', 'Signed memorabilia from legendary players.', 'An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.', '2019-06-25 00:00:00', 'rui_frio'),
 ('pokemon', 'Pokémon Trading Cards', 'Collectible Cards', '../images/pikachuset.jpg', 'Rare and classic cards from the Pokémon universe.', 'A comprehensive Pokémon TCG collection featuring rare holographic cards, first editions, and limited releases from various generations. It celebrates both the nostalgic and competitive sides of Pokémon collecting.', '2021-04-20 00:00:00', 'rui_frio');
 
 -- --------------------------------------------------------
@@ -222,25 +223,62 @@ CREATE TABLE `user_followers` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `user_ratings`
+-- Estrutura da tabela `user_ratings_collections`
 --
 
-CREATE TABLE `user_ratings` (
+CREATE TABLE `user_ratings_collections` (
   `user_id` varchar(100) NOT NULL,
-  `last_updated` datetime DEFAULT NULL,
-  `picks` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`picks`)),
-  `liked_collections` longtext DEFAULT NULL,
-  `liked_items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`liked_items`)),
+  `last_updated` datetime NOT NULL,
+  `liked_collections` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`liked_collections`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Extraindo dados da tabela `user_ratings_collections`
+--
+
+INSERT INTO `user_ratings_collections` (`user_id`, `last_updated`, `liked_collections`) VALUES
+('cristina_feira', '2025-09-30 00:00:00', '[\"escudos\", \"escudos-gold\", \"jerseys\"]'),
+('rui_frio', '2025-08-12 00:00:00', '[\"pokemon\",\"jerseys\",\"escudos\"]');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `user_ratings_events`
+--
+
+CREATE TABLE `user_ratings_events` (
+  `user_id` varchar(100) NOT NULL,
+  `last_updated` datetime NOT NULL,
   `liked_events` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`liked_events`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Extraindo dados da tabela `user_ratings`
+-- Extraindo dados da tabela `user_ratings_events`
 --
 
-INSERT INTO `user_ratings` (`user_id`, `last_updated`, `picks`, `liked_collections`, `liked_items`, `liked_events`) VALUES
-('cristina_feira', '2025-09-30 00:00:00', '[{\"collectionId\": \"escudos\", \"order\": 1}, {\"collectionId\": \"escudos-gold\", \"order\": 2}, {\"collectionId\": \"pokemon\", \"order\": 4}]', '[\"escudos\", \"escudos-gold\", \"jerseys\"]', '[\"escudos-item-1\", \"escudos-item-2\", \"pokemon-item-1\", \"jerseys-item-1\"]', '[\"pokemon-event-1\"]'),
-('rui_frio', '2025-08-12 00:00:00', '[{\"collectionId\": \"pokemon\", \"order\": 1}, {\"collectionId\": \"jerseys\", \"order\": 3}]', '[\"pokemon\",\"jerseys\",\"escudos\"]', '[\"pokemon-item-1\", \"pokemon-item-2\", \"jerseys-item-2\"]', '[\"pokemon-event-1\", \"jerseys-event-2\"]');
+INSERT INTO `user_ratings_events` (`user_id`, `last_updated`, `liked_events`) VALUES
+('cristina_feira', '2025-09-30 00:00:00', '[\"pokemon-event-1\"]'),
+('rui_frio', '2025-08-12 00:00:00', '[\"pokemon-event-1\", \"jerseys-event-2\"]');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `user_ratings_items`
+--
+
+CREATE TABLE `user_ratings_items` (
+  `user_id` varchar(100) NOT NULL,
+  `last_updated` datetime NOT NULL,
+  `liked_items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`liked_items`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Extraindo dados da tabela `user_ratings_items`
+--
+
+INSERT INTO `user_ratings_items` (`user_id`, `last_updated`, `liked_items`) VALUES
+('cristina_feira', '2025-09-30 00:00:00', '[\"escudos-item-1\", \"escudos-item-2\", \"pokemon-item-1\", \"jerseys-item-1\"]'),
+('rui_frio', '2025-08-12 00:00:00', '[\"pokemon-item-1\", \"pokemon-item-2\", \"jerseys-item-2\"]');
 
 --
 -- Índices para tabelas despejadas
@@ -304,10 +342,22 @@ ALTER TABLE `user_followers`
   ADD KEY `following_id` (`following_id`);
 
 --
--- Índices para tabela `user_ratings`
+-- Índices para tabela `user_ratings_collections`
 --
-ALTER TABLE `user_ratings`
-  ADD PRIMARY KEY (`user_id`);
+ALTER TABLE `user_ratings_collections`
+  ADD PRIMARY KEY (`user_id`,`last_updated`);
+
+--
+-- Índices para tabela `user_ratings_events`
+--
+ALTER TABLE `user_ratings_events`
+  ADD PRIMARY KEY (`user_id`,`last_updated`);
+
+--
+-- Índices para tabela `user_ratings_items`
+--
+ALTER TABLE `user_ratings_items`
+  ADD PRIMARY KEY (`user_id`,`last_updated`);
 
 --
 -- Restrições para despejos de tabelas
@@ -359,12 +409,6 @@ ALTER TABLE `items`
 ALTER TABLE `user_followers`
   ADD CONSTRAINT `user_followers_ibfk_1` FOREIGN KEY (`follower_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_followers_ibfk_2` FOREIGN KEY (`following_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
-
---
--- Limitadores para a tabela `user_ratings`
---
-ALTER TABLE `user_ratings`
-  ADD CONSTRAINT `fk_us_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

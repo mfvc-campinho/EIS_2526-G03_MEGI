@@ -276,46 +276,81 @@ document.addEventListener("DOMContentLoaded", () => {
           accountModal.style.display = "none";
         }
       });
-      accountForm?.addEventListener("submit", (e) => {
+      accountForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const getValue = (id) => document.getElementById(id)?.value?.trim() || "";
         const ownerId = getValue("acc-owner-id");
         const ownerName = getValue("acc-name");
         const email = getValue("acc-email");
 
-        if (!ownerName) {
-          alert("Please provide a username.");
-          return;
-        }
-        if (!email) {
-          alert("Please provide an email.");
-          return;
-        }
+        if (!ownerName) { alert("Please provide a username."); return; }
+        if (!email) { alert("Please provide an email."); return; }
         const password = document.getElementById("acc-password")?.value || "";
         const confirmPassword = document.getElementById("acc-password-confirm")?.value || "";
-        if (password !== confirmPassword) {
-          alert("Passwords do not match!");
-          return;
-        }
+        if (password !== confirmPassword) { alert("Passwords do not match!"); return; }
         const ownerPhoto = document.getElementById("acc-owner-photo")?.value?.trim() || "";
         const dateOfBirth = document.getElementById("acc-dob")?.value || "";
         const memberSince = document.getElementById("acc-member-since")?.value?.trim() || "";
 
-        const summaryLines = [
-          `Collector ID: ${ownerId}`,
-          `Name: ${ownerName}`,
-          ownerPhoto ? `Photo URL: ${ownerPhoto}` : "",
-          dateOfBirth ? `Date of Birth: ${dateOfBirth}` : "",
-          memberSince ? `Member Since: ${memberSince}` : "",
-          `Email: ${email}`,
-        ].filter(Boolean);
+        // Prepare payload for server
+        try {
+          const payload = new FormData();
+          payload.append('action', 'create');
+          if (ownerId) payload.append('id', ownerId);
+          payload.append('name', ownerName);
+          payload.append('email', email);
+          payload.append('password', password);
+          if (ownerPhoto) payload.append('photo', ownerPhoto);
+          if (dateOfBirth) payload.append('dob', dateOfBirth);
+          if (memberSince) payload.append('member_since', memberSince);
 
-        alert(`Account creation simulated. No account was created by this prototype.\n\nDetails:\n${summaryLines.join("\n")}`);
-        if (accountModal) {
-          accountModal.style.display = "none";
+          const res = await fetch('../PHP/crud/users.php', { method: 'POST', body: payload });
+          const json = await res.json();
+          if (!res.ok || json.error) {
+            const msg = json && json.error ? json.error : 'Failed to create account';
+            alert('Account creation failed: ' + msg);
+            return;
+          }
+
+          // Auto-login the new user (server-side session via auth.php)
+          try {
+            const loginPayload = new FormData();
+            loginPayload.append('email', email);
+            loginPayload.append('password', password);
+            const authRes = await fetch('../PHP/auth.php', { method: 'POST', body: loginPayload });
+            const authJson = await authRes.json();
+            if (authRes.ok && authJson && authJson.success && authJson.user) {
+              const userSess = { id: authJson.user.id, ownerName: authJson.user.name, active: true };
+              localStorage.setItem('currentUser', JSON.stringify(userSess));
+              currentUser = userSess;
+              notifyUserStateChange();
+              renderProfileMenu();
+            } else {
+              // Account created but login failed (unlikely). Inform user.
+              alert('Account created. Please use the login form to sign in.');
+            }
+          } catch (loginErr) {
+            console.warn('Auto-login failed', loginErr);
+            alert('Account created but automatic login failed. Please sign in.');
+          }
+
+          if (accountModal) accountModal.style.display = 'none';
+          accountForm.reset();
+          setMemberSinceYear();
+
+          // Refresh cached dataset
+          try {
+            const r2 = await fetch('../PHP/get_all.php');
+            if (r2.ok) {
+              const serverData = await r2.json();
+              localStorage.setItem('collectionsData', JSON.stringify(serverData));
+            }
+          } catch (err) { console.warn('Unable to refresh local dataset', err); }
+
+        } catch (err) {
+          console.error('Account creation error', err);
+          alert('Account creation failed due to network error');
         }
-        accountForm.reset();
-        setMemberSinceYear();
       });
     }
 

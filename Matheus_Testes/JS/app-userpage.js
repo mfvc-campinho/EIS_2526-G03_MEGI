@@ -776,7 +776,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   resetTopPicksBtn?.addEventListener("click", handleResetTopPicks);
   topPicksContainer?.addEventListener("click", handleTopPickAction);
-    followUserBtn?.addEventListener("click", () => {
+  followUserBtn?.addEventListener("click", () => {
     if (!activeUser?.active || !activeUser?.id) {
       alert("Please sign in to follow collectors.");
       return;

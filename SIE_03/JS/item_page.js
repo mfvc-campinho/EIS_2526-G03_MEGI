@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ol = nav.querySelector('.breadcrumb-list');
     if (!ol) return;
     // Clear existing items (keep Home and Collections if present)
-    ol.innerHTML = '';
+    safeSetInnerHTML(ol, '');
 
     const makeLi = (content, href, isCurrent) => {
       const li = document.createElement('li');
@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function clearAndSetPlaceholder(container, message) {
     if (!container) return;
-    container.innerHTML = "";
+    safeSetInnerHTML(container, "");
     const placeholder = document.createElement("p");
     placeholder.className = "pill-placeholder";
     placeholder.textContent = message;
@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
       clearAndSetPlaceholder(collectionsListEl, "This item is not linked to any collection yet.");
       return;
     }
-    collectionsListEl.innerHTML = "";
+    safeSetInnerHTML(collectionsListEl, "");
     collections.forEach(col => {
       const link = document.createElement("a");
       link.className = "pill-link";
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    ownerLinksEl.innerHTML = "";
+    safeSetInnerHTML(ownerLinksEl, "");
     ownersMap.forEach(owner => {
       const link = document.createElement("a");
       link.className = "pill-link";
@@ -179,6 +179,21 @@ document.addEventListener("DOMContentLoaded", () => {
       link.setAttribute("aria-label", `View owner profile for ${owner.name}`);
       ownerLinksEl.appendChild(link);
     });
+  }
+
+  // Utility: only set innerHTML when the container is not server-rendered
+  function safeSetInnerHTML(el, html) {
+    if (!el) return;
+    try {
+      if (el.dataset && el.dataset.serverRendered === '1') return;
+    } catch (e) {
+      // ignore
+    }
+    // If the element already has children (likely server-rendered), don't overwrite
+    try {
+      if (el.children && el.children.length > 0) return;
+    } catch (e) {}
+    el.innerHTML = html;
   }
 
   function getItemLikeHelpers() {

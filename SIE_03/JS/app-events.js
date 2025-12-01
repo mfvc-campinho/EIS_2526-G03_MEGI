@@ -120,6 +120,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
+  // Utility: only set innerHTML when the container is not server-rendered
+  function safeSetInnerHTML(el, html) {
+    if (!el) return;
+    try {
+      if (el.dataset && el.dataset.serverRendered === '1') return;
+      if (el.children && el.children.length > 0) return;
+    } catch (e) {}
+    el.innerHTML = html;
+  }
+
   function getInitialPageSizeFromControls(controls) {
     for (const ctrl of controls) {
       const select = ctrl.querySelector("[data-page-size]");
@@ -528,7 +538,7 @@ document.addEventListener("DOMContentLoaded", () => {
       : getAllCollections(dataset);
     collections = filterCollectionsByOwner(collections, ownerId, dataset);
 
-    fieldCollections.innerHTML = "";
+    safeSetInnerHTML(fieldCollections, "");
 
     if (!collections.length) {
       const emptyOpt = document.createElement("option");
@@ -757,7 +767,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderCalendar() {
     if (!calendarGrid) return;
-    calendarGrid.innerHTML = '';
+    safeSetInnerHTML(calendarGrid, '');
     const year = calendarState.year;
     const month = calendarState.month;
     calendarMonthTitle.textContent = formatMonthYear(year, month);
@@ -857,12 +867,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function showEventDetails(dateObj) {
     if (!calendarDayModal || !calendarDayList || !calendarDayTitle) return;
     const evs = getEventsForDateObj(dateObj).sort((a, b) => (parseEventDate(a.date) || 0) - (parseEventDate(b.date) || 0));
-    calendarDayList.innerHTML = '';
+    safeSetInnerHTML(calendarDayList, '');
     const humanTitle = dateObj.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     calendarDayTitle.textContent = `Events on ${humanTitle}`;
 
     if (!evs.length) {
-      calendarDayList.innerHTML = '<p class="muted">No events for this date.</p>';
+      safeSetInnerHTML(calendarDayList, '<p class="muted">No events for this date.</p>');
     } else {
       evs.forEach(ev => {
         const div = document.createElement('div');
@@ -924,7 +934,7 @@ document.addEventListener("DOMContentLoaded", () => {
     buildLikesMaps(data);
     if (!eventsList) return;
 
-    eventsList.innerHTML = "";
+    safeSetInnerHTML(eventsList, "");
 
     const allEvents = (data.events || []).slice();
     populateLocationFilterOptions(allEvents);
@@ -985,7 +995,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateEventsPaginationUI(totalMatches, startIndexForPage, eventsToRender.length);
 
     if (eventsToRender.length === 0) {
-      eventsList.innerHTML = '<p class="muted">No events found for this filter.</p>';
+      safeSetInnerHTML(eventsList, '<p class="muted">No events found for this filter.</p>');
       return;
     }
 
@@ -1269,7 +1279,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
       : storedUserRating ?? null;
 
-    modalRatingStars.innerHTML = "";
+    safeSetInnerHTML(modalRatingStars, "");
 
     if (isPast) {
       // Interactive stars if logged in

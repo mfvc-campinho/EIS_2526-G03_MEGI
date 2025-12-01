@@ -77,6 +77,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const hasPagination = paginationControls.length > 0;
 
+  // Utility: only set innerHTML when the container is not server-rendered
+  function safeSetInnerHTML(el, html) {
+    if (!el) return;
+    try {
+      if (el.dataset && el.dataset.serverRendered === '1') return;
+      if (el.children && el.children.length > 0) return;
+    } catch (e) {}
+    el.innerHTML = html;
+  }
+
   const defaultPageSize = hasPagination
     ? getInitialPageSizeFromControls(paginationControls)
     : null;
@@ -662,12 +672,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // If collection page but invalid ID
     if (isCollectionPage && !collection) {
-      itemsContainer.innerHTML = `<p class="notice-message">Collection not found.</p>`;
+      safeSetInnerHTML(itemsContainer, `<p class="notice-message">Collection not found.</p>`);
       updatePaginationSummary(0, 0, 0);
       return;
     }
 
-    itemsContainer.innerHTML = "";
+    safeSetInnerHTML(itemsContainer, "");
 
     // Choose base items (collection or all items on user_page)
     const baseItems =
@@ -853,16 +863,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const collection = getCurrentCollection(data);
 
     if (!collection) {
-      eventsContainer.innerHTML =
-        `<p class="notice-message">Collection not found.</p>`;
+      safeSetInnerHTML(eventsContainer, `<p class="notice-message">Collection not found.</p>`);
       return;
     }
 
     const events = appData.getEventsByCollection(collection.id, data) || [];
 
     if (!events.length) {
-      eventsContainer.innerHTML =
-        `<p class="notice-message">No events linked to this collection yet.</p>`;
+      safeSetInnerHTML(eventsContainer, `<p class="notice-message">No events linked to this collection yet.</p>`);
       return;
     }
 
@@ -876,7 +884,7 @@ document.addEventListener("DOMContentLoaded", () => {
       encodedReturnUrl = encodeURIComponent(fallback);
     }
 
-    eventsContainer.innerHTML = events.map(ev => `
+    safeSetInnerHTML(eventsContainer, events.map(ev => `
       <article class="collection-event-card">
         <div>
           <h3>${ev.name}</h3>
@@ -889,7 +897,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <i class="bi bi-calendar-event"></i> View event
         </a>
       </article>
-    `).join("");
+    `).join("") );
   }
 
 
@@ -1030,7 +1038,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = appData.loadData();
     if (!data || !data.collections) return;
 
-    select.innerHTML = "";
+    safeSetInnerHTML(select, "");
     const ownerId = getEffectiveOwnerId();
 
     const userCollections = data.collections.filter(col => {

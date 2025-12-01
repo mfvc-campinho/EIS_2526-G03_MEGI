@@ -45,6 +45,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let isViewingOwnProfile = false;
   let ownerLikesLookup = {};
 
+  // Utility: only set innerHTML when the container is not server-rendered
+  function safeSetInnerHTML(el, html) {
+    if (!el) return;
+    try {
+      if (el.dataset && el.dataset.serverRendered === '1') return;
+    } catch (e) {
+      // ignore
+    }
+    // If the element already has children (likely server-rendered), don't overwrite
+    try {
+      if (el.children && el.children.length > 0) return;
+    } catch (e) {}
+    el.innerHTML = html;
+  }
+
   function normalizeOwnerId(ownerId) {
     if (ownerId === undefined || ownerId === null) return "";
     return String(ownerId).trim().toLowerCase();
@@ -208,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!container) return;
     const normalizedEvents = Array.isArray(events) ? events : [];
     if (!normalizedEvents.length) {
-      container.innerHTML = `<p class="notice-message">${emptyMessage}</p>`;
+      safeSetInnerHTML(container, `<p class="notice-message">${emptyMessage}</p>`);
       updatePaginationStatus(paginationKey, 0);
       setPaginationVisibility(paginationKey, false);
       return;
@@ -219,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .sort((a, b) => getEventTimestamp(a) - getEventTimestamp(b));
 
     const encodedReturnUrl = encodeURIComponent(window.location.href);
-    container.innerHTML = sorted
+    safeSetInnerHTML(container, sorted
       .map(
         (ev) => `
       <article class="user-event-card">
@@ -233,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </article>
     `
       )
-      .join("");
+      .join("") );
     setPaginationVisibility(paginationKey, true);
     updatePaginationStatus(paginationKey, sorted.length, 0, sorted.length);
   }
@@ -245,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (userRsvpContainer) {
       userRsvpContainer.hidden = !showSection;
       if (!showSection) {
-        userRsvpContainer.innerHTML = "";
+        safeSetInnerHTML(userRsvpContainer, "");
         setPaginationVisibility("user-rsvp-events", false);
       }
     }
@@ -287,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .map((col) => ({ collectionId: col.id, ownerId }));
     }
     if (!links.length) {
-      userEventsContainer.innerHTML = `<p class="notice-message">No collections linked to this user yet.</p>`;
+      safeSetInnerHTML(userEventsContainer, `<p class="notice-message">No collections linked to this user yet.</p>`);
       updatePaginationStatus("user-events", 0);
       return;
     }
@@ -363,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (!entries.length) {
-      topPicksContainer.innerHTML = `<p class="notice-message">No curated collections yet.</p>`;
+      safeSetInnerHTML(topPicksContainer, `<p class="notice-message">No curated collections yet.</p>`);
       return;
     }
 
@@ -395,9 +410,10 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .filter(Boolean);
 
-    topPicksContainer.innerHTML = cards.length
+    safeSetInnerHTML(topPicksContainer, cards.length
       ? cards.join("")
-      : `<p class="notice-message">No curated collections yet.</p>`;
+      : `<p class="notice-message">No curated collections yet.</p>`
+    );
   }
 
   function handleResetTopPicks() {
@@ -419,19 +435,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const paginationKey = "user-liked-collections";
     const data = dataArg || latestData || appData.loadData();
     if (!data) {
-      likedCollectionsContainer.innerHTML = `<p class="notice-message">Likes unavailable right now.</p>`;
+      safeSetInnerHTML(likedCollectionsContainer, `<p class="notice-message">Likes unavailable right now.</p>`);
       updatePaginationStatus(paginationKey, 0);
       return;
     }
     const targetOwner = viewedOwnerId;
     if (!targetOwner) {
-      likedCollectionsContainer.innerHTML = `<p class="notice-message">No user selected.</p>`;
+      safeSetInnerHTML(likedCollectionsContainer, `<p class="notice-message">No user selected.</p>`);
       updatePaginationStatus(paginationKey, 0);
       return;
     }
     const liked = (data.collections || []).filter(col => doesUserLikeCollection(col, targetOwner));
     if (!liked.length) {
-      likedCollectionsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't starred any collections yet." : "This user hasn't starred any collections yet."}</p>`;
+      safeSetInnerHTML(likedCollectionsContainer, `<p class="notice-message">${isViewingOwnProfile ? "You haven't starred any collections yet." : "This user hasn't starred any collections yet."}</p>`);
       updatePaginationStatus(paginationKey, 0);
       return;
     }
@@ -443,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </a>
       </article>
     `);
-    likedCollectionsContainer.innerHTML = cards.join("");
+    safeSetInnerHTML(likedCollectionsContainer, cards.join(""));
     updatePaginationStatus(paginationKey, cards.length, 0, cards.length);
   }
 
@@ -452,19 +468,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const paginationKey = "user-liked-items";
     const data = dataArg || latestData || appData.loadData();
     if (!data) {
-      likedItemsContainer.innerHTML = `<p class="notice-message">Likes unavailable right now.</p>`;
+        safeSetInnerHTML(likedItemsContainer, `<p class="notice-message">Likes unavailable right now.</p>`);
       updatePaginationStatus(paginationKey, 0);
       return;
     }
     const targetOwner = ownerId || viewedOwnerId;
     if (!targetOwner) {
-      likedItemsContainer.innerHTML = `<p class="notice-message">No user selected.</p>`;
+        safeSetInnerHTML(likedItemsContainer, `<p class="notice-message">No user selected.</p>`);
       updatePaginationStatus(paginationKey, 0);
       return;
     }
     const likedIds = getOwnerLikedItems(data, targetOwner);
     if (!likedIds.length) {
-      likedItemsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any items yet." : "This user hasn't liked any items yet."}</p>`;
+        safeSetInnerHTML(likedItemsContainer, `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any items yet." : "This user hasn't liked any items yet."}</p>`);
       updatePaginationStatus(paginationKey, 0);
       return;
     }
@@ -501,12 +517,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
     if (!cards.length) {
-      likedItemsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any items yet." : "This user hasn't liked any items yet."}</p>`;
+        safeSetInnerHTML(likedItemsContainer, `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any items yet." : "This user hasn't liked any items yet."}</p>`);
       updatePaginationStatus(paginationKey, 0);
       return;
     }
 
-    likedItemsContainer.innerHTML = cards.join("");
+      safeSetInnerHTML(likedItemsContainer, cards.join(""));
     updatePaginationStatus(paginationKey, cards.length, 0, cards.length);
   }
 
@@ -524,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (!likedSet.size) {
-      likedEventsContainer.innerHTML = `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any events yet." : "This user hasn't liked any events yet."}</p>`;
+        safeSetInnerHTML(likedEventsContainer, `<p class="notice-message">${isViewingOwnProfile ? "You haven't liked any events yet." : "This user hasn't liked any events yet."}</p>`);
       updatePaginationStatus(paginationKey, 0);
       return;
     }
@@ -537,7 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <p>${ev.summary || ev.description || "No summary provided."}</p>
         </a>
       </article>`);
-    likedEventsContainer.innerHTML = cards.join("");
+      safeSetInnerHTML(likedEventsContainer, cards.join(""));
     updatePaginationStatus(paginationKey, cards.length, 0, cards.length);
   }
 
@@ -590,10 +606,10 @@ document.addEventListener("DOMContentLoaded", () => {
     followUserBtn.setAttribute("aria-pressed", String(following));
     const iconClass = following ? "bi-person-check-fill" : "bi-person-plus";
     const label = following ? "Following" : "Follow";
-    followUserBtn.innerHTML = `
+    safeSetInnerHTML(followUserBtn, `
       <i class="bi ${iconClass} me-1" aria-hidden="true"></i>
       <span class="follow-label">${label}</span>
-    `;
+    `);
     followUserBtn.title = following
       ? `You are following ${ownerName || "this collector"}`
       : `Follow ${ownerName || "this collector"}`;
@@ -603,7 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!itemCollectionsSelect) return;
     const data = appData?.loadData ? appData.loadData() : null;
     const collections = Array.isArray(data?.collections) ? data.collections : [];
-    itemCollectionsSelect.innerHTML = "";
+    safeSetInnerHTML(itemCollectionsSelect, "");
     if (!collections.length) {
       const placeholder = document.createElement("option");
       placeholder.value = "";
@@ -694,9 +710,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const user = latestData.users.find((u) => u["owner-id"] === viewedOwnerId);
 
     if (!user) {
-      document.querySelector("main").innerHTML = `
+      safeSetInnerHTML(document.querySelector("main"), `
         <h1 class="page-title">User Not Found</h1>
-        <p class="notice-message">No profile matched the id "${viewedOwnerId}".</p>`;
+        <p class="notice-message">No profile matched the id "${viewedOwnerId}".</p>`);
       return;
     }
 

@@ -76,8 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = document.getElementById("collections-list") ||
         document.getElementById("homeCollections") ||
         document.getElementById("user-collections");
-    // If there is no collections container on this page, stop early.
+    // If there is no collections container on this page, or it is server-rendered, stop early.
     if (!list)
+        return;
+    if (list.dataset && list.dataset.serverRendered === '1')
         return;
 
     const isHomePage = list?.id === "homeCollections";

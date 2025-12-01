@@ -102,7 +102,7 @@ include __DIR__ . '/header.php';
     }
     ?>
 
-    <div class="collection-container" id="collections-list">
+    <div class="collection-container" id="collections-list" data-server-rendered="1">
       <?php if (empty($collections)): ?>
         <p class="muted">No collections found.</p>
       <?php else: ?>

@@ -10,15 +10,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. Initialization
   // - Import demo data from Data.js into localStorage if missing
   // ============================================================
-  if (!localStorage.getItem("collectionsData")) {
-    if (typeof collectionsData !== "undefined") {
-      localStorage.setItem("collectionsData", JSON.stringify(collectionsData));
-      console.log("✅ Initial data imported from Data.js");
-    } else {
-      console.error("❌ ERROR: Data.js was not loaded.");
-    }
+  // If server rendered collections are present, skip importing demo data.
+  if (document.getElementById('collections-list')?.dataset?.serverRendered === '1') {
+    console.log('Server-rendered collections present — skipping demo data import.');
   } else {
-    console.log("📦 Data loaded from localStorage.");
+    if (!localStorage.getItem("collectionsData")) {
+      if (typeof collectionsData !== "undefined") {
+        localStorage.setItem("collectionsData", JSON.stringify(collectionsData));
+        console.log("✅ Initial data imported from Data.js");
+      } else {
+        console.error("❌ ERROR: Data.js was not loaded.");
+      }
+    } else {
+      console.log("📦 Data loaded from localStorage.");
+    }
   }
 
   // ============================================================

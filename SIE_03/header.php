@@ -53,13 +53,30 @@
             <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
           </button>
 
-          <!-- Login dropdown -->
-          <div class="dropdown profile-dropdown">
-            <button class="dropbtn profile-btn">
-              <i class="bi bi-person-circle me-1"></i> Log In ▾
-            </button>
-            <div class="dropdown-content profile-menu"></div>
-          </div>
+          <!-- Login / Profile -->
+          <?php if (!empty($_SESSION['user_id'])): ?>
+            <div class="nav-item profile-inline">
+              <a href="user_page.php" class="nav-link profile-link">
+                <img src="<?php echo htmlspecialchars($_SESSION['user_photo'] ?? '../images/default_user.jpg'); ?>" alt="Profile" class="profile-photo" />
+                <?php echo htmlspecialchars($_SESSION['user_name'] ?? ''); ?>
+              </a>
+              <a href="../PHP_SIE/login_action.php?action=logout" class="nav-link">Log out</a>
+            </div>
+          <?php else: ?>
+            <div class="dropdown profile-dropdown">
+              <button class="dropbtn profile-btn">
+                <i class="bi bi-person-circle me-1"></i> Log In ▾
+              </button>
+              <div class="dropdown-content profile-menu">
+                <form class="login-inline-form" action="../PHP_SIE/login_action.php" method="post">
+                  <input type="email" name="email" placeholder="Email" required />
+                  <input type="password" name="password" placeholder="Password" required />
+                  <button type="submit" class="explore-btn">Log in</button>
+                </form>
+                <a href="#" id="open-account-modal" class="nav-link" data-open-modal="add-account-modal">Create account</a>
+              </div>
+            </div>
+          <?php endif; ?>
 
           <!-- Search -->
           <div class="search-wrapper">

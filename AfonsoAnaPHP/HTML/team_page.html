@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<!--
+    File: public_html/HTML/team_page.html
+    Purpose: Team information and project details. Lists team members and project repository link.
+    Major sections: NAVIGATION, TEAM HERO, TEAM MEMBERS, PROJECT REPO, FOOTER.
+    Notes: Some template metadata was preserved; language set to 'pt-PT' originally — keep as-is unless you want to change locale.
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Team Page - GoodCollections</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Styles (CSS) -->
+    <link rel="stylesheet" href="../CSS/general.css">
+    <link rel="stylesheet" href="../CSS/team_page.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Scripts -->
+    <script src="../JS/theme-toggle.js"></script>
+</head>
+
+<body>
+
+    <div id="content">
+        <!-- NAVIGATION BAR -->
+        <header>
+            <nav class="navbar">
+                <div class="nav-left">
+                    <a href="home_page.html" class="logo">
+                        <i class="bi bi-collection me-2"></i> GoodCollections
+                    </a>
+                </div>
+
+                <div class="nav-right">
+                    <a href="all_collections.html" class="nav-link">
+                        <i class="bi bi-box-seam-fill me-1"></i> Collections
+                    </a>
+
+                    <a href="event_page.html" class="nav-link">
+                        <i class="bi bi-calendar-event-fill me-1"></i> Events
+                    </a>
+
+                    <a href="team_page.html" class="nav-link" aria-current="page">
+                        <i class="bi bi-people-fill me-1"></i> About Us
+                    </a>
+
+                    <a href="user_page.html" class="nav-link">
+                        <i class="bi bi-person-fill me-1"></i> Profile
+                    </a>
+
+                    <!-- Dark mode toggle -->
+                    <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
+                        <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
+                    </button>
+
+                    <!-- Login dropdown -->
+                    <div class="dropdown profile-dropdown">
+                        <button class="dropbtn profile-btn">
+                            <i class="bi bi-person-circle me-1"></i> Log In ▾
+                        </button>
+                        <div class="dropdown-content profile-menu"></div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="search-wrapper">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="search" class="search-bar" placeholder="Search...">
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Breadcrumb (standardized) -->
+            <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
+                    <li class="breadcrumb-item" aria-current="page">About Us</li>
+                </ol>
+            </nav>
+
+            <!-- PROJECT + TEAM HERO -->
+            <section class="team-hero">
+                <h1 class="page-title">Our Team</h1>
+                <p class="page-subtitle">Meet the people behind GoodCollections.</p>
+
+                <div class="project-summary-card">
+                    <div class="project-icon" aria-hidden="true">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+
+                    <div class="project-title">
+                        <h2>GoodCollections — Information System for Collection Management</h2>
+                    </div>
+
+                    <div class="project-meta">
+                        <div class="meta-block">
+                            <span class="meta-label">Team</span>
+                            <span class="meta-value pill">G03</span>
+                        </div>
+                        <div class="meta-block">
+                            <span class="meta-label">Course</span>
+                            <span class="meta-value">Masters in Industrial Engineering and Management (MEGI)</span>
+                        </div>
+                        <div class="meta-block">
+                            <span class="meta-label">University</span>
+                            <span class="meta-value">Faculty of Engineering of University of Porto (FEUP)</span>
+                        </div>
+                        <div class="meta-block">
+                            <span class="meta-label">Academic Year</span>
+                            <span class="meta-value">1S 2025/2026</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TEAM MEMBERS HEADING -->
+            <section class="team-heading">
+                <div class="heading-content">
+                    <i class="bi bi-people-fill team-icon" aria-hidden="true"></i>
+                    <h2>Team Members</h2>
+                </div>
+            </section>
+
+
+            <!-- TEAM MEMBERS -->
+            <section class="Team">
+                <div class="member">
+                    <img src="../images/Afonso.jpeg" alt="Afonso Ramos" width="104" height="142" loading="lazy">
+                    <h2>Afonso Dias Fachada Ramos</h2>
+                    <p class="id">up202108474</p>
+                    <p class="desc">If I used this site, I'd collect Minecraft limited edition figures.</p>
+                </div>
+
+                <div class="member">
+                    <img src="../images/Ana.jpg" alt="Ana Amorim" width="104" height="142" loading="lazy">
+                    <h2>Ana Isabel Dias Cunha Amorim</h2>
+                    <p class="id">up202107329</p>
+                    <p class="desc">If I used this site, I'd collect airplane miniatures.</p>
+                </div>
+
+                <div class="member">
+                    <img src="../images/Filipa.jpg" alt="Filipa Mota" width="104" height="142" loading="lazy">
+                    <h2>Filipa Marisa Duarte Mota</h2>
+                    <p class="id">up202402072</p>
+                    <p class="desc">If I used this site, I'd collect photos of José Condessa.</p>
+                </div>
+
+                <div class="member">
+                    <img src="../images/Matheus.jpeg" alt="Matheus Campinho" width="104" height="142" loading="lazy">
+                    <h2>Matheus Fernandes Vilhena Campinho</h2>
+                    <p class="id">up202202004</p>
+                    <p class="desc">If I used this site, I'd collect retro games and consoles.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- PROJECT REPOSITORY CARD -->
+    <section class="project-repo">
+        <div class="repo-card">
+            <i class="bi bi-github repo-icon" aria-hidden="true"></i>
+            <h3>Project Repository</h3>
+            <p>View the complete source code and documentation on GitHub</p>
+            <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" class="repo-link">
+                github.com/EIS_2526-G03_MEGI
+            </a>
+        </div>
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <p>
+                Made with <span class="heart">❤️</span> by
+                <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-github" aria-hidden="true"></i>
+                    EIS_2526-G03_MEGI
+                </a>
+            </p>
+            <div class="footer-links">
+                <a href="home_page.html">Home Page</a>
+                <a href="all_collections.html">Collections</a>
+                <a href="event_page.html">Events</a>
+                <a href="team_page.html">About Us</a>
+                <a href="user_page.html">User Profile</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS (order matches other pages; app-events.js implements event logic) -->
+    <div id="forgot-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-forgot-modal">&times;</span>
+            <h2>Forgot Password</h2>
+            <form id="form-forgot-password">
+                <p>Enter your email address and we'll send you a link to reset your password.</p>
+                <label for="forgot-email">Email:</label>
+                <input type="email" id="forgot-email" name="forgot-email" required>
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Send Reset Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="add-account-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-account-modal">&times;</span>
+            <h2>Create New Account</h2>
+
+            <form id="form-add-account">
+
+                <label for="acc-name">Username:</label>
+                <input type="text" id="acc-name" name="acc-name" required>
+                <label for="acc-owner-photo">Photo URL:</label>
+                <input type="url" id="acc-owner-photo" name="acc-owner-photo"
+                    placeholder="https://example.com/photo.jpg">
+                <label for="acc-dob">Date of Birth:</label>
+                <input type="date" id="acc-dob" name="acc-dob">
+                <label for="acc-member-since">Member Since (YYYY):</label>
+                <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
+                    placeholder="2020" readonly>
+                <label for="acc-email">Email:</label>
+                <input type="email" id="acc-email" name="acc-email" required>
+                <label for="acc-password">Password:</label>
+                <input type="password" id="acc-password" name="acc-password" required>
+                <label for="acc-password-confirm">Confirm Password:</label>
+                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required>
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../JS/app-users.js"></script>
+    <script src="../JS/search-toggle.js"></script>
+
+</body>
+
+</html>

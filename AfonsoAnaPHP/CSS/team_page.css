@@ -1,0 +1,329 @@
+/*
+  File: public_html/CSS/team_page.css
+  Purpose: Styles for the Team page and project summary card.
+  Major selector groups: Team grid, member cards, project summary, responsive adjustments.
+  Notes: Keep .Team and .member selectors stable as HTML relies on them.
+*/
+
+/* ===== TEAM SECTION ===== */
+
+/* Grid that auto-wraps with spacing */
+.Team {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* 4 per row */
+  gap: 28px 12px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+}
+
+/* Cards fill their column (no extra margins) */
+.member {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 28px 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+
+
+.member:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+
+/* Round photo */
+.member img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #2563eb;
+  margin-bottom: 15px;
+  display: block;
+  /* <- required for margin:auto to work */
+  margin: 6px auto 14px;
+  /* <- centers and provides vertical spacing */
+}
+
+/* Member name */
+.member h2 {
+  font-size: 1.35rem;
+  margin: 12px 0 6px;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+/* Student ID */
+.member .id {
+  padding: 5px 16px;
+  border-radius: 999px;
+  background-color: #eef6ff;
+  color: #2563eb;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.member .id[data-sigarra-url] {
+  cursor: pointer;
+}
+
+.member .id[data-sigarra-url]:hover,
+.member .id[data-sigarra-url]:focus-visible {
+  text-decoration: underline;
+}
+
+.member .id[data-sigarra-url]:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Personal description */
+.member .desc {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
+  font-weight: 400;
+  font-style: italic;
+  max-width: 90%;
+}
+
+/* Responsive: 2 per row on smaller screens */
+@media (max-width: 768px) {
+  .Team {
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 per row */
+  }
+}
+
+/* Optional: 1 per row on very small screens */
+@media (max-width: 480px) {
+  .Team {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== TEAM HERO + PROJECT SUMMARY ===== */
+
+.team-hero {
+  text-align: center;
+  padding: 40px 16px 28px;
+}
+
+.project-summary-card {
+  max-width: 1150px;
+  margin: 0 auto 40px;
+  padding: 26px 32px 26px;
+  background-color: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+  box-sizing: border-box;
+}
+
+/* Linha com TEAM / COURSE / UNIVERSITY / ACADEMIC YEAR */
+.project-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 14px;
+  align-items: center;
+  justify-items: center;
+  /* centers each block inside the card */
+}
+
+/* Cada bloco (label + value) centrado */
+.meta-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* centers text within the column */
+  gap: 4px;
+}
+
+.meta-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.meta-value {
+  font-size: 0.98rem;
+  color: #111827;
+  font-weight: 500;
+}
+
+/* Blue pill used to highlight G03 */
+.meta-value.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background-color: #e8f2ff;
+  color: #1d4ed8;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .team-hero {
+    padding-top: 28px;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .project-summary-card {
+    padding: 20px 18px;
+  }
+
+  .project-meta {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .project-title h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* ===== TEAM MEMBERS HEADING ===== */
+
+.team-heading {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 35px;
+}
+
+.heading-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.team-heading h2 {
+  font-size: 1.8rem;
+  color: #1f2937;
+  /* dark gray */
+  font-weight: 600;
+  margin: 0;
+}
+
+.team-icon {
+  font-size: 2.1rem;
+  color: #2563eb;
+  /* blue-600 to match other accents */
+  line-height: 1;
+  transform: translateY(1px);
+  /* small vertical alignment fix */
+}
+
+@media (max-width: 520px) {
+  .team-heading h2 {
+    font-size: 1.4rem;
+  }
+
+}
+
+/* Project cap and team icons */
+.project-icon i,
+.team-icon {
+  font-size: 2rem;
+  color: #2563eb;
+  /* consistent blue */
+}
+
+/* Title alignment adjustment */
+.heading-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.team-heading h2 {
+  font-size: 1.8rem;
+  color: #1f2937;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ===== PROJECT REPOSITORY CARD ===== */
+.project-repo {
+  text-align: center;
+  margin: 50px 0;
+}
+
+.repo-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 26px 36px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.repo-icon {
+  font-size: 4rem;
+  color: #111827;
+  margin-bottom: 1px;
+}
+
+.repo-card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.repo-card p {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0 0 6px;
+}
+
+.repo-link {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.repo-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .repo-card {
+    padding: 20px 18px;
+  }
+
+  /* Slightly reduce the repo icon size on small screens to avoid overflow */
+  .repo-icon {
+    font-size: 2.4rem;
+  }
+}

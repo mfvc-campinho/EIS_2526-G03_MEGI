@@ -1,0 +1,405 @@
+﻿<!DOCTYPE html>
+<!--
+    File: public_html/HTML/event_page.html
+    Purpose: Events listing and details page. Shows filters, event cards, and modals populated by app-events.js.
+    Major sections: NAVIGATION, MAIN (filters, events grid), EVENT DETAIL MODAL, CREATE/EDIT EVENT MODAL, FOOTER.
+    Notes: Keep IDs and element structure stable — JS hooks rely on these IDs (e.g., #eventsList, #event-modal).
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Events — GoodCollections</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Styles (CSS) -->
+    <link rel="stylesheet" href="../CSS/general.css">
+    <link rel="stylesheet" href="../CSS/events.css">
+    <link rel="stylesheet" href="../CSS/likes.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Scripts -->
+    <script src="../JS/theme-toggle.js"></script>
+</head>
+
+<body>
+    <div id="content">
+        <!-- NAVIGATION -->
+        <header>
+            <nav class="navbar">
+                <div class="nav-left">
+                    <a href="home_page.html" class="logo">
+                        <i class="bi bi-collection me-2"></i> GoodCollections
+                    </a>
+                </div>
+
+                <div class="nav-right">
+                    <a href="all_collections.html" class="nav-link">
+                        <i class="bi bi-box-seam-fill me-1"></i> Collections
+                    </a>
+
+                    <a href="event_page.html" class="nav-link" aria-current="page">
+                        <i class="bi bi-calendar-event-fill me-1"></i> Events
+                    </a>
+
+                    <a href="team_page.html" class="nav-link">
+                        <i class="bi bi-people-fill me-1"></i> About Us
+                    </a>
+
+                    <a href="user_page.html" class="nav-link">
+                        <i class="bi bi-person-fill me-1"></i> Profile
+                    </a>
+
+                    <!-- Dark mode toggle -->
+                    <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
+                        <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
+                    </button>
+
+                    <!-- Login dropdown -->
+                    <div class="dropdown profile-dropdown">
+                        <button class="dropbtn profile-btn">
+                            <i class="bi bi-person-circle me-1"></i> Log In ▾
+                        </button>
+                        <div class="dropdown-content profile-menu"></div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="search-wrapper">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="search" class="search-bar" placeholder="Search...">
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <!-- BREADCRUMB -->
+            <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
+                    <li class="breadcrumb-item" aria-current="page">Events</li>
+                </ol>
+            </nav>
+
+            <!-- Page header -->
+            <section class="page-header">
+                <div class="page-header-actions">
+                    <h1 class="page-title">Events</h1>
+                </div>
+                <p class="page-subtitle">
+                    Browse upcoming and past events related to your collections.
+                    View details, register (RSVP), and receive alerts for upcoming dates.
+                    After attending, you can rate the event from 1 to 5 stars.
+                </p>
+            </section>
+
+            <!-- Calendar widget: placed above the filters -->
+            <section class="calendar-widget" aria-label="Events calendar" id="calendarWidget">
+                <div class="calendar-header">
+                    <button id="calendarPrev" class="cal-nav" aria-label="Previous month">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <div class="calendar-title" id="calendarMonthTitle">March 2025</div>
+                    <button id="calendarNext" class="cal-nav" aria-label="Next month">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid" role="grid" aria-labelledby="calendarMonthTitle">
+                    <!-- JS will render weekday labels and day cells here -->
+                </div>
+
+                <div id="calendarAlert" class="calendar-alert" role="status" aria-live="polite" style="display:none;">
+                </div>
+            </section>
+
+            <!-- TOGGLE: UPCOMING / PAST
+           (Tabs control the hidden select used by JS) -->
+            <section class="events-toggle-wrapper">
+                <h2 class="sr-only">Event timeframe controls</h2>
+                <div class="events-toggle" role="group" aria-label="Filter events">
+                    <button id="tabUpcoming" class="toggle-pill active" type="button">
+                        Upcoming <span class="toggle-count" id="upcomingCount">(0)</span>
+                    </button>
+                    <button id="tabPast" class="toggle-pill" type="button">
+                        Past <span class="toggle-count" id="pastCount">(0)</span>
+                    </button>
+                </div>
+
+
+                <!-- Hidden native controls used by app-events.js -->
+                <div class="hidden-filters">
+                    <label for="eventFilter" class="sr-only">Show</label>
+                    <select id="eventFilter">
+                        <option value="upcoming" selected>Upcoming</option>
+                        <option value="all">All</option>
+                        <option value="past">Past</option>
+                    </select>
+                </div>
+
+            </section>
+            <button id="newEventBtn" class="explore-btn success events-new-btn" data-requires-login>
+                <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                New Event
+            </button>
+
+            <!-- Visible advanced filters -->
+            <section class="events-advanced-filters" aria-label="Additional filters">
+                <div class="filter-field">
+                    <label for="eventType">Type</label>
+                    <select id="eventType">
+                        <option value="all" selected>All Types</option>
+                        <option value="meetup">Meetup</option>
+                        <option value="fair">Fair</option>
+                        <option value="exhibition">Exhibition</option>
+                        <option value="expo">Expo</option>
+                        <option value="convention">Convention</option>
+                        <option value="gallery">Gallery</option>
+                        <option value="signing">Signing</option>
+                        <option value="swap">Swap</option>
+                        <option value="workshop">Workshop</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="eventLocation">Location</label>
+                    <select id="eventLocation">
+                        <option value="all" selected>All Locations</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="eventSort">Sort by</label>
+                    <select id="eventSort">
+                        <option value="asc" selected>Date · Oldest first</option>
+                        <option value="desc">Date · Newest first</option>
+                        <option value="alpha">Name · A → Z</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- ACTIONS (NEW EVENT) -->
+            <section class="events-actions">
+                <h2 class="sr-only">Event actions</h2>
+                <p class="actions-hint">
+                    Filter using the tabs above. Logged-in collectors can propose new events for the community.
+                </p>
+            </section>
+
+            <!-- EVENTS GRID
+            (Cards injected by app-events.js into #eventsList)-->
+            <section class="events-section">
+                <h2 class="sr-only">Event listings</h2>
+                <div class="list-pagination" data-pagination-for="eventsList">
+                    <label class="page-size-label">
+                        View
+                        <select data-page-size>
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="50">50</option>
+                        </select>
+                        events at a time
+                    </label>
+                    <div class="pagination-actions">
+                        <button type="button" class="explore-btn ghost icon-only" data-page-prev
+                            aria-label="Ver anteriores">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <span class="pagination-status" data-pagination-status>Mostrando 0-0 de 0</span>
+                        <button type="button" class="explore-btn ghost icon-only" data-page-next
+                            aria-label="Ver seguintes">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="eventsList" class="events-grid">
+                    <!-- JS will populate event cards here -->
+                </div>
+            </section>
+
+            <!-- EVENT DETAIL MODAL -->
+            <div id="event-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn" id="close-event-modal">&times;</span>
+
+                    <h2 id="modal-event-title">Event Title</h2>
+                    <p id="modal-event-meta" class="muted">Date · Time · Location</p>
+
+                    <div id="modal-event-body">
+                        <p id="modal-event-description">
+                            Full event description goes here. It can include agenda, host,
+                            requirements and links.
+                        </p>
+                        <p>
+                            <strong>Owner:</strong>
+                            <a id="modal-event-host" class="event-owner-link" href="#" target="_self"></a>
+                        </p>
+                        <p><strong>Attendees:</strong>
+                            <span id="modal-event-attendees-count">0</span>
+                        </p>
+                    </div>
+
+                    <!-- Rating area for past events -->
+                    <div id="modal-rating-info" class="modal-rating muted">
+                        <span id="modal-rating-label">
+                            Rating available after the event date.
+                        </span>
+                        <div id="modal-rating-stars" class="rating-stars"></div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button id="modal-rsvpBtn" class="explore-btn success" data-requires-login>
+                            <i class="bi bi-calendar-check me-1" aria-hidden="true"></i>
+                            RSVP
+                        </button>
+                        <button id="modal-shareEventBtn" class="explore-btn">
+                            <i class="bi bi-share-fill me-1" aria-hidden="true"></i>
+                            Share
+                        </button>
+                        <button id="modal-add-calendar" class="explore-btn" style="display:none;">
+                            <i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i>
+                            Add to My Calendar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CREATE / EDIT EVENT MODAL -->
+            <div id="event-edit-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn" id="close-event-edit-modal">&times;</span>
+                    <h2 id="event-edit-title">Create Event</h2>
+
+                    <form id="form-event">
+                        <input type="hidden" id="event-id">
+
+                        <div class="form-section form-section--required">
+                            <h3>Required fields</h3>
+                            <label for="evt-name">Name:</label>
+                            <input type="text" id="evt-name" name="evt-name" required>
+                            <label for="evt-date">Date &amp; Time:</label>
+                            <input type="datetime-local" id="evt-date" name="evt-date" required>
+                            <label for="evt-location">Location:</label>
+                            <input type="text" id="evt-location" name="evt-location" required>
+                            <label for="evt-collections">Associated collections</label>
+                            <select id="evt-collections" name="evt-collections" multiple size="4" required>
+                                <!-- Filled via JavaScript -->
+                            </select>
+                            <small class="form-hint">Press Ctrl/Cmd (⌘) or Shift to select multiple collections.</small>
+                        </div>
+
+                        <div class="form-section form-section--optional">
+                            <h3>Optional fields</h3>
+                            <label for="evt-summary">Summary:</label>
+                            <input type="text" id="evt-summary" name="evt-summary">
+                            <label for="evt-description">Description:</label>
+                            <textarea id="evt-description" name="evt-description"></textarea>
+                            <label for="evt-type">Type:</label>
+                            <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop">
+                        </div>
+
+                        <div class="modal-actions">
+                            <button type="submit" class="explore-btn success">
+                                <i class="bi bi-save me-1" aria-hidden="true"></i>Save Event</button>
+                            <button type="button" id="cancel-event-edit"
+                                class="explore-btn danger delete-btn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Calendar Day Details Modal (shows events for a clicked date) -->
+            <div id="calendar-day-modal" class="modal" aria-hidden="true">
+                <div class="modal-content" id="calendar-day-modal-content">
+                    <span class="close-btn" id="close-calendar-day-modal">&times;</span>
+                    <h3 id="calendar-day-title">Events on DATE</h3>
+                    <div id="calendar-day-list">
+                        <!-- Populated by JS with a list of events for the selected day -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="footer-content">
+                <p>
+                    Made with <span class="heart">❤️</span> by
+                    <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank"
+                        rel="noopener noreferrer">
+                        <i class="bi bi-github" aria-hidden="true"></i>
+                        EIS_2526-G03_MEGI
+                    </a>
+                </p>
+
+                <div class="footer-links">
+                    <a href="home_page.html">Home Page</a>
+                    <a href="all_collections.html">Collections</a>
+                    <a href="event_page.html">Events</a>
+                    <a href="team_page.html">About Us</a>
+                    <a href="user_page.html">User Profile</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- SCRIPTS -->
+    <div id="forgot-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-forgot-modal">&times;</span>
+            <h2>Forgot Password</h2>
+            <form id="form-forgot-password">
+                <p>Enter your email address and we'll send you a link to reset your password.</p>
+                <label for="forgot-email">Email:</label>
+                <input type="email" id="forgot-email" name="forgot-email" required>
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Send Reset Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="add-account-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-account-modal">&times;</span>
+            <h2>Create New Account</h2>
+
+            <form id="form-add-account">
+
+                <label for="acc-name">Username:</label>
+                <input type="text" id="acc-name" name="acc-name" required>
+                <label for="acc-owner-photo">Photo URL:</label>
+                <input type="url" id="acc-owner-photo" name="acc-owner-photo"
+                    placeholder="https://example.com/photo.jpg">
+                <label for="acc-dob">Date of Birth:</label>
+                <input type="date" id="acc-dob" name="acc-dob">
+                <label for="acc-member-since">Member Since (YYYY):</label>
+                <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
+                    placeholder="2020" readonly>
+                <label for="acc-email">Email:</label>
+                <input type="email" id="acc-email" name="acc-email" required>
+                <label for="acc-password">Password:</label>
+                <input type="password" id="acc-password" name="acc-password" required>
+                <label for="acc-password-confirm">Confirm Password:</label>
+                <input type="password" id="acc-password-confirm" name="acc-password-confirm" required>
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../JS/Data.js"></script>
+    <script src="../JS/app-data.js"></script>
+    <script src="../JS/app-users.js"></script>
+    <script src="../JS/app-events.js"></script>
+    <script src="../JS/app-collections.js"></script>
+    <script src="../JS/app-loader.js"></script>
+    <script src="../JS/search-toggle.js"></script>
+</body>
+
+</html>

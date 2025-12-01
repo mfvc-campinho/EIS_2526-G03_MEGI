@@ -1,0 +1,854 @@
+/*
+  File: public_html/CSS/events.css
+  Purpose: Styles for the Events page (toggle, filters, grid, modals, and rating stars).
+  Major selector groups: toggle, filters, actions, grid/cards, rating, modal styling, responsive.
+*/
+
+/* ============================================
+  events.css — Page-specific styles for Events
+  ============================================ */
+
+/* -------------------------------
+   Toggle (Upcoming / Past)
+---------------------------------- */
+
+.events-toggle-wrapper {
+  margin: 18px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Capsule background */
+.events-toggle {
+  display: flex;
+  background: #f3f4ff;
+  border-radius: 40px;
+  padding: 6px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+/* Each pill */
+.toggle-pill {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 14px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #6b7280;
+  border-radius: 28px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+/* Active tab */
+.toggle-pill.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 3px 10px rgba(148, 163, 253, 0.5);
+}
+
+.toggle-count {
+  font-weight: 500;
+  color: #9ca3af;
+  margin-left: 2px;
+}
+
+/* Hidden native selects (used by JS) */
+.hidden-filters select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.events-advanced-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 14px 0 6px;
+}
+
+/* -------------------------------
+   Page header (title + action button)
+---------------------------------- */
+.page-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.filter-field label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.filter-field select {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1f2937;
+  background: #fff;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* -------------------------------
+   Actions (New Event)
+---------------------------------- */
+
+.events-actions {
+  margin: 6px 0 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.actions-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.events-new-btn {
+  border-radius: 999px;
+  padding-inline: 18px;
+}
+
+/* -------------------------------
+   Events Grid & Cards
+---------------------------------- */
+
+.events-section {
+  margin-top: 4px;
+}
+
+.events-grid,
+#eventsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+  margin-top: 10px;
+}
+
+/* Main card style  */
+#eventsList .event-card,
+#eventsList .collection-card,
+#eventsList>div {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 22px 18px 18px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-sizing: border-box;
+}
+
+#eventsList .event-card:hover,
+#eventsList .collection-card:hover,
+#eventsList>div:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Title */
+#eventsList .card-title,
+#eventsList .event-title,
+#eventsList h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.18;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Summary */
+#eventsList .card-summary,
+#eventsList .event-summary,
+#eventsList p.summary {
+  margin: 0;
+  font-size: 0.98rem;
+  color: var(--text-muted);
+}
+
+/* Meta rows for date & location */
+.event-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 0.98rem;
+  color: #4b5563;
+}
+
+.event-meta-row i {
+  font-size: 1.1rem;
+  color: #9ca3af;
+}
+
+.event-owner-row {
+  margin-top: 10px;
+}
+
+.event-owner-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.event-owner-link {
+  color: #4338ca;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.event-owner-link:hover,
+.event-owner-link:focus-visible {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Rating summary row on cards */
+.card-rating {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.86rem;
+  color: #6b7280;
+}
+
+.card-rating .rating-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-rating .demo-rating-note {
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+/* Buttons inside cards */
+
+#eventsList .card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+#eventsList .card-actions button {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 0.9rem;
+  border-radius: 50px;
+  border: 1px solid rgba(148, 163, 253, 0.25);
+  background: var(--card-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.14s ease;
+}
+
+#eventsList .card-actions button i {
+  font-size: 0.9rem;
+}
+
+#eventsList .card-actions button:hover {
+  background: #eff6ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(148, 163, 253, 0.6);
+}
+
+/* RSVP style */
+#eventsList .card-actions .rsvp-btn {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  color: #ffffff;
+  border: none;
+}
+
+/* -------------------------------
+   Modal rating stars
+---------------------------------- */
+
+.modal-rating {
+  margin-top: 10px;
+  font-size: 0.82rem;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.rating-stars .star {
+  font-size: 1.2rem;
+  color: #d1d5db;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.rating-stars .star.filled {
+  color: #fbbf24;
+}
+
+.rating-stars .star.user-rating {
+  /* Show user-selected stars in yellow to match filled state */
+  color: #fbbf24;
+}
+
+.rating-stars .star.clickable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rating-stars .star.clickable:hover {
+  transform: translateY(-5px);
+}
+
+/* Progressive hover styling applied by JS (adds .hovered) */
+.rating-stars .star.hovered {
+  color: #fbbf24;
+  transform: translateY(-5px) scale(1.08);
+}
+
+/* Improve focus and press feedback so the active state feels intentional. */
+.rating-stars .star.clickable:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.45);
+  border-radius: 0.35rem;
+}
+
+.rating-stars .star.clickable:active {
+  transform: translateY(-2px) scale(1.04);
+}
+
+/* Modal width */
+#event-modal,
+#event-edit-modal {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(2px);
+}
+
+#event-modal .modal-content,
+#event-edit-modal .modal-content {
+  max-width: 740px;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+/* -------------------------------
+   Responsive
+---------------------------------- */
+
+@media (max-width: 640px) {
+  .events-toggle {
+    padding: 4px;
+
+    /* Calendar add button small spacing to match other buttons */
+    .modal-actions .explore-btn#modal-add-calendar,
+    .card-actions .explore-btn.calendar-btn {
+      margin-left: 8px;
+    }
+  }
+
+  .toggle-pill {
+    padding: 8px 6px;
+    font-size: 0.95rem;
+  }
+
+  #eventsList .card-title,
+  #eventsList .event-title,
+  #eventsList h3 {
+    font-size: 1.3rem;
+  }
+
+  #eventsList .card-summary,
+  #eventsList p.summary {
+    font-size: 0.9rem;
+  }
+}
+
+/* ================================
+   Calendar widget styles
+   Subtle blue-and-white theme consistent with project
+   ================================ */
+.calendar-widget {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+  border: 1px solid #e6eefc;
+  max-width: 420px;
+  /* center horizontally */
+  margin: 12px auto;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.calendar-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.cal-nav {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.cal-nav:hover {
+  background: #f3f4ff;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.06);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-grid .weekday {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+  padding: 4px 2px;
+}
+
+.cal-day {
+  min-height: 52px;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 6px 8px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  position: relative;
+  border: 1px solid transparent;
+}
+
+.cal-day.empty {
+  background: transparent;
+  border: none;
+}
+
+.cal-day.today {
+  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.12);
+  background: linear-gradient(180deg, #f8fbff, #fff);
+}
+
+.cal-day .date-number {
+  font-weight: 600;
+}
+
+.cal-day.has-event {
+  border: 1px solid rgba(79, 70, 229, 0.18);
+}
+
+.cal-day .event-dot {
+  width: 8px;
+  height: 8px;
+  background: #2563eb;
+  border-radius: 50%;
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+}
+
+.cal-day:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.calendar-alert {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f1f5ff;
+  color: #0f172a;
+  border: 1px solid #dbeafe;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .calendar-widget {
+    max-width: 100%;
+  }
+
+  .cal-day {
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Past vs upcoming markers */
+.cal-day.has-event-upcoming {
+  background: linear-gradient(180deg, #eef2ff, #fff);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+}
+
+.cal-day.has-event-upcoming .event-dot {
+  background: #2563eb;
+}
+
+.cal-day.has-event-past {
+  background: linear-gradient(180deg, #f7f7f9, #fff);
+  border: 1px solid rgba(107, 114, 128, 0.08);
+  color: #6b7280;
+}
+
+.cal-day.has-event-past .event-dot {
+  background: #9ca3af;
+}
+
+/* Calendar day modal (same as project's modal styles but smaller) */
+#calendar-day-modal {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+#calendar-day-modal .modal-content {
+  max-width: 560px;
+  padding: 18px 18px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.98);
+}
+
+#calendar-day-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+#calendar-day-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calendar-day-event {
+  background: #fff;
+  border: 1px solid #eef2ff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+
+.calendar-day-event h4 {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+}
+
+.calendar-day-event .meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: #475569;
+  font-size: 0.92rem;
+}
+
+.calendar-day-event .meta i {
+  color: #9ca3af;
+}
+
+.calendar-day-event p {
+  margin: 6px 0 0 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* subtle transitions */
+.calendar-widget .cal-day,
+.calendar-day-event {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.calendar-widget .cal-day:hover {
+  transform: translateY(-3px);
+}
+
+@media (max-width:640px) {
+  #calendar-day-modal .modal-content {
+    margin: 12px;
+    width: auto;
+  }
+}
+
+/* Event alert badge shown on event cards when event date is within next 7 days */
+.event-alert-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.78rem;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ffbb33, #ff9a33);
+  color: #111;
+  font-weight: 700;
+  margin-left: 8px;
+  vertical-align: middle;
+  box-shadow: 0 6px 18px rgba(255, 153, 51, 0.08);
+}
+
+@media (max-width: 600px) {
+  .event-alert-badge {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    margin-left: 6px;
+  }
+}
+
+/* Additional responsive rules for Events: filters, grid spacing, touch targets */
+@media (max-width: 992px) {
+  .events-advanced-filters {
+    gap: 12px;
+    padding: 0 8px;
+  }
+
+  .filter-field {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* Stack filter controls vertically to avoid overflow on tablets */
+  .events-advanced-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-field {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  /* Make the toggle pill group more compact and tappable */
+  .events-toggle {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .toggle-pill {
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+
+  /* Events grid: fewer columns and larger gap for readability */
+  .events-grid,
+  #eventsList {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+    padding: 0 10px;
+  }
+
+  #eventsList .card-title,
+  #eventsList h3 {
+    font-size: 1.25rem;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 600px) {
+
+  /* Mobile: stack filters and toggle into single column */
+  .events-advanced-filters,
+  .events-toggle-wrapper,
+  .events-actions {
+    width: 100%;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filter-field,
+  .toggle-pill {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Grid -> single column for small phones */
+  .events-grid,
+  #eventsList {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 8px;
+  }
+
+  #eventsList .event-card,
+  #eventsList .collection-card,
+  #eventsList>div {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  /* Increase button tap area inside each card */
+  #eventsList .card-actions button,
+  #eventsList .card-actions .rsvp-btn {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  /* Prevent long titles from overflowing cards */
+  #eventsList .card-title,
+  #eventsList h3 {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Added mobile-friendly grid adjustments for smaller breakpoints.
+   Targets: .collection-container, .events-grid/.event-grid, .features-grid, .Team
+   These rules are intentionally simple and only apply below the stated
+   breakpoints so desktop (>992px) layouts remain unchanged.
+   ------------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+  /* Prefer two-column layouts on small tablets for readability */
+  .collection-container,
+  .events-grid,
+  .event-grid,
+  .features-grid,
+  .Team {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.125rem;
+    /* 18px */
+    padding-left: 12px;
+    padding-right: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Allow grid children to shrink properly and avoid overflowing the column */
+  .collection-container>*,
+  .events-grid>*,
+  #eventsList>*,
+  .features-grid>*,
+  .Team>* {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+
+  /* Stack to a single full-width column on phones */
+  .collection-container,
+  .events-grid,
+  .event-grid,
+  .features-grid,
+  .Team {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem;
+    /* 20px for touch readability */
+    padding-left: 14px;
+    padding-right: 14px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Make sure images and media inside grid cards don't overflow */
+  .collection-container img,
+  .events-grid img,
+  .features-grid img,
+  .Team img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Ensure card children can break and don't force horizontal scroll */
+  .collection-container>*,
+  .events-grid>*,
+  #eventsList>*,
+  .features-grid>*,
+  .Team>* {
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Improve tappable areas for controls inside collection/team items */
+  .collection-container .item-buttons button,
+  .Team .member-actions button {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 375px) {
+
+  /* Final small-screen polish to prevent accidental overflow on very small phones */
+  .collection-container,
+  .events-grid,
+  .features-grid,
+  .Team {
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 1rem;
+  }
+
+  /* Extra safe rule so long titles and flex children can wrap */
+  .collection-container .item-info h3,
+  .Team .member-name,
+  #eventsList .card-title {
+    word-break: break-word;
+    white-space: normal;
+  }
+}

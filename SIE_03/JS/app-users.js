@@ -26,23 +26,48 @@ document.addEventListener("DOMContentLoaded", () => {
   // - Updates dropdown content for authenticated or anonymous users
   // - Attaches event handlers for embedded forms and links
   // =======================================================
+  // Utility: only set innerHTML when the container is not server-rendered
+  function safeSetInnerHTML(el, html) {
+    if (!el) return;
+    try {
+      if (el.dataset && el.dataset.serverRendered === '1') return;
+      if (el.children && el.children.length > 0) return;
+    } catch (e) { }
+    el.innerHTML = html;
+  }
+
+  // Utility: safely set innerHTML on a button (preserve server-rendered buttons)
+  function safeSetButtonInnerHTML(btn, html) {
+    if (!btn) return;
+    try {
+      if (btn.dataset && btn.dataset.serverRendered === '1') return;
+      if (btn.children && btn.children.length > 0) return;
+    } catch (e) { }
+    btn.innerHTML = html;
+  }
+
   function renderProfileMenu() {
     if (!profileMenu) return;
-    profileMenu.innerHTML = "";
+    // If server rendered, avoid client-side replacement
+    try {
+      if (profileMenu.dataset && profileMenu.dataset.serverRendered === '1') return;
+      if (profileMenu.children && profileMenu.children.length > 0) return;
+    } catch (e) { }
+    safeSetInnerHTML(profileMenu, "");
     profileDropdown?.classList.remove("open");
 
     if (currentUser && currentUser.active) {
       // Authenticated user
       const displayName = currentUser.ownerName || currentUser.id || "Profile";
-      profileButton.innerHTML = `<i class="bi bi-person"></i> ${displayName} ▾`;
-      profileMenu.innerHTML = `
+      safeSetButtonInnerHTML(profileButton, `<i class="bi bi-person-circle me-1"></i> ${displayName} ▾`);
+      safeSetInnerHTML(profileMenu, `
         <a href="user_page.html">See Profile</a>
         <a href="#" id="signout-btn">Sign Out</a>
-      `;
+      `);
     } else {
       // Not authenticated -> render inline login form
-      profileButton.innerHTML = `<i class="bi bi-person"></i> Log In ▾`;
-      profileMenu.innerHTML = `
+      safeSetButtonInnerHTML(profileButton, `<i class="bi bi-person-circle me-1"></i> Log In ▾`);
+      safeSetInnerHTML(profileMenu, `
         <form id="login-form" class="login-form">
           <label>Username:</label>
           <input type="text" id="login-user" placeholder="Enter username">
@@ -54,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <a href="#" id="forgot-password-btn">Forgot Password?</a>
           <a href="#" id="add-account-btn">Create New Account</a>
         </div>
-      `;
+      `);
     }
 
     // Wire up interactions after inserting the menu content

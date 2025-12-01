@@ -2,7 +2,7 @@
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: all_collections.php');
+    header('Location: ../SIE_03/all_collections.php');
     exit;
 }
 
@@ -17,7 +17,7 @@ $email           = trim($_POST['acc-email'] ?? '');
 $password        = $_POST['acc-password'] ?? '';
 $passwordConfirm = $_POST['acc-password-confirm'] ?? '';
 
-// validações básicas
+// Basic validation
 if ($username === '' || $email === '' || $password === '') {
     $errors[] = 'Username, email and password are required.';
 }
@@ -29,21 +29,45 @@ if ($password !== $passwordConfirm) {
 }
 
 if (empty($errors)) {
-    // TODO: lógica real de criação de conta:
-    // - verificar se email/username já existem
-    // - hash da password
-    // - inserir na BD
+    require_once __DIR__ . '/../config/db.php';
+    $pdo = get_db();
 
-    /*
-    require_once '../config/db.php';
+    try {
+        // Check if email already exists
+        $stmt = $pdo->prepare('SELECT user_id FROM users WHERE email = ? LIMIT 1');
+        $stmt->execute([$email]);
+        if ($stmt->fetch()) {
+            $errors[] = 'An account with this email already exists.';
+        }
 
-    $hash = password_hash($password, PASSWORD_DEFAULT);
+        // Generate a simple user_id from username (slug)
+        $baseId = preg_replace('/[^a-z0-9_]/', '', strtolower(str_replace(' ', '_', $username)));
+        if ($baseId === '') {
+            $baseId = 'user_' . time();
+        }
+        $userId = $baseId;
+        $i = 1;
+        $check = $pdo->prepare('SELECT 1 FROM users WHERE user_id = ? LIMIT 1');
+        while (true) {
+            $check->execute([$userId]);
+            if (!$check->fetch()) {
+                break;
+            }
+            $userId = $baseId . '_' . $i;
+            $i++;
+        }
 
-    $stmt = $pdo->prepare('INSERT INTO users (username, email, password_hash, photo, dob, member_since) VALUES (?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$username, $email, $hash, $photo, $dob, $memberSince]);
-    */
+        if (empty($errors)) {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
 
-    $success = 'Account created successfully! (dummy)';
+            $insert = $pdo->prepare('INSERT INTO users (user_id, user_name, user_photo, date_of_birth, email, password, member_since) VALUES (?, ?, ?, ?, ?, ?, ?)');
+            $insert->execute([$userId, $username, $photo, $dob, $email, $hash, $memberSince]);
+
+            $success = 'Account created successfully! You can now log in.';
+        }
+    } catch (Exception $e) {
+        $errors[] = 'Database error: ' . $e->getMessage();
+    }
 }
 
 if (!empty($errors)) {
@@ -53,12 +77,5 @@ if ($success) {
     $_SESSION['form_success'] = $success;
 }
 
-header('Location: all_collections.php');
+header('Location: ../SIE_03/all_collections.php');
 exit;
-
-?>
-/* 
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/EmptyPHP.php to edit this template
- */
-

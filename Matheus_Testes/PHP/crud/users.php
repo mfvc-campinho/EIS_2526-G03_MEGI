@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../config/db.php';
+// Use sessions for authentication when updating profiles
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -82,6 +84,12 @@ if ($method === 'POST') {
       echo json_encode(['error' => 'missing id']);
       exit;
     }
+    // Require logged in user and ownership
+    if (empty($_SESSION['user']) || empty($_SESSION['user']['id']) || $_SESSION['user']['id'] !== $id) {
+      http_response_code(401);
+      echo json_encode(['error' => 'not authorized']);
+      exit;
+    }
     $name = $_POST['name'] ?? null;
     $photo = $_POST['photo'] ?? null;
     $dob = $_POST['dob'] ?? null;
@@ -90,7 +98,15 @@ if ($method === 'POST') {
     $stmt->bind_param('sssss', $name, $photo, $dob, $member, $id);
     $ok = $stmt->execute();
     $stmt->close();
-    echo json_encode(['success' => $ok]);
+    if ($ok) {
+      // Refresh session user info so auth.php reflects changes
+      $_SESSION['user']['name'] = $name;
+      $_SESSION['user']['photo'] = $photo;
+      echo json_encode(['success' => true, 'user' => $_SESSION['user']]);
+    } else {
+      http_response_code(500);
+      echo json_encode(['success' => false, 'error' => 'db error']);
+    }
     exit;
   } elseif ($action === 'delete') {
     $id = $_POST['id'] ?? null;

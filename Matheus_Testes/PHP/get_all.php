@@ -182,6 +182,17 @@ foreach ($showcaseMap as $entry) {
   $userShowcases[] = $entry;
 }
 
+// 11) user_follows (map follower -> [following])
+$ufRows = fetch_all($mysqli, "SELECT follower_id,following_id FROM user_followers");
+$userFollows = [];
+foreach ($ufRows as $r) {
+  $f = $r['follower_id'] ?? null;
+  $t = $r['following_id'] ?? null;
+  if (!$f || !$t) continue;
+  if (!isset($userFollows[$f])) $userFollows[$f] = [];
+  if (!in_array($t, $userFollows[$f], true)) $userFollows[$f][] = $t;
+}
+
 // 10) collectionRatings and itemRatings: DB lacks dedicated tables; return empty arrays for now
 $collectionRatings = [];
 $itemRatings = [];
@@ -197,6 +208,7 @@ $out = [
   'collectionsUsers' => $collectionsUsers,
   'eventsUsers' => $eventsUsers,
   'userShowcases' => $userShowcases,
+  'userFollows' => $userFollows,
   'collectionRatings' => $collectionRatings,
   'itemRatings' => $itemRatings
 ];

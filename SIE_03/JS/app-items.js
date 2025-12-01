@@ -77,20 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const hasPagination = paginationControls.length > 0;
 
-  // Utility: only set innerHTML when the container is not server-rendered
-  function safeSetInnerHTML(el, html) {
-    if (!el) return;
-    try {
-      if (el.dataset && el.dataset.serverRendered === '1') return;
-      if (el.children && el.children.length > 0) return;
-<<<<<<< HEAD
-    } catch (e) { }
-=======
-    } catch (e) {}
->>>>>>> 2c73eb2d86ddeea781cd8529fc9f903ef81a28a6
-    el.innerHTML = html;
-  }
-
   const defaultPageSize = hasPagination
     ? getInitialPageSizeFromControls(paginationControls)
     : null;
@@ -676,12 +662,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // If collection page but invalid ID
     if (isCollectionPage && !collection) {
-      safeSetInnerHTML(itemsContainer, `<p class="notice-message">Collection not found.</p>`);
+      itemsContainer.innerHTML = `<p class="notice-message">Collection not found.</p>`;
       updatePaginationSummary(0, 0, 0);
       return;
     }
 
-    safeSetInnerHTML(itemsContainer, "");
+    itemsContainer.innerHTML = "";
 
     // Choose base items (collection or all items on user_page)
     const baseItems =
@@ -867,14 +853,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const collection = getCurrentCollection(data);
 
     if (!collection) {
-      safeSetInnerHTML(eventsContainer, `<p class="notice-message">Collection not found.</p>`);
+      eventsContainer.innerHTML =
+        `<p class="notice-message">Collection not found.</p>`;
       return;
     }
 
     const events = appData.getEventsByCollection(collection.id, data) || [];
 
     if (!events.length) {
-      safeSetInnerHTML(eventsContainer, `<p class="notice-message">No events linked to this collection yet.</p>`);
+      eventsContainer.innerHTML =
+        `<p class="notice-message">No events linked to this collection yet.</p>`;
       return;
     }
 
@@ -888,7 +876,7 @@ document.addEventListener("DOMContentLoaded", () => {
       encodedReturnUrl = encodeURIComponent(fallback);
     }
 
-    safeSetInnerHTML(eventsContainer, events.map(ev => `
+    eventsContainer.innerHTML = events.map(ev => `
       <article class="collection-event-card">
         <div>
           <h3>${ev.name}</h3>
@@ -901,11 +889,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <i class="bi bi-calendar-event"></i> View event
         </a>
       </article>
-<<<<<<< HEAD
-    `).join(""));
-=======
-    `).join("") );
->>>>>>> 2c73eb2d86ddeea781cd8529fc9f903ef81a28a6
+    `).join("");
   }
 
 
@@ -1046,7 +1030,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = appData.loadData();
     if (!data || !data.collections) return;
 
-    safeSetInnerHTML(select, "");
+    select.innerHTML = "";
     const ownerId = getEffectiveOwnerId();
 
     const userCollections = data.collections.filter(col => {

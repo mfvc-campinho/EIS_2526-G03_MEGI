@@ -3,10 +3,6 @@
 (function () {
   const container = document.getElementById('upcomingEvents');
   if (!container) return;
-  // If this section was rendered by the server, do not overwrite it with demo JS
-  if (container.dataset && container.dataset.serverRendered === '1') return;
-  // Also avoid overwriting if server already injected content
-  if (container.children && container.children.length > 0) return;
 
   const sourceData = (window.appData && typeof window.appData.loadData === 'function')
     ? window.appData.loadData()
@@ -15,11 +11,7 @@
   const dataEvents = (sourceData && Array.isArray(sourceData.events)) ? sourceData.events.slice() : [];
 
   if (!dataEvents.length) {
-<<<<<<< HEAD
-    try { if (!(container.dataset && container.dataset.serverRendered === '1') && (!container.children || container.children.length === 0)) container.innerHTML = '<p class="no-events">No events available. <a href="event_page.html">See all events</a></p>'; } catch (e) { }
-=======
-    try { if (!(container.dataset && container.dataset.serverRendered === '1') && (!container.children || container.children.length === 0)) container.innerHTML = '<p class="no-events">No events available. <a href="event_page.html">See all events</a></p>'; } catch(e) {}
->>>>>>> 2c73eb2d86ddeea781cd8529fc9f903ef81a28a6
+    container.innerHTML = '<p class="no-events">No events available. <a href="event_page.html">See all events</a></p>';
     return;
   }
 
@@ -34,11 +26,7 @@
     .slice(0, 3);
 
   if (!upcoming.length) {
-<<<<<<< HEAD
-    try { if (!(container.dataset && container.dataset.serverRendered === '1') && (!container.children || container.children.length === 0)) container.innerHTML = '<p class="no-events">No upcoming events scheduled. <a href="event_page.html">See all events</a></p>'; } catch (e) { }
-=======
-    try { if (!(container.dataset && container.dataset.serverRendered === '1') && (!container.children || container.children.length === 0)) container.innerHTML = '<p class="no-events">No upcoming events scheduled. <a href="event_page.html">See all events</a></p>'; } catch(e) {}
->>>>>>> 2c73eb2d86ddeea781cd8529fc9f903ef81a28a6
+    container.innerHTML = '<p class="no-events">No upcoming events scheduled. <a href="event_page.html">See all events</a></p>';
     return;
   }
 

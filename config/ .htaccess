@@ -1,4 +1,0 @@
-Require all denied
-
-# Fallback for older Apache versions
-Deny from all

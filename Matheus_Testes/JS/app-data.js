@@ -10,15 +10,32 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. Initialization
   // - Import demo data from Data.js into localStorage if missing
   // ============================================================
-  if (!localStorage.getItem("collectionsData")) {
-    if (typeof collectionsData !== "undefined") {
-      localStorage.setItem("collectionsData", JSON.stringify(collectionsData));
-      console.log("✅ Initial data imported from Data.js");
+  // Load the application dataset from the server (synchronously) so existing scripts
+  // that expect `appData.loadData()` to return immediately keep working.
+  // The endpoint `../PHP/get_all.php` returns a JSON object with the same shape
+  // previously stored in localStorage under "collectionsData".
+  try {
+    var xhr = new XMLHttpRequest();
+    // Use synchronous XHR so the data is available before other DOMContentLoaded handlers run.
+    xhr.open('GET', '../PHP/get_all.php', false);
+    xhr.send(null);
+    if (xhr.status === 200) {
+      try {
+        var serverData = JSON.parse(xhr.responseText || '{}');
+        if (serverData && typeof serverData === 'object') {
+          localStorage.setItem('collectionsData', JSON.stringify(serverData));
+          console.log('✅ Data loaded from server (get_all.php)');
+        } else {
+          console.error('❌ get_all.php returned invalid JSON');
+        }
+      } catch (e) {
+        console.error('❌ Error parsing server response:', e);
+      }
     } else {
-      console.error("❌ ERROR: Data.js was not loaded.");
+      console.error('❌ Failed to load server data:', xhr.status, xhr.statusText);
     }
-  } else {
-    console.log("📦 Data loaded from localStorage.");
+  } catch (err) {
+    console.error('❌ Unable to fetch server data synchronously:', err);
   }
 
   // ============================================================

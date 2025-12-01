@@ -6,6 +6,25 @@
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
   let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  // Try to sync server session to localStorage so UI reflects server auth when served via Apache
+  try {
+    fetch('../PHP/auth.php')
+      .then(r => r.json())
+      .then(json => {
+        if (json && json.user) {
+          const sess = { id: json.user.id || json.user.user_id, ownerName: json.user.name || json.user.user_name, active: true };
+          localStorage.setItem('currentUser', JSON.stringify(sess));
+          currentUser = sess;
+          // emit event so other scripts react
+          window.dispatchEvent(new CustomEvent('userStateChange', { detail: currentUser }));
+          // Re-render menu if already initialized
+          try { renderProfileMenu(); } catch (e) { /* ignore */ }
+        }
+      })
+      .catch(() => { /* ignore when not served by PHP */ });
+  } catch (err) {
+    // ignore errors (e.g., file:// access)
+  }
   const profileMenu = document.querySelector(".profile-dropdown .dropdown-content");
   const profileButton = document.querySelector(".profile-btn");
   const profileDropdown = document.querySelector(".profile-dropdown");
@@ -151,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const addAccountBtn = document.getElementById("add-account-btn");
 
     if (form) {
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const usernameInput = document.getElementById("login-user");
         const passwordInput = document.getElementById("login-pass");
@@ -164,7 +183,37 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        loginUser();
+        // Resolve username -> email when possible
+        let email = username;
+        try {
+          const data = window.appData?.loadData ? window.appData.loadData() : null;
+          if (data && !username.includes('@')) {
+            const user = (data.users || []).find(u => u.id === username || u['owner-id'] === username || u.user_name === username);
+            if (user && user.email) email = user.email;
+          }
+        } catch (err) {
+          // ignore
+        }
+
+        try {
+          const payload = new FormData();
+          payload.append('email', email);
+          payload.append('password', password);
+          const resp = await fetch('../PHP/auth.php', { method: 'POST', body: payload });
+          const json = await resp.json();
+          if (json && json.success && json.user) {
+            const userSess = { id: json.user.id, ownerName: json.user.name, active: true };
+            localStorage.setItem('currentUser', JSON.stringify(userSess));
+            currentUser = userSess;
+            notifyUserStateChange();
+            renderProfileMenu();
+          } else {
+            alert('Login failed: ' + (json && json.error ? json.error : 'invalid credentials'));
+          }
+        } catch (err) {
+          console.error('Login error', err);
+          alert('Login error');
+        }
       });
     }
 

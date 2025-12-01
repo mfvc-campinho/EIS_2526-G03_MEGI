@@ -99,6 +99,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const openBtn = document.getElementById("open-collection-modal");
     const restoreBtn = document.getElementById("restoreDataBtn");
 
+    // Disable the restore demo-data button in Sprint 2 (server-backed)
+    if (restoreBtn) {
+        try { restoreBtn.style.display = 'none'; } catch (e) { /* ignore */ }
+    }
+
     // ==========================================================
     // 2. User state management
     // ==========================================================
@@ -817,16 +822,47 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        form.addEventListener("submit", e => {
+        form.addEventListener("submit", async e => {
             e.preventDefault();
             const id = idField.value.trim();
-            const action = id ? "updated" : "created";
+            const formData = new FormData(form);
+            const payload = new FormData();
+            const isUpdate = Boolean(id);
+            payload.append('action', isUpdate ? 'update' : 'create');
+            if (isUpdate) payload.append('id', id);
+            payload.append('name', formData.get('col-name') || '');
+            payload.append('summary', formData.get('col-summary') || '');
+            payload.append('description', formData.get('col-description') || '');
+            payload.append('image', formData.get('col-image') || '');
+            payload.append('type', formData.get('col-type') || '');
 
-            alert(`✅ Simulation successful. Collection would have been ${action}.\n\n(This is a demonstration. No data was saved.)`);
+            try {
+                const res = await fetch('../PHP/crud/collections.php', {
+                    method: 'POST',
+                    body: payload
+                });
+                const json = await res.json();
+                if (json && json.success) {
+                    // Refresh client cache by reloading server-side dataset
+                    try {
+                        const r2 = await fetch('../PHP/get_all.php');
+                        if (r2.ok) {
+                            const serverData = await r2.json();
+                            localStorage.setItem('collectionsData', JSON.stringify(serverData));
+                        }
+                    } catch (err) {
+                        console.warn('Unable to refresh local dataset', err);
+                    }
 
-            closeModal();
-            // Rendering is omitted to avoid showing changes that did not actually occur
-            // renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
+                    closeModal();
+                    renderCollections(filter ? filter.value : 'lastAdded', isHomePage ? 5 : null);
+                } else {
+                    alert('Error saving collection: ' + (json && json.error ? json.error : 'unknown'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error while saving collection');
+            }
         });
 
         document.getElementById("close-collection-modal")?.addEventListener("click", closeModal);
@@ -837,19 +873,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Restore Data button
-    if (restoreBtn) {
-        restoreBtn.addEventListener("click", () => {
-            if (confirm("⚠️ Restore initial data? This will delete all current collections and log you out.")) {
-                if (typeof collectionsData !== "undefined" && window.appData) {
-                    localStorage.removeItem("collectionsData");
-                    localStorage.removeItem("currentUser");
-                    alert("✅ Data restored successfully! The page will now reload.");
-                    location.reload();
-                }
-            }
-        });
-    }
+    // Restore data removed in Sprint 2: no client-side demo seeding.
 
     // React to global user state changes
     window.addEventListener("userStateChange", () => {

@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const eventsDemoState = window.demoEventsState || (window.demoEventsState = { voteState: {} });
 
   const FOLLOW_SIMULATION_MESSAGE =
-    "Attention: following collectors is just a backend simulation; there is no real persistence.";
+    "Following collectors is simulated in this prototype and will not be saved.";
   let followSimulationAlertShown = false;
 
 
@@ -771,14 +771,14 @@ document.addEventListener("DOMContentLoaded", () => {
   cancelUserModalBtn.addEventListener("click", closeProfileModal);
   profileForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    alert("Demo only: profile changes are not saved.");
+    alert("Profile edits in this prototype are not persisted. Sign in to save changes in a full deployment.");
     closeProfileModal();
   });
   resetTopPicksBtn?.addEventListener("click", handleResetTopPicks);
   topPicksContainer?.addEventListener("click", handleTopPickAction);
-  followUserBtn?.addEventListener("click", () => {
+    followUserBtn?.addEventListener("click", () => {
     if (!activeUser?.active || !activeUser?.id) {
-      alert("Please log in to follow collectors.");
+      alert("Please sign in to follow collectors.");
       return;
     }
     if (!viewedOwnerId || activeUser.id === viewedOwnerId) return;

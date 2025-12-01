@@ -478,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function toggleItemLike(itemId, options = {}) {
     const { skipRender = false, onUpdate } = options;
     if (!isActiveUser) {
-      alert("Sign in to like items.");
+      alert("Please sign in to like items.");
       return;
     }
 
@@ -566,7 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setItemRating(itemId, value) {
     if (!isActiveUser) {
-      alert("Sign in to rate items.");
+      alert("Please sign in to rate items.");
       return;
     }
     if (!itemId) return;
@@ -577,7 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     sessionItemRatings[itemId] = numericValue;
-    alert("Demo only: rating stored for this session.");
+    alert("This prototype stores ratings locally in your browser and they are not persisted to the server.");
     window.renderItems();
   }
 
@@ -1251,7 +1251,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (collectionForm) {
     collectionForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Simulation: collection updated (not really).");
+      alert("Prototype: collection update simulated and not saved. Sign in to persist changes in a full deployment.");
       closeCollectionModal();
     });
   }
@@ -1269,9 +1269,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const id = idField.value.trim();
       const action = id ? "updated" : "created";
 
-      alert(
-        `Simulation: item would have been ${action} (not saved).`
-      );
+      alert(`Prototype: item ${action} simulated and not saved. Sign in to persist changes in a full deployment.`);
 
       closeModal();
     });

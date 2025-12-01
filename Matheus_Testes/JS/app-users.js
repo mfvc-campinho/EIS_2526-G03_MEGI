@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
       closeForgot?.addEventListener("click", () => forgotModal.style.display = "none");
       document.getElementById("form-forgot-password")?.addEventListener("submit", (e) => {
         e.preventDefault();
-        alert("✅ Password reset link sent!\n\n(This is a simulation. No data was saved.)");
+        alert("Password reset email simulated. This prototype does not send emails or save changes.");
         forgotModal.style.display = "none";
       });
     }
@@ -310,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
           `Email: ${email}`,
         ].filter(Boolean);
 
-        alert(`✅ Simulation successful. Account details:\n${summaryLines.join("\n")}\n\n(This is a simulation. No data was saved.)`);
+        alert(`Account creation simulated. No account was created by this prototype.\n\nDetails:\n${summaryLines.join("\n")}`);
         if (accountModal) {
           accountModal.style.display = "none";
         }

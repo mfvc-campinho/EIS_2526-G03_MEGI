@@ -1406,7 +1406,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     sessionRatings[eventId] = value;
-    alert("Demo only: rating stored for this session.");
+    alert("This prototype stores ratings locally in your browser and they are not persisted to the server.");
     const preserveReturnUrl = modalReturnUrl;
     renderEvents();
     if (eventDetailModal && eventDetailModal.style.display === "flex") {
@@ -1530,11 +1530,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (!confirm("Delete this event? This action cannot be undone. This prototype only simulates the flow.")) {
+    if (!confirm("Delete this event? This action cannot be undone. Prototype: no data will be removed.")) {
       return;
     }
 
-    alert("Simulation: the delete button only shows this confirmation; no data was removed.");
+    alert("Prototype: no data was removed. Sign in to delete events in a deployed app.");
   }
 
   // ---------- RSVP ----------
@@ -1550,7 +1550,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ev = (data.events || []).find(x => x.id === id);
     if (!ev) return alert("Event not found.");
 
-    alert("Demo only: RSVP is not saved.");
+    alert("RSVP actions in this prototype are simulated and not persisted. Sign in to RSVP in a full deployment.");
   }
 
   // ---------- TABS / FILTER HOOKUP ----------

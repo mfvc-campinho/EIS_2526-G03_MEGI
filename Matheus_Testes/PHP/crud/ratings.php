@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../config/db.php';
 
@@ -10,14 +11,22 @@ if ($method !== 'POST') {
 }
 
 $action = $_POST['action'] ?? null;
-$userId = $_POST['userId'] ?? null;
+// Require authenticated session user; do not accept client-supplied userId for security
+if (empty($_SESSION['user']) || empty($_SESSION['user']['id'])) {
+  http_response_code(401);
+  echo json_encode(['error' => 'Unauthorized']);
+  exit;
+}
+$userId = $_SESSION['user']['id'];
 
-function respond($data) {
+function respond($data)
+{
   echo json_encode($data, JSON_UNESCAPED_UNICODE);
   exit;
 }
 
-function operateLike($mysqli, $table, $field, $userId, $targetId, $add) {
+function operateLike($mysqli, $table, $field, $userId, $targetId, $add)
+{
   if (!$userId || !$targetId) return ['error' => 'missing params'];
 
   // Fetch existing
@@ -39,7 +48,9 @@ function operateLike($mysqli, $table, $field, $userId, $targetId, $add) {
   if ($add) {
     if (!in_array($targetId, $current, true)) $current[] = $targetId;
   } else {
-    $current = array_values(array_filter($current, function($v) use ($targetId) { return $v !== $targetId; }));
+    $current = array_values(array_filter($current, function ($v) use ($targetId) {
+      return $v !== $targetId;
+    }));
   }
 
   $json = !empty($current) ? json_encode(array_values(array_unique($current)), JSON_UNESCAPED_UNICODE) : null;
@@ -66,41 +77,78 @@ function operateLike($mysqli, $table, $field, $userId, $targetId, $add) {
 
 if ($action === 'likeCollection' || $action === 'unlikeCollection') {
   $collectionId = $_POST['collectionId'] ?? null;
-  if (!$userId || !$collectionId) { http_response_code(400); respond(['error'=>'missing params']); }
+  if (!$userId || !$collectionId) {
+    http_response_code(400);
+    respond(['error' => 'missing params']);
+  }
   $res = operateLike($mysqli, 'user_ratings_collections', 'liked_collections', $userId, $collectionId, $action === 'likeCollection');
   respond($res);
 }
 
 if ($action === 'likeItem' || $action === 'unlikeItem') {
   $itemId = $_POST['itemId'] ?? null;
-  if (!$userId || !$itemId) { http_response_code(400); respond(['error'=>'missing params']); }
+  if (!$userId || !$itemId) {
+    http_response_code(400);
+    respond(['error' => 'missing params']);
+  }
   $res = operateLike($mysqli, 'user_ratings_items', 'liked_items', $userId, $itemId, $action === 'likeItem');
   respond($res);
 }
 
 if ($action === 'likeEvent' || $action === 'unlikeEvent') {
   $eventId = $_POST['eventId'] ?? null;
-  if (!$userId || !$eventId) { http_response_code(400); respond(['error'=>'missing params']); }
+  if (!$userId || !$eventId) {
+    http_response_code(400);
+    respond(['error' => 'missing params']);
+  }
   $res = operateLike($mysqli, 'user_ratings_events', 'liked_events', $userId, $eventId, $action === 'likeEvent');
   respond($res);
 }
 
 // Return user's likes across the three tables
 if ($action === 'getUserLikes') {
-  if (!$userId) { http_response_code(400); respond(['error'=>'missing userId']); }
-  $out = ['likedCollections'=>[], 'likedItems'=>[], 'likedEvents'=>[]];
+  if (!$userId) {
+    http_response_code(400);
+    respond(['error' => 'missing userId']);
+  }
+  $out = ['likedCollections' => [], 'likedItems' => [], 'likedEvents' => []];
   $r1 = $mysqli->prepare('SELECT liked_collections FROM user_ratings_collections WHERE user_id = ? LIMIT 1');
-  if ($r1) { $r1->bind_param('s',$userId); $r1->execute(); $res = $r1->get_result(); if ($row = $res->fetch_assoc()) { $dec = json_decode($row['liked_collections'] ?? '[]', true); if (is_array($dec)) $out['likedCollections'] = $dec; } $r1->close(); }
+  if ($r1) {
+    $r1->bind_param('s', $userId);
+    $r1->execute();
+    $res = $r1->get_result();
+    if ($row = $res->fetch_assoc()) {
+      $dec = json_decode($row['liked_collections'] ?? '[]', true);
+      if (is_array($dec)) $out['likedCollections'] = $dec;
+    }
+    $r1->close();
+  }
   $r2 = $mysqli->prepare('SELECT liked_items FROM user_ratings_items WHERE user_id = ? LIMIT 1');
-  if ($r2) { $r2->bind_param('s',$userId); $r2->execute(); $res = $r2->get_result(); if ($row = $res->fetch_assoc()) { $dec = json_decode($row['liked_items'] ?? '[]', true); if (is_array($dec)) $out['likedItems'] = $dec; } $r2->close(); }
+  if ($r2) {
+    $r2->bind_param('s', $userId);
+    $r2->execute();
+    $res = $r2->get_result();
+    if ($row = $res->fetch_assoc()) {
+      $dec = json_decode($row['liked_items'] ?? '[]', true);
+      if (is_array($dec)) $out['likedItems'] = $dec;
+    }
+    $r2->close();
+  }
   $r3 = $mysqli->prepare('SELECT liked_events FROM user_ratings_events WHERE user_id = ? LIMIT 1');
-  if ($r3) { $r3->bind_param('s',$userId); $r3->execute(); $res = $r3->get_result(); if ($row = $res->fetch_assoc()) { $dec = json_decode($row['liked_events'] ?? '[]', true); if (is_array($dec)) $out['likedEvents'] = $dec; } $r3->close(); }
-  respond(['success'=>true,'likes'=>$out]);
+  if ($r3) {
+    $r3->bind_param('s', $userId);
+    $r3->execute();
+    $res = $r3->get_result();
+    if ($row = $res->fetch_assoc()) {
+      $dec = json_decode($row['liked_events'] ?? '[]', true);
+      if (is_array($dec)) $out['likedEvents'] = $dec;
+    }
+    $r3->close();
+  }
+  respond(['success' => true, 'likes' => $out]);
 }
 
 http_response_code(400);
 respond(['error' => 'unknown action']);
 
 $mysqli->close();
-
-?>

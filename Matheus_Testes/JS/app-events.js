@@ -1414,6 +1414,12 @@ document.addEventListener("DOMContentLoaded", () => {
       history.replaceState(null, "", url.toString());
     }
   }
+  // Expose opener to other scripts (e.g., homepage upcoming links)
+  try {
+    window.openEventDetail = openEventDetail;
+  } catch (e) {
+    console.warn('Unable to expose openEventDetail globally', e);
+  }
 
   function closeEventDetail() {
     if (eventDetailModal) eventDetailModal.style.display = "none";

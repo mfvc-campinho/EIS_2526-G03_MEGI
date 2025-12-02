@@ -1116,6 +1116,7 @@ button {
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 60%, rgba(248, 250, 252, 0.4) 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .card-image:hover::before,

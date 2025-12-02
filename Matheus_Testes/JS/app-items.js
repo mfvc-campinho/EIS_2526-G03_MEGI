@@ -860,12 +860,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         card.innerHTML = `
           <div class="item-image-wrapper">
-            <img src="${item.image}" alt="${item.name}"
-                 class="item-image" loading="lazy">
+            <a href="item_page.html?id=${item.id}" aria-label="Open ${item.name}">
+              <img src="${item.image}" alt="${item.name}"
+                   class="item-image" loading="lazy">
+            </a>
           </div>
 
           <div class="item-info simple-item">
-            <h3>${item.name}</h3>
+            <h3><a href="item_page.html?id=${item.id}">${item.name}</a></h3>
             ${ratingBlock}
 
             <div class="item-actions">

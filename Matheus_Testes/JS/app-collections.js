@@ -683,11 +683,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             return `
         <div class="card collection-card ${specialClass}">
-          <div class="card-image" id="img-${col.id}">
-            <img src="${col.coverImage || '../images/default.jpg'}" alt="${col.name}" loading="lazy">
-          </div>
-          <div class="card-info">
-            <h3>${col.name}</h3>
+                <div class="card-image" id="img-${col.id}">
+                        <a href="specific_collection.html?id=${col.id}" aria-label="Open ${col.name}">
+                            <img src="${col.coverImage || '../images/default.jpg'}" alt="${col.name}" loading="lazy">
+                        </a>
+                    </div>
+                    <div class="card-info">
+                        <h3><a href="specific_collection.html?id=${col.id}">${col.name}</a></h3>
             <p>${col.summary || ""}</p>
             <div class="items-preview" id="preview-${col.id}" style="display:none;">
               ${itemsHTML}

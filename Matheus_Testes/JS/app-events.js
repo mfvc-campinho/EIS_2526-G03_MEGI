@@ -1482,7 +1482,16 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // reload server data and re-render
+        // Optimistically update session rating so modal updates immediately
+        try {
+          if (action === 'unrateEvent') {
+            delete sessionRatings[eventId];
+          } else if (action === 'rateEvent') {
+            sessionRatings[eventId] = Number(value);
+          }
+        } catch (e) { }
+
+        // reload server data and re-render (best-effort)
         try {
           const ga = await fetch('../PHP/get_all.php');
           if (ga.status === 200) {
@@ -1500,9 +1509,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (eventDetailModal && eventDetailModal.style.display === "flex") {
           openEventDetail(eventId, { returnUrl: preserveReturnUrl });
         }
-        try {
-          notify(isRemoving ? 'Your rating has been removed.' : 'Your rating has been saved.', isRemoving ? 'info' : 'success');
-        } catch (e) { }
+        try { notify(isRemoving ? 'Your rating has been removed.' : 'Your rating has been saved.', isRemoving ? 'info' : 'success'); } catch (e) { }
       } catch (err) {
         console.error('Rating failed', err);
         notify('Network error saving rating.', 'error');
@@ -1759,7 +1766,20 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // reload server data and re-render
+        // Optimistically update modal RSVP UI immediately
+        try {
+          const rsvpState = action === 'rsvp';
+          if (modalRsvpBtn) {
+            modalRsvpBtn.className = rsvpState ? 'explore-btn ghost following' : 'explore-btn ghost';
+            modalRsvpBtn.innerHTML = rsvpState ? `<i class="bi bi-calendar-check" aria-hidden="true"></i> Going` : `<i class="bi bi-calendar-plus" aria-hidden="true"></i> RSVP`;
+          }
+          if (modalAttendeesCountEl) {
+            const current = Number(modalAttendeesCountEl.textContent || 0) || 0;
+            modalAttendeesCountEl.textContent = String(current + (action === 'rsvp' ? 1 : -1));
+          }
+        } catch (e) { }
+
+        // reload server data and re-render (best-effort)
         try {
           const ga = await fetch('../PHP/get_all.php');
           if (ga.status === 200) {
@@ -1776,10 +1796,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (eventDetailModal && eventDetailModal.style.display === 'flex') {
           openEventDetail(id, {});
         }
-        try {
-          // Inform the user of RSVP state change
-          notify(action === 'rsvp' ? "You have RSVP'd to this event." : 'Your RSVP has been removed.', action === 'rsvp' ? 'success' : 'info');
-        } catch (e) { }
+        try { notify(action === 'rsvp' ? "You have RSVP'd to this event." : 'Your RSVP has been removed.', action === 'rsvp' ? 'success' : 'info'); } catch (e) { }
       } catch (err) {
         console.error('RSVP failed', err);
         notify('Network error while updating RSVP.', 'error');

@@ -63,8 +63,10 @@ if ($method === 'POST') {
       $chk->close();
     }
 
+    // Hash the password before storing
+    $hash = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $mysqli->prepare('INSERT INTO users (user_id,user_name,user_photo,date_of_birth,email,password,member_since) VALUES (?,?,?,?,?,?,?)');
-    $stmt->bind_param('sssssss', $id, $name, $photo, $dob, $email, $password, $member);
+    $stmt->bind_param('sssssss', $id, $name, $photo, $dob, $email, $hash, $member);
     $ok = $stmt->execute();
     $stmt->close();
     if ($ok) {
@@ -141,6 +143,13 @@ if ($method === 'POST') {
         $types .= 's';
         $params[] = $emailVal;
       }
+    }
+
+    // Allow password updates: hash new password when provided
+    if (array_key_exists('password', $_POST) && $_POST['password'] !== '') {
+      $fields[] = 'password = ?';
+      $types .= 's';
+      $params[] = password_hash($_POST['password'], PASSWORD_DEFAULT);
     }
 
     if (empty($fields)) {

@@ -28,8 +28,28 @@ if ($method === 'POST') {
     exit;
   }
 
-  // Note: passwords in the provided database are plain text. In production, use password_hash.
-  if ($password !== $user['password']) {
+  // Verify password using password_verify().
+  $verified = false;
+  if (isset($user['password']) && $user['password'] !== '') {
+    if (password_verify($password, $user['password'])) {
+      $verified = true;
+    } else {
+      // Fallback for existing plaintext-stored passwords: if direct match, rehash and update DB.
+      if ($password === $user['password']) {
+        $verified = true;
+        // Re-hash and persist the password securely
+        $newHash = password_hash($password, PASSWORD_DEFAULT);
+        $up = $mysqli->prepare('UPDATE users SET password = ? WHERE user_id = ?');
+        if ($up) {
+          $up->bind_param('ss', $newHash, $user['user_id']);
+          $up->execute();
+          $up->close();
+        }
+      }
+    }
+  }
+
+  if (! $verified) {
     http_response_code(401);
     echo json_encode(['error' => 'Invalid credentials']);
     exit;

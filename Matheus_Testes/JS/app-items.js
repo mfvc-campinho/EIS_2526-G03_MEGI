@@ -350,6 +350,33 @@ document.addEventListener("DOMContentLoaded", () => {
       ownerPhotoEl.src =
         ownerProfile["owner-photo"] || ownerProfile.photo || fallback;
       ownerPhotoEl.alt = `${ownerDisplayName} owner`;
+      // Make the owner image act as a link to the owner's profile (accessible)
+      if (ownerId) {
+        ownerPhotoEl.style.cursor = 'pointer';
+        ownerPhotoEl.setAttribute('role', 'link');
+        ownerPhotoEl.setAttribute('tabindex', '0');
+        ownerPhotoEl.setAttribute('aria-label', `${ownerDisplayName} profile`);
+        const goToProfileFromImg = () => {
+          window.location.href = `user_page.html?owner=${encodeURIComponent(ownerId)}`;
+        };
+        ownerPhotoEl.onclick = goToProfileFromImg;
+        ownerPhotoEl.onkeydown = (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            goToProfileFromImg();
+          }
+        };
+        // If the image is wrapped in an anchor, update its href for non-JS or easier navigation
+        try {
+          const parent = ownerPhotoEl.parentElement;
+          if (parent && parent.tagName && parent.tagName.toLowerCase() === 'a') {
+            parent.href = `user_page.html?owner=${encodeURIComponent(ownerId)}`;
+            parent.setAttribute('aria-label', `${ownerDisplayName} profile`);
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
     }
   }
 

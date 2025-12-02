@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="nav-right">
-                    <a href="all_collections.html" class="nav-link">
+                    <a href="all_collections.html" class="nav-link" aria-current="page">
                         <i class="bi bi-box-seam-fill me-1"></i> Collections
                     </a>
 
@@ -49,7 +49,7 @@
                         <i class="bi bi-calendar-event-fill me-1"></i> Events
                     </a>
 
-                    <a href="team_page.html" class="nav-link" aria-current="page">
+                    <a href="team_page.html" class="nav-link">
                         <i class="bi bi-people-fill me-1"></i> About Us
                     </a>
 
@@ -97,7 +97,7 @@
             <!-- ACTION BUTTONS -->
             <!-- Back button (history-based, centered on page) -->
             <div class="center-block">
-                <a href="javascript:history.back()" class="explore-btn ghost centered-btn">
+                <a id="back-to-previous" href="javascript:history.back()" class="explore-btn ghost centered-btn">
                     <i class="bi bi-arrow-left" aria-hidden="true"></i>
                     Back to Collections
                 </a>
@@ -454,6 +454,7 @@
 
     <!-- Scripts -->
     <script src="../JS/app-data.js"></script>
+    <script src="../JS/back-link.js"></script>
     <script src="../JS/app-users.js"></script>
     <script src="../JS/app-items.js"></script>
     <script src="../JS/app-loader.js"></script>

@@ -185,8 +185,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // login form and by a modal-based login form.
   async function handleLoginSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
-    const usernameInput = document.getElementById("login-user") || document.querySelector('#modal-login-form #login-user');
-    const passwordInput = document.getElementById("login-pass") || document.querySelector('#modal-login-form #login-pass');
+    // Prefer modal inputs when present (they are the active UI). Fall back to
+    // the dropdown form inputs if modal is not available. This avoids reading
+    // values from a hidden dropdown input when IDs are duplicated.
+    const usernameInput = document.querySelector('#modal-login-form #login-user') || document.getElementById("login-user") || document.querySelector('.profile-dropdown #login-user');
+    const passwordInput = document.querySelector('#modal-login-form #login-pass') || document.getElementById("login-pass") || document.querySelector('.profile-dropdown #login-pass');
     const username = usernameInput?.value?.trim() || "";
     const password = passwordInput?.value?.trim() || "";
     const hasLetter = (value) => /[A-Za-z]/.test(value);

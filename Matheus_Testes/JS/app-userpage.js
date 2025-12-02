@@ -717,9 +717,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const mainEl = document.querySelector("main");
         if (mainEl) {
           mainEl.innerHTML = `
+              <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+            <ol class="breadcrumb-list">
+              <li class="breadcrumb-item"><a href="home_page.html">Home</a></li>
+              <li class="breadcrumb-item" aria-current="page">User Profile</li>
+            </ol>
+          </nav>
             <h1 class="page-title">Sign In To Your Profile</h1>
+            <p class="page-subtitle">To see your profile and manage collections, please sign in or create an account.</p>
             <div class="auth-card">
-              <p class="notice-message">To see your profile and manage collections, please sign in or create an account.</p>
               <div class="auth-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
                 <button id="open-login-menu" class="explore-btn success">Log In</button>
                 <button id="open-create-account" class="explore-btn warning">Create Account</button>

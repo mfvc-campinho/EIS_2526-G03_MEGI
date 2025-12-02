@@ -1103,9 +1103,19 @@ document.addEventListener("DOMContentLoaded", () => {
             <button class="view-btn explore-btn ghost">
               <i class="bi bi-eye-fill" aria-hidden="true"></i> View
             </button>
-            <button class="rsvp-btn explore-btn success" data-id="${ev.id}" data-requires-login>
-              <i class="bi bi-calendar-check" aria-hidden="true"></i> RSVP
-            </button>
+            ${(() => {
+          // Build RSVP button according to whether the current user is attending
+          const isAttending = Boolean(eventLinks && currentUser && eventLinks.some(link => String(link.userId) === String(currentUser.id)));
+          // Use the same 'ghost' styling as the View button to keep design consistent
+          // Add `following` when attending so CSS can show the green state only when appropriate
+          const rsvpClass = isAttending ? 'explore-btn ghost rsvp-btn following' : 'explore-btn ghost rsvp-btn';
+          const rsvpIcon = isAttending ? 'bi-calendar-check' : 'bi-calendar-plus';
+          const rsvpLabel = isAttending ? 'Going' : 'RSVP';
+          return `
+              <button class="${rsvpClass}" data-id="${ev.id}" data-requires-login>
+                <i class="bi ${rsvpIcon}" aria-hidden="true"></i> ${rsvpLabel}
+              </button>`;
+        })()}
             ${canManage ? `
               <button class="edit-btn explore-btn warning" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
@@ -1262,6 +1272,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const eventLinks = getEventUserLinks(ev, data);
     if (modalAttendeesCountEl) {
       modalAttendeesCountEl.textContent = eventLinks.length;
+    }
+
+    // Modal RSVP button appearance (use ghost style to match View button)
+    if (modalRsvpBtn) {
+      const isAttending = Boolean(eventLinks && currentUser && eventLinks.some(link => String(link.userId) === String(currentUser.id)));
+      modalRsvpBtn.className = isAttending ? 'explore-btn ghost following' : 'explore-btn ghost';
+      modalRsvpBtn.innerHTML = isAttending ? `<i class="bi bi-calendar-check" aria-hidden="true"></i> Going` : `<i class="bi bi-calendar-plus" aria-hidden="true"></i> RSVP`;
+      modalRsvpBtn.onclick = () => rsvpEvent(id);
     }
 
     // Rating (only for past events)

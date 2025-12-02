@@ -299,8 +299,15 @@
   box-shadow: 0 4px 10px rgba(148, 163, 253, 0.6);
 }
 
-/* RSVP style */
+/* RSVP style: default neutral (matches ghost) — green only when attending */
 #eventsList .card-actions .rsvp-btn {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+/* Attending state (green) — applied when JS adds the `following` class */
+#eventsList .card-actions .rsvp-btn.following {
   background: linear-gradient(90deg, #10b981, #34d399);
   color: #ffffff;
   border: none;

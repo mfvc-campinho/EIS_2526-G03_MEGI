@@ -1001,6 +1001,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const isSoon = evDateObj && evDateObj >= today && evDateObj <= in7;
       const card = document.createElement("div");
       card.className = "event-card";
+      // expose event id on the card for delegation/debugging
+      try { card.setAttribute('data-event-id', ev.id); } catch (e) { }
       const isPast = isPastEvent(ev.date);
       const eventLinks = getEventUserLinks(ev, data);
       const { count: ratingCount, average: ratingAvg } = getEventRatingStats(eventLinks);
@@ -1100,7 +1102,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ${ratingHtml}
 
           <div class="card-actions">
-            <button class="view-btn explore-btn ghost">
+            <button class="view-btn explore-btn ghost" data-id="${ev.id}" type="button">
               <i class="bi bi-eye-fill" aria-hidden="true"></i> View
             </button>
             ${(() => {
@@ -1129,10 +1131,25 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
 
-      card.querySelector(".explore-btn")
-        .addEventListener("click", () => openEventDetail(ev.id));
-      card.querySelector(".rsvp-btn")
-        .addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
+      const viewBtnEl = card.querySelector(".view-btn");
+      if (viewBtnEl) {
+        // ensure button won't accidentally submit forms
+        try { viewBtnEl.setAttribute('type', 'button'); } catch (e) { }
+        viewBtnEl.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); console.debug('view-btn clicked', ev.id); openEventDetail(ev.id); });
+        viewBtnEl.addEventListener("keydown", (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEventDetail(ev.id); } });
+      }
+      // also attach delegated handler on the card to catch cases where the click target
+      // is an inner element or event propagation is different
+      card.addEventListener('click', (e) => {
+        const vb = e.target.closest ? e.target.closest('.view-btn') : null;
+        if (vb && card.contains(vb)) {
+          e.preventDefault(); e.stopPropagation(); console.debug('delegated view click', ev.id); openEventDetail(ev.id);
+        }
+      });
+      const rsvpBtnEl = card.querySelector(".rsvp-btn");
+      if (rsvpBtnEl) {
+        rsvpBtnEl.addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
+      }
       const editBtn = card.querySelector(".edit-btn");
       if (editBtn) {
         editBtn.addEventListener("click", () => openEditModal(ev.id));
@@ -1233,8 +1250,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- DETAIL MODAL & RATING ----------
 
   function openEventDetail(id, options = {}) {
+    console.debug('openEventDetail called with id=', id);
     const data = loadData();
     const ev = (data.events || []).find(x => x.id === id);
+    console.debug('loaded events count=', (data.events || []).length, 'found ev=', !!ev);
     if (!ev) return alert("Event not found.");
 
     if (!eventDetailModal) return;
@@ -1270,6 +1289,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Attendees
     const eventLinks = getEventUserLinks(ev, data);
+    // Current user (needed for RSVP button and rating state)
+    const currentUser = getCurrentUser();
     if (modalAttendeesCountEl) {
       modalAttendeesCountEl.textContent = eventLinks.length;
     }
@@ -1284,7 +1305,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Rating (only for past events)
     const isPast = isPastEvent(ev.date);
-    const currentUser = getCurrentUser();
     const { count, average: avg } = getEventRatingStats(eventLinks);
     const sessionValue = currentUser && currentUser.active ? sessionRatings[ev.id] : undefined;
     const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;

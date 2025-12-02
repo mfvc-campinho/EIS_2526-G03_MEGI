@@ -160,6 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
       notifyUserStateChange();
       renderProfileMenu();
 
+      try { notify('Signed out.', 'info'); } catch (e) { }
       // Redirect to homepage after logout
       window.location.href = "home_page.html";
     })();
@@ -198,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const hasLetter = (value) => /[A-Za-z]/.test(value);
 
         if (!hasLetter(username) || !hasLetter(password)) {
-          alert("Please enter a username and password (at least one letter each).");
+          notify("Please enter a username and password (at least one letter each).", "warning");
           return;
         }
 
@@ -226,12 +227,13 @@ document.addEventListener("DOMContentLoaded", () => {
             currentUser = userSess;
             notifyUserStateChange();
             renderProfileMenu();
+            try { notify('You are now logged in.', 'success'); } catch (e) { }
           } else {
-            alert('Login failed: ' + (json && json.error ? json.error : 'invalid credentials'));
+            notify('Login failed: ' + (json && json.error ? json.error : 'invalid credentials'), 'error');
           }
         } catch (err) {
           console.error('Login error', err);
-          alert('Login error');
+          notify('Login error', 'error');
         }
       });
     }
@@ -254,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
       closeForgot?.addEventListener("click", () => forgotModal.style.display = "none");
       document.getElementById("form-forgot-password")?.addEventListener("submit", (e) => {
         e.preventDefault();
-        alert("Password reset email simulated. This prototype does not send emails or save changes.");
+        notify("Password reset email sent.", "success");
         forgotModal.style.display = "none";
       });
     }
@@ -283,11 +285,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const ownerName = getValue("acc-name");
         const email = getValue("acc-email");
 
-        if (!ownerName) { alert("Please provide a username."); return; }
-        if (!email) { alert("Please provide an email."); return; }
+        if (!ownerName) { notify("Please provide a username.", "warning"); return; }
+        if (!email) { notify("Please provide an email.", "warning"); return; }
         const password = document.getElementById("acc-password")?.value || "";
         const confirmPassword = document.getElementById("acc-password-confirm")?.value || "";
-        if (password !== confirmPassword) { alert("Passwords do not match!"); return; }
+        if (password !== confirmPassword) { notify("Passwords do not match!", "warning"); return; }
         const ownerPhoto = document.getElementById("acc-owner-photo")?.value?.trim() || "";
         const dateOfBirth = document.getElementById("acc-dob")?.value || "";
         const memberSince = document.getElementById("acc-member-since")?.value?.trim() || "";
@@ -308,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const json = await res.json();
           if (!res.ok || json.error) {
             const msg = json && json.error ? json.error : 'Failed to create account';
-            alert('Account creation failed: ' + msg);
+            notify('Account creation failed: ' + msg, 'error');
             return;
           }
 
@@ -325,13 +327,14 @@ document.addEventListener("DOMContentLoaded", () => {
               currentUser = userSess;
               notifyUserStateChange();
               renderProfileMenu();
+              try { notify('You are now logged in.', 'success'); } catch (e) { }
             } else {
               // Account created but login failed (unlikely). Inform user.
-              alert('Account created. Please use the login form to sign in.');
+              notify('Account created. Please use the login form to sign in.', 'success');
             }
           } catch (loginErr) {
             console.warn('Auto-login failed', loginErr);
-            alert('Account created but automatic login failed. Please sign in.');
+            notify('Account created but automatic login failed. Please sign in.', 'warning');
           }
 
           if (accountModal) accountModal.style.display = 'none';
@@ -349,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (err) {
           console.error('Account creation error', err);
-          alert('Account creation failed due to network error');
+          notify('Account creation failed due to network error', 'error');
         }
       });
     }
@@ -360,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
       searchBar.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault(); // Prevent default Enter behavior
-          alert("Search functionality is under construction!");
+          notify("Search functionality is under construction!", "info");
         }
       });
     }

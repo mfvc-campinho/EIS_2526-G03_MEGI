@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const itemLikeHelper = document.getElementById("item-like-helper");
 
   if (!itemId) {
-    alert("No item selected.");
+    notify("No item selected.", "error");
     return;
   }
 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const item = (data.items || []).find(i => i.id === itemId);
 
   if (!item) {
-    alert("Item not found.");
+    notify("Item not found.", "error");
     return;
   }
 
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function ensureCollectionLink() {
     if (primaryCollectionId) return true;
-    alert("Unable to determine the collection for this item.");
+    notify("Unable to determine the collection for this item.", "error");
     return false;
   }
 
@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
     itemLikeBtn.addEventListener("click", () => {
       const helpers = getItemLikeHelpers();
       if (!helpers || typeof helpers.toggle !== "function") {
-        alert("Likes unavailable right now.");
+        notify("Likes unavailable right now.", "error");
         return;
       }
       helpers.toggle(itemId, {
@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!canManage) return;
     if (!ensureCollectionLink()) return;
     if (typeof window.openItemModal !== "function") {
-      alert("Item modal is not available.");
+      notify("Item modal is not available.", "error");
       return;
     }
     window.openItemModal(false);
@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!canManage) return;
     if (!ensureCollectionLink()) return;
     if (typeof window.editItem !== "function") {
-      alert("Edit action is not available.");
+      notify("Edit action is not available.", "error");
       return;
     }
     window.editItem(itemId);
@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!canManage) return;
     if (!ensureCollectionLink()) return;
     if (typeof window.deleteItem !== "function") {
-      alert("Delete action is not available.");
+      notify("Delete action is not available.", "error");
       return;
     }
     window.deleteItem(itemId);

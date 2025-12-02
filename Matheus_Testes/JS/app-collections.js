@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function toggleVote(collectionId) {
         if (!isActiveUser) {
-            alert("Please sign in to like or vote. Use the profile menu to sign in.");
+            notify("Please sign in to like or vote.", "warning");
             return;
         }
         const ownerId = getEffectiveOwnerId();
@@ -45,6 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         renderCollections(lastRenderCriteria);
         notifyLikesChange(ownerId);
+        try {
+            notify(newState ? 'Collection liked.' : 'Collection unliked.', newState ? 'success' : 'info');
+        } catch (e) { }
     }
 
     function promoteCollectionToFirstPick(collectionId, dataParam, ownerIdOverride) {
@@ -304,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setCollectionRating(collectionId, value) {
         if (!isActiveUser) {
-            alert("Please sign in to rate collections.");
+            notify("Please sign in to rate collections.", "warning");
             return;
         }
         const ownerId = getEffectiveOwnerId();
@@ -316,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         sessionCollectionRatings[collectionId] = numericValue;
-        alert("This prototype stores ratings locally in your browser and they are not persisted to the server.");
+        notify("Ratings are stored locally.", "info");
         renderCollections(lastRenderCriteria);
     }
 
@@ -751,7 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
         hydrateCollectionOwnerMap(data);
         const col = data.collections.find(c => c.id === id);
         if (!col || !isCollectionOwnedByCurrentUser(col, data))
-            return alert("❌ You can only edit your own collections.");
+            return notify("You can only edit your own collections.", "error");
 
         if (form) {
             form.querySelector("#collection-id").value = col.id;
@@ -772,10 +775,10 @@ document.addEventListener("DOMContentLoaded", () => {
         hydrateCollectionOwnerMap(data);
         const col = data.collections.find(c => c.id === id);
         if (!col || !isCollectionOwnedByCurrentUser(col, data))
-            return alert("❌ You can only delete your own collections.");
+            return notify("You can only delete your own collections.", "error");
 
-        if (confirm(`⚠️ Delete "${col.name}"?\n\n(Prototype: no data will be changed.)`)) {
-            alert("✅ Prototype: no data was deleted.");
+        if (confirm(`⚠️ Delete "${col.name}"?\n\n(This action will not change server data in this environment.)`)) {
+            notify("No data was deleted.", "info");
             // appData.deleteEntity("collections", id);
             // alert(`🗑️ Collection "${col.name}" deleted.`);
             // renderCollections(filter ? filter.value : "lastAdded", isHomePage ? 5 : null);
@@ -826,7 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (openBtn) {
             openBtn.addEventListener("click", () => {
                 if (!isActiveUser)
-                    return alert("Please sign in to add collections.");
+                    return notify("Please sign in to add collections.", "warning");
                 openModal(false);
             });
         }
@@ -865,12 +868,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     closeModal();
                     renderCollections(filter ? filter.value : 'lastAdded', isHomePage ? 5 : null);
+                    try { notify(isUpdate ? 'Collection updated successfully.' : 'Collection created successfully.', 'success'); } catch (e) { }
                 } else {
-                    alert('Error saving collection: ' + (json && json.error ? json.error : 'unknown'));
+                    notify('Error saving collection: ' + (json && json.error ? json.error : 'unknown'), 'error');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Network error while saving collection');
+                notify('Network error while saving collection', 'error');
             }
         });
 

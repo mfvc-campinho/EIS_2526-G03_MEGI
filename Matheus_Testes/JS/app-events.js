@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!eventData || !eventData.name || !eventData.date) return;
 
     const start = parseEventDate(eventData.date);
-    if (!start) return alert('Invalid event date');
+    if (!start) { notify('Invalid event date', 'error'); return; }
 
     // determine end time: provided or default 2 hours
     let end = null;
@@ -684,7 +684,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function toggleEventLike(eventId) {
     if (!isLoggedIn()) {
-      alert("Please sign in to like events.");
+      notify("Please sign in to like events.", "warning");
       return;
     }
     const ownerId = getActiveOwnerId();
@@ -704,6 +704,7 @@ document.addEventListener("DOMContentLoaded", () => {
       openEventDetail(eventId);
     }
     notifyEventLikesChange(ownerId);
+    try { notify(newState ? 'Event liked.' : 'Event unliked.', newState ? 'success' : 'info'); } catch (e) { }
   }
 
   // ---------- CALENDAR WIDGET ----------
@@ -1254,7 +1255,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = loadData();
     const ev = (data.events || []).find(x => x.id === id);
     console.debug('loaded events count=', (data.events || []).length, 'found ev=', !!ev);
-    if (!ev) return alert("Event not found.");
+    if (!ev) { notify("Event not found.", "error"); return; }
 
     if (!eventDetailModal) return;
 
@@ -1383,7 +1384,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // (Optional) share button: simple alert for now
     if (modalShareBtn) {
       modalShareBtn.onclick = () => {
-        alert("Sharing is simulated in this prototype.");
+        notify("Sharing is currently unavailable.", "info");
       };
     }
 
@@ -1435,7 +1436,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function setRating(eventId, value) {
     const user = getCurrentUser();
     if (!user || !user.active) {
-      alert("Please sign in to rate events.");
+      notify("Please sign in to rate events.", "warning");
       return;
     }
 
@@ -1444,7 +1445,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!ev) return;
 
     if (!isPastEvent(ev.date)) {
-      alert("You can only rate past events.");
+      notify("You can only rate past events.", "warning");
       return;
     }
 
@@ -1471,13 +1472,13 @@ document.addEventListener("DOMContentLoaded", () => {
           body: bodyParams
         });
         if (resp.status === 401) {
-          alert('Not authorized. Please sign in to rate events.');
+          notify('Not authorized. Please sign in to rate events.', 'warning');
           return;
         }
         const json = await resp.json().catch(() => null);
         if (!json || !json.success) {
           console.warn('Rate event failed', json);
-          alert('Unable to save rating. Please try again.');
+          notify('Unable to save rating. Please try again.', 'error');
           return;
         }
 
@@ -1499,9 +1500,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (eventDetailModal && eventDetailModal.style.display === "flex") {
           openEventDetail(eventId, { returnUrl: preserveReturnUrl });
         }
+        try {
+          notify(isRemoving ? 'Your rating has been removed.' : 'Your rating has been saved.', isRemoving ? 'info' : 'success');
+        } catch (e) { }
       } catch (err) {
         console.error('Rating failed', err);
-        alert('Network error saving rating.');
+        notify('Network error saving rating.', 'error');
       }
     })();
   }
@@ -1516,9 +1520,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (id) {
       const ev = (data.events || []).find(x => x.id === id);
-      if (!ev) return alert("Event not found.");
+      if (!ev) { notify("Event not found.", "error"); return; }
       if (!canCurrentUserManageEvent(ev.id, data, currentUser)) {
-        alert("You can only edit events that belong to your collections.");
+        notify("You can only edit events that belong to your collections.", "error");
         return;
       }
 
@@ -1582,13 +1586,13 @@ document.addEventListener("DOMContentLoaded", () => {
         : [];
 
       if (!name || !dateVal) {
-        alert("Please provide at least a name and date.");
+        notify("Please provide at least a name and date.", "warning");
         return;
       }
 
       const parsedDate = parseEventDate(dateVal);
       if (!parsedDate) {
-        alert("Please provide a valid date.");
+        notify("Please provide a valid date.", "warning");
         return;
       }
 
@@ -1596,11 +1600,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const tenYearsLater = new Date(now);
       tenYearsLater.setFullYear(tenYearsLater.getFullYear() + 10);
       if (parsedDate < now) {
-        alert("Please choose a date from today onwards.");
+        notify("Please choose a date from today onwards.", "warning");
         return;
       }
       if (parsedDate > tenYearsLater) {
-        alert("Please choose a date within the next 10 years.");
+        notify("Please choose a date within the next 10 years.", "warning");
         return;
       }
 
@@ -1627,17 +1631,17 @@ document.addEventListener("DOMContentLoaded", () => {
           body
         });
         if (resp.status === 401) {
-          alert('Not authenticated. Please sign in to save events.');
+          notify('Not authenticated. Please sign in to save events.', 'warning');
           return;
         }
         if (resp.status === 403) {
-          alert('Forbidden. You are not allowed to modify this event.');
+          notify('Forbidden. You are not allowed to modify this event.', 'error');
           return;
         }
         const json = await resp.json().catch(() => null);
         if (!json || !json.success) {
           console.warn('Save event failed', json);
-          alert('Unable to save event. Please try again.');
+          notify('Unable to save event. Please try again.', 'error');
           return;
         }
 
@@ -1658,7 +1662,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderEvents();
       } catch (err) {
         console.error('Failed to save event', err);
-        alert('Network error while saving event.');
+        notify('Network error while saving event.', 'error');
       }
     })();
   }
@@ -1666,7 +1670,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function deleteEventHandler(id) {
     const data = loadData();
     if (!canCurrentUserManageEvent(id, data)) {
-      alert("You can only delete events that belong to your collections.");
+      notify("You can only delete events that belong to your collections.", "error");
       return;
     }
     if (!confirm("Delete this event? This action cannot be undone.")) {
@@ -1682,17 +1686,17 @@ document.addEventListener("DOMContentLoaded", () => {
           body: new URLSearchParams({ action: 'delete', id })
         });
         if (resp.status === 401) {
-          alert('Not authenticated. Please sign in to delete events.');
+          notify('Not authenticated. Please sign in to delete events.', 'warning');
           return;
         }
         if (resp.status === 403) {
-          alert('Forbidden. You are not allowed to delete this event.');
+          notify('Forbidden. You are not allowed to delete this event.', 'error');
           return;
         }
         const json = await resp.json().catch(() => null);
         if (!json || !json.success) {
           console.warn('Delete event failed', json);
-          alert('Unable to delete event. Please try again.');
+          notify('Unable to delete event. Please try again.', 'error');
           return;
         }
 
@@ -1711,7 +1715,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderEvents();
       } catch (err) {
         console.error('Delete failed', err);
-        alert('Network error while deleting event.');
+        notify('Network error while deleting event.', 'error');
       }
     })();
   }
@@ -1721,13 +1725,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function rsvpEvent(id) {
     const user = getCurrentUser();
     if (!user || !user.active) {
-      alert("Please sign in to RSVP.");
+      notify("Please sign in to RSVP.", "warning");
       return;
     }
 
     const data = loadData();
     const ev = (data.events || []).find(x => x.id === id);
-    if (!ev) return alert("Event not found.");
+    if (!ev) { notify("Event not found.", "error"); return; }
 
     (async () => {
       try {
@@ -1745,13 +1749,13 @@ document.addEventListener("DOMContentLoaded", () => {
           body: new URLSearchParams({ action, eventId: id })
         });
         if (resp.status === 401) {
-          alert('Not authorized. Please sign in again.');
+          notify('Not authorized. Please sign in again.', 'warning');
           return;
         }
         const json = await resp.json().catch(() => null);
         if (!json || !json.success) {
           console.warn('RSVP failed', json);
-          alert('Unable to update RSVP. Please try again.');
+          notify('Unable to update RSVP. Please try again.', 'error');
           return;
         }
 
@@ -1772,9 +1776,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (eventDetailModal && eventDetailModal.style.display === 'flex') {
           openEventDetail(id, {});
         }
+        try {
+          // Inform the user of RSVP state change
+          notify(action === 'rsvp' ? "You have RSVP'd to this event." : 'Your RSVP has been removed.', action === 'rsvp' ? 'success' : 'info');
+        } catch (e) { }
       } catch (err) {
         console.error('RSVP failed', err);
-        alert('Network error while updating RSVP.');
+        notify('Network error while updating RSVP.', 'error');
       }
     })();
   }

@@ -5,6 +5,49 @@
 // Notes: appData is exported to window and used by page scripts (app-collections.js, app-events.js, app-items.js).
 // ===============================================
 
+// Simple toast/notification helper available globally
+(function () {
+  if (window.notify) return;
+  const CSS = `
+  .app-toast-container{position:fixed;z-index:99999;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .app-toast{background:#222;color:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:all .22s ease;max-width:320px}
+  .app-toast.show{opacity:1;transform:translateY(0)}
+  .app-toast.success{background:#198754}
+  .app-toast.error{background:#dc3545}
+  .app-toast.warning{background:#ffc107;color:#000}
+  .app-toast.info{background:#0d6efd}
+  `;
+  try {
+    const style = document.createElement('style'); style.textContent = CSS; document.head && document.head.appendChild(style);
+  } catch (e) { }
+  let container = null;
+  function ensureContainer() {
+    if (container) return container;
+    container = document.querySelector('.app-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'app-toast-container';
+      document.body.appendChild(container);
+    }
+    return container;
+  }
+  window.notify = function (message, type = 'info', timeout = 4000) {
+    try {
+      const cont = ensureContainer();
+      const toast = document.createElement('div');
+      toast.className = 'app-toast ' + (type || 'info');
+      toast.textContent = message;
+      cont.appendChild(toast);
+      // show
+      requestAnimationFrame(() => { toast.classList.add('show'); });
+      const remove = () => { try { toast.classList.remove('show'); setTimeout(() => toast.remove(), 220); } catch (e) { } };
+      const t = setTimeout(remove, timeout || 4000);
+      toast.addEventListener('click', () => { clearTimeout(t); remove(); });
+      return { dismiss: remove };
+    } catch (e) { console.error('notify() failed', e); }
+  };
+})();
+
 document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   // 1. Initialization
@@ -228,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
               map[followerId] = cur;
               saveData(d);
               dispatchFollowChangeEvent({ followerId, targetOwnerId, following: !willFollow });
-              alert('Please sign in to follow collectors.');
+              notify('Please sign in to follow collectors.', 'warning');
               resolve(!willFollow);
               return null;
             }

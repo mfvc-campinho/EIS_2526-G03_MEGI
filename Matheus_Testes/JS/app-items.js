@@ -478,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function toggleItemLike(itemId, options = {}) {
     const { skipRender = false, onUpdate } = options;
     if (!isActiveUser) {
-      alert("Please sign in to like items.");
+      notify("Please sign in to like items.", "warning");
       return;
     }
 
@@ -498,6 +498,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!skipRender) renderItems();
     notifyItemLikesChange(ownerId);
+
+    try { notify(newState ? 'Item liked.' : 'Item unliked.', newState ? 'success' : 'info'); } catch (e) { }
 
     if (typeof onUpdate === "function") {
       const snapshot = getItemLikeSnapshot(itemId, { reload: false });
@@ -566,7 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setItemRating(itemId, value) {
     if (!isActiveUser) {
-      alert("Please sign in to rate items.");
+      notify("Please sign in to rate items.", "warning");
       return;
     }
     if (!itemId) return;
@@ -577,7 +579,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     sessionItemRatings[itemId] = numericValue;
-    alert("This prototype stores ratings locally in your browser and they are not persisted to the server.");
+    notify("Ratings are stored locally.", "info");
     window.renderItems();
   }
 
@@ -1148,16 +1150,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // EDIT & DELETE (SIMULATED)
   // ===============================================
   window.editItem = (id) => {
-    if (!isActiveUser) return alert("You must be logged in to edit items.");
+    if (!isActiveUser) { notify("You must be logged in to edit items.", "warning"); return; }
 
     const data = appData.loadData();
     const item = data.items.find(i => i.id === id);
 
-    if (!item) return alert("Item not found");
+    if (!item) { notify("Item not found", "error"); return; }
 
     const collection = getCurrentCollection(data);
     if (!isCollectionOwnedByCurrentUser(collection, data)) {
-      return alert("You cannot edit this item.");
+      return notify("You cannot edit this item.", "error");
     }
 
     idField.value = item.id;
@@ -1172,13 +1174,13 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.deleteItem = (id) => {
-    if (!isActiveUser) return alert("You must be logged in to delete items.");
+    if (!isActiveUser) { notify("You must be logged in to delete items.", "warning"); return; }
 
     const data = appData.loadData();
     const collection = getCurrentCollection(data);
 
     if (!isCollectionOwnedByCurrentUser(collection, data)) {
-      return alert("You can only delete your own items.");
+      return notify("You can only delete your own items.", "error");
     }
 
     if (!confirm("Delete this item?\n\nThis will remove the item from the server.")) return;
@@ -1198,7 +1200,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const json = await res.json();
         if (!res.ok || json.error || !json.success) {
           console.error('Delete failed', json);
-          alert('Failed to delete item. See console for details.');
+          notify('Failed to delete item. See console for details.', 'error');
           return;
         }
 
@@ -1207,9 +1209,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try { renderItems(); } catch (e) { console.warn(e); }
         try { renderCollectionEvents(); } catch (e) { console.warn(e); }
         try { const stats = computeCollectionStatistics(); renderCollectionStats(stats); } catch (e) { console.warn(e); }
+        try { notify('Item deleted.', 'success'); } catch (e) { }
       } catch (err) {
         console.error('Error deleting item', err);
-        alert('Error deleting item. See console.');
+        notify('Error deleting item. See console.', 'error');
       }
     })();
   };
@@ -1222,9 +1225,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = appData.loadData();
     const collection = data.collections.find(c => c.id === collectionId);
 
-    if (!collection) return alert("Collection not found!");
+    if (!collection) return notify("Collection not found!", "error");
     if (!isCollectionOwnedByCurrentUser(collection, data)) {
-      return alert("You can only edit your own collections.");
+      return notify("You can only edit your own collections.", "error");
     }
 
     collectionForm.querySelector("#collection-id").value = collection.id;
@@ -1253,7 +1256,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (collectionForm) {
     collectionForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Prototype: collection update simulated and not saved. Sign in to persist changes in a full deployment.");
+      notify("Collection update submitted.", "info");
       closeCollectionModal();
     });
   }
@@ -1265,7 +1268,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!isActiveUser) return alert('You must be logged in to add items.');
+      if (!isActiveUser) return notify('You must be logged in to add items.', 'warning');
 
       const id = idField.value.trim();
       const isUpdate = Boolean(id);
@@ -1307,7 +1310,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const json = await res.json();
         if (!res.ok || json.error || !json.success) {
           console.error('Save item failed', json);
-          alert('Failed to save item. See console for details.');
+          notify('Failed to save item. See console for details.', 'error');
           return;
         }
 
@@ -1342,9 +1345,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try { renderItems(); } catch (e) { console.warn(e); }
         try { renderCollectionEvents(); } catch (e) { console.warn(e); }
         try { const stats = computeCollectionStatistics(); renderCollectionStats(stats); } catch (e) { console.warn(e); }
+        try { notify(isUpdate ? 'Item updated successfully.' : 'Item saved.', 'success'); } catch (e) { }
       } catch (err) {
         console.error('Error saving item', err);
-        alert('Error saving item. See console.');
+        notify('Error saving item. See console.', 'error');
       }
     });
   }

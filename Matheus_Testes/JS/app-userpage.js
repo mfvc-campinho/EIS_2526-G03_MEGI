@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const eventsDemoState = window.demoEventsState || (window.demoEventsState = { voteState: {} });
 
   const FOLLOW_SIMULATION_MESSAGE =
-    "Following collectors is simulated in this prototype and will not be saved.";
+    "Following collectors is a local action and may not be saved.";
   let followSimulationAlertShown = false;
 
 
@@ -404,7 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!viewedOwnerId) return;
     const sessionEntries = demoState.userChosenState?.[viewedOwnerId];
     if (!sessionEntries?.length) {
-      alert("You're already seeing the default order.");
+      notify("You're already seeing the default order.", "info");
       return;
     }
     delete demoState.userChosenState[viewedOwnerId];
@@ -543,7 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showFollowSimulationMessage() {
     if (followSimulationAlertShown) return;
-    alert(FOLLOW_SIMULATION_MESSAGE);
+    notify(FOLLOW_SIMULATION_MESSAGE, 'info');
     followSimulationAlertShown = true;
   }
 
@@ -657,7 +657,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleItemFormSubmit(event) {
     event.preventDefault();
-    alert("This prototype only simulates adding items; no data is saved.");
+    notify("Adding items is performed locally.", "info");
     closeItemModal();
   }
 
@@ -666,18 +666,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!btn) return;
     event.preventDefault();
     if (!isViewingOwnProfile) {
-      alert("Log in as the owner to change this order.");
+      notify("Log in as the owner to change this order.", "warning");
       return;
     }
     const action = btn.dataset.topPickAction;
     const collectionId = btn.dataset.collectionId;
     if (!collectionId || action !== "reorder") return;
     if (!latestData) {
-      alert("Data not ready. Please try again.");
+      notify("Data not ready. Please try again.", "warning");
       return;
     }
     if (typeof window.demoTopPickFlow !== "function") {
-      alert("This action is unavailable right now.");
+      notify("This action is unavailable right now.", "error");
       return;
     }
     const collection = (latestData?.collections || []).find(c => c.id === collectionId);
@@ -785,7 +785,7 @@ document.addEventListener("DOMContentLoaded", () => {
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!activeUser?.active || !activeUser?.id) {
-      alert('Please sign in to edit your profile.');
+      notify('Please sign in to edit your profile.', 'warning');
       return;
     }
     const id = activeUser.id;
@@ -805,13 +805,13 @@ document.addEventListener("DOMContentLoaded", () => {
         body: new URLSearchParams({ action: 'update', id, name, photo, dob, email, member_since })
       });
       if (resp.status === 401) {
-        alert('Not authorized. Please sign in again.');
+        notify('Not authorized. Please sign in again.', 'warning');
         return;
       }
       const json = await resp.json().catch(() => null);
       console.debug('users.php:update response', resp.status, json);
       if (!json || !json.success) {
-        alert('Unable to save profile. Please try again.');
+        notify('Unable to save profile. Please try again.', 'error');
         console.warn('Profile update error', json);
         return;
       }
@@ -842,21 +842,29 @@ document.addEventListener("DOMContentLoaded", () => {
       closeProfileModal();
       // Re-render the profile to show updated values from serverData
       loadAndRenderUserData();
-      alert('Profile updated successfully.');
+      notify('Profile updated successfully.', 'success');
     } catch (err) {
       console.error('Profile update failed', err);
-      alert('Network error saving profile.');
+      notify('Network error saving profile.', 'error');
     }
   });
   resetTopPicksBtn?.addEventListener("click", handleResetTopPicks);
   topPicksContainer?.addEventListener("click", handleTopPickAction);
   followUserBtn?.addEventListener("click", async () => {
     if (!activeUser?.active || !activeUser?.id) {
-      alert("Please sign in to follow collectors.");
+      notify("Please sign in to follow collectors.", "warning");
       return;
     }
     if (!viewedOwnerId || activeUser.id === viewedOwnerId) return;
-    await toggleFollowUser(viewedOwnerId);
+    const ownerName = currentUserData?.["owner-name"] || viewedOwnerId;
+    const following = await toggleFollowUser(viewedOwnerId);
+    if (following === true) {
+      try { notify(`You are now following ${ownerName}.`, 'success'); } catch (e) { }
+    } else if (following === false) {
+      try { notify(`You have unfollowed ${ownerName}.`, 'info'); } catch (e) { }
+    } else {
+      try { notify('Unable to update follow status.', 'error'); } catch (e) { }
+    }
     renderFollowButton(currentUserData?.["owner-name"] || viewedOwnerId);
   });
 

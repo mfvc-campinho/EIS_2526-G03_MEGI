@@ -61,7 +61,21 @@
         const colName = tryResolveCollectionNameFromId(id);
         title = colName || 'Collection';
       } else if (path.endsWith('item_page.html')) {
-        title = 'Item';
+        // Try to resolve item name from query id when coming from an item page
+        const itemId = ref.searchParams.get('id');
+        let itemName = null;
+        if (itemId) {
+          try {
+            const raw = window.appData && typeof window.appData.loadData === 'function'
+              ? window.appData.loadData()
+              : JSON.parse(localStorage.getItem('collectionsData') || 'null');
+            if (raw && raw.items) {
+              const it = (raw.items || []).find(i => String(i.id || i.item_id) === String(itemId));
+              if (it) itemName = it.name || it.title || it['item-name'] || null;
+            }
+          } catch (e) { /* ignore */ }
+        }
+        title = itemName || 'Item';
       } else if (path.endsWith('all_collections.html')) {
         title = 'Collections';
       } else if (path.endsWith('user_page.html')) {

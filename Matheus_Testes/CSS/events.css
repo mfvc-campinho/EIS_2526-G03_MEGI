@@ -127,7 +127,7 @@
 ---------------------------------- */
 
 .events-actions {
-  margin: 6px 0 14px;
+  margin: 32px 0 12px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

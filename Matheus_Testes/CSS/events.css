@@ -313,6 +313,14 @@
   border: none;
 }
 
+/* Modal RSVP following state (modal uses a different DOM location) */
+#modal-rsvpBtn.following,
+.modal .modal-content .explore-btn.following {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  color: #ffffff;
+  border: none;
+}
+
 /* -------------------------------
    Modal rating stars
 ---------------------------------- */

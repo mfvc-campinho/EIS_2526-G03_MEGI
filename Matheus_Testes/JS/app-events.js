@@ -1541,52 +1541,100 @@ document.addEventListener("DOMContentLoaded", () => {
   function saveEventFromForm(e) {
     e.preventDefault();
 
-    const id = (fieldId.value || "").trim();
-    const name = fieldName.value.trim();
-    const dateVal = fieldDate.value;
-    const location = fieldLocation.value.trim();
-    const summary = fieldSummary.value.trim();
-    const description = fieldDescription.value.trim();
-    const type = fieldType.value.trim();
-    const selectedCollections = fieldCollections
-      ? Array.from(fieldCollections.selectedOptions)
-        .map(option => option.value)
-        .filter(Boolean)
-      : [];
+    (async () => {
+      const id = (fieldId.value || "").trim();
+      const name = fieldName.value.trim();
+      const dateVal = fieldDate.value;
+      const location = fieldLocation.value.trim();
+      const summary = fieldSummary.value.trim();
+      const description = fieldDescription.value.trim();
+      const type = fieldType.value.trim();
+      const selectedCollections = fieldCollections
+        ? Array.from(fieldCollections.selectedOptions)
+          .map(option => option.value)
+          .filter(Boolean)
+        : [];
 
-    if (!name || !dateVal) {
-      alert("Please provide at least a name and date.");
-      return;
-    }
+      if (!name || !dateVal) {
+        alert("Please provide at least a name and date.");
+        return;
+      }
 
-    let dateIso;
-    try {
-      dateIso = new Date(dateVal).toISOString();
-    } catch {
-      dateIso = dateVal;
-    }
+      const parsedDate = parseEventDate(dateVal);
+      if (!parsedDate) {
+        alert("Please provide a valid date.");
+        return;
+      }
 
-    const parsedDate = parseEventDate(dateVal);
-    if (!parsedDate) {
-      alert("Please provide a valid date.");
-      return;
-    }
+      const now = new Date();
+      const tenYearsLater = new Date(now);
+      tenYearsLater.setFullYear(tenYearsLater.getFullYear() + 10);
+      if (parsedDate < now) {
+        alert("Please choose a date from today onwards.");
+        return;
+      }
+      if (parsedDate > tenYearsLater) {
+        alert("Please choose a date within the next 10 years.");
+        return;
+      }
 
-    const now = new Date();
-    const tenYearsLater = new Date(now);
-    tenYearsLater.setFullYear(tenYearsLater.getFullYear() + 10);
-    if (parsedDate < now) {
-      alert("Please choose a date from today onwards.");
-      return;
-    }
-    if (parsedDate > tenYearsLater) {
-      alert("Please choose a date within the next 10 years.");
-      return;
-    }
+      const action = id ? 'update' : 'create';
+      const payloadId = id || generateId(name);
+      const dateOnly = parsedDate.toISOString().split('T')[0];
+      const body = new URLSearchParams({
+        action,
+        id: payloadId,
+        name,
+        localization: location,
+        date: dateOnly,
+        type,
+        summary,
+        description,
+        collection_id: selectedCollections.length ? selectedCollections[0] : ''
+      });
 
-    alert("This prototype only simulates event creation; no data is saved.");
-    closeEditModal();
-    renderEvents();
+      try {
+        const resp = await fetch('../PHP/crud/events.php', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body
+        });
+        if (resp.status === 401) {
+          alert('Not authenticated. Please sign in to save events.');
+          return;
+        }
+        if (resp.status === 403) {
+          alert('Forbidden. You are not allowed to modify this event.');
+          return;
+        }
+        const json = await resp.json().catch(() => null);
+        if (!json || !json.success) {
+          console.warn('Save event failed', json);
+          alert('Unable to save event. Please try again.');
+          return;
+        }
+
+        // Reload server data and re-render
+        try {
+          const ga = await fetch('../PHP/get_all.php');
+          if (ga.status === 200) {
+            const serverData = await ga.json().catch(() => null);
+            if (serverData) {
+              try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to reload server data after saving event', e);
+        }
+
+        closeEditModal();
+        renderEvents();
+      } catch (err) {
+        console.error('Failed to save event', err);
+        alert('Network error while saving event.');
+      }
+    })();
   }
 
   function deleteEventHandler(id) {
@@ -1595,12 +1643,51 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("You can only delete events that belong to your collections.");
       return;
     }
-
-    if (!confirm("Delete this event? This action cannot be undone. Prototype: no data will be removed.")) {
+    if (!confirm("Delete this event? This action cannot be undone.")) {
       return;
     }
 
-    alert("Prototype: no data was removed. Sign in to delete events in a deployed app.");
+    (async () => {
+      try {
+        const resp = await fetch('../PHP/crud/events.php', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ action: 'delete', id })
+        });
+        if (resp.status === 401) {
+          alert('Not authenticated. Please sign in to delete events.');
+          return;
+        }
+        if (resp.status === 403) {
+          alert('Forbidden. You are not allowed to delete this event.');
+          return;
+        }
+        const json = await resp.json().catch(() => null);
+        if (!json || !json.success) {
+          console.warn('Delete event failed', json);
+          alert('Unable to delete event. Please try again.');
+          return;
+        }
+
+        try {
+          const ga = await fetch('../PHP/get_all.php');
+          if (ga.status === 200) {
+            const serverData = await ga.json().catch(() => null);
+            if (serverData) {
+              try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to reload server data after delete', e);
+        }
+
+        renderEvents();
+      } catch (err) {
+        console.error('Delete failed', err);
+        alert('Network error while deleting event.');
+      }
+    })();
   }
 
   // ---------- RSVP ----------

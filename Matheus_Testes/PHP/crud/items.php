@@ -39,11 +39,14 @@ if ($method === 'POST') {
     $importance = $_POST['importance'] ?? null;
     $weight = $_POST['weight'] ?? null;
     $price = $_POST['price'] ?? null;
-    $acq = $_POST['acquisition_date'] ?? null;
+    // send empty string when not provided so SQL can convert '' -> NULL
+    $acq = $_POST['acquisition_date'] ?? '';
     $image = $_POST['image'] ?? null;
     $collection = $_POST['collection_id'] ?? null;
-    $stmt = $mysqli->prepare('INSERT INTO items (item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image,collection_id) VALUES (?,?,?,?,?,?,NOW(),NOW(),?,?)');
-    $stmt->bind_param('ssddssss', $id, $name, $importance, $weight, $price, $acq, $image, $collection);
+    // Use NULLIF for acquisition_date so empty string becomes NULL (no '0000-00-00')
+    $stmt = $mysqli->prepare('INSERT INTO items (item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image,collection_id) VALUES (?,?,?,?,?,NULLIF(?, \'\'),NOW(),NOW(),?,?)');
+    // types: id(s), name(s), importance(s), weight(d), price(d), acquisition_date(s), image(s), collection_id(s)
+    $stmt->bind_param('sssddsss', $id, $name, $importance, $weight, $price, $acq, $image, $collection);
     $ok = $stmt->execute();
     $stmt->close();
     echo json_encode(['success' => $ok, 'id' => $id]);
@@ -59,11 +62,14 @@ if ($method === 'POST') {
     $importance = $_POST['importance'] ?? null;
     $weight = $_POST['weight'] ?? null;
     $price = $_POST['price'] ?? null;
-    $acq = $_POST['acquisition_date'] ?? null;
+    // send empty string when not provided so SQL can convert '' -> NULL
+    $acq = $_POST['acquisition_date'] ?? '';
     $image = $_POST['image'] ?? null;
     $collection = $_POST['collection_id'] ?? null;
-    $stmt = $mysqli->prepare('UPDATE items SET name=?, importance=?, weight=?, price=?, acquisition_date=?, image=?, collection_id=? WHERE item_id=?');
-    $stmt->bind_param('sssddsss', $name, $importance, $weight, $price, $acq, $image, $collection, $id);
+    // Use NULLIF so empty acquisition_date values are saved as NULL instead of '0000-00-00'
+    $stmt = $mysqli->prepare('UPDATE items SET name=?, importance=?, weight=?, price=?, acquisition_date=NULLIF(?, \'\'), image=?, collection_id=? WHERE item_id=?');
+    // types: name(s), importance(s), weight(d), price(d), acquisition_date(s), image(s), collection_id(s), id(s)
+    $stmt->bind_param('ssddssss', $name, $importance, $weight, $price, $acq, $image, $collection, $id);
     $ok = $stmt->execute();
     $stmt->close();
     echo json_encode(['success' => $ok]);

@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
       body.append('action', 'linkItem');
       body.append('itemId', itemId);
       body.append('collectionId', collectionId);
-      const res = await fetch('../PHP/crud/relations.php', { method: 'POST', body });
+      const res = await fetch('../PHP/crud/relations.php', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
       const json = await res.json();
       return json;
     } catch (err) {
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       body.append('action', 'unlinkItem');
       body.append('itemId', itemId);
       body.append('collectionId', collectionId);
-      const res = await fetch('../PHP/crud/relations.php', { method: 'POST', body });
+      const res = await fetch('../PHP/crud/relations.php', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
       const json = await res.json();
       return json;
     } catch (err) {
@@ -1191,6 +1191,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const res = await fetch('../PHP/crud/items.php', {
           method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body
         });
         const json = await res.json();
@@ -1258,23 +1260,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ===============================================
-  // ITEM FORM SUBMISSION
+  // ITEM FORM SUBMISSION (server-backed)
   // ===============================================
-  if (form) {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      if (!isActiveUser) return alert("You must be logged in to add items.");
-
-      const id = idField.value.trim();
-      const action = id ? "updated" : "created";
-
-      alert(`Prototype: item ${action} simulated and not saved. Sign in to persist changes in a full deployment.`);
-
-      closeModal();
-    });
-  }
-
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();

@@ -95,17 +95,24 @@ if ($method === 'POST') {
     $dob = $_POST['dob'] ?? null;
     $member = $_POST['member_since'] ?? null;
     $stmt = $mysqli->prepare('UPDATE users SET user_name=?, user_photo=?, date_of_birth=?, member_since=? WHERE user_id=?');
+    if (!$stmt) {
+      http_response_code(500);
+      echo json_encode(['success' => false, 'error' => 'prepare failed', 'mysqli_error' => $mysqli->error]);
+      exit;
+    }
     $stmt->bind_param('sssss', $name, $photo, $dob, $member, $id);
     $ok = $stmt->execute();
+    $affected = $stmt->affected_rows;
+    $stmtErr = $stmt->error;
     $stmt->close();
     if ($ok) {
       // Refresh session user info so auth.php reflects changes
       $_SESSION['user']['name'] = $name;
       $_SESSION['user']['photo'] = $photo;
-      echo json_encode(['success' => true, 'user' => $_SESSION['user']]);
+      echo json_encode(['success' => true, 'user' => $_SESSION['user'], 'affected_rows' => $affected, 'stmt_error' => $stmtErr]);
     } else {
       http_response_code(500);
-      echo json_encode(['success' => false, 'error' => 'db error']);
+      echo json_encode(['success' => false, 'error' => 'db error', 'mysqli_error' => $mysqli->error, 'stmt_error' => $stmtErr]);
     }
     exit;
   } elseif ($action === 'delete') {

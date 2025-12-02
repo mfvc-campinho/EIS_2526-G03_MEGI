@@ -794,55 +794,52 @@ document.addEventListener("DOMContentLoaded", () => {
     const dob = profileForm.querySelector('#user-form-dob')?.value || '';
 
     try {
+      // include member_since if present in currentUser/local data
+      const storedUser = JSON.parse(localStorage.getItem('currentUser') || 'null') || {};
+      const member_since = storedUser.member_since || storedUser['member-since'] || '';
       const resp = await fetch('../PHP/crud/users.php', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ action: 'update', id, name, photo, dob })
+        body: new URLSearchParams({ action: 'update', id, name, photo, dob, member_since })
       });
       if (resp.status === 401) {
         alert('Not authorized. Please sign in again.');
         return;
       }
       const json = await resp.json().catch(() => null);
+      console.debug('users.php:update response', resp.status, json);
       if (!json || !json.success) {
         alert('Unable to save profile. Please try again.');
         console.warn('Profile update error', json);
         return;
       }
 
-      // Update local state: latestData (collectionsData) and currentUser in localStorage
-      latestData = latestData || (window.appData && window.appData.loadData ? window.appData.loadData() : null);
-      if (latestData && Array.isArray(latestData.users)) {
-        const u = latestData.users.find(u => String(u.id || u.user_id || u['owner-id'] || '') === String(id));
-        if (u) {
-          u['owner-name'] = name;
-          u.user_name = name;
-          u['owner-photo'] = photo;
-          u.user_photo = photo;
-          u['date-of-birth'] = dob;
-          u.date_of_birth = dob;
+      // Refresh full dataset from server so UI shows authoritative values
+      try {
+        const ga = await fetch('../PHP/get_all.php');
+        if (ga.status === 200) {
+          const serverData = await ga.json().catch(() => null);
+          if (serverData) {
+            try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
+            latestData = serverData;
+          }
         }
-        try { window.appData.saveData(latestData); } catch (err) { localStorage.setItem('collectionsData', JSON.stringify(latestData)); }
+      } catch (e) {
+        console.warn('Failed to reload server data after profile update', e);
       }
 
-      // Update currentUser in localStorage so UI reflects change
-      const stored = JSON.parse(localStorage.getItem('currentUser') || 'null');
-      if (stored && stored.id === id) {
-        stored.name = name;
-        stored.photo = photo;
-        localStorage.setItem('currentUser', JSON.stringify(stored));
-      }
-
-      // If server returned updated session user, merge
+      // Update currentUser in localStorage so UI reflects session/user
       if (json.user) {
         const s = JSON.parse(localStorage.getItem('currentUser') || 'null') || {};
         s.name = json.user.name || s.name;
         s.photo = json.user.photo || s.photo;
+        s.member_since = json.user.member_since || s.member_since;
         localStorage.setItem('currentUser', JSON.stringify(s));
       }
 
       closeProfileModal();
-      // Re-render the profile to show updated values
+      // Re-render the profile to show updated values from serverData
       loadAndRenderUserData();
       alert('Profile updated successfully.');
     } catch (err) {

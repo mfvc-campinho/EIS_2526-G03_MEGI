@@ -1082,6 +1082,24 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
 
+      // Collection info (associated collection displayed on the event card)
+      const associatedCollection = (data.collections || []).find(c => String(c.id) === String(ev.collectionId || ev.collection_id));
+      let collectionHtml = "";
+      if (associatedCollection) {
+        const colHref = `specific_collection.html?id=${encodeURIComponent(associatedCollection.id)}`;
+        const colName = escapeHtml(associatedCollection.name || associatedCollection.id || 'Collection');
+        const colImg = associatedCollection.coverImage || associatedCollection.coverImage || '../images/default.jpg';
+        collectionHtml = `
+          <div class="event-meta-row event-collection-row">
+            <i class="bi bi-box-seam" aria-hidden="true"></i>
+            <span class="event-collection-label">Collection:</span>
+            <a class="event-collection-link" href="${colHref}">
+              <img src="${colImg}" alt="${colName}" class="event-collection-thumb" loading="lazy"> ${colName}
+            </a>
+          </div>
+        `;
+      }
+
       card.innerHTML = `
           <h3 class="card-title">${escapeHtml(ev.name)} ${alertBadgeHtml}</h3>
           <p class="card-summary">
@@ -1097,6 +1115,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
             <span>${escapeHtml(ev.localization || "To be announced")}</span>
           </div>
+
+          ${collectionHtml}
 
           ${ownerHtml}
 

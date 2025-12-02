@@ -244,6 +244,29 @@
   text-decoration: underline;
 }
 
+/* Collection row inside event cards */
+.event-collection-row .event-collection-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #434190;
+  text-decoration: none;
+}
+
+.event-collection-row .event-collection-link:hover,
+.event-collection-row .event-collection-link:focus-visible {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.event-collection-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
 /* Rating summary row on cards */
 .card-rating {
   margin-top: 4px;

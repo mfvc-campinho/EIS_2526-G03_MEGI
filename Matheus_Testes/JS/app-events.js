@@ -1301,7 +1301,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!eventDetailModal) return;
 
     modalTitleEl.textContent = ev.name;
-    modalMetaEl.textContent = `${formatDate(ev.date)} · ${ev.localization || "To be announced"}`;
+    // Show Date and Location as separate labeled lines for clarity
+    modalMetaEl.innerHTML = `
+      <div><strong>Date:</strong> ${escapeHtml(formatDate(ev.date))}</div>
+      <div><strong>Location:</strong> ${escapeHtml(ev.localization || "To be announced")}</div>
+    `;
     modalDescriptionEl.textContent = ev.description || ev.summary || "No description provided.";
 
     // Host
@@ -1335,6 +1339,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentUser = getCurrentUser();
     if (modalAttendeesCountEl) {
       modalAttendeesCountEl.textContent = eventLinks.length;
+    }
+
+    // Collections associated with this event
+    try {
+      const collectionIds = getEventCollectionIds(ev.id, data) || [];
+      const allCols = getAllCollections(data) || [];
+      const cols = collectionIds.map(id => allCols.find(c => String(c.id) === String(id))).filter(Boolean);
+      const collectionHtml = cols.length
+        ? cols.map(c => `<a href="specific_collection.html?id=${encodeURIComponent(c.id)}">${escapeHtml(c.name || c.id)}</a>`).join(', ')
+        : '<span class="muted">None</span>';
+
+      const modalBody = document.getElementById('modal-event-body');
+      if (modalBody) {
+        // remove existing placeholder if present
+        const existing = document.getElementById('modal-event-collections');
+        if (existing) existing.remove();
+
+        const p = document.createElement('p');
+        p.id = 'modal-event-collections';
+        p.innerHTML = `<strong>Collection:</strong> ${collectionHtml}`;
+
+        // Insert after host element if available, otherwise append to body
+        const hostEl = document.getElementById('modal-event-host');
+        if (hostEl && hostEl.parentElement) {
+          // find the parent <p> that contains the host link
+          const hostParent = hostEl.closest('p');
+          if (hostParent && hostParent.nextSibling) hostParent.parentNode.insertBefore(p, hostParent.nextSibling);
+          else if (hostParent) hostParent.parentNode.appendChild(p);
+          else modalBody.appendChild(p);
+        } else {
+          modalBody.appendChild(p);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to render event collections', e);
     }
 
     // Modal RSVP button appearance (use ghost style to match View button)

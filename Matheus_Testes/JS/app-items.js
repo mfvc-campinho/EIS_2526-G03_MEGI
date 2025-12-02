@@ -961,8 +961,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ${formatEventDate(ev.date)} · ${ev.localization || "To be announced"}
           </p>
         </div>
-        <a class="explore-btn ghost"
-           href="event_page.html?id=${ev.id}&returnUrl=${encodedReturnUrl}">
+        <a class="explore-btn ghost" href="event_page.html?id=${ev.id}&returnUrl=${encodedReturnUrl}"
+           onclick="(function(e){ if ((typeof openEventDetail === 'function' || (window.openEventDetail && typeof window.openEventDetail === 'function')) && document.getElementById('event-modal')){ e.preventDefault(); (window.openEventDetail || openEventDetail)('${ev.id}'); } else { return true; } })(event)">
           <i class="bi bi-calendar-event"></i> View event
         </a>
       </article>

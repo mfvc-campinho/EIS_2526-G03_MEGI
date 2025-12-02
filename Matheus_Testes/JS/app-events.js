@@ -1035,23 +1035,23 @@ document.addEventListener("DOMContentLoaded", () => {
           stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
         }
 
-        const summaryParts = [];
         const showDemoOnly = userCanRate && sessionValue !== undefined;
+        let summary = "";
+        // First line: average + count (or no ratings)
         if (!showDemoOnly) {
           if (ratingAvg) {
-            summaryParts.push(`<span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span>(${ratingCount})</span>`);
+            summary += `<div class="rating-line"><span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span class="rating-count">(${ratingCount})</span></div>`;
           } else {
-            summaryParts.push(`<span class="muted">No ratings yet</span>`);
+            summary += `<div class="rating-line"><span class="muted">No ratings yet</span></div>`;
           }
         }
 
+        // Second line: user-specific note (demo or recorded)
         if (showDemoOnly) {
-          summaryParts.push(`<span class="demo-rating-note">Your demo rating: ${sessionValue}/5 (not saved)</span>`);
+          summary += `<div class="rating-note demo-rating-note">Your demo rating: ${sessionValue}/5 (not saved)</div>`;
         } else if (userCanRate && userRating) {
-          summaryParts.push(`<span class="demo-rating-note">You rated this ${userRating}/5</span>`);
+          summary += `<div class="rating-note">You rated this ${userRating}/5</div>`;
         }
-
-        const summary = summaryParts.join("");
 
         ratingHtml = `
             <div class="card-rating">

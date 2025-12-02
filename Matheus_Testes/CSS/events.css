@@ -267,6 +267,37 @@
   border: 1px solid #e5e7eb;
 }
 
+/* Make Collection: label bold */
+.event-collection-label {
+  font-weight: 700;
+  color: #374151;
+}
+
+/* Meta labels (Date:, Location:) */
+.event-meta-label {
+  font-weight: 600;
+  color: #374151;
+  margin-left: 4px;
+}
+
+/* Ensure calendar and like buttons sit together nicely */
+.card-actions .metric-btn.vote-toggle {
+  margin-right: 8px;
+}
+
+/* Like button default and active (match RSVP 'Going' design when active) */
+#eventsList .card-actions .like-btn {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+#eventsList .card-actions .like-btn.following {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  color: #ffffff;
+  border: none;
+}
+
 /* Rating summary row on cards */
 .card-rating {
   margin-top: 4px;

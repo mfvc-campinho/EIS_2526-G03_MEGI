@@ -1073,13 +1073,6 @@ document.addEventListener("DOMContentLoaded", () => {
               ${ownerDisplayText}
             </a>
           </div>
-
-          <div class="event-meta-row">
-            <button class="metric-btn vote-toggle ${isLiked ? "active" : ""}" data-event-id="${ev.id}">
-              <i class="bi ${isLiked ? "bi-star-fill" : "bi-star"}"></i>
-              <span class="vote-count">${displayLikes}</span>
-            </button>
-          </div>
         `;
 
       // Collection info (associated collection displayed on the event card)
@@ -1088,13 +1081,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (associatedCollection) {
         const colHref = `specific_collection.html?id=${encodeURIComponent(associatedCollection.id)}`;
         const colName = escapeHtml(associatedCollection.name || associatedCollection.id || 'Collection');
-        const colImg = associatedCollection.coverImage || associatedCollection.coverImage || '../images/default.jpg';
         collectionHtml = `
           <div class="event-meta-row event-collection-row">
             <i class="bi bi-box-seam" aria-hidden="true"></i>
             <span class="event-collection-label">Collection:</span>
             <a class="event-collection-link" href="${colHref}">
-              <img src="${colImg}" alt="${colName}" class="event-collection-thumb" loading="lazy"> ${colName}
+              ${colName}
             </a>
           </div>
         `;
@@ -1108,11 +1100,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div class="event-meta-row">
             <i class="bi bi-calendar-event-fill" aria-hidden="true"></i>
+            <span class="event-meta-label">Date:</span>
             <span>${formatDateShort(ev.date)}</span>
           </div>
 
           <div class="event-meta-row">
             <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+            <span class="event-meta-label">Location:</span>
             <span>${escapeHtml(ev.localization || "To be announced")}</span>
           </div>
 
@@ -1179,9 +1173,29 @@ document.addEventListener("DOMContentLoaded", () => {
       if (deleteBtn) {
         deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
       }
-      const likeBtn = card.querySelector(".vote-toggle");
-      if (likeBtn) {
-        likeBtn.addEventListener("click", () => toggleEventLike(ev.id));
+
+      // Create a Like button next to the View button for all events (past and upcoming)
+      let likeBtnEl = null;
+      const actionsElForLike = card.querySelector('.card-actions');
+      if (actionsElForLike) {
+        const viewBtnElem = actionsElForLike.querySelector('.view-btn');
+        likeBtnEl = document.createElement('button');
+        // Use explore-btn so we can toggle the `following` style when liked
+        likeBtnEl.className = `explore-btn ghost like-btn ${isLiked ? 'following' : ''}`;
+        likeBtnEl.type = 'button';
+        likeBtnEl.setAttribute('data-event-id', ev.id);
+        likeBtnEl.innerHTML = `<i class="bi ${isLiked ? 'bi-star-fill' : 'bi-star'} me-1" aria-hidden="true"></i> <span class="vote-count">${displayLikes}</span>`;
+        likeBtnEl.addEventListener('click', (e) => { e.preventDefault(); toggleEventLike(ev.id); });
+        // Insert after the View button if present, otherwise prepend
+        try {
+          if (viewBtnElem && viewBtnElem.parentElement === actionsElForLike) {
+            viewBtnElem.insertAdjacentElement('afterend', likeBtnEl);
+          } else {
+            actionsElForLike.prepend(likeBtnEl);
+          }
+        } catch (e) {
+          actionsElForLike.appendChild(likeBtnEl);
+        }
       }
 
 
@@ -1189,6 +1203,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!isPast) {
         const actionsEl = card.querySelector('.card-actions');
         if (actionsEl) {
+          // Create the calendar button
           const calBtn = document.createElement('button');
           calBtn.className = 'explore-btn calendar-btn';
           calBtn.type = 'button';
@@ -1203,7 +1218,13 @@ document.addEventListener("DOMContentLoaded", () => {
               location: ev.localization || ''
             });
           });
-          actionsEl.appendChild(calBtn);
+
+          // Append calendar button next to existing like button (if present)
+          if (likeBtnEl && likeBtnEl.parentElement === actionsEl) {
+            likeBtnEl.insertAdjacentElement('afterend', calBtn);
+          } else {
+            actionsEl.appendChild(calBtn);
+          }
         }
       }
 

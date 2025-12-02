@@ -181,6 +181,105 @@ document.addEventListener("DOMContentLoaded", () => {
   // =======================================================
   // 5. Dynamic event bindings for menu forms and links
   // =======================================================
+  // Centralized login submit handler so it can be reused by the dropdown
+  // login form and by a modal-based login form.
+  async function handleLoginSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const usernameInput = document.getElementById("login-user") || document.querySelector('#modal-login-form #login-user');
+    const passwordInput = document.getElementById("login-pass") || document.querySelector('#modal-login-form #login-pass');
+    const username = usernameInput?.value?.trim() || "";
+    const password = passwordInput?.value?.trim() || "";
+    const hasLetter = (value) => /[A-Za-z]/.test(value);
+
+    if (!hasLetter(username) || !hasLetter(password)) {
+      notify("Please enter a username and password (at least one letter each).", "warning");
+      return;
+    }
+
+    // Resolve username -> email when possible
+    let email = username;
+    try {
+      const data = window.appData?.loadData ? window.appData.loadData() : null;
+      if (data && !username.includes('@')) {
+        const user = (data.users || []).find(u => u.id === username || u['owner-id'] === username || u.user_name === username);
+        if (user && user.email) email = user.email;
+      }
+    } catch (err) {
+      // ignore
+    }
+
+    try {
+      const payload = new FormData();
+      payload.append('email', email);
+      payload.append('password', password);
+      const resp = await fetch('../PHP/auth.php', { method: 'POST', body: payload });
+      const json = await resp.json();
+      if (json && json.success && json.user) {
+        const userSess = { id: json.user.id, ownerName: json.user.name, active: true };
+        localStorage.setItem('currentUser', JSON.stringify(userSess));
+        currentUser = userSess;
+        notifyUserStateChange();
+        renderProfileMenu();
+        try { notify('You are now logged in.', 'success'); } catch (e) { }
+        // Close modal if present
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) loginModal.style.display = 'none';
+      } else {
+        notify('Login failed: ' + (json && json.error ? json.error : 'invalid credentials'), 'error');
+      }
+    } catch (err) {
+      console.error('Login error', err);
+      notify('Login error', 'error');
+    }
+  }
+
+  // Helper to open a login modal. Re-uses the same input IDs so the handler
+  // can find them whether the form is in the dropdown or modal.
+  function openLoginModal() {
+    if (document.getElementById('login-modal')) {
+      const existing = document.getElementById('login-modal');
+      existing.style.display = 'flex';
+      const userField = document.getElementById('login-user');
+      userField?.focus();
+      return;
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'login-modal';
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <span class="close-btn" id="close-login-modal">&times;</span>
+        <h2>Log In</h2>
+        <form id="modal-login-form" class="login-form">
+          <label>Username:</label>
+          <input type="text" id="login-user" placeholder="Enter username">
+          <label>Password:</label>
+          <input type="password" id="login-pass" placeholder="Enter password">
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+            <button type="submit" class="login-btn explore-btn">Enter</button>
+            <button type="button" id="modal-cancel-login" class="explore-btn ghost">Cancel</button>
+          </div>
+        </form>
+      </div>`;
+
+    document.body.appendChild(modal);
+
+    // Close handlers
+    document.getElementById('close-login-modal')?.addEventListener('click', () => { modal.style.display = 'none'; });
+    document.getElementById('modal-cancel-login')?.addEventListener('click', () => { modal.style.display = 'none'; });
+
+    // Wire submit to centralized handler
+    const modalForm = document.getElementById('modal-login-form');
+    modalForm?.addEventListener('submit', handleLoginSubmit);
+    // focus the username field shortly after opening
+    setTimeout(() => document.getElementById('login-user')?.focus(), 60);
+  }
+
+  // Expose helper so other scripts can open the login modal
+  window.openLoginModal = openLoginModal;
+
   function attachEvents() {
     const form = document.getElementById("login-form");
     const signoutBtn = document.getElementById("signout-btn");
@@ -190,52 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const addAccountBtn = document.getElementById("add-account-btn");
 
     if (form) {
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const usernameInput = document.getElementById("login-user");
-        const passwordInput = document.getElementById("login-pass");
-        const username = usernameInput?.value?.trim() || "";
-        const password = passwordInput?.value?.trim() || "";
-        const hasLetter = (value) => /[A-Za-z]/.test(value);
-
-        if (!hasLetter(username) || !hasLetter(password)) {
-          notify("Please enter a username and password (at least one letter each).", "warning");
-          return;
-        }
-
-        // Resolve username -> email when possible
-        let email = username;
-        try {
-          const data = window.appData?.loadData ? window.appData.loadData() : null;
-          if (data && !username.includes('@')) {
-            const user = (data.users || []).find(u => u.id === username || u['owner-id'] === username || u.user_name === username);
-            if (user && user.email) email = user.email;
-          }
-        } catch (err) {
-          // ignore
-        }
-
-        try {
-          const payload = new FormData();
-          payload.append('email', email);
-          payload.append('password', password);
-          const resp = await fetch('../PHP/auth.php', { method: 'POST', body: payload });
-          const json = await resp.json();
-          if (json && json.success && json.user) {
-            const userSess = { id: json.user.id, ownerName: json.user.name, active: true };
-            localStorage.setItem('currentUser', JSON.stringify(userSess));
-            currentUser = userSess;
-            notifyUserStateChange();
-            renderProfileMenu();
-            try { notify('You are now logged in.', 'success'); } catch (e) { }
-          } else {
-            notify('Login failed: ' + (json && json.error ? json.error : 'invalid credentials'), 'error');
-          }
-        } catch (err) {
-          console.error('Login error', err);
-          notify('Login error', 'error');
-        }
-      });
+      form.addEventListener('submit', handleLoginSubmit);
     }
 
     if (signoutBtn) {

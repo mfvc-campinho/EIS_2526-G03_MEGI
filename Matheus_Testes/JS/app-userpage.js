@@ -711,6 +711,70 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (!user) {
+      // If no profile found and the visitor is not signed in, show a friendly
+      // sign-in panel that re-uses the existing header login dropdown and modals.
+      if (!activeUser?.active && !ownerParam) {
+        const mainEl = document.querySelector("main");
+        if (mainEl) {
+          mainEl.innerHTML = `
+            <h1 class="page-title">Sign In To Your Profile</h1>
+            <div class="auth-card">
+              <p class="notice-message">To see your profile and manage collections, please sign in or create an account.</p>
+              <div class="auth-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+                <button id="open-login-menu" class="explore-btn success">Log In</button>
+                <button id="open-create-account" class="explore-btn warning">Create Account</button>
+                <button id="open-forgot-password" class="explore-btn ghost">Forgot Password</button>
+                <button id="continue-anon" class="explore-btn ghost">Browse As Guest</button>
+              </div>
+            </div>
+          `;
+
+          // Wire actions to existing header/menu elements and modals
+          setTimeout(() => {
+            const openLogin = document.getElementById('open-login-menu');
+            openLogin?.addEventListener('click', (e) => {
+              e.preventDefault();
+              // Prefer the modal-based login when available
+              if (typeof window.openLoginModal === 'function') {
+                window.openLoginModal();
+                return;
+              }
+              // Fallback: toggle profile dropdown
+              const profileBtn = document.querySelector('.profile-btn');
+              if (profileBtn) {
+                profileBtn.click();
+                setTimeout(() => {
+                  const loginUser = document.getElementById('login-user');
+                  loginUser?.focus();
+                }, 80);
+              }
+            });
+
+            const openCreate = document.getElementById('open-create-account');
+            openCreate?.addEventListener('click', (e) => {
+              e.preventDefault();
+              const modal = document.getElementById('add-account-modal');
+              if (modal) modal.style.display = 'flex';
+            });
+
+            const openForgot = document.getElementById('open-forgot-password');
+            openForgot?.addEventListener('click', (e) => {
+              e.preventDefault();
+              const modal = document.getElementById('forgot-password-modal');
+              if (modal) modal.style.display = 'flex';
+            });
+
+            const continueAnon = document.getElementById('continue-anon');
+            continueAnon?.addEventListener('click', (e) => {
+              e.preventDefault();
+              // Let the user continue browsing — go to home page for safety
+              window.location.href = 'home_page.html';
+            });
+          }, 20);
+        }
+        return;
+      }
+
       document.querySelector("main").innerHTML = `
         <h1 class="page-title">User Not Found</h1>
         <p class="notice-message">No profile matched the id "${viewedOwnerId}".</p>`;

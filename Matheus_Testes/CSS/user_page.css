@@ -650,3 +650,100 @@
     justify-content: center;
   }
 }
+
+/* ===== Sign-in card (shown when anonymous visitor opens profile page) ===== */
+.auth-card {
+  max-width: 920px;
+  margin: 32px auto;
+  padding: 32px 26px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e6eef9;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+}
+
+.auth-card .notice-message {
+  margin: 0;
+  color: #475569;
+  font-size: 1rem;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.auth-actions .explore-btn {
+  padding: 10px 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.08);
+  background: #ffffff;
+  color: #123;
+}
+
+.auth-actions .explore-btn.success {
+  background: var(--success-btn-bg);
+  color: var(--success-btn-text);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.auth-actions .explore-btn.success:hover {
+  background: #d1fae5;
+  border-color: transparent;
+  color: #064e3b;
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.08);
+}
+
+.auth-actions .explore-btn.warning {
+  background: var(--warning-btn-bg);
+  color: var(--warning-btn-text);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.06);
+}
+
+.auth-actions .explore-btn.warning:hover {
+  background: var(--warning-btn-bg-hover);
+  border-color: transparent;
+  color: var(--warning-btn-text-hover);
+  box-shadow: 0 4px 10px rgba(146, 64, 14, 0.08);
+}
+
+.auth-actions .explore-btn.ghost {
+  background: #ffffff;
+  color: var(--ghost-btn-text);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.04);
+}
+
+.auth-actions .explore-btn:hover {
+  background: #f9fafb;
+  color: var(--ghost-btn-text-hover);
+  border-color: #dbeafe;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 16px;
+    margin: 16px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .auth-actions {
+    justify-content: center;
+  }
+
+  .auth-actions .explore-btn {
+    min-width: 160px;
+  }
+}

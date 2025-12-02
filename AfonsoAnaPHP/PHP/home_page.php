@@ -1,11 +1,13 @@
 <?php
 session_start();
+// Não incluas aqui o db.php, senão arriscas-te a mandar JSON para a página
 ?>
 <!DOCTYPE html>
 <!--
   File: public_html/HTML/home_page.php
   Purpose: Site homepage — displays welcome hero, top collections, and feature highlights.
-  Major sections: NAVIGATION (via include), WELCOME HERO, RANKING (Top 5), FEATURES, FOOTER (via include).
+  Major sections: NAVIGATION, WELCOME HERO, RANKING (Top 5), FEATURES, FOOTER.
+  Notes: JS (app-collections.js) continua a ser o responsável por desenhar as coleções.
 -->
 <html lang="en">
 
@@ -24,14 +26,59 @@ session_start();
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <!-- Scripts (que precisam de ir no head) -->
+  <!-- Scripts -->
   <script src="../JS/theme-toggle.js"></script>
 </head>
 
 <body>
   <div id="content">
-    <!-- NAVIGATION (include existente) -->
-    <?php include __DIR__ . '../includes/header.php'; ?>
+    <!-- NAVIGATION -->
+    <header>
+      <nav class="navbar">
+        <div class="nav-left">
+          <a href="home_page.php" class="logo" aria-current="page">
+            <i class="bi bi-collection me-2"></i> GoodCollections
+          </a>
+        </div>
+
+        <div class="nav-right">
+          <a href="all_collections.php" class="nav-link">
+            <i class="bi bi-box-seam-fill me-1"></i> Collections
+          </a>
+
+          <a href="event_page.php" class="nav-link">
+            <i class="bi bi-calendar-event-fill me-1"></i> Events
+          </a>
+
+          <a href="team_page.php" class="nav-link">
+            <i class="bi bi-people-fill me-1"></i> About Us
+          </a>
+
+          <a href="user_page.php" class="nav-link">
+            <i class="bi bi-person-fill me-1"></i> Profile
+          </a>
+
+          <!-- Dark mode toggle -->
+          <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
+            <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
+          </button>
+
+          <!-- Login dropdown -->
+          <div class="dropdown profile-dropdown">
+            <button class="dropbtn profile-btn">
+              <i class="bi bi-person-circle me-1"></i> Log In ▾
+            </button>
+            <div class="dropdown-content profile-menu"></div>
+          </div>
+
+          <!-- Search -->
+          <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input type="search" class="search-bar" placeholder="Search...">
+          </div>
+        </div>
+      </nav>
+    </header>
 
     <!-- MAIN CONTENT -->
     <main>
@@ -108,7 +155,7 @@ session_start();
         </div>
       </section>
 
-      <!-- Collections Container -->
+      <!-- Collections Container (preenchido por app-collections.js) -->
       <section class="ranking-section">
         <h2 class="sr-only">Collection ranking controls</h2>
         <!-- Hidden pagination control to enforce a page size of 5 for the script -->
@@ -130,10 +177,8 @@ session_start();
           Upcoming Events
         </h2>
 
-        <p class="upcoming-sub">
-          Don't miss the next exhibitions, fairs and meetups curated by our community. Click an
-          event to see details.
-        </p>
+        <p class="upcoming-sub">Don't miss the next exhibitions, fairs and meetups curated by our community. Click an
+          event to see details.</p>
 
         <div class="events-grid" id="upcomingEvents">
           <!-- Event cards will be populated here by JS  -->
@@ -149,10 +194,8 @@ session_start();
     <section class="features-hero">
       <div class="features-inner">
         <h2 class="features-title">Everything You Need to <span class="accent">Manage Your Collections</span></h2>
-        <p class="features-sub">
-          From automotive miniatures to rare stamps, GoodCollections gives you the tools to
-          catalog, organize, and showcase every item with precision.
-        </p>
+        <p class="features-sub">From automotive miniatures to rare stamps, GoodCollections gives you the tools to
+          catalog, organize, and showcase every item with precision.</p>
 
         <div class="features-grid">
           <article class="feature-card">
@@ -200,45 +243,57 @@ session_start();
       </div>
     </section>
 
-    <!-- FOOTER (include existente) -->
-    <?php include __DIR__ . '../includes/footer.php'; ?>
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-content">
+        <p>
+          Made with <span class="heart">❤️</span> by
+          <a href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-github" aria-hidden="true"></i>
+            EIS_2526-G03_MEGI
+          </a>
+        </p>
+
+        <div class="footer-links">
+          <a href="home_page.php">Home Page</a>
+          <a href="all_collections.php">Collections</a>
+          <a href="event_page.php">Events</a>
+          <a href="team_page.php">About Us</a>
+          <a href="user_page.php">User Profile</a>
+        </div>
+      </div>
+    </footer>
   </div>
 
-  <!-- MODALS -->
+  <!-- MODALS (iguais ao original; podes manter actions para os teus PHP de backend) -->
   <div id="collection-modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="close-collection-modal">&times;</span>
       <h2 id="collection-modal-title">New Collection</h2>
-      <form id="form-collection"
-            method="post"
-            action="../PHP/add_collection.php">
-        <input type="hidden" id="collection-id" name="collection_id">
+      <form id="form-collection">
+        <input type="hidden" id="collection-id" name="collection-id">
 
         <div class="form-section form-section--required">
           <h3>Required fields</h3>
           <label for="col-name">Name:</label>
-          <input type="text" id="col-name" name="col_name" required>
-
+          <input type="text" id="col-name" name="col-name" required>
           <label for="col-summary">Summary:</label>
-          <textarea id="col-summary" name="col_summary" required></textarea>
+          <textarea id="col-summary" name="col-summary" required></textarea>
         </div>
 
         <div class="form-section form-section--optional">
           <h3>Optional fields</h3>
           <label for="col-description">Full Description:</label>
-          <textarea id="col-description" name="col_description"></textarea>
-
+          <textarea id="col-description" name="col-description"></textarea>
           <label for="col-image">Image (URL):</label>
-          <input type="text" id="col-image" name="col_image" placeholder="../images/default.jpg">
-
+          <input type="text" id="col-image" name="col-image" placeholder="../images/default.jpg">
           <label for="col-type">Type:</label>
-          <input type="text" id="col-type" name="col_type">
+          <input type="text" id="col-type" name="col-type">
         </div>
         <div class="modal-actions">
           <button type="submit" class="explore-btn success">
-            <i class="bi bi-save"></i> Save
-          </button>
-          <button type="button" id="cancel-collection-modal" class="explore-btn danger">Cancel</button>
+            <i class="bi bi-save me-1"></i>Save</button>
+          <button type="button" id="cancel-collection-modal" class="explore-btn danger delete-btn">Cancel</button>
         </div>
       </form>
     </div>
@@ -248,12 +303,10 @@ session_start();
     <div class="modal-content">
       <span class="close-btn" id="close-forgot-modal">&times;</span>
       <h2>Forgot Password</h2>
-      <form id="form-forgot-password"
-            method="post"
-            action="../PHP/forgot_password.php">
+      <form id="form-forgot-password">
         <p>Enter your email address and we'll send you a link to reset your password.</p>
         <label for="forgot-email">Email:</label>
-        <input type="email" id="forgot-email" name="email" required>
+        <input type="email" id="forgot-email" name="forgot-email" required>
         <div class="modal-actions">
           <button type="submit" class="save-btn">Send Reset Link</button>
         </div>
@@ -266,31 +319,22 @@ session_start();
       <span class="close-btn" id="close-account-modal">&times;</span>
       <h2>Create New Account</h2>
 
-      <form id="form-add-account"
-            method="post"
-            action="../PHP/register.php">
+      <form id="form-add-account">
         <label for="acc-name">Username:</label>
-        <input type="text" id="acc-name" name="username" required>
-
+        <input type="text" id="acc-name" name="acc-name" required>
         <label for="acc-owner-photo">Photo URL:</label>
-        <input type="url" id="acc-owner-photo" name="photo_url" placeholder="https://example.com/photo.jpg">
-
+        <input type="url" id="acc-owner-photo" name="acc-owner-photo" placeholder="https://example.com/photo.jpg">
         <label for="acc-dob">Date of Birth:</label>
-        <input type="date" id="acc-dob" name="dob">
-
+        <input type="date" id="acc-dob" name="acc-dob">
         <label for="acc-member-since">Member Since (YYYY):</label>
-        <input type="number" id="acc-member-since" name="member_since" min="1900" max="2100" step="1"
-               placeholder="2024" readonly>
-
+        <input type="number" id="acc-member-since" name="acc-member-since" min="1900" max="2100" step="1"
+               placeholder="2020" readonly>
         <label for="acc-email">Email:</label>
-        <input type="email" id="acc-email" name="email" required>
-
+        <input type="email" id="acc-email" name="acc-email" required>
         <label for="acc-password">Password:</label>
-        <input type="password" id="acc-password" name="password" required>
-
+        <input type="password" id="acc-password" name="acc-password" required>
         <label for="acc-password-confirm">Confirm Password:</label>
-        <input type="password" id="acc-password-confirm" name="password_confirm" required>
-
+        <input type="password" id="acc-password-confirm" name="acc-password-confirm" required>
         <div class="modal-actions">
           <button type="submit" class="save-btn">Create Account</button>
         </div>

@@ -1263,6 +1263,14 @@ button {
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
 }
 
+/* Make vote-toggle (collection Like) match the green "following" style used for Events/RSVP */
+.metric-btn.vote-toggle.active {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.18);
+}
+
 /* ===============================
    🔹 ITEMS PREVIEW
 =============================== */

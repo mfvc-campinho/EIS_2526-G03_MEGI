@@ -623,9 +623,10 @@
 }
 
 .item-like-btn.active {
-  background: #eff6ff;
-  border-color: #93c5fd;
-  color: #1d4ed8;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.18);
 }
 
 .item-like-btn:focus-visible {

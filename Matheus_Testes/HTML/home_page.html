@@ -134,6 +134,10 @@
             <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> New Collection
           </button>
 
+          <button id="newEventBtn" class="explore-btn success events-new-btn" data-requires-login>
+            <i class="bi bi-calendar-plus me-1" aria-hidden="true"></i> New Event
+          </button>
+
           <button id="restoreDataBtn" class="explore-btn warning"
             title="Deletes all current data and restores the original data from Data.js">
             <i class="bi bi-arrow-repeat me-1" aria-hidden="true"></i> Restore Data
@@ -349,6 +353,49 @@
           Add to My Calendar
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT EVENT MODAL -->
+  <div id="event-edit-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-event-edit-modal">&times;</span>
+      <h2 id="event-edit-title">Create Event</h2>
+
+      <form id="form-event">
+        <input type="hidden" id="event-id">
+
+        <div class="form-section form-section--required">
+          <h3>Required fields</h3>
+          <label for="evt-name">Name:</label>
+          <input type="text" id="evt-name" name="evt-name" required>
+          <label for="evt-date">Date &amp; Time:</label>
+          <input type="datetime-local" id="evt-date" name="evt-date" required>
+          <label for="evt-location">Location:</label>
+          <input type="text" id="evt-location" name="evt-location" required>
+          <label for="evt-collections">Associated collections</label>
+          <select id="evt-collections" name="evt-collections" multiple size="4" required>
+            <!-- Filled via JavaScript -->
+          </select>
+          <small class="form-hint">Press Ctrl/Cmd (⌘) or Shift to select multiple collections.</small>
+        </div>
+
+        <div class="form-section form-section--optional">
+          <h3>Optional fields</h3>
+          <label for="evt-summary">Summary:</label>
+          <input type="text" id="evt-summary" name="evt-summary">
+          <label for="evt-description">Description:</label>
+          <textarea id="evt-description" name="evt-description"></textarea>
+          <label for="evt-type">Type:</label>
+          <input type="text" id="evt-type" name="evt-type" placeholder="meetup, swap, workshop">
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="explore-btn success">
+            <i class="bi bi-save me-1" aria-hidden="true"></i>Save Event</button>
+          <button type="button" id="cancel-event-edit" class="explore-btn danger delete-btn">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 

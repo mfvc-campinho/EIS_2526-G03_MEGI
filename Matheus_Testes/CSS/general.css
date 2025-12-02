@@ -1271,6 +1271,20 @@ button {
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.18);
 }
 
+/* Ensure item like buttons use the same green "active" style across pages */
+.item-like-btn.active {
+  background: linear-gradient(90deg, #10b981, #34d399) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.18);
+}
+
+/* Make sure the like count inside an active item button is visible */
+.item-like-btn.active .like-count {
+  color: #ffffff;
+  font-weight: 700;
+}
+
 /* ===============================
    🔹 ITEMS PREVIEW
 =============================== */

@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <h3>${ev.name}</h3>
           <p class="event-meta">${formatEventDate(ev.date)} &middot; ${ev.localization || "To be announced"}</p>
         </div>
-        <button class="explore-btn ghost" onclick="window.location.href='event_page.html?id=${ev.id}&returnUrl=${encodedReturnUrl}'">
+        <button class="explore-btn ghost" onclick="(function(e){ if ((typeof openEventDetail === 'function' || (window.openEventDetail && typeof window.openEventDetail === 'function')) && document.getElementById('event-modal')){ e.preventDefault(); (window.openEventDetail || openEventDetail)('${ev.id}'); } else { window.location.href='event_page.html?id=${ev.id}&returnUrl=${encodedReturnUrl}'; } })(event)">
           <i class="bi bi-calendar-event"></i> View event
         </button>
       </article>

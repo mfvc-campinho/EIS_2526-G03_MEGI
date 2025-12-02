@@ -1348,7 +1348,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : "No ratings yet. Sign in after attending to rate this event.";
       } else if (sessionValue !== undefined) {
         modalRatingLabel.textContent =
-          `Demo rating selected: ${sessionValue}/5. (Not saved.) ` +
+          `Your rating: ${sessionValue}/5. ` +
           (avg ? `Current average: ${avg.toFixed(1)} (${count}).` : "");
       } else if (userRating) {
         modalRatingLabel.textContent =

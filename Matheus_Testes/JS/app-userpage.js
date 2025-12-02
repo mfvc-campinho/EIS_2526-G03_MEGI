@@ -792,6 +792,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const name = profileForm.querySelector('#user-form-name')?.value || '';
     const photo = profileForm.querySelector('#user-form-photo')?.value || '';
     const dob = profileForm.querySelector('#user-form-dob')?.value || '';
+    const email = profileForm.querySelector('#user-form-email')?.value || '';
 
     try {
       // include member_since if present in currentUser/local data
@@ -801,7 +802,7 @@ document.addEventListener("DOMContentLoaded", () => {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ action: 'update', id, name, photo, dob, member_since })
+        body: new URLSearchParams({ action: 'update', id, name, photo, dob, email, member_since })
       });
       if (resp.status === 401) {
         alert('Not authorized. Please sign in again.');

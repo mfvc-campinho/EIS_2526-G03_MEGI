@@ -1027,8 +1027,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isPast) {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
+          // Show stars according to the user's own rating only.
+          // The average is shown in the summary text; do not color stars by average.
           let classes = "star";
-          if (ratingAvg && i <= Math.round(ratingAvg)) classes += " filled";
           if (userRating && i <= userRating) classes += " user-rating";
           classes += " clickable";
           stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
@@ -1282,9 +1283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         star.textContent = "★";
         star.classList.add("star");
 
-        if (avg && i <= Math.round(avg)) {
-          star.classList.add("filled");
-        }
+        // Only highlight stars that reflect the current user's rating.
         if (userRating && i <= userRating) {
           star.classList.add("user-rating");
         }
@@ -1405,13 +1404,62 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    sessionRatings[eventId] = value;
-    alert("This prototype stores ratings locally in your browser and they are not persisted to the server.");
-    const preserveReturnUrl = modalReturnUrl;
-    renderEvents();
-    if (eventDetailModal && eventDetailModal.style.display === "flex") {
-      openEventDetail(eventId, { returnUrl: preserveReturnUrl });
-    }
+    // Persist rating to server. If user clicks the same star again, remove rating (unrate).
+    (async () => {
+      try {
+        const dataset = loadData();
+        const eventLinks = getEventUserLinks(ev, dataset);
+        const currentUser = getCurrentUser();
+        const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;
+        const sessionValue = currentUser && currentUser.active ? sessionRatings[eventId] : undefined;
+        const userRating = currentUser && currentUser.active ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null) : storedUserRating ?? null;
+
+        const isRemoving = userRating !== null && Number(userRating) === Number(value);
+        const action = isRemoving ? 'unrateEvent' : 'rateEvent';
+
+        const bodyParams = new URLSearchParams({ action, eventId });
+        if (!isRemoving) bodyParams.append('rating', String(value));
+
+        const resp = await fetch('../PHP/crud/ratings.php', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: bodyParams
+        });
+        if (resp.status === 401) {
+          alert('Not authorized. Please sign in to rate events.');
+          return;
+        }
+        const json = await resp.json().catch(() => null);
+        if (!json || !json.success) {
+          console.warn('Rate event failed', json);
+          alert('Unable to save rating. Please try again.');
+          return;
+        }
+
+        // reload server data and re-render
+        try {
+          const ga = await fetch('../PHP/get_all.php');
+          if (ga.status === 200) {
+            const serverData = await ga.json().catch(() => null);
+            if (serverData) {
+              try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to reload server data after rating', e);
+        }
+
+        const preserveReturnUrl = modalReturnUrl;
+        renderEvents();
+        if (eventDetailModal && eventDetailModal.style.display === "flex") {
+          openEventDetail(eventId, { returnUrl: preserveReturnUrl });
+        }
+      } catch (err) {
+        console.error('Rating failed', err);
+        alert('Network error saving rating.');
+      }
+    })();
   }
 
   // ---------- EDIT / CREATE EVENT ----------
@@ -1550,7 +1598,54 @@ document.addEventListener("DOMContentLoaded", () => {
     const ev = (data.events || []).find(x => x.id === id);
     if (!ev) return alert("Event not found.");
 
-    alert("RSVP actions in this prototype are simulated and not persisted. Sign in to RSVP in a full deployment.");
+    (async () => {
+      try {
+        // Find if current user already has an entry in event_ratings for this event
+        const dataset = loadData();
+        const existing = Array.isArray(dataset.eventsUsers)
+          ? dataset.eventsUsers.find(eu => eu.eventId === id && eu.userId === user.id)
+          : null;
+
+        const action = existing ? 'unrsvp' : 'rsvp';
+        const resp = await fetch('../PHP/crud/ratings.php', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ action, eventId: id })
+        });
+        if (resp.status === 401) {
+          alert('Not authorized. Please sign in again.');
+          return;
+        }
+        const json = await resp.json().catch(() => null);
+        if (!json || !json.success) {
+          console.warn('RSVP failed', json);
+          alert('Unable to update RSVP. Please try again.');
+          return;
+        }
+
+        // reload server data and re-render
+        try {
+          const ga = await fetch('../PHP/get_all.php');
+          if (ga.status === 200) {
+            const serverData = await ga.json().catch(() => null);
+            if (serverData) {
+              try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to reload server data after RSVP', e);
+        }
+
+        renderEvents();
+        if (eventDetailModal && eventDetailModal.style.display === 'flex') {
+          openEventDetail(id, {});
+        }
+      } catch (err) {
+        console.error('RSVP failed', err);
+        alert('Network error while updating RSVP.');
+      }
+    })();
   }
 
   // ---------- TABS / FILTER HOOKUP ----------

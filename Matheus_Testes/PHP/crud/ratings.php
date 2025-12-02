@@ -105,6 +105,133 @@ if ($action === 'likeEvent' || $action === 'unlikeEvent') {
   respond($res);
 }
 
+// RSVP: use the event_ratings table to record attendance (rating may be NULL)
+if ($action === 'rsvp' || $action === 'unrsvp') {
+  $eventId = $_POST['eventId'] ?? null;
+  if (!$userId || !$eventId) {
+    http_response_code(400);
+    respond(['error' => 'missing params']);
+  }
+
+  if ($action === 'rsvp') {
+    // Insert or update a row for this user/event preserving any existing rating
+    $stmt = $mysqli->prepare('SELECT rating FROM event_ratings WHERE event_id = ? AND user_id = ? LIMIT 1');
+    $stmt->bind_param('ss', $eventId, $userId);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $existing = $res->fetch_assoc();
+    $stmt->close();
+
+    if ($existing) {
+      // already exists - nothing to do
+      respond(['success' => true, 'rsvp' => true]);
+    }
+
+    $ins = $mysqli->prepare('INSERT INTO event_ratings (event_id,user_id,rating) VALUES (?,?,NULL)');
+    if ($ins === false) respond(['error' => 'db prepare failed']);
+    $ins->bind_param('ss', $eventId, $userId);
+    $ok = $ins->execute();
+    $ins->close();
+    respond(['success' => (bool)$ok, 'rsvp' => (bool)$ok]);
+  } else {
+    // unrsvp -> remove any event_ratings row for this user/event
+    $del = $mysqli->prepare('DELETE FROM event_ratings WHERE event_id = ? AND user_id = ?');
+    if ($del === false) respond(['error' => 'db prepare failed']);
+    $del->bind_param('ss', $eventId, $userId);
+    $ok = $del->execute();
+    $del->close();
+    respond(['success' => (bool)$ok, 'rsvp' => false]);
+  }
+}
+
+// Unrate an event (remove rating but keep RSVP if present)
+if ($action === 'unrateEvent') {
+  $eventId = $_POST['eventId'] ?? null;
+  if (!$userId || !$eventId) {
+    http_response_code(400);
+    respond(['error' => 'missing params']);
+  }
+
+  // Only clear rating (set to NULL) if a row exists
+  $stmt = $mysqli->prepare('SELECT rating FROM event_ratings WHERE event_id = ? AND user_id = ? LIMIT 1');
+  if ($stmt === false) respond(['error' => 'db prepare failed']);
+  $stmt->bind_param('ss', $eventId, $userId);
+  $stmt->execute();
+  $res = $stmt->get_result();
+  $existing = $res->fetch_assoc();
+  $stmt->close();
+
+  if ($existing) {
+    $up = $mysqli->prepare('UPDATE event_ratings SET rating = NULL WHERE event_id = ? AND user_id = ?');
+    if ($up === false) respond(['error' => 'db prepare failed']);
+    $up->bind_param('ss', $eventId, $userId);
+    $ok = $up->execute();
+    $up->close();
+  } else {
+    // nothing to unrate
+    respond(['success' => true, 'avg' => null, 'count' => 0]);
+  }
+
+  // Return updated aggregate for this event
+  $agg = $mysqli->prepare('SELECT AVG(rating) as avg_rating, COUNT(rating) as count_rating FROM event_ratings WHERE event_id = ? AND rating IS NOT NULL');
+  if ($agg === false) respond(['error' => 'db prepare failed']);
+  $agg->bind_param('s', $eventId);
+  $agg->execute();
+  $r = $agg->get_result()->fetch_assoc();
+  $agg->close();
+  $avg = $r['avg_rating'] !== null ? floatval($r['avg_rating']) : null;
+  $count = intval($r['count_rating']);
+  respond(['success' => true, 'avg' => $avg, 'count' => $count]);
+}
+
+// Rate an event (1-5)
+if ($action === 'rateEvent') {
+  $eventId = $_POST['eventId'] ?? null;
+  $rating = isset($_POST['rating']) ? intval($_POST['rating']) : null;
+  if (!$userId || !$eventId || $rating === null) {
+    http_response_code(400);
+    respond(['error' => 'missing params']);
+  }
+  if ($rating < 1 || $rating > 5) {
+    http_response_code(400);
+    respond(['error' => 'invalid rating']);
+  }
+
+  // Upsert rating in event_ratings
+  $stmt = $mysqli->prepare('SELECT rating FROM event_ratings WHERE event_id = ? AND user_id = ? LIMIT 1');
+  if ($stmt === false) respond(['error' => 'db prepare failed']);
+  $stmt->bind_param('ss', $eventId, $userId);
+  $stmt->execute();
+  $res = $stmt->get_result();
+  $existing = $res->fetch_assoc();
+  $stmt->close();
+
+  if ($existing) {
+    $up = $mysqli->prepare('UPDATE event_ratings SET rating = ? WHERE event_id = ? AND user_id = ?');
+    if ($up === false) respond(['error' => 'db prepare failed']);
+    $up->bind_param('iss', $rating, $eventId, $userId);
+    $ok = $up->execute();
+    $up->close();
+  } else {
+    $ins = $mysqli->prepare('INSERT INTO event_ratings (event_id,user_id,rating) VALUES (?,?,?)');
+    if ($ins === false) respond(['error' => 'db prepare failed']);
+    $ins->bind_param('ssi', $eventId, $userId, $rating);
+    $ok = $ins->execute();
+    $ins->close();
+  }
+
+  // Return updated aggregate for this event
+  $agg = $mysqli->prepare('SELECT AVG(rating) as avg_rating, COUNT(rating) as count_rating FROM event_ratings WHERE event_id = ? AND rating IS NOT NULL');
+  if ($agg === false) respond(['error' => 'db prepare failed']);
+  $agg->bind_param('s', $eventId);
+  $agg->execute();
+  $r = $agg->get_result()->fetch_assoc();
+  $agg->close();
+  $avg = $r['avg_rating'] !== null ? floatval($r['avg_rating']) : null;
+  $count = intval($r['count_rating']);
+  respond(['success' => true, 'avg' => $avg, 'count' => $count]);
+}
+
 // Return user's likes across the three tables
 if ($action === 'getUserLikes') {
   if (!$userId) {

@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../config/db.php';
-// Use sessions for authentication when updating profiles
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -44,14 +43,12 @@ if ($method === 'POST') {
     $dob = trim($_POST['dob'] ?? '') ?: null;
     $member = trim($_POST['member_since'] ?? '') ?: null;
 
-    // Basic validation
     if ($id === '' || $name === '' || $email === '' || $password === '') {
       http_response_code(400);
       echo json_encode(['error' => 'missing required fields']);
       exit;
     }
 
-    // Prevent duplicate email or user_id
     $chk = $mysqli->prepare('SELECT user_id FROM users WHERE email = ? OR user_id = ? LIMIT 1');
     if ($chk) {
       $chk->bind_param('ss', $email, $id);
@@ -90,25 +87,88 @@ if ($method === 'POST') {
       echo json_encode(['error' => 'not authorized']);
       exit;
     }
-    $name = $_POST['name'] ?? null;
-    $photo = $_POST['photo'] ?? null;
-    $dob = $_POST['dob'] ?? null;
-    $member = $_POST['member_since'] ?? null;
-    $stmt = $mysqli->prepare('UPDATE users SET user_name=?, user_photo=?, date_of_birth=?, member_since=? WHERE user_id=?');
-    if (!$stmt) {
-      http_response_code(500);
-      echo json_encode(['success' => false, 'error' => 'prepare failed', 'mysqli_error' => $mysqli->error]);
+
+    // Build dynamic update to avoid overwriting fields with empty values
+    $fields = [];
+    $types = '';
+    $params = [];
+
+    if (array_key_exists('name', $_POST)) {
+      $fields[] = 'user_name = ?';
+      $types .= 's';
+      $params[] = $_POST['name'];
+    }
+    if (array_key_exists('photo', $_POST)) {
+      $fields[] = 'user_photo = ?';
+      $types .= 's';
+      $params[] = $_POST['photo'];
+    }
+    if (array_key_exists('dob', $_POST)) {
+      $fields[] = 'date_of_birth = ?';
+      $types .= 's';
+      $params[] = ($_POST['dob'] !== '') ? $_POST['dob'] : null;
+    }
+    if (array_key_exists('member_since', $_POST) && $_POST['member_since'] !== '') {
+      $ms = trim($_POST['member_since']);
+      if (preg_match('/^\d{4}$/', $ms) && intval($ms) >= 1900 && intval($ms) <= 2100) {
+        $fields[] = 'member_since = ?';
+        $types .= 's';
+        $params[] = $ms;
+      }
+    }
+    if (array_key_exists('email', $_POST)) {
+      $emailVal = trim($_POST['email']);
+      if ($emailVal !== '') {
+        if (!filter_var($emailVal, FILTER_VALIDATE_EMAIL)) {
+          http_response_code(400);
+          echo json_encode(['success' => false, 'error' => 'invalid email']);
+          exit;
+        }
+        $chk = $mysqli->prepare('SELECT user_id FROM users WHERE email = ? AND user_id <> ? LIMIT 1');
+        if ($chk) {
+          $chk->bind_param('ss', $emailVal, $id);
+          $chk->execute();
+          $res = $chk->get_result();
+          if ($res && $res->fetch_assoc()) {
+            http_response_code(409);
+            echo json_encode(['success' => false, 'error' => 'email exists']);
+            $chk->close();
+            exit;
+          }
+          $chk->close();
+        }
+        $fields[] = 'email = ?';
+        $types .= 's';
+        $params[] = $emailVal;
+      }
+    }
+
+    if (empty($fields)) {
+      echo json_encode(['success' => true, 'message' => 'no changes']);
       exit;
     }
-    $stmt->bind_param('sssss', $name, $photo, $dob, $member, $id);
+
+    $sql = 'UPDATE users SET ' . implode(', ', $fields) . ' WHERE user_id = ?';
+    $types .= 's';
+    $params[] = $id;
+    $stmt = $mysqli->prepare($sql);
+    if (!$stmt) {
+      http_response_code(500);
+      echo json_encode(['success' => false, 'error' => 'prepare failed', 'mysqli_error' => $mysqli->error, 'sql' => $sql]);
+      exit;
+    }
+    // bind params
+    $bindNames = [];
+    $bindNames[] = $types;
+    for ($i = 0; $i < count($params); $i++) $bindNames[] = &$params[$i];
+    call_user_func_array([$stmt, 'bind_param'], $bindNames);
     $ok = $stmt->execute();
     $affected = $stmt->affected_rows;
     $stmtErr = $stmt->error;
     $stmt->close();
     if ($ok) {
-      // Refresh session user info so auth.php reflects changes
-      $_SESSION['user']['name'] = $name;
-      $_SESSION['user']['photo'] = $photo;
+      if (isset($_POST['name'])) $_SESSION['user']['name'] = $_POST['name'];
+      if (isset($_POST['photo'])) $_SESSION['user']['photo'] = $_POST['photo'];
       echo json_encode(['success' => true, 'user' => $_SESSION['user'], 'affected_rows' => $affected, 'stmt_error' => $stmtErr]);
     } else {
       http_response_code(500);

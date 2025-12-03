@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 01-Dez-2025 às 18:40
+-- Tempo de geração: 03-Dez-2025 às 23:22
 -- Versão do servidor: 10.4.32-MariaDB
--- versão do PHP: 8.2.12
+-- versão do PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -92,6 +92,8 @@ INSERT INTO `collection_items` (`collection_id`, `item_id`) VALUES
 ('escudos-gold', 'escudos-item-1'),
 ('jerseys', 'jerseys-item-1'),
 ('jerseys', 'jerseys-item-2'),
+('pokemon', 'jerseys-item-1'),
+('pokemon', 'jerseys-item-2'),
 ('pokemon', 'pokemon-item-1'),
 ('pokemon', 'pokemon-item-2');
 
@@ -148,10 +150,12 @@ INSERT INTO `event_ratings` (`event_id`, `user_id`, `rating`, `collection_id`) V
 ('escudos-event-1', 'cristina_feira', 5, NULL),
 ('escudos-event-1', 'rui_frio', NULL, NULL),
 ('escudos-event-2', 'cristina_feira', NULL, NULL),
+('escudos-event-2', 'rui_frio', 5, NULL),
 ('jerseys-event-1', 'rui_frio', NULL, NULL),
+('jerseys-event-2', 'rui_frio', 5, NULL),
 ('pokemon-event-1', 'cristina_feira', 5, NULL),
 ('pokemon-event-1', 'rui_frio', 5, NULL),
-('pokemon-event-2', 'rui_frio', NULL, NULL);
+('pokemon-event-2', 'rui_frio', 5, NULL);
 
 -- --------------------------------------------------------
 
@@ -179,8 +183,8 @@ CREATE TABLE `items` (
 INSERT INTO `items` (`item_id`, `name`, `importance`, `weight`, `price`, `acquisition_date`, `created_at`, `updated_at`, `image`, `collection_id`) VALUES
 ('escudos-item-1', '1950 Escudo', 'High', 4.500, 120.00, '2020-03-15', '2020-03-01 00:00:00', '2020-03-15 00:00:00', '../images/escudo1950.jpg', 'escudos'),
 ('escudos-item-2', '1960 Escudo', 'Very High', 5.100, 250.00, '2021-07-10', '2021-06-20 00:00:00', '2021-07-10 00:00:00', '../images/escudo1960.jpg', 'escudos'),
-('jerseys-item-1', 'Deco\'s FC Porto 2004 Jersey', 'High', 0.400, 450.00, '2020-03-12', '2020-02-20 00:00:00', '2020-03-12 00:00:00', '../images/porto.jpg', 'jerseys'),
-('jerseys-item-2', 'Cardozo\'s Benfica 2010 Jersey', 'High', 0.400, 400.00, '2021-09-03', '2021-08-10 00:00:00', '2021-09-03 00:00:00', '../images/benfica.jpg', 'jerseys'),
+('jerseys-item-1', 'Deco\'s FC Porto 2004 Jersey', 'High', 0.400, 450.00, '2020-03-12', '2020-02-20 00:00:00', '2020-03-12 00:00:00', '../images/porto.jpg', 'pokemon'),
+('jerseys-item-2', 'Cardozo\'s Benfica 2010 Jersey', 'High', 0.400, 400.00, '2021-09-03', '2021-08-10 00:00:00', '2021-09-03 00:00:00', '../images/benfica.jpg', 'pokemon'),
 ('pokemon-item-1', 'Pikachu Base Set', 'Low', 0.005, 150.00, '2021-06-18', '2021-06-01 00:00:00', '2021-06-18 00:00:00', '../images/pikachuset.JPG', 'pokemon'),
 ('pokemon-item-2', 'Charizard Holo', 'Very High', 0.005, 2000.00, '2022-04-22', '2022-03-30 00:00:00', '2022-04-22 00:00:00', '../images/charizard.jpg', 'pokemon');
 
@@ -206,7 +210,32 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `user_name`, `user_photo`, `date_of_birth`, `email`, `password`, `member_since`) VALUES
 ('cristina_feira', 'Cristina Feira', '../images/cristina.jpg', '1985-05-20', 'collector.main@email.com', 'password123', '2015'),
-('rui_frio', 'Rui Frio', '../images/rui.jpg', '1982-07-14', 'rui.frio@email.com', 'password123', '2018');
+('rui_frio', 'Rui Frio', '../images/rui.jpg', '1982-07-14', 'rui.frio@email.com', '$2y$10$F61AxUcubEgZ61FVB8IXWe3u7rScokh4ojE2XMVvbzBeNLC.HAagC', '2018');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `user_event_ratings`
+--
+
+CREATE TABLE `user_event_ratings` (
+  `id` int(11) NOT NULL,
+  `event_id` varchar(255) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `rating` tinyint(4) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `user_event_ratings`
+--
+
+INSERT INTO `user_event_ratings` (`id`, `event_id`, `user_id`, `rating`, `created_at`, `updated_at`) VALUES
+(1, 'pokemon-event-1', 'rui_frio', 5, '2025-12-03 22:09:25', '2025-12-03 22:09:25'),
+(2, 'escudos-event-2', 'rui_frio', 5, '2025-12-03 22:09:50', '2025-12-03 22:09:50'),
+(3, 'jerseys-event-2', 'rui_frio', 4, '2025-12-03 22:09:53', '2025-12-03 22:09:53'),
+(4, 'pokemon-event-2', 'rui_frio', 4, '2025-12-03 22:09:55', '2025-12-03 22:12:45');
 
 -- --------------------------------------------------------
 
@@ -222,62 +251,49 @@ CREATE TABLE `user_followers` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `user_ratings_collections`
+-- Estrutura da tabela `user_liked_collections`
 --
 
-CREATE TABLE `user_ratings_collections` (
-  `user_id` varchar(100) NOT NULL,
-  `last_updated` datetime NOT NULL,
-  `liked_collections` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`liked_collections`))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `user_ratings_collections`
---
-
-INSERT INTO `user_ratings_collections` (`user_id`, `last_updated`, `liked_collections`) VALUES
-('cristina_feira', '2025-09-30 00:00:00', '[\"escudos\", \"escudos-gold\", \"jerseys\"]'),
-('rui_frio', '2025-08-12 00:00:00', '[\"pokemon\",\"jerseys\",\"escudos\"]');
+CREATE TABLE `user_liked_collections` (
+  `id` int(11) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `liked_collection_id` varchar(255) NOT NULL,
+  `last_updated` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `user_ratings_events`
+-- Estrutura da tabela `user_liked_events`
 --
 
-CREATE TABLE `user_ratings_events` (
-  `user_id` varchar(100) NOT NULL,
-  `last_updated` datetime NOT NULL,
-  `liked_events` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`liked_events`))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `user_ratings_events`
---
-
-INSERT INTO `user_ratings_events` (`user_id`, `last_updated`, `liked_events`) VALUES
-('cristina_feira', '2025-09-30 00:00:00', '[\"pokemon-event-1\"]'),
-('rui_frio', '2025-08-12 00:00:00', '[\"pokemon-event-1\", \"jerseys-event-2\"]');
+CREATE TABLE `user_liked_events` (
+  `id` int(11) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `liked_event_id` varchar(255) NOT NULL,
+  `last_updated` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `user_ratings_items`
+-- Estrutura da tabela `user_liked_items`
 --
 
-CREATE TABLE `user_ratings_items` (
-  `user_id` varchar(100) NOT NULL,
-  `last_updated` datetime NOT NULL,
-  `liked_items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`liked_items`))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `user_liked_items` (
+  `id` int(11) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `liked_item_id` varchar(255) NOT NULL,
+  `last_updated` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Extraindo dados da tabela `user_ratings_items`
+-- Extraindo dados da tabela `user_liked_items`
 --
 
-INSERT INTO `user_ratings_items` (`user_id`, `last_updated`, `liked_items`) VALUES
-('cristina_feira', '2025-09-30 00:00:00', '[\"escudos-item-1\", \"escudos-item-2\", \"pokemon-item-1\", \"jerseys-item-1\"]'),
-('rui_frio', '2025-08-12 00:00:00', '[\"pokemon-item-1\", \"pokemon-item-2\", \"jerseys-item-2\"]');
+INSERT INTO `user_liked_items` (`id`, `user_id`, `liked_item_id`, `last_updated`) VALUES
+(5, 'rui_frio', 'jerseys-item-1', '2025-12-03 22:53:16'),
+(6, 'rui_frio', 'jerseys-item-2', '2025-12-03 22:53:16');
 
 --
 -- Índices para tabelas despejadas
@@ -334,6 +350,13 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Índices para tabela `user_event_ratings`
+--
+ALTER TABLE `user_event_ratings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_event_user` (`event_id`,`user_id`);
+
+--
 -- Índices para tabela `user_followers`
 --
 ALTER TABLE `user_followers`
@@ -341,22 +364,53 @@ ALTER TABLE `user_followers`
   ADD KEY `following_id` (`following_id`);
 
 --
--- Índices para tabela `user_ratings_collections`
+-- Índices para tabela `user_liked_collections`
 --
-ALTER TABLE `user_ratings_collections`
-  ADD PRIMARY KEY (`user_id`,`last_updated`);
+ALTER TABLE `user_liked_collections`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_user_collection` (`user_id`,`liked_collection_id`);
 
 --
--- Índices para tabela `user_ratings_events`
+-- Índices para tabela `user_liked_events`
 --
-ALTER TABLE `user_ratings_events`
-  ADD PRIMARY KEY (`user_id`,`last_updated`);
+ALTER TABLE `user_liked_events`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_user_event` (`user_id`,`liked_event_id`);
 
 --
--- Índices para tabela `user_ratings_items`
+-- Índices para tabela `user_liked_items`
 --
-ALTER TABLE `user_ratings_items`
-  ADD PRIMARY KEY (`user_id`,`last_updated`);
+ALTER TABLE `user_liked_items`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_user_item` (`user_id`,`liked_item_id`);
+
+--
+-- AUTO_INCREMENT de tabelas despejadas
+--
+
+--
+-- AUTO_INCREMENT de tabela `user_event_ratings`
+--
+ALTER TABLE `user_event_ratings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `user_liked_collections`
+--
+ALTER TABLE `user_liked_collections`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `user_liked_events`
+--
+ALTER TABLE `user_liked_events`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `user_liked_items`
+--
+ALTER TABLE `user_liked_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restrições para despejos de tabelas

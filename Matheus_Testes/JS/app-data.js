@@ -130,87 +130,86 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setUserItemLike(ownerId, itemId, isLiked) {
     if (!ownerId || !itemId) return;
-    const data = loadData();
-    const userShowcase = findOrCreateUserShowcase(data, ownerId);
-    if (!userShowcase) return;
-    userShowcase.likedItems = userShowcase.likedItems || [];
-    const likedSet = new Set(userShowcase.likedItems);
-
-    if (isLiked) {
-      likedSet.add(itemId);
-    } else {
-      likedSet.delete(itemId);
-    }
-    userShowcase.likedItems = Array.from(likedSet);
-    saveData(data);
-    // Persist to server (best-effort, async). Backend: PHP/crud/ratings.php
-    try {
-      fetch('../PHP/crud/ratings.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ action: isLiked ? 'likeItem' : 'unlikeItem', userId: ownerId, itemId: itemId })
-      }).then(resp => resp.json()).then(j => {
-        if (!j || j.error || !j.success) console.warn('ratings: server responded with error', j);
-      }).catch(e => console.warn('ratings: network error', e));
-    } catch (e) {
-      console.warn('ratings: unable to POST', e);
-    }
+    // Persist directly to server; rely on get_all.php to refresh local cache
+    fetch('../PHP/crud/ratings.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      credentials: 'same-origin',
+      body: new URLSearchParams({ action: isLiked ? 'likeItem' : 'unlikeItem', itemId })
+    })
+      .then(resp => resp.json())
+      .then(async (j) => {
+        if (!j || j.error || !j.success) {
+          console.warn('ratings: server responded with error', j);
+          return;
+        }
+        // Refresh cached data from server so UI mirrors DB
+        try {
+          const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
+          if (res.ok) {
+            const json = await res.json();
+            saveData(json);
+          }
+        } catch (err) {
+          console.warn('ratings: refresh failed', err);
+        }
+      })
+      .catch(e => console.warn('ratings: network error', e));
   }
 
   function setUserEventLike(ownerId, eventId, isLiked) {
     if (!ownerId || !eventId) return;
-    const data = loadData();
-    const userShowcase = findOrCreateUserShowcase(data, ownerId);
-    if (!userShowcase) return;
-    userShowcase.likedEvents = userShowcase.likedEvents || [];
-    const likedSet = new Set(userShowcase.likedEvents);
-
-    if (isLiked) {
-      likedSet.add(eventId);
-    } else {
-      likedSet.delete(eventId);
-    }
-    userShowcase.likedEvents = Array.from(likedSet);
-    saveData(data);
-    // Persist to server (best-effort, async)
-    try {
-      fetch('../PHP/crud/ratings.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ action: isLiked ? 'likeEvent' : 'unlikeEvent', userId: ownerId, eventId: eventId })
-      }).then(resp => resp.json()).then(j => {
-        if (!j || j.error || !j.success) console.warn('ratings: server responded with error', j);
-      }).catch(e => console.warn('ratings: network error', e));
-    } catch (e) {
-      console.warn('ratings: unable to POST', e);
-    }
+    fetch('../PHP/crud/ratings.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      credentials: 'same-origin',
+      body: new URLSearchParams({ action: isLiked ? 'likeEvent' : 'unlikeEvent', eventId })
+    })
+      .then(resp => resp.json())
+      .then(async (j) => {
+        if (!j || j.error || !j.success) {
+          console.warn('ratings: server responded with error', j);
+          return;
+        }
+        try {
+          const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
+          if (res.ok) {
+            const json = await res.json();
+            saveData(json);
+          }
+        } catch (err) {
+          console.warn('ratings: refresh failed', err);
+        }
+      })
+      .catch(e => console.warn('ratings: network error', e));
   }
 
   // Like/unlike a collection for a user (mirror of items/events)
   function setUserCollectionLike(ownerId, collectionId, isLiked) {
     if (!ownerId || !collectionId) return;
-    const data = loadData();
-    const userShowcase = findOrCreateUserShowcase(data, ownerId);
-    if (!userShowcase) return;
-    userShowcase.likes = userShowcase.likes || [];
-    const likedSet = new Set(userShowcase.likes);
-
-    if (isLiked) likedSet.add(collectionId); else likedSet.delete(collectionId);
-    userShowcase.likes = Array.from(likedSet);
-    saveData(data);
-
-    // Persist to server (best-effort)
-    try {
-      fetch('../PHP/crud/ratings.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ action: isLiked ? 'likeCollection' : 'unlikeCollection', userId: ownerId, collectionId })
-      }).then(resp => resp.json()).then(j => {
-        if (!j || j.error || !j.success) console.warn('ratings: server responded with error', j);
-      }).catch(e => console.warn('ratings: network error', e));
-    } catch (e) {
-      console.warn('ratings: unable to POST', e);
-    }
+    fetch('../PHP/crud/ratings.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      credentials: 'same-origin',
+      body: new URLSearchParams({ action: isLiked ? 'likeCollection' : 'unlikeCollection', collectionId })
+    })
+      .then(resp => resp.json())
+      .then(async (j) => {
+        if (!j || j.error || !j.success) {
+          console.warn('ratings: server responded with error', j);
+          return;
+        }
+        try {
+          const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
+          if (res.ok) {
+            const json = await res.json();
+            saveData(json);
+          }
+        } catch (err) {
+          console.warn('ratings: refresh failed', err);
+        }
+      })
+      .catch(e => console.warn('ratings: network error', e));
   }
 
   function getUserFollowing(followerId) {

@@ -114,19 +114,37 @@ $collectionsUsers = array_map(function ($c) {
   return ['collectionId' => $c['id'], 'ownerId' => $c['ownerId']];
 }, $collections);
 
-// 8) eventsUsers (from event_ratings)
-$erRows = fetch_all($mysqli, "SELECT event_id,user_id,rating,collection_id FROM event_ratings");
+// 8) eventsUsers (from event_ratings or user_event_ratings if present)
+$hasEventRatingsTable = table_exists($mysqli, 'user_event_ratings');
+$erRows = $hasEventRatingsTable
+  ? fetch_all($mysqli, "SELECT event_id,user_id,rating,collection_id FROM user_event_ratings")
+  : fetch_all($mysqli, "SELECT event_id,user_id,rating,collection_id FROM event_ratings");
 $eventsUsers = array_map(function ($r) {
   return ['eventId' => $r['event_id'], 'userId' => $r['user_id'], 'rating' => $r['rating'], 'collectionId' => $r['collection_id']];
 }, $erRows);
 
 // 9) userShowcases (migrated to separate tables)
 // Combine data from user_ratings_collections, user_ratings_events, user_ratings_items
+// If dedicated per-like tables exist (user_liked_*), prefer those.
 $userShowcases = [];
 $showcaseMap = []; // ownerId => ['ownerId'=>..., 'lastUpdated'=>..., 'picks'=>[], 'likes'=>[], 'likedItems'=>[], 'likedEvents'=>[]]
 
-// collections
-$urc = fetch_all($mysqli, "SELECT user_id,last_updated,liked_collections FROM user_ratings_collections");
+function table_exists($mysqli, $tableName)
+{
+  $t = $mysqli->real_escape_string($tableName);
+  $res = $mysqli->query("SHOW TABLES LIKE '{$t}'");
+  return $res && $res->num_rows > 0;
+}
+
+// Prefer per-row tables when available
+$hasLikedCollectionsTable = table_exists($mysqli, 'user_liked_collections');
+$hasLikedItemsTable = table_exists($mysqli, 'user_liked_items');
+$hasLikedEventsTable = table_exists($mysqli, 'user_liked_events');
+
+// collections (prefer per-like table; only fall back to legacy if needed)
+$urc = $hasLikedCollectionsTable
+  ? fetch_all($mysqli, "SELECT user_id,last_updated,liked_collection_id as liked_collections FROM user_liked_collections")
+  : fetch_all($mysqli, "SELECT user_id,last_updated,liked_collections FROM user_ratings_collections");
 foreach ($urc as $r) {
   $uid = $r['user_id'] ?? null;
   if (!$uid) continue;
@@ -138,13 +156,20 @@ foreach ($urc as $r) {
     $showcaseMap[$uid]['lastUpdated'] = $r['last_updated'];
   }
   if (!empty($r['liked_collections'])) {
-    $decoded = json_decode($r['liked_collections'], true);
-    if (is_array($decoded)) $showcaseMap[$uid]['likes'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likes'], $decoded)));
+    $raw = $r['liked_collections'];
+    $decoded = json_decode($raw, true);
+    if (is_array($decoded)) {
+      $showcaseMap[$uid]['likes'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likes'], $decoded)));
+    } else {
+      $showcaseMap[$uid]['likes'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likes'], [$raw])));
+    }
   }
 }
 
 // events
-$ure = fetch_all($mysqli, "SELECT user_id,last_updated,liked_events FROM user_ratings_events");
+$ure = $hasLikedEventsTable
+  ? fetch_all($mysqli, "SELECT user_id,last_updated,liked_event_id as liked_events FROM user_liked_events")
+  : fetch_all($mysqli, "SELECT user_id,last_updated,liked_events FROM user_ratings_events");
 foreach ($ure as $r) {
   $uid = $r['user_id'] ?? null;
   if (!$uid) continue;
@@ -155,13 +180,20 @@ foreach ($ure as $r) {
     $showcaseMap[$uid]['lastUpdated'] = $r['last_updated'];
   }
   if (!empty($r['liked_events'])) {
-    $decoded = json_decode($r['liked_events'], true);
-    if (is_array($decoded)) $showcaseMap[$uid]['likedEvents'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedEvents'], $decoded)));
+    $raw = $r['liked_events'];
+    $decoded = json_decode($raw, true);
+    if (is_array($decoded)) {
+      $showcaseMap[$uid]['likedEvents'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedEvents'], $decoded)));
+    } else {
+      $showcaseMap[$uid]['likedEvents'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedEvents'], [$raw])));
+    }
   }
 }
 
 // items
-$uri = fetch_all($mysqli, "SELECT user_id,last_updated,liked_items FROM user_ratings_items");
+$uri = $hasLikedItemsTable
+  ? fetch_all($mysqli, "SELECT user_id,last_updated,liked_item_id as liked_items FROM user_liked_items")
+  : fetch_all($mysqli, "SELECT user_id,last_updated,liked_items FROM user_ratings_items");
 foreach ($uri as $r) {
   $uid = $r['user_id'] ?? null;
   if (!$uid) continue;
@@ -172,8 +204,13 @@ foreach ($uri as $r) {
     $showcaseMap[$uid]['lastUpdated'] = $r['last_updated'];
   }
   if (!empty($r['liked_items'])) {
-    $decoded = json_decode($r['liked_items'], true);
-    if (is_array($decoded)) $showcaseMap[$uid]['likedItems'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedItems'], $decoded)));
+    $raw = $r['liked_items'];
+    $decoded = json_decode($raw, true);
+    if (is_array($decoded)) {
+      $showcaseMap[$uid]['likedItems'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedItems'], $decoded)));
+    } else {
+      $showcaseMap[$uid]['likedItems'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedItems'], [$raw])));
+    }
   }
 }
 
@@ -193,9 +230,9 @@ foreach ($ufRows as $r) {
   if (!in_array($t, $userFollows[$f], true)) $userFollows[$f][] = $t;
 }
 
-// 10) collectionRatings and itemRatings: DB lacks dedicated tables; return empty arrays for now
-$collectionRatings = [];
+// 10) Ratings (items/collections) not stored server-side; keep empty arrays
 $itemRatings = [];
+$collectionRatings = [];
 
 // Final assembly
 $out = [

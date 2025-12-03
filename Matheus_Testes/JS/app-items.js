@@ -599,14 +599,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     if (!itemId) return;
-    const ownerId = getEffectiveOwnerId();
-    if (!ownerId) return;
     const numericValue = Number(value);
     if (!Number.isInteger(numericValue) || numericValue < 1 || numericValue > 5) {
       return;
     }
+    // Stored locally only (no backend table for item ratings)
     sessionItemRatings[itemId] = numericValue;
-    notify("Ratings are stored locally.", "info");
+    notify("Item ratings are stored locally only.", "info");
     window.renderItems();
   }
 
@@ -849,22 +848,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </button>
         `;
 
-        const ratingEntries = getItemRatingEntries(item.id, data);
-        const { count: ratingCount, average: ratingAvg } = getRatingStats(ratingEntries);
-        const sessionValue = ownerId && isActiveUser ? sessionItemRatings[item.id] : undefined;
-        const storedUserRating = ownerId ? getUserRatingFromEntries(ratingEntries, ownerId) : null;
-        const userRating = ownerId
-          ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
-          : storedUserRating ?? null;
-        const allowRating = Boolean(ownerId && isActiveUser);
-        const ratingStars = buildRatingStarsMarkup(item.id, ratingAvg, userRating, allowRating);
-        const ratingSummary = buildRatingSummary(ratingAvg, ratingCount, userRating, sessionValue, allowRating);
-        const ratingBlock = `
-          <div class="card-rating">
-            ${ratingStars}
-            <div class="rating-summary">${ratingSummary}</div>
-          </div>
-        `;
+        const ratingBlock = "";
 
         const isItemOwner =
           isCollectionPage &&
@@ -895,8 +879,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div class="item-info simple-item">
             <h3><a href="item_page.html?id=${item.id}">${item.name}</a></h3>
-            ${ratingBlock}
-
             <div class="item-actions">
               ${likeButton}
               <a href="item_page.html?id=${item.id}"
@@ -919,7 +901,6 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => renderChunk(idx + CHUNK), 0);
       } else {
         attachItemLikeHandlers();
-        attachItemRatingHandlers();
       }
     }
 

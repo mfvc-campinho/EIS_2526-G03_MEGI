@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/../config/db.php';
 
@@ -45,13 +46,19 @@ if ($method === 'POST') {
   // Minimal create/update/delete via action param
   $action = isset($_POST['action']) ? $_POST['action'] : null;
   if ($action === 'create') {
+    $currentUser = $_SESSION['user']['id'] ?? null;
+    if (!$currentUser) {
+      http_response_code(401);
+      echo json_encode(['error' => 'Not authenticated']);
+      exit;
+    }
     $id = isset($_POST['id']) ? $_POST['id'] : uniqid('col-');
     $name = $_POST['name'] ?? '';
     $summary = $_POST['summary'] ?? '';
     $description = $_POST['description'] ?? '';
     $image = $_POST['image'] ?? '';
     $type = $_POST['type'] ?? '';
-    $owner = $_POST['owner'] ?? null;
+    $owner = $currentUser;
     $stmt = $mysqli->prepare('INSERT INTO collections (collection_id,name,type,cover_image,summary,description,created_at,user_id) VALUES (?,?,?,?,?,?,NOW(),?)');
     $stmt->bind_param('sssssss', $id, $name, $type, $image, $summary, $description, $owner);
     $ok = $stmt->execute();
@@ -59,10 +66,28 @@ if ($method === 'POST') {
     echo json_encode(['success' => $ok, 'id' => $id]);
     exit;
   } elseif ($action === 'update') {
+    $currentUser = $_SESSION['user']['id'] ?? null;
+    if (!$currentUser) {
+      http_response_code(401);
+      echo json_encode(['error' => 'Not authenticated']);
+      exit;
+    }
     $id = $_POST['id'] ?? null;
     if (!$id) {
       http_response_code(400);
       echo json_encode(['error' => 'missing id']);
+      exit;
+    }
+    // Ownership check
+    $check = $mysqli->prepare('SELECT user_id FROM collections WHERE collection_id = ? LIMIT 1');
+    $check->bind_param('s', $id);
+    $check->execute();
+    $cres = $check->get_result();
+    $crow = $cres->fetch_assoc();
+    $check->close();
+    if (!$crow || ($crow['user_id'] ?? null) !== $currentUser) {
+      http_response_code(403);
+      echo json_encode(['error' => 'Forbidden']);
       exit;
     }
     $name = $_POST['name'] ?? null;
@@ -77,10 +102,28 @@ if ($method === 'POST') {
     echo json_encode(['success' => $ok]);
     exit;
   } elseif ($action === 'delete') {
+    $currentUser = $_SESSION['user']['id'] ?? null;
+    if (!$currentUser) {
+      http_response_code(401);
+      echo json_encode(['error' => 'Not authenticated']);
+      exit;
+    }
     $id = $_POST['id'] ?? null;
     if (!$id) {
       http_response_code(400);
       echo json_encode(['error' => 'missing id']);
+      exit;
+    }
+    // Ownership check
+    $check = $mysqli->prepare('SELECT user_id FROM collections WHERE collection_id = ? LIMIT 1');
+    $check->bind_param('s', $id);
+    $check->execute();
+    $cres = $check->get_result();
+    $crow = $cres->fetch_assoc();
+    $check->close();
+    if (!$crow || ($crow['user_id'] ?? null) !== $currentUser) {
+      http_response_code(403);
+      echo json_encode(['error' => 'Forbidden']);
       exit;
     }
     $stmt = $mysqli->prepare('DELETE FROM collections WHERE collection_id = ?');

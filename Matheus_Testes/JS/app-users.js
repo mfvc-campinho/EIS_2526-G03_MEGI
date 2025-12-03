@@ -338,7 +338,6 @@ document.addEventListener("DOMContentLoaded", () => {
       accountForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const getValue = (id) => document.getElementById(id)?.value?.trim() || "";
-        const ownerId = getValue("acc-owner-id");
         const ownerName = getValue("acc-name");
         const email = getValue("acc-email");
 
@@ -355,7 +354,6 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           const payload = new FormData();
           payload.append('action', 'create');
-          if (ownerId) payload.append('id', ownerId);
           payload.append('name', ownerName);
           payload.append('email', email);
           payload.append('password', password);

@@ -1,20 +1,16 @@
 // ===============================================
 // File: public_html/JS/app-collections.js
-// Purpose: Render collection cards across pages and provide interactions (preview, edit, delete, likes, top-pick flow).
+// Purpose: Render collection cards across pages and provide interactions (preview, edit, delete, likes).
 // Major blocks: element selectors & page context, user state management, derived maps, rendering logic, global functions, event listeners and initialization.
 // Notes: Exposes some globals used by HTML (togglePreview, editCollection, deleteCollection).
 // ===============================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    function attachCollectionInteractions(collections, data) {
+    function attachCollectionInteractions() {
         if (!list) return;
         list.querySelectorAll(".vote-toggle").forEach(btn => {
             const id = btn.dataset.collectionId;
             btn.addEventListener("click", () => toggleVote(id));
-        });
-        list.querySelectorAll(".top-pick-btn").forEach(btn => {
-            const id = btn.dataset.collectionId;
-            btn.addEventListener("click", () => promoteCollectionToFirstPick(id, data));
         });
     }
 
@@ -49,38 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
             notify(newState ? 'Collection liked.' : 'Collection unliked.', newState ? 'success' : 'info');
         } catch (e) { }
     }
-
-    function promoteCollectionToFirstPick(collectionId, dataParam, ownerIdOverride) {
-        if (!collectionId)
-            return;
-        const ownerId = ownerIdOverride || getEffectiveOwnerId();
-        if (!ownerId)
-            return;
-        const data = dataParam || appData.loadData();
-        if (!data)
-            return;
-        const entries = getActiveShowcase(ownerId, data);
-        const others = entries
-            .filter(entry => entry.collectionId !== collectionId)
-            .sort((a, b) => a.order - b.order);
-        const updated = [{ collectionId, order: 1 }];
-        let nextOrder = 2;
-        for (const entry of others) {
-            if (nextOrder > MAX_USER_CHOICES)
-                break;
-            updated.push({ collectionId: entry.collectionId, order: nextOrder });
-            nextOrder += 1;
-        }
-        userChosenState[ownerId] = updated;
-        renderCollections(lastRenderCriteria);
-        notifyShowcaseChange(ownerId);
-    }
-
-    window.demoTopPickFlow = function (options = {}) {
-        const { ownerId, collectionId } = options;
-        const data = options.data || appData.loadData();
-        promoteCollectionToFirstPick(collectionId, data, ownerId);
-    };
 
     // ==========================================================
     // 1. Element selectors and page context
@@ -120,25 +84,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. User state management
     // ==========================================================
     const DEFAULT_OWNER_ID = "collector-main";
-    const MAX_USER_CHOICES = 5;
     let currentUserId;
     let isActiveUser;
     let collectionOwnerMap = {};
     const sessionState = window.demoCollectionsState || (window.demoCollectionsState = {});
     const voteState = sessionState.voteState || (sessionState.voteState = {});
-    const userChosenState = sessionState.userChosenState || (sessionState.userChosenState = {});
-    const sessionCollectionRatings = sessionState.collectionRatings || (sessionState.collectionRatings = {});
-    let defaultShowcaseMap = {};
-    let showcaseInitialized = false;
     let lastRenderCriteria = "lastAdded";
     let lastRenderData = null;
     let likesByCollectionMap = {};
     let ownerLikesMap = {};
-
-    function notifyShowcaseChange(ownerId) {
-        if (!ownerId) return;
-        window.dispatchEvent(new CustomEvent("userShowcaseChange", { detail: { ownerId } }));
-    }
 
     function notifyLikesChange(ownerId) {
         if (!ownerId) return;
@@ -251,128 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function getRatingStats(entries) {
-        const rated = (entries || []).filter(entry => typeof entry.rating === "number");
-        if (!rated.length) {
-            return { count: 0, average: null };
-        }
-        const total = rated.reduce((sum, entry) => sum + entry.rating, 0);
-        return { count: rated.length, average: total / rated.length };
-    }
-
-    function getUserRatingFromEntries(entries, userId) {
-        if (!userId) return null;
-        const entry = (entries || []).find(link => link.userId === userId);
-        return entry && typeof entry.rating === "number" ? entry.rating : null;
-    }
-
-    function getCollectionRatingEntries(collection, data) {
-        if (!collection) return [];
-        return (data?.collectionRatings || []).filter(entry => entry.collectionId === collection.id);
-    }
-
-    function buildRatingStarsMarkup(entityId, average, userRating, allowRate, dataAttr) {
-        const stars = [];
-        for (let i = 1; i <= 5; i++) {
-            let classes = "star";
-            if (average && i <= Math.round(average)) classes += " filled";
-            if (userRating && i <= userRating) classes += " user-rating";
-            if (allowRate) classes += " clickable";
-            stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
-        }
-        return `<div class="rating-stars" data-${dataAttr}="${entityId}" data-rateable="${allowRate ? "true" : "false"}">${stars.join("")}</div>`;
-    }
-
-    function buildRatingSummary(average, count, userRating, sessionValue, allowRate) {
-        const parts = [];
-        if (average) {
-            parts.push(`<span class="muted">★ ${average.toFixed(1)}</span> <span>(${count})</span>`);
-        }
-        else {
-            parts.push(`<span class="muted">No ratings yet</span>`);
-        }
-
-        if (sessionValue !== undefined) {
-            parts.push(`<span class="demo-rating-note">Your demo rating: ${sessionValue}/5 (not saved)</span>`);
-        }
-        else if (userRating) {
-            parts.push(`<span class="demo-rating-note">You rated this ${userRating}/5</span>`);
-        }
-        else if (allowRate) {
-            parts.push(`<span class="demo-rating-note">Click a star to rate this collection.</span>`);
-        }
-
-        return parts.join(" ");
-    }
-
-    function setCollectionRating(collectionId, value) {
-        if (!isActiveUser) {
-            notify("Please sign in to rate collections.", "warning");
-            return;
-        }
-        const ownerId = getEffectiveOwnerId();
-        if (!ownerId || !collectionId) {
-            return;
-        }
-        const numericValue = Number(value);
-        if (!Number.isInteger(numericValue) || numericValue < 1 || numericValue > 5) {
-            return;
-        }
-        sessionCollectionRatings[collectionId] = numericValue;
-        notify("Ratings are stored locally.", "info");
-        renderCollections(lastRenderCriteria);
-    }
-
-    function attachCollectionRatingHandlers() {
-        if (!list) return;
-        const containers = list.querySelectorAll('.rating-stars[data-collection-id]');
-        containers.forEach(container => {
-            const id = container.dataset.collectionId;
-            if (!id) return;
-            const allowRate = container.dataset.rateable === "true";
-            const stars = Array.from(container.querySelectorAll(".star"));
-
-            function clearHover() {
-                stars.forEach(star => {
-                    star.classList.remove("hovered", "dimmed");
-                });
-            }
-
-            function highlightTo(value) {
-                if (!allowRate) {
-                    return;
-                }
-                const ratingValue = Number(value) || 0;
-                stars.forEach(star => {
-                    const numeric = Number(star.dataset.value);
-                    const isActive = numeric <= ratingValue;
-                    star.classList.toggle("hovered", isActive);
-                    star.classList.toggle("dimmed", !isActive);
-                });
-            }
-
-            stars.forEach(star => {
-                const val = Number(star.dataset.value);
-                const rate = () => setCollectionRating(id, val);
-                star.addEventListener("mouseenter", () => highlightTo(val));
-                star.addEventListener("focus", () => highlightTo(val));
-                star.addEventListener("mouseleave", clearHover);
-                star.addEventListener("blur", clearHover);
-                star.addEventListener("click", rate);
-                star.addEventListener("keydown", ev => {
-                    if (ev.key === "Enter" || ev.key === " ") {
-                        ev.preventDefault();
-                        rate();
-                    }
-                });
-                star.setAttribute("tabindex", "0");
-                star.setAttribute("role", "button");
-                star.setAttribute("aria-label", `Rate ${val} out of 5`);
-            });
-
-            container.addEventListener("mouseleave", clearHover);
-        });
-    }
+    // Rating helpers removed
 
     function getCollectionLikedBy(collection) {
         if (!collection) return new Set();
@@ -472,32 +305,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return Boolean(collectionOwnerId && collectionOwnerId === ownerId);
     }
 
-    function ensureDefaultShowcases(data) {
-        if (showcaseInitialized) return;
-        (data?.userShowcases || []).forEach(entry => {
-            defaultShowcaseMap[entry.ownerId] = (entry.picks || []).slice().sort((a, b) => a.order - b.order);
-        });
-        showcaseInitialized = true;
-    }
-
-    function getActiveShowcase(ownerId, data) {
-        if (!ownerId) return [];
-        if (userChosenState[ownerId] && userChosenState[ownerId].length) {
-            return userChosenState[ownerId];
-        }
-        ensureDefaultShowcases(data);
-        return (defaultShowcaseMap[ownerId] || []).slice();
-    }
-
-    function getUserChosenOrderForCollection(collectionId, ownerIdOverride, data) {
-        const ownerId = ownerIdOverride || getEffectiveOwnerId();
-        if (!ownerId)
-            return null;
-        const entries = getActiveShowcase(ownerId, data);
-        const match = entries.find(entry => entry.collectionId === collectionId);
-        return match ? match.order : null;
-    }
-
     function getTimestamp(value) {
         if (!value)
             return null;
@@ -557,7 +364,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderCollections(criteria = "lastAdded", limitOverride) {
         const data = appData.loadData();
         lastRenderData = data;
-        ensureDefaultShowcases(data);
         hydrateCollectionOwnerMap(data);
         buildLikesMaps(data);
         let collections = data.collections || [];
@@ -575,22 +381,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (criteria === "lastAdded") {
             collections.sort((a, b) => (latestMap[b.id] || 0) - (latestMap[a.id] || 0));
-        } else if (criteria === "userChosen") {
-            if (!isActiveUser) {
-                list.innerHTML = `<p class="notice-message">Log in to view your curated picks.</p>`;
-                return;
-            }
-            const ownerId = getEffectiveOwnerId();
-            const ownerEntries = ownerId ? getActiveShowcase(ownerId, data) : [];
-            if (!ownerEntries.length) {
-                list.innerHTML = `<p class="notice-message">You haven't selected any collections for your Top 5 yet.</p>`;
-                return;
-            }
-            const orderMap = ownerEntries.reduce((acc, entry) => {
-                acc[entry.collectionId] = entry.order;
-                return acc;
-            }, {});
-            collections = collections.filter(c => orderMap[c.id]).sort((a, b) => orderMap[a.id] - orderMap[b.id]);
         } else if (criteria === "itemCount") {
             const itemCounts = (data.collectionItems || []).reduce((acc, link) => {
                 acc[link.collectionId] = (acc[link.collectionId] || 0) + 1;
@@ -649,30 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const specialClass = isOwnerLoggedIn ? "collector-owned" : "";
             const canEdit = isOwnerLoggedIn;
             const displayVotes = getDisplayLikes(col, ownerIdForDisplay);
-            const userPickOrder = getUserChosenOrderForCollection(col.id);
             const isStarred = ownerIdForDisplay ? getEffectiveUserLike(col, ownerIdForDisplay) : false;
-            const pickLabel = userPickOrder ? `My pick #${userPickOrder}` : "Promote to #1";
-            const ratingEntries = getCollectionRatingEntries(col, data);
-            const { count: ratingCount, average: ratingAvg } = getRatingStats(ratingEntries);
-            const sessionValue = ownerIdForDisplay && isActiveUser ? sessionCollectionRatings[col.id] : undefined;
-            const storedUserRating = ownerIdForDisplay ? getUserRatingFromEntries(ratingEntries, ownerIdForDisplay) : null;
-            const userRating = ownerIdForDisplay
-                ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
-                : storedUserRating ?? null;
-            const allowRating = Boolean(ownerIdForDisplay && isActiveUser);
-            const ratingStars = buildRatingStarsMarkup(col.id, ratingAvg, userRating, allowRating, "collection-id");
-            const ratingSummary = buildRatingSummary(ratingAvg, ratingCount, userRating, sessionValue, allowRating);
-            const ratingBlock = `
-                <div class="card-rating">
-                  ${ratingStars}
-                  <div class="rating-summary">${ratingSummary}</div>
-                </div>`;
-            const topPickBtn = isActiveUser
-                ? `<button class="metric-btn top-pick-btn ${userPickOrder ? "active" : ""}" data-collection-id="${col.id}">
-                <i class="bi bi-award"></i>
-                <span class="top-pick-label">${pickLabel}</span>
-              </button>`
-                : "";
 
             const buttons = `
                 <button class="explore-btn" onclick="togglePreview('${col.id}', this)"><i class="bi bi-eye"></i> Show Preview</button>
@@ -702,9 +469,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <i class="bi ${isStarred ? "bi-star-fill" : "bi-star"}"></i>
                 <span class="vote-count">${displayVotes}</span>
               </button>
-              ${topPickBtn}
             </div>
-            ${ratingBlock}
             <div class="card-buttons">${buttons}</div>
           </div>
         </div>`;
@@ -712,8 +477,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         list.innerHTML = cardsHTML;
         // Attach interaction handlers after DOM insertion
-        attachCollectionInteractions(collections, data);
-        attachCollectionRatingHandlers();
+        attachCollectionInteractions();
     }// ==========================================================
     // ==========================================================
     // 4. Global functions (accessible from HTML)
@@ -752,7 +516,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.editCollection = id => {
         const data = appData.loadData();
         lastRenderData = data;
-        ensureDefaultShowcases(data);
         hydrateCollectionOwnerMap(data);
         const col = data.collections.find(c => c.id === id);
         if (!col || !isCollectionOwnedByCurrentUser(col, data))
@@ -773,7 +536,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.deleteCollection = id => {
         const data = appData.loadData();
         lastRenderData = data;
-        ensureDefaultShowcases(data);
         hydrateCollectionOwnerMap(data);
         const col = data.collections.find(c => c.id === id);
         if (!col || !isCollectionOwnedByCurrentUser(col, data))
@@ -853,6 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const res = await fetch('../PHP/crud/collections.php', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     body: payload
                 });
                 const json = await res.json();

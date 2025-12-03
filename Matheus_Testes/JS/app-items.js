@@ -1334,6 +1334,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const res = await fetch('../PHP/crud/items.php', {
           method: 'POST',
+          credentials: 'same-origin',
           body
         });
         const json = await res.json();

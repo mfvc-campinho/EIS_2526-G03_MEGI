@@ -1198,6 +1198,17 @@ document.addEventListener("DOMContentLoaded", () => {
     form["item-price"].value = item.price || "";
     form["item-date"].value = item.acquisitionDate || "";
     form["item-image"].value = item.image || "";
+    // Preselect all linked collections
+    const select = document.getElementById("item-collections");
+    if (select) {
+      const linkedIds = (data.collectionItems || [])
+        .filter(link => link.itemId === id || link.item_id === id)
+        .map(link => link.collectionId || link.collection_id);
+      const fallbackIds = linkedIds.length ? linkedIds : (collection ? [collection.id] : []);
+      Array.from(select.options).forEach(opt => {
+        opt.selected = fallbackIds.includes(opt.value);
+      });
+    }
 
     openModal(true);
   };
@@ -1321,7 +1332,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const acq = (form['item-date'] && form['item-date'].value) || '';
       const image = (form['item-image'] && form['item-image'].value) || '';
       const collectionSelect = document.getElementById('item-collections');
-      const collectionIdVal = collectionSelect && collectionSelect.value ? collectionSelect.value : '';
+      const selectedCollectionIds = collectionSelect
+        ? Array.from(collectionSelect.selectedOptions).map(opt => opt.value).filter(Boolean)
+        : [];
+      if (!selectedCollectionIds.length) {
+        notify('Select at least one collection for this item.', 'warning');
+        return;
+      }
 
       body.append('name', name);
       body.append('importance', importance);
@@ -1329,7 +1346,9 @@ document.addEventListener("DOMContentLoaded", () => {
       body.append('price', price);
       body.append('acquisition_date', acq);
       body.append('image', image);
-      if (collectionIdVal) body.append('collection_id', collectionIdVal);
+      // Primary collection (for items table) + full list (for relation table)
+      body.append('collection_id', selectedCollectionIds[0]);
+      body.append('collection_ids', JSON.stringify(selectedCollectionIds));
 
       try {
         const res = await fetch('../PHP/crud/items.php', {

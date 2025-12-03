@@ -5,6 +5,34 @@ require_once __DIR__ . '/../config/db.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
+function normalize_collection_ids($raw) {
+  if (is_array($raw)) {
+    $ids = $raw;
+  } else {
+    $decoded = json_decode($raw ?? '', true);
+    if (is_array($decoded)) $ids = $decoded;
+    else $ids = array_filter(array_map('trim', explode(',', $raw ?? '')));
+  }
+  $ids = array_values(array_unique(array_filter($ids)));
+  return $ids;
+}
+
+function collections_owned_by_user($mysqli, $ids, $userId) {
+  if (!$ids || !$userId) return false;
+  foreach ($ids as $cid) {
+    $chk = $mysqli->prepare('SELECT user_id FROM collections WHERE collection_id = ? LIMIT 1');
+    $chk->bind_param('s', $cid);
+    $chk->execute();
+    $res = $chk->get_result();
+    $row = $res->fetch_assoc();
+    $chk->close();
+    if (!$row || ($row['user_id'] ?? null) !== $userId) {
+      return false;
+    }
+  }
+  return true;
+}
+
 if ($method === 'GET') {
   if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -41,6 +69,17 @@ if ($method === 'POST') {
       echo json_encode(['error' => 'Not authenticated']);
       exit;
     }
+    $collectionIds = normalize_collection_ids($_POST['collection_ids'] ?? $_POST['collection_id'] ?? '');
+    if (!$collectionIds) {
+      http_response_code(400);
+      echo json_encode(['error' => 'missing collection_id']);
+      exit;
+    }
+    if (!collections_owned_by_user($mysqli, $collectionIds, $currentUser)) {
+      http_response_code(403);
+      echo json_encode(['error' => 'Forbidden']);
+      exit;
+    }
     $id = $_POST['id'] ?? uniqid('item-');
     $name = $_POST['name'] ?? '';
     $importance = $_POST['importance'] ?? null;
@@ -49,31 +88,24 @@ if ($method === 'POST') {
     // send empty string when not provided so SQL can convert '' -> NULL
     $acq = $_POST['acquisition_date'] ?? '';
     $image = $_POST['image'] ?? null;
-    $collection = $_POST['collection_id'] ?? null;
-    // Ensure collection belongs to current user
-    if ($collection) {
-      $chk = $mysqli->prepare('SELECT user_id FROM collections WHERE collection_id = ? LIMIT 1');
-      $chk->bind_param('s', $collection);
-      $chk->execute();
-      $cRes = $chk->get_result();
-      $cRow = $cRes->fetch_assoc();
-      $chk->close();
-      if (!$cRow || ($cRow['user_id'] ?? null) !== $currentUser) {
-        http_response_code(403);
-        echo json_encode(['error' => 'Forbidden']);
-        exit;
-      }
-    } else {
-      http_response_code(400);
-      echo json_encode(['error' => 'missing collection_id']);
-      exit;
-    }
+    $collection = $collectionIds[0];
     // Use NULLIF for acquisition_date so empty string becomes NULL (no '0000-00-00')
     $stmt = $mysqli->prepare('INSERT INTO items (item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image,collection_id) VALUES (?,?,?,?,?,NULLIF(?, \'\'),NOW(),NOW(),?,?)');
     // types: id(s), name(s), importance(s), weight(d), price(d), acquisition_date(s), image(s), collection_id(s)
     $stmt->bind_param('sssddsss', $id, $name, $importance, $weight, $price, $acq, $image, $collection);
     $ok = $stmt->execute();
     $stmt->close();
+    // Sync collection_items links
+    $del = $mysqli->prepare('DELETE FROM collection_items WHERE item_id = ?');
+    $del->bind_param('s', $id);
+    $del->execute();
+    $del->close();
+    $ins = $mysqli->prepare('INSERT IGNORE INTO collection_items (collection_id,item_id) VALUES (?,?)');
+    foreach ($collectionIds as $cid) {
+      $ins->bind_param('ss', $cid, $id);
+      $ins->execute();
+    }
+    $ins->close();
     echo json_encode(['success' => $ok, 'id' => $id]);
     exit;
   } elseif ($action === 'update') {
@@ -101,6 +133,15 @@ if ($method === 'POST') {
       echo json_encode(['error' => 'Forbidden']);
       exit;
     }
+    $collectionIds = normalize_collection_ids($_POST['collection_ids'] ?? $_POST['collection_id'] ?? '');
+    if (!$collectionIds) {
+      $collectionIds = [$irow['collection_id']];
+    }
+    if (!collections_owned_by_user($mysqli, $collectionIds, $currentUser)) {
+      http_response_code(403);
+      echo json_encode(['error' => 'Forbidden']);
+      exit;
+    }
     $name = $_POST['name'] ?? null;
     $importance = $_POST['importance'] ?? null;
     $weight = $_POST['weight'] ?? null;
@@ -108,29 +149,24 @@ if ($method === 'POST') {
     // send empty string when not provided so SQL can convert '' -> NULL
     $acq = $_POST['acquisition_date'] ?? '';
     $image = $_POST['image'] ?? null;
-    $collection = $_POST['collection_id'] ?? null;
-    // If collection is being changed, ensure new collection also belongs to the user
-    if ($collection && $collection !== $irow['collection_id']) {
-      $chk = $mysqli->prepare('SELECT user_id FROM collections WHERE collection_id = ? LIMIT 1');
-      $chk->bind_param('s', $collection);
-      $chk->execute();
-      $cres = $chk->get_result();
-      $crow = $cres->fetch_assoc();
-      $chk->close();
-      if (!$crow || ($crow['user_id'] ?? null) !== $currentUser) {
-        http_response_code(403);
-        echo json_encode(['error' => 'Forbidden']);
-        exit;
-      }
-    } else {
-      $collection = $irow['collection_id'];
-    }
+    $collection = $collectionIds[0];
     // Use NULLIF so empty acquisition_date values are saved as NULL instead of '0000-00-00'
     $stmt = $mysqli->prepare('UPDATE items SET name=?, importance=?, weight=?, price=?, acquisition_date=NULLIF(?, \'\'), image=?, collection_id=? WHERE item_id=?');
     // types: name(s), importance(s), weight(d), price(d), acquisition_date(s), image(s), collection_id(s), id(s)
     $stmt->bind_param('ssddssss', $name, $importance, $weight, $price, $acq, $image, $collection, $id);
     $ok = $stmt->execute();
     $stmt->close();
+    // Sync collection_items links
+    $del = $mysqli->prepare('DELETE FROM collection_items WHERE item_id = ?');
+    $del->bind_param('s', $id);
+    $del->execute();
+    $del->close();
+    $ins = $mysqli->prepare('INSERT IGNORE INTO collection_items (collection_id,item_id) VALUES (?,?)');
+    foreach ($collectionIds as $cid) {
+      $ins->bind_param('ss', $cid, $id);
+      $ins->execute();
+    }
+    $ins->close();
     echo json_encode(['success' => $ok]);
     exit;
   } elseif ($action === 'delete') {

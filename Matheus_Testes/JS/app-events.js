@@ -1709,6 +1709,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description,
         collection_id: selectedCollections.length ? selectedCollections[0] : ''
       });
+      body.append('collection_ids', JSON.stringify(selectedCollections));
 
       try {
         const resp = await fetch('../PHP/crud/events.php', {

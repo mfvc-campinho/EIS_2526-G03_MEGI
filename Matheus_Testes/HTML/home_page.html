@@ -202,6 +202,48 @@
     </section>
 
     <!-- FEATURES HERO -->
+    <!-- HOME STATISTICS (same layout as Specific Collection Statistics) -->
+    <section id="collection-stats" aria-label="Site statistics">
+      <h2 class="section-subtitle">GoodCollections Statistics</h2>
+      <div class="stats-grid">
+        <article class="stat-card" data-key="totalUsers">
+          <h3 class="sr-only">Registered users</h3>
+          <div class="stat-icon"><i class="bi bi-people"></i></div>
+          <div class="stat-body">
+            <div class="stat-value" id="stat-total-users">-</div>
+            <div class="stat-label">Registered users</div>
+          </div>
+        </article>
+
+        <article class="stat-card" data-key="totalEvents">
+          <h3 class="sr-only">Total events</h3>
+          <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
+          <div class="stat-body">
+            <div class="stat-value" id="stat-total-events">-</div>
+            <div class="stat-label">Total events</div>
+          </div>
+        </article>
+
+        <article class="stat-card" data-key="totalCollections">
+          <h3 class="sr-only">Total collections</h3>
+          <div class="stat-icon"><i class="bi bi-collection"></i></div>
+          <div class="stat-body">
+            <div class="stat-value" id="stat-total-collections">-</div>
+            <div class="stat-label">Collections</div>
+          </div>
+        </article>
+
+        <article class="stat-card" data-key="totalItems">
+          <h3 class="sr-only">Total items</h3>
+          <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+          <div class="stat-body">
+            <div class="stat-value" id="stat-total-items">-</div>
+            <div class="stat-label">Items</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <section class="features-hero">
       <div class="features-inner">
         <h2 class="features-title">Everything You Need to <span class="accent">Manage Your Collections</span></h2>
@@ -457,6 +499,7 @@
   <!-- Script: trigger features entrance animation when in viewport -->
   <script src="../JS/features.js"></script>
   <script src="../JS/search-toggle.js"></script>
+  <script src="../JS/home-stats.js"></script>
 
 </body>
 

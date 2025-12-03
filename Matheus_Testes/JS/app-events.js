@@ -842,7 +842,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const ev = upcoming[0];
       const human = formatDateHuman(ev.date);
       calendarAlertEl.style.display = 'block';
-      calendarAlertEl.textContent = `📅 Upcoming event: ${ev.name} on ${human}!`;
+      calendarAlertEl.innerHTML = `📅 <b>Upcoming event:</b><br>${ev.name} on ${human}!`;
     } else {
       calendarAlertEl.style.display = 'none';
       calendarAlertEl.textContent = '';

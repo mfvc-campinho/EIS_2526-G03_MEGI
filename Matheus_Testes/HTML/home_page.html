@@ -415,10 +415,10 @@
           <label for="evt-location">Location:</label>
           <input type="text" id="evt-location" name="evt-location" required>
           <label for="evt-collections">Associated collections</label>
-          <select id="evt-collections" name="evt-collections" multiple size="4" required>
+          <div id="evt-collections" class="checkbox-grid" role="group" aria-label="Associated collections">
             <!-- Filled via JavaScript -->
-          </select>
-          <small class="form-hint">Press Ctrl/Cmd (⌘) or Shift to select multiple collections.</small>
+          </div>
+          <small class="form-hint">Escolha uma ou mais coleções usando as caixas de seleção.</small>
         </div>
 
         <div class="form-section form-section--optional">

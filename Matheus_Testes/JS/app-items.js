@@ -1130,13 +1130,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // POPULATE COLLECTION SELECT (ADD/EDIT ITEM)
   // ===============================================
   function populateCollectionsSelect() {
-    const select = document.getElementById("item-collections");
-    if (!select) return;
+    const container = document.getElementById("item-collections");
+    if (!container) return;
 
     const data = appData.loadData();
     if (!data || !data.collections) return;
 
-    select.innerHTML = "";
+    container.innerHTML = "";
     const ownerId = getEffectiveOwnerId();
 
     const userCollections = data.collections.filter(col => {
@@ -1147,11 +1147,31 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
 
+    if (!userCollections.length) {
+      const emptyState = document.createElement("p");
+      emptyState.className = "form-hint";
+      emptyState.textContent = ownerId
+        ? "No collections available for your profile."
+        : "No collections available.";
+      container.appendChild(emptyState);
+      return;
+    }
+
     userCollections.forEach(col => {
-      const opt = document.createElement("option");
-      opt.value = col.id;
-      opt.textContent = col.name;
-      select.appendChild(opt);
+      const label = document.createElement("label");
+      label.className = "checkbox-pill";
+
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.name = "item-collections";
+      input.value = col.id;
+
+      const span = document.createElement("span");
+      span.textContent = col.name;
+
+      label.appendChild(input);
+      label.appendChild(span);
+      container.appendChild(label);
     });
   }
 
@@ -1205,8 +1225,9 @@ document.addEventListener("DOMContentLoaded", () => {
         .filter(link => link.itemId === id || link.item_id === id)
         .map(link => link.collectionId || link.collection_id);
       const fallbackIds = linkedIds.length ? linkedIds : (collection ? [collection.id] : []);
-      Array.from(select.options).forEach(opt => {
-        opt.selected = fallbackIds.includes(opt.value);
+      const checkboxes = Array.from(select.querySelectorAll('input[type="checkbox"]'));
+      checkboxes.forEach(input => {
+        input.checked = fallbackIds.includes(input.value);
       });
     }
 
@@ -1333,7 +1354,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const image = (form['item-image'] && form['item-image'].value) || '';
       const collectionSelect = document.getElementById('item-collections');
       const selectedCollectionIds = collectionSelect
-        ? Array.from(collectionSelect.selectedOptions).map(opt => opt.value).filter(Boolean)
+        ? Array.from(collectionSelect.querySelectorAll('input[type=\"checkbox\"]:checked')).map(opt => opt.value).filter(Boolean)
         : [];
       if (!selectedCollectionIds.length) {
         notify('Select at least one collection for this item.', 'warning');

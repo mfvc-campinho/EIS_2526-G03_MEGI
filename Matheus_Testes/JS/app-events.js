@@ -531,26 +531,31 @@ document.addEventListener("DOMContentLoaded", () => {
     fieldCollections.innerHTML = "";
 
     if (!collections.length) {
-      const emptyOpt = document.createElement("option");
-      emptyOpt.value = "";
-      emptyOpt.textContent = ownerId
+      const emptyState = document.createElement("p");
+      emptyState.className = "form-hint";
+      emptyState.textContent = ownerId
         ? "No collections available for your profile"
         : "No collections available";
-      emptyOpt.selected = true;
-      fieldCollections.appendChild(emptyOpt);
-      fieldCollections.disabled = true;
+      fieldCollections.appendChild(emptyState);
       return;
     }
 
-    fieldCollections.disabled = false;
     collections.forEach(col => {
-      const option = document.createElement("option");
-      option.value = col.id;
-      option.textContent = col.name || col.id;
-      if (selectedIds.includes(col.id)) {
-        option.selected = true;
-      }
-      fieldCollections.appendChild(option);
+      const label = document.createElement("label");
+      label.className = "checkbox-pill";
+
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.name = "evt-collections";
+      input.value = col.id;
+      input.checked = selectedIds.includes(col.id);
+
+      const span = document.createElement("span");
+      span.textContent = col.name || col.id;
+
+      label.appendChild(input);
+      label.appendChild(span);
+      fieldCollections.appendChild(label);
     });
   }
 
@@ -1667,10 +1672,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const description = fieldDescription.value.trim();
       const type = fieldType.value.trim();
       const selectedCollections = fieldCollections
-        ? Array.from(fieldCollections.selectedOptions)
-          .map(option => option.value)
+        ? Array.from(fieldCollections.querySelectorAll('input[type="checkbox"]:checked'))
+          .map(input => input.value)
           .filter(Boolean)
         : [];
+      if (!selectedCollections.length) {
+        notify("Select at least one collection.", "warning");
+        return;
+      }
 
       if (!name || !dateVal) {
         notify("Please provide at least a name and date.", "warning");

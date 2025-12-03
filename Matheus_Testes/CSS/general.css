@@ -1741,6 +1741,53 @@ section#buttons-bar .explore-btn.ghost {
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
+/* Checkbox grid for multi-select fields */
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.checkbox-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--card-bg);
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease,
+    background 0.2s ease;
+}
+
+.checkbox-pill input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+}
+
+.checkbox-pill span {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.checkbox-pill:hover,
+.checkbox-pill:focus-within {
+  border-color: #2563eb;
+  background: #f3f6ff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px);
+}
+
+.checkbox-pill input[type="checkbox"]:checked + span {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
 /* Specific style for the text area (description) */
 .modal-content textarea {
   min-height: 120px;

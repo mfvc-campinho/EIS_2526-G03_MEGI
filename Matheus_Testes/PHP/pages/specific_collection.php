@@ -62,12 +62,47 @@ $isOwner = $isAuth && $collection && ($collection['ownerId'] ?? null) === $curre
   <link rel="stylesheet" href="../../CSS/likes.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="../../JS/theme-toggle.js"></script>
+  <style>
+    /* Align items grid visually with all_collections cards */
+    body { background: #f5f6f8; }
+    .page-shell { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; }
+    .collection-hero {
+      margin: 20px 0;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.1);
+    }
+    .collection-hero img { width: 100%; max-height: 360px; object-fit: cover; display: block; }
+    .collection-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+      gap: 24px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+    .product-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .15s ease, box-shadow .2s ease;
+      min-height: 420px;
+    }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(0,0,0,0.1); }
+    .product-card__media img { width: 100%; height: 210px; object-fit: cover; display: block; }
+    .product-card__body { padding: 16px 18px 14px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .product-card h3 { margin: 0; font-size: 1.05rem; }
+    .product-card__meta { display: flex; justify-content: space-between; color: #6b7280; font-size: 0.9rem; }
+    .card-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; padding-top: 6px; }
+  </style>
 </head>
 
 <body>
   <?php include __DIR__ . '/../includes/nav.php'; ?>
 
-  <main>
+  <main class="page-shell">
     <nav class="breadcrumb-nav" aria-label="Breadcrumb">
       <ol class="breadcrumb-list">
         <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
@@ -82,7 +117,7 @@ $isOwner = $isAuth && $collection && ($collection['ownerId'] ?? null) === $curre
       </section>
     <?php else: ?>
       <section class="collection-header">
-        <div class="collection-cover">
+        <div class="collection-hero">
           <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($collection['name'] ?? ''); ?>">
         </div>
         <div class="collection-info">
@@ -105,23 +140,42 @@ $isOwner = $isAuth && $collection && ($collection['ownerId'] ?? null) === $curre
 
       <section class="items-section">
         <h2>Items</h2>
-        <div class="items-grid">
+        <div class="collection-grid">
           <?php if ($itemsForCollection): ?>
             <?php foreach ($itemsForCollection as $it): ?>
               <?php
-                $thumb = $it['image'] ?? '../../images/default.jpg';
+                $thumb = $it['image'] ?? '';
                 if ($thumb && !preg_match('#^https?://#', $thumb)) {
                   $thumb = '../../' . ltrim($thumb, './');
                 }
+                $importance = $it['importance'] ?? 'Item';
+                $price = $it['price'] ?? '-';
+                $date = substr($it['acquisitionDate'] ?? '', 0, 10);
+                $isItemOwner = $isOwner; // same owner as collection
               ?>
-              <article class="item-card">
-                <div class="item-thumb">
-                  <img src="<?php echo htmlspecialchars($thumb); ?>" alt="<?php echo htmlspecialchars($it['name'] ?? ''); ?>">
-                </div>
-                <div class="item-body">
+              <article class="product-card">
+                <a href="item_page.php?id=<?php echo urlencode($it['id']); ?>" class="product-card__media">
+                  <img src="<?php echo htmlspecialchars($thumb ?: '../../images/default.jpg'); ?>" alt="<?php echo htmlspecialchars($it['name'] ?? ''); ?>">
+                </a>
+                <div class="product-card__body">
+                  <p class="pill"><?php echo htmlspecialchars($importance); ?></p>
                   <h3><a href="item_page.php?id=<?php echo urlencode($it['id']); ?>"><?php echo htmlspecialchars($it['name'] ?? ''); ?></a></h3>
-                  <p class="muted">Importance: <?php echo htmlspecialchars($it['importance'] ?? '-'); ?></p>
-                  <p class="muted">Price: <?php echo htmlspecialchars($it['price'] ?? '-'); ?></p>
+                  <p class="muted">Price: <?php echo htmlspecialchars($price); ?></p>
+                  <div class="product-card__meta">
+                    <span><i class="bi bi-calendar3"></i> <?php echo htmlspecialchars($date ?: ''); ?></span>
+                    <span><i class="bi bi-box-seam"></i> <?php echo htmlspecialchars($collection['name'] ?? ''); ?></span>
+                  </div>
+                  <div class="card-actions">
+                    <a class="explore-btn" href="item_page.php?id=<?php echo urlencode($it['id']); ?>">Explore More</a>
+                    <?php if ($isItemOwner): ?>
+                      <a class="explore-btn ghost" href="items_form.php?id=<?php echo urlencode($it['id']); ?>">Edit</a>
+                      <form action="items_action.php" method="POST" style="display:inline;">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($it['id']); ?>">
+                        <button type="submit" class="explore-btn ghost danger" onclick="return confirm('Delete this item?');">Delete</button>
+                      </form>
+                    <?php endif; ?>
+                  </div>
                 </div>
               </article>
             <?php endforeach; ?>

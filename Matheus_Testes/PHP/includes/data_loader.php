@@ -23,6 +23,40 @@ function fetch_all($mysqli, $sql, $types = null, $params = [])
   return $rows;
 }
 
+// Resolve an image path preferring uploads/; if not found, return the stored value (no default fallback).
+function resolve_image_path($rawPath, $folder, $default = '')
+{
+  $trim = trim((string)$rawPath);
+  if ($trim === '') return '';
+  if (preg_match('#^https?://#i', $trim)) return $trim; // absolute URL
+
+  $fileName = basename($trim);
+  $root = dirname(__DIR__, 2); // Matheus_Testes
+
+  // If path already points to uploads and exists, keep it.
+  $uploadsRel = 'uploads/' . $folder . '/' . $fileName;
+  $uploadsAbs = $root . '/' . $uploadsRel;
+  if (is_file($uploadsAbs)) {
+    return $uploadsRel;
+  }
+
+  // Legacy images folder fallback
+  $legacyRel = 'images/' . $fileName;
+  $legacyAbs = $root . '/' . $legacyRel;
+  if (is_file($legacyAbs)) {
+    return $legacyRel;
+  }
+
+  // If stored path already points to a readable file, keep it
+  $candidate = $root . '/' . ltrim($trim, './');
+  if (is_file($candidate)) {
+    return ltrim($trim, './');
+  }
+
+  // If nothing is found, return the cleaned original (no default).
+  return ltrim($trim, './');
+}
+
 /**
  * Load the complete application dataset from MySQL.
  * Returns a PHP array ready to be JSON-encoded or embedded in a script tag.
@@ -33,11 +67,12 @@ function load_app_data($mysqli)
   $cols = fetch_all($mysqli, "SELECT collection_id,name,type,cover_image,summary,description,created_at,user_id FROM collections ORDER BY created_at DESC");
   $collections = array_map(function ($r) {
     $owner = $r['user_id'] ?? null;
+    $cover = resolve_image_path($r['cover_image'] ?? '', 'collections');
     return [
       'id' => $r['collection_id'] ?? null,
       'name' => $r['name'] ?? null,
       'type' => $r['type'] ?? null,
-      'coverImage' => $r['cover_image'] ?: '../images/default.jpg',
+      'coverImage' => $cover,
       'summary' => $r['summary'] ?? null,
       'description' => $r['description'] ?? null,
       'createdAt' => $r['created_at'] ?? null,
@@ -52,18 +87,19 @@ function load_app_data($mysqli)
   $users = array_map(function ($r) {
     $uid = $r['user_id'] ?? null;
     $uname = $r['user_name'] ?? null;
+    $photo = resolve_image_path($r['user_photo'] ?? '', 'users');
     return [
       'id' => $uid,
       'user_id' => $uid,
       'user_name' => $uname,
-      'user_photo' => $r['user_photo'] ?? null,
+      'user_photo' => $photo,
       'date_of_birth' => $r['date_of_birth'] ?? null,
       'email' => $r['email'] ?? null,
       'member_since' => $r['member_since'] ?? null,
       // legacy keys expected by client
       'owner-id' => $uid,
       'owner-name' => $uname,
-      'owner-photo' => $r['user_photo'] ?? null,
+      'owner-photo' => $photo,
       'date-of-birth' => $r['date_of_birth'] ?? null,
       'member-since' => $r['member_since'] ?? null
     ];
@@ -72,6 +108,7 @@ function load_app_data($mysqli)
   // 3) Items
   $itemsRows = fetch_all($mysqli, "SELECT item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image,collection_id FROM items");
   $items = array_map(function ($r) {
+    $img = resolve_image_path($r['image'] ?? '', 'items');
     return [
       'id' => $r['item_id'] ?? null,
       'name' => $r['name'] ?? null,
@@ -81,7 +118,7 @@ function load_app_data($mysqli)
       'acquisitionDate' => $r['acquisition_date'] ?? null,
       'createdAt' => $r['created_at'] ?? null,
       'updatedAt' => $r['updated_at'] ?? null,
-      'image' => $r['image'] ?? null,
+      'image' => $img,
       'collectionId' => $r['collection_id'] ?? null,
       // legacy alias
       'collection_id' => $r['collection_id'] ?? null
@@ -271,4 +308,3 @@ function load_app_data($mysqli)
     'itemRatings' => $itemRatings
   ];
 }
-

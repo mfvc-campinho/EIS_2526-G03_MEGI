@@ -38,7 +38,7 @@ function handle_upload($field, $folder, $keep = '')
   if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
     redirect_error('Formato de imagem inválido.');
   }
-  $dir = __DIR__ . '/../uploads/' . $folder;
+  $dir = dirname(__DIR__, 2) . '/uploads/' . $folder;
   if (!is_dir($dir)) {
     @mkdir($dir, 0777, true);
   }
@@ -124,5 +124,4 @@ if ($action === 'delete') {
 
 $mysqli->close();
 redirect_error('Ação inválida.');
-
 

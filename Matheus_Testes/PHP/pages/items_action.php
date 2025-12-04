@@ -49,7 +49,7 @@ function handle_upload($field, $folder, $keep = '')
   if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
     redirect_error('Formato de imagem inválido.');
   }
-  $dir = __DIR__ . '/../uploads/' . $folder;
+  $dir = dirname(__DIR__, 2) . '/uploads/' . $folder;
   if (!is_dir($dir)) {
     @mkdir($dir, 0777, true);
   }
@@ -61,12 +61,36 @@ function handle_upload($field, $folder, $keep = '')
   return 'uploads/' . $folder . '/' . $filename;
 }
 
-if ($action === 'create') {
-  $collectionId = $_POST['collectionId'] ?? null;
-  if (!$collectionId || !user_owns_collection($mysqli, $collectionId, $currentUser)) {
-    $mysqli->close();
-    redirect_error('Só pode criar itens nas suas coleções.');
+// Persist collection_links (collection_items)
+function replace_item_links($mysqli, $itemId, $collectionIds)
+{
+  $del = $mysqli->prepare('DELETE FROM collection_items WHERE item_id = ?');
+  $del->bind_param('s', $itemId);
+  $del->execute();
+  $del->close();
+
+  $ins = $mysqli->prepare('INSERT INTO collection_items (collection_id,item_id) VALUES (?,?)');
+  foreach ($collectionIds as $cid) {
+    $ins->bind_param('ss', $cid, $itemId);
+    $ins->execute();
   }
+  $ins->close();
+}
+
+// Normalize posted collection ids
+$collectionIds = $_POST['collectionIds'] ?? [];
+$collectionIds = is_array($collectionIds) ? array_values(array_unique(array_filter($collectionIds))) : [];
+
+if ($action === 'create') {
+  if (!$collectionIds) redirect_error('Selecione pelo menos uma coleção.');
+  // all must belong to user
+  foreach ($collectionIds as $cid) {
+    if (!user_owns_collection($mysqli, $cid, $currentUser)) {
+      $mysqli->close();
+      redirect_error('Só pode criar itens nas suas coleções.');
+    }
+  }
+  $primaryCol = $collectionIds[0];
   $id = uniqid('item-');
   $name = $_POST['name'] ?? '';
   $importance = $_POST['importance'] ?? '';
@@ -76,9 +100,11 @@ if ($action === 'create') {
   $image = handle_upload('imageFile', 'items', '');
 
   $stmt = $mysqli->prepare('INSERT INTO items (item_id,name,importance,weight,price,acquisition_date,created_at,collection_id,image) VALUES (?,?,?,?,?,?,NOW(),?,?)');
-  $stmt->bind_param('ssssssss', $id, $name, $importance, $weight, $price, $acq, $collectionId, $image);
+  $stmt->bind_param('ssssssss', $id, $name, $importance, $weight, $price, $acq, $primaryCol, $image);
   $ok = $stmt->execute();
   $stmt->close();
+
+  replace_item_links($mysqli, $id, $collectionIds);
   $mysqli->close();
   if ($ok) redirect_success('Item criado.');
   redirect_error('Falha ao criar item.');
@@ -87,8 +113,9 @@ if ($action === 'create') {
 if ($action === 'update') {
   $id = $_POST['id'] ?? null;
   if (!$id) redirect_error('ID em falta.');
+  if (!$collectionIds) redirect_error('Selecione pelo menos uma coleção.');
 
-  // fetch existing item
+  // fetch existing item for current image and ownership check
   $chkItem = $mysqli->prepare('SELECT collection_id,image FROM items WHERE item_id = ? LIMIT 1');
   $chkItem->bind_param('s', $id);
   $chkItem->execute();
@@ -100,10 +127,12 @@ if ($action === 'update') {
     redirect_error('Item não encontrado.');
   }
 
-  $collectionId = $_POST['collectionId'] ?? $existing['collection_id'];
-  if (!$collectionId || !user_owns_collection($mysqli, $collectionId, $currentUser)) {
-    $mysqli->close();
-    redirect_error('Sem permissão para editar este item.');
+  // ownership: all selected must be user-owned
+  foreach ($collectionIds as $cid) {
+    if (!user_owns_collection($mysqli, $cid, $currentUser)) {
+      $mysqli->close();
+      redirect_error('Sem permissão para editar este item.');
+    }
   }
 
   $name = $_POST['name'] ?? '';
@@ -112,11 +141,14 @@ if ($action === 'update') {
   $price = $_POST['price'] ?? '';
   $acq = $_POST['acquisitionDate'] ?? null;
   $image = handle_upload('imageFile', 'items', $existing['image'] ?? '');
+  $primaryCol = $collectionIds[0];
 
   $stmt = $mysqli->prepare('UPDATE items SET name=?, importance=?, weight=?, price=?, acquisition_date=?, collection_id=?, image=? WHERE item_id=?');
-  $stmt->bind_param('ssssssss', $name, $importance, $weight, $price, $acq, $collectionId, $image, $id);
+  $stmt->bind_param('ssssssss', $name, $importance, $weight, $price, $acq, $primaryCol, $image, $id);
   $ok = $stmt->execute();
   $stmt->close();
+
+  replace_item_links($mysqli, $id, $collectionIds);
   $mysqli->close();
   if ($ok) redirect_success('Item atualizado.');
   redirect_error('Falha ao atualizar item.');
@@ -126,23 +158,35 @@ if ($action === 'delete') {
   $id = $_POST['id'] ?? null;
   if (!$id) redirect_error('ID em falta.');
 
-  // find item's collection and verify ownership
-  $chk = $mysqli->prepare('SELECT collection_id FROM items WHERE item_id = ? LIMIT 1');
-  $chk->bind_param('s', $id);
-  $chk->execute();
-  $res = $chk->get_result();
-  $row = $res->fetch_assoc();
-  $chk->close();
-  $collectionId = $row['collection_id'] ?? null;
-  if (!$collectionId || !user_owns_collection($mysqli, $collectionId, $currentUser)) {
-    $mysqli->close();
-    redirect_error('Sem permissão para apagar este item.');
+  // find item's collections and verify ownership of at least one
+  $links = fetch_item_collections($mysqli, $id);
+  $owns = false;
+  foreach ($links as $cid) {
+    if (user_owns_collection($mysqli, $cid, $currentUser)) {
+      $owns = true;
+      break;
+    }
+  }
+  if (!$owns) {
+    // fallback: check primary
+    $chk = $mysqli->prepare('SELECT collection_id FROM items WHERE item_id = ? LIMIT 1');
+    $chk->bind_param('s', $id);
+    $chk->execute();
+    $res = $chk->get_result();
+    $row = $res->fetch_assoc();
+    $chk->close();
+    if (!$row || !user_owns_collection($mysqli, $row['collection_id'], $currentUser)) {
+      $mysqli->close();
+      redirect_error('Sem permissão para apagar este item.');
+    }
   }
 
   $stmt = $mysqli->prepare('DELETE FROM items WHERE item_id = ?');
   $stmt->bind_param('s', $id);
   $ok = $stmt->execute();
   $stmt->close();
+  // remove links
+  replace_item_links($mysqli, $id, []);
   $mysqli->close();
   if ($ok) redirect_success('Item apagado.');
   redirect_error('Falha ao apagar item.');
@@ -151,4 +195,17 @@ if ($action === 'delete') {
 $mysqli->close();
 redirect_error('Ação inválida.');
 
+// helper to fetch item collections for delete
+function fetch_item_collections($mysqli, $itemId) {
+  $out = [];
+  $stmt = $mysqli->prepare('SELECT collection_id FROM collection_items WHERE item_id = ?');
+  $stmt->bind_param('s', $itemId);
+  $stmt->execute();
+  $res = $stmt->get_result();
+  while ($row = $res->fetch_assoc()) {
+    $out[] = $row['collection_id'];
+  }
+  $stmt->close();
+  return $out;
+}
 

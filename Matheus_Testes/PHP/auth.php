@@ -1,7 +1,12 @@
 <?php
 session_start();
-header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/includes/flash.php';
+
+$redirect = $_POST['redirect'] ?? $_GET['redirect'] ?? null;
+if (!$redirect) {
+  header('Content-Type: application/json; charset=utf-8');
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -10,6 +15,11 @@ if ($method === 'POST') {
   $email = isset($_POST['email']) ? trim($_POST['email']) : null;
   $password = isset($_POST['password']) ? $_POST['password'] : null;
   if (!$email || !$password) {
+    if ($redirect) {
+      flash_set('error', 'Missing email or password');
+      header('Location: ' . $redirect);
+      exit;
+    }
     http_response_code(400);
     echo json_encode(['error' => 'Missing email or password']);
     exit;
@@ -23,6 +33,11 @@ if ($method === 'POST') {
   $stmt->close();
 
   if (!$user) {
+    if ($redirect) {
+      flash_set('error', 'Invalid credentials');
+      header('Location: ' . $redirect);
+      exit;
+    }
     http_response_code(401);
     echo json_encode(['error' => 'Invalid credentials']);
     exit;
@@ -50,6 +65,11 @@ if ($method === 'POST') {
   }
 
   if (! $verified) {
+    if ($redirect) {
+      flash_set('error', 'Invalid credentials');
+      header('Location: ' . $redirect);
+      exit;
+    }
     http_response_code(401);
     echo json_encode(['error' => 'Invalid credentials']);
     exit;
@@ -64,6 +84,12 @@ if ($method === 'POST') {
     'member_since' => $user['member_since']
   ];
 
+  if ($redirect) {
+    flash_set('success', 'Login efetuado com sucesso.');
+    header('Location: ' . $redirect);
+    exit;
+  }
+
   echo json_encode(['success' => true, 'user' => $_SESSION['user']]);
   exit;
 }
@@ -74,6 +100,11 @@ if ($method === 'GET') {
   if ($action === 'logout') {
     session_unset();
     session_destroy();
+    if ($redirect) {
+      flash_set('success', 'Sessão terminada.');
+      header('Location: ' . $redirect);
+      exit;
+    }
     echo json_encode(['success' => true]);
     exit;
   }

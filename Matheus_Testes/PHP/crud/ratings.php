@@ -296,7 +296,7 @@ if ($action === 'likeEvent' || $action === 'unlikeEvent') {
   respond($res);
 }
 
-// RSVP: use the event_ratings table to record attendance (rating may be NULL)
+// RSVP: store attendance in dedicated table
 if ($action === 'rsvp' || $action === 'unrsvp') {
   $eventId = $_POST['eventId'] ?? null;
   if (!$userId || !$eventId) {
@@ -304,31 +304,16 @@ if ($action === 'rsvp' || $action === 'unrsvp') {
     respond(['error' => 'missing params']);
   }
 
-  $ratingsTable = tableExists($mysqli, 'user_event_ratings') ? 'user_event_ratings' : 'event_ratings';
-
   if ($action === 'rsvp') {
-    // Insert or update a row for this user/event preserving any existing rating
-    $stmt = $mysqli->prepare("SELECT rating FROM {$ratingsTable} WHERE event_id = ? AND user_id = ? LIMIT 1");
-    $stmt->bind_param('ss', $eventId, $userId);
-    $stmt->execute();
-    $res = $stmt->get_result();
-    $existing = $res->fetch_assoc();
-    $stmt->close();
-
-    if ($existing) {
-      // already exists - nothing to do
-      respond(['success' => true, 'rsvp' => true]);
-    }
-
-    $ins = $mysqli->prepare("INSERT INTO {$ratingsTable} (event_id,user_id,rating) VALUES (?,?,NULL)");
+    $ins = $mysqli->prepare("INSERT INTO event_rsvps (event_id,user_id) VALUES (?,?) ON DUPLICATE KEY UPDATE rsvp_at = CURRENT_TIMESTAMP()");
     if ($ins === false) respond(['error' => 'db prepare failed']);
     $ins->bind_param('ss', $eventId, $userId);
     $ok = $ins->execute();
     $ins->close();
     respond(['success' => (bool)$ok, 'rsvp' => (bool)$ok]);
   } else {
-    // unrsvp -> remove any event_ratings row for this user/event
-    $del = $mysqli->prepare("DELETE FROM {$ratingsTable} WHERE event_id = ? AND user_id = ?");
+    // unrsvp -> remove any rsvp row for this user/event
+    $del = $mysqli->prepare("DELETE FROM event_rsvps WHERE event_id = ? AND user_id = ?");
     if ($del === false) respond(['error' => 'db prepare failed']);
     $del->bind_param('ss', $eventId, $userId);
     $ok = $del->execute();
@@ -345,10 +330,8 @@ if ($action === 'unrateEvent') {
     respond(['error' => 'missing params']);
   }
 
-  $ratingsTable = tableExists($mysqli, 'user_event_ratings') ? 'user_event_ratings' : 'event_ratings';
-
   // Only clear rating (set to NULL) if a row exists
-  $stmt = $mysqli->prepare("SELECT rating FROM {$ratingsTable} WHERE event_id = ? AND user_id = ? LIMIT 1");
+  $stmt = $mysqli->prepare("SELECT rating FROM event_ratings WHERE event_id = ? AND user_id = ? LIMIT 1");
   if ($stmt === false) respond(['error' => 'db prepare failed']);
   $stmt->bind_param('ss', $eventId, $userId);
   $stmt->execute();
@@ -357,7 +340,7 @@ if ($action === 'unrateEvent') {
   $stmt->close();
 
   if ($existing) {
-    $up = $mysqli->prepare("UPDATE {$ratingsTable} SET rating = NULL WHERE event_id = ? AND user_id = ?");
+    $up = $mysqli->prepare("UPDATE event_ratings SET rating = NULL WHERE event_id = ? AND user_id = ?");
     if ($up === false) respond(['error' => 'db prepare failed']);
     $up->bind_param('ss', $eventId, $userId);
     $ok = $up->execute();
@@ -368,7 +351,7 @@ if ($action === 'unrateEvent') {
   }
 
   // Return updated aggregate for this event
-  $agg = $mysqli->prepare("SELECT AVG(rating) as avg_rating, COUNT(rating) as count_rating FROM {$ratingsTable} WHERE event_id = ? AND rating IS NOT NULL");
+  $agg = $mysqli->prepare("SELECT AVG(rating) as avg_rating, COUNT(rating) as count_rating FROM event_ratings WHERE event_id = ? AND rating IS NOT NULL");
   if ($agg === false) respond(['error' => 'db prepare failed']);
   $agg->bind_param('s', $eventId);
   $agg->execute();
@@ -392,11 +375,20 @@ if ($action === 'rateEvent') {
     respond(['error' => 'invalid rating']);
   }
 
-  // Choose table (prefer dedicated per-row table if exists)
-  $ratingsTable = tableExists($mysqli, 'user_event_ratings') ? 'user_event_ratings' : 'event_ratings';
+  // Must have RSVP before rating
+  $chk = $mysqli->prepare("SELECT 1 FROM event_rsvps WHERE event_id = ? AND user_id = ? LIMIT 1");
+  if ($chk === false) respond(['error' => 'db prepare failed']);
+  $chk->bind_param('ss', $eventId, $userId);
+  $chk->execute();
+  $hasRsvp = $chk->get_result()->fetch_assoc();
+  $chk->close();
+  if (!$hasRsvp) {
+    http_response_code(403);
+    respond(['error' => 'RSVP required before rating']);
+  }
 
   // Upsert rating
-  $stmt = $mysqli->prepare("SELECT rating FROM {$ratingsTable} WHERE event_id = ? AND user_id = ? LIMIT 1");
+  $stmt = $mysqli->prepare("SELECT rating FROM event_ratings WHERE event_id = ? AND user_id = ? LIMIT 1");
   if ($stmt === false) respond(['error' => 'db prepare failed']);
   $stmt->bind_param('ss', $eventId, $userId);
   $stmt->execute();
@@ -405,13 +397,13 @@ if ($action === 'rateEvent') {
   $stmt->close();
 
   if ($existing) {
-    $up = $mysqli->prepare("UPDATE {$ratingsTable} SET rating = ? WHERE event_id = ? AND user_id = ?");
+    $up = $mysqli->prepare("UPDATE event_ratings SET rating = ? WHERE event_id = ? AND user_id = ?");
     if ($up === false) respond(['error' => 'db prepare failed']);
     $up->bind_param('iss', $rating, $eventId, $userId);
     $ok = $up->execute();
     $up->close();
   } else {
-    $ins = $mysqli->prepare("INSERT INTO {$ratingsTable} (event_id,user_id,rating) VALUES (?,?,?)");
+    $ins = $mysqli->prepare("INSERT INTO event_ratings (event_id,user_id,rating) VALUES (?,?,?)");
     if ($ins === false) respond(['error' => 'db prepare failed']);
     $ins->bind_param('ssi', $eventId, $userId, $rating);
     $ok = $ins->execute();
@@ -419,7 +411,7 @@ if ($action === 'rateEvent') {
   }
 
   // Return updated aggregate for this event
-  $agg = $mysqli->prepare("SELECT AVG(rating) as avg_rating, COUNT(rating) as count_rating FROM {$ratingsTable} WHERE event_id = ? AND rating IS NOT NULL");
+  $agg = $mysqli->prepare("SELECT AVG(rating) as avg_rating, COUNT(rating) as count_rating FROM event_ratings WHERE event_id = ? AND rating IS NOT NULL");
   if ($agg === false) respond(['error' => 'db prepare failed']);
   $agg->bind_param('s', $eventId);
   $agg->execute();

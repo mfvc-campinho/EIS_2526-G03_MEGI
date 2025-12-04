@@ -5,6 +5,14 @@
 // Notes: Uses window.appData where available; keeps data changes simulated or delegated to appData.
 // ===============================================
 
+// Log any uncaught errors to help diagnose missing event rendering (also show alert so it's visible)
+window.addEventListener("error", (e) => {
+  try {
+    console.error("Global JS error", e.message, e.filename, e.lineno, e.colno, e.error);
+    alert("Erro de JavaScript: " + e.message + " (" + e.filename + ":" + e.lineno + ")");
+  } catch (_) { }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   // ---------- ELEMENTS ----------
   const DEFAULT_OWNER_ID = "collector-main";
@@ -97,21 +105,38 @@ document.addEventListener("DOMContentLoaded", () => {
   let inMemoryCollectionsData = null;
 
   function loadData() {
-    if (window.appData && typeof window.appData.loadData === "function") {
-      return window.appData.loadData();
-    }
     if (inMemoryCollectionsData) return inMemoryCollectionsData;
-    if (typeof window !== "undefined" && window.localStorage) {
+    if (window.appData && typeof window.appData.loadData === "function") {
       try {
-        const stored = JSON.parse(window.localStorage.getItem(DATA_STORAGE_KEY));
-        inMemoryCollectionsData = stored || { events: [] };
-      } catch {
-        inMemoryCollectionsData = { events: [] };
-      }
-    } else {
-      inMemoryCollectionsData = { events: [] };
+        const data = window.appData.loadData();
+        inMemoryCollectionsData = data || { events: [], collections: [], users: [] };
+        return inMemoryCollectionsData;
+      } catch (e) { /* ignore */ }
     }
+    inMemoryCollectionsData = { events: [], collections: [], users: [] };
     return inMemoryCollectionsData;
+  }
+
+  async function refreshDataFromServer() {
+    try {
+      const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
+      if (!res.ok) throw new Error('get_all.php returned ' + res.status);
+      const json = await res.json().catch(() => null);
+      if (!json || typeof json !== "object") throw new Error('Invalid JSON from get_all.php');
+      inMemoryCollectionsData = json;
+      if (window.appData) {
+        try {
+          window.appData.loadData = () => inMemoryCollectionsData;
+          if (typeof window.appData.saveData === "function") {
+            window.appData.saveData(inMemoryCollectionsData);
+          }
+        } catch (e) { console.warn('appData sync failed', e); }
+      }
+      return json;
+    } catch (e) {
+      console.error('Failed to refresh data from server', e);
+      throw e;
+    }
   }
 
   function persistCollectionsData(data) {
@@ -565,512 +590,201 @@ document.addEventListener("DOMContentLoaded", () => {
     const users = Array.isArray(dataset?.users) ? dataset.users : [];
     const ownerIds = getEventOwnerIds(event.id, dataset);
     const uniqueOwnerIds = Array.from(new Set(ownerIds));
+    const profiles = uniqueOwnerIds
+      .map(id => users.find(u => String(u.id || u.user_id) === String(id)))
+      .filter(Boolean)
+      .map(u => ({ id: u.id || u.user_id, name: u.user_name || u.name || u.id }));
+    return profiles.length ? profiles : [{ id: null, name: "Community host" }];
+  }
 
-    const ownerProfiles = uniqueOwnerIds
-      .map(ownerId => {
-        const user = users.find(u => {
-          const uid = String(u?.id || u?.user_id || u?.['owner-id'] || '');
-          const uname = String(u?.user_name || u?.['owner-name'] || u?.['user_name'] || '');
-          return uid === ownerId || uname === ownerId;
-        });
-        const name = user?.["owner-name"] || ownerId;
-        return { id: ownerId, name };
-      })
-      .filter(profile => Boolean(profile?.name));
 
-    if (ownerProfiles.length) return ownerProfiles;
+  // ---------- RENDER EVENTS (fresh implementation) ----------
+  function getEventUserLinks(eventOrId, data) {
+    const dataset = data || loadData();
+    const eventId = typeof eventOrId === "string" ? eventOrId : eventOrId?.id;
+    const links = Array.isArray(dataset?.eventsUsers) ? dataset.eventsUsers : [];
+    if (!eventId) return [];
+    return links.filter(link => String(link.eventId) === String(eventId));
+  }
 
-    if (event.host) {
-      return [{ id: null, name: event.host }];
-    }
+  function userHasRsvp(eventLinks, user) {
+    if (!user) return false;
+    return eventLinks.some(link => String(link.userId) === String(user.id) && Number(link.rsvp || 0) === 1);
+  }
 
-    return [{ id: null, name: "Community host" }];
+  function getUserRatingFromEntries(eventLinks, user) {
+    if (!user) return null;
+    const entry = eventLinks.find(link => String(link.userId) === String(user.id) && link.rating !== undefined && link.rating !== null);
+    return entry ? Number(entry.rating) : null;
+  }
+
+  function getEventRatingStats(eventLinks) {
+    const ratings = eventLinks
+      .map(link => link.rating)
+      .filter(val => val !== null && val !== undefined)
+      .map(Number)
+      .filter(n => !Number.isNaN(n));
+    const count = ratings.length;
+    const average = count ? ratings.reduce((a, b) => a + b, 0) / count : null;
+    return { count, average };
   }
 
   function canCurrentUserManageEvent(eventId, data, user = getCurrentUser()) {
-    const ownerId = getActiveOwnerId(user);
-    if (!ownerId) return false;
-    const owners = getEventOwnerIds(eventId, data);
-    if (!owners.length) return false;
-    return owners.includes(ownerId);
-  }
-
-  function getEventUserLinks(event, data) {
-    if (!event) return [];
+    if (!user || !user.active) return false;
     const dataset = data || loadData();
-    if (window.appData?.getEventUsers) {
-      return window.appData.getEventUsers(event.id, dataset) || [];
+    const ev = (dataset.events || []).find(e => String(e.id) === String(eventId));
+    if (!ev) return false;
+    if (ev.hostUserId && String(ev.hostUserId) === String(user.id)) return true;
+    const collectionIds = getEventCollectionIds(eventId, dataset);
+    for (const cid of collectionIds) {
+      const ownerId = window.appData?.getCollectionOwnerId
+        ? window.appData.getCollectionOwnerId(cid, dataset)
+        : (dataset.collections || []).find(c => String(c.id) === String(cid))?.ownerId;
+      if (ownerId && String(ownerId) === String(user.id)) return true;
     }
-    if (Array.isArray(dataset?.eventsUsers)) {
-      return dataset.eventsUsers.filter(entry => entry.eventId === event.id);
-    }
-    const attendees = Array.isArray(event.attendees) ? event.attendees : [];
-    return attendees.map(userId => ({
-      eventId: event.id,
-      userId,
-      rating: typeof event.ratings?.[userId] === "number" ? event.ratings[userId] : null
-    }));
+    return false;
   }
 
-  function getEventRatingStats(entries) {
-    const rated = entries.filter(entry => typeof entry.rating === "number");
-    if (!rated.length) {
-      return { count: 0, average: null };
-    }
-    const total = rated.reduce((sum, entry) => sum + entry.rating, 0);
-    return {
-      count: rated.length,
-      average: total / rated.length
-    };
-  }
-
-  function getUserRatingFromEntries(entries, user) {
-    if (!user) return null;
-    const userId = user?.id || user?.user_id || user?.['owner-id'] || null;
-    if (!userId) return null;
-    const entry = entries.find(link => link.userId === userId);
-    return entry && typeof entry.rating === "number" ? entry.rating : null;
-  }
-
-  function buildLikesMaps(data) {
-    likesByEventMap = {};
-    ownerLikesMap = {};
-    (data?.userShowcases || []).forEach(entry => {
-      const owner = entry.ownerId;
-      const likes = entry.likedEvents || [];
-      ownerLikesMap[owner] = new Set(likes);
-      likes.forEach(eventId => {
-        if (!likesByEventMap[eventId]) likesByEventMap[eventId] = new Set();
-        likesByEventMap[eventId].add(owner);
-      });
-    });
-  }
-
-  function getEventLikedBy(eventId) {
-    const set = likesByEventMap[eventId];
-    return set ? new Set(set) : new Set();
-  }
-
-  function getVoteOverride(eventId) {
-    return Object.prototype.hasOwnProperty.call(voteState, eventId)
-      ? voteState[eventId]
-      : undefined;
-  }
-
-  function getUserBaseLike(eventId, userId) {
-    if (!userId) return false;
-    const likedSet = ownerLikesMap[userId];
-    return likedSet ? likedSet.has(eventId) : false;
-  }
-
-  function getEffectiveUserLike(eventId, userId) {
-    if (!userId) return false;
-    const override = getVoteOverride(eventId);
-    if (override === undefined) return getUserBaseLike(eventId, userId);
-    return override;
-  }
-
-  function getDisplayLikes(eventId, userId) {
-    const likedSet = getEventLikedBy(eventId);
-    if (userId) {
-      const override = getVoteOverride(eventId);
-      const baseHas = likedSet.has(userId);
-      const finalState = override === undefined ? baseHas : override;
-      if (finalState) likedSet.add(userId);
-      else likedSet.delete(userId);
-    }
-    return likedSet.size;
-  }
-
-  function notifyEventLikesChange(ownerId) {
-    if (!ownerId) return;
-    window.dispatchEvent(new CustomEvent("userEventLikesChange", { detail: { ownerId } }));
-  }
-
-  function toggleEventLike(eventId) {
-    if (!isLoggedIn()) {
-      notify("Please sign in to like events.", "warning");
-      return;
-    }
-    const ownerId = getActiveOwnerId();
-    if (!ownerId) return;
-    const currentState = getEffectiveUserLike(eventId, ownerId);
-    const newState = !currentState;
-    voteState[eventId] = newState;
-
-    // Persist the change using the centralized appData function
-    if (window.appData && typeof window.appData.setUserEventLike === "function") {
-      window.appData.setUserEventLike(ownerId, eventId, newState);
-    }
-
-    // Re-render the list and the modal if it's open
-    renderEvents();
-    if (eventDetailModal && eventDetailModal.style.display === "flex") {
-      openEventDetail(eventId);
-    }
-    notifyEventLikesChange(ownerId);
-    try { notify(newState ? 'Event liked.' : 'Event unliked.', newState ? 'success' : 'info'); } catch (e) { }
-  }
-
-  // ---------- CALENDAR WIDGET ----------
-  // Small self-contained calendar that highlights upcoming event days
-  let calendarState = { year: null, month: null };
-  let calendarGrid, calendarMonthTitle, calendarPrev, calendarNext, calendarAlertEl;
-
-  function initCalendar() {
-    const widget = document.getElementById('calendarWidget');
-    if (!widget) return;
-    calendarGrid = document.getElementById('calendarGrid');
-    calendarMonthTitle = document.getElementById('calendarMonthTitle');
-    calendarPrev = document.getElementById('calendarPrev');
-    calendarNext = document.getElementById('calendarNext');
-    calendarAlertEl = document.getElementById('calendarAlert');
-
-    const today = new Date();
-    calendarState.year = today.getFullYear();
-    calendarState.month = today.getMonth();
-
-    calendarPrev?.addEventListener('click', () => navigateMonth(-1));
-    calendarNext?.addEventListener('click', () => navigateMonth(1));
-
-    renderCalendar();
-  }
-
-  function formatMonthYear(y, m) {
-    const d = new Date(y, m, 1);
-    return d.toLocaleString(undefined, { month: 'long', year: 'numeric' });
-  }
-
-  function getEventsMapForMonth(year, month) {
-    const data = loadData();
-    const map = new Map();
-    (data.events || []).forEach(ev => {
-      const d = parseEventDate(ev.date);
-      if (!d) return;
-      if (d.getFullYear() === year && d.getMonth() === month) {
-        const day = d.getDate();
-        if (!map.has(day)) map.set(day, []);
-        map.get(day).push(ev);
-      }
-    });
-    return map;
-  }
-
-  function getEventsForDateObj(dateObj) {
-    const data = loadData();
-    return (data.events || []).filter(ev => {
-      const d = parseEventDate(ev.date);
-      if (!d) return false;
-      return d.getFullYear() === dateObj.getFullYear() && d.getMonth() === dateObj.getMonth() && d.getDate() === dateObj.getDate();
-    });
-  }
-
-  function renderCalendar() {
-    if (!calendarGrid) return;
-    calendarGrid.innerHTML = '';
-    const year = calendarState.year;
-    const month = calendarState.month;
-    calendarMonthTitle.textContent = formatMonthYear(year, month);
-
-    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    weekdays.forEach(w => {
-      const el = document.createElement('div');
-      el.className = 'weekday';
-      el.textContent = w;
-      calendarGrid.appendChild(el);
-    });
-
-    const first = new Date(year, month, 1);
-    const firstDay = first.getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // leading empty cells
-    for (let i = 0; i < firstDay; i++) {
-      const empty = document.createElement('div');
-      empty.className = 'cal-day empty';
-      calendarGrid.appendChild(empty);
-    }
-
-    const eventsMap = getEventsMapForMonth(year, month);
-    const today = new Date();
-
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cell = document.createElement('div');
-      cell.className = 'cal-day';
-      const dateNum = document.createElement('div');
-      dateNum.className = 'date-number';
-      dateNum.textContent = d;
-      cell.appendChild(dateNum);
-
-      const dateObj = new Date(year, month, d);
-      if (dateObj.getFullYear() === today.getFullYear() && dateObj.getMonth() === today.getMonth() && dateObj.getDate() === today.getDate()) {
-        cell.classList.add('today');
+  async function renderEvents() {
+    try {
+      let data = loadData();
+      const currentUser = getCurrentUser();
+      let events = Array.isArray(data?.events) ? data.events.slice() : [];
+      if (!eventsList) {
+        console.error("renderEvents: #eventsList not found in DOM");
+        return;
       }
 
-      if (eventsMap.has(d)) {
-        const evs = eventsMap.get(d) || [];
-        const hasUpcoming = evs.some(e => isUpcoming(e.date));
-        const hasPast = evs.some(e => isPastEvent(e.date));
-
-        if (hasUpcoming) cell.classList.add('has-event-upcoming');
-        else if (hasPast) cell.classList.add('has-event-past');
-
-        const dot = document.createElement('div');
-        dot.className = 'event-dot';
-        cell.appendChild(dot);
-
-        // tooltip: list of event names
-        const names = evs.map(e => e.name).filter(Boolean);
-        if (names.length) cell.setAttribute('title', names.join('\n'));
-        cell.style.cursor = 'pointer';
-        cell.addEventListener('click', () => showEventDetails(dateObj));
-      }
-
-      calendarGrid.appendChild(cell);
-    }
-
-    checkUpcomingWeekEvents();
-  }
-
-  function checkUpcomingWeekEvents() {
-    if (!calendarAlertEl) return;
-    const data = loadData();
-    const today = todayStart();
-    const in7 = new Date(today.getTime() + 7 * 24 * 3600 * 1000);
-    const upcoming = (data.events || []).filter(ev => {
-      const d = parseEventDate(ev.date);
-      if (!d) return false;
-      return d >= today && d <= in7;
-    }).sort((a, b) => (parseEventDate(a.date) || 0) - (parseEventDate(b.date) || 0));
-
-    if (upcoming.length) {
-      const ev = upcoming[0];
-      const human = formatDateHuman(ev.date);
-      calendarAlertEl.style.display = 'block';
-      calendarAlertEl.innerHTML = `📅 <b>Upcoming event:</b><br>${ev.name} on ${human}!`;
-    } else {
-      calendarAlertEl.style.display = 'none';
-      calendarAlertEl.textContent = '';
-    }
-  }
-
-  // Navigate months (direction: -1 previous, 1 next)
-  function navigateMonth(direction) {
-    if (typeof direction !== 'number') return;
-    calendarState.month += direction;
-    if (calendarState.month < 0) { calendarState.month = 11; calendarState.year -= 1; }
-    if (calendarState.month > 11) { calendarState.month = 0; calendarState.year += 1; }
-    renderCalendar();
-  }
-
-  // Show modal with events on the given date (dateObj is a Date)
-  function showEventDetails(dateObj) {
-    if (!calendarDayModal || !calendarDayList || !calendarDayTitle) return;
-    const evs = getEventsForDateObj(dateObj).sort((a, b) => (parseEventDate(a.date) || 0) - (parseEventDate(b.date) || 0));
-    calendarDayList.innerHTML = '';
-    const humanTitle = dateObj.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    calendarDayTitle.textContent = `Events on ${humanTitle}`;
-
-    if (!evs.length) {
-      calendarDayList.innerHTML = '<p class="muted">No events for this date.</p>';
-    } else {
-      evs.forEach(ev => {
-        const div = document.createElement('div');
-        div.className = 'calendar-day-event';
-        const title = document.createElement('h4');
-        title.innerHTML = escapeHtml(ev.name || 'Untitled Event');
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        const dateSpan = document.createElement('span');
-        dateSpan.innerHTML = `<i class="bi bi-calendar-event-fill"></i> ${escapeHtml(formatDateShort(ev.date))}`;
-        const locSpan = document.createElement('span');
-        locSpan.innerHTML = `<i class="bi bi-geo-alt-fill"></i> ${escapeHtml(ev.localization || 'TBA')}`;
-        meta.appendChild(dateSpan);
-        meta.appendChild(locSpan);
-
-        const typeP = document.createElement('div');
-        typeP.className = 'meta';
-        typeP.innerHTML = `<small class="muted">Type: ${escapeHtml(ev.type || 'General')}</small>`;
-
-        const desc = document.createElement('p');
-        desc.textContent = ev.description || ev.summary || '';
-
-        const actions = document.createElement('div');
-        actions.style.marginTop = '8px';
-        const viewBtn = document.createElement('button');
-        viewBtn.className = 'explore-btn';
-        viewBtn.textContent = 'View Details';
-        viewBtn.addEventListener('click', () => {
-          // close calendar modal and open event detail
-          closeCalendarDayModalFn();
-          openEventDetail(ev.id);
-        });
-        actions.appendChild(viewBtn);
-
-        div.appendChild(title);
-        div.appendChild(meta);
-        div.appendChild(typeP);
-        if (desc.textContent) div.appendChild(desc);
-        div.appendChild(actions);
-
-        calendarDayList.appendChild(div);
-      });
-    }
-
-    // show modal
-    calendarDayModal.style.display = 'flex';
-  }
-
-  function closeCalendarDayModalFn() {
-    if (calendarDayModal) calendarDayModal.style.display = 'none';
-  }
-
-  // ---------- END CALENDAR WIDGET ----------
-
-  // ---------- RENDERING ----------
-
-  function renderEvents() {
-    const data = loadData();
-    buildLikesMaps(data);
-    if (!eventsList) return;
-
-    eventsList.innerHTML = "";
-
-    const allEvents = (data.events || []).slice();
-    populateLocationFilterOptions(allEvents);
-    const currentUser = getCurrentUser();
-
-    // Count upcoming/past for tabs
-    let upcomingCount = 0;
-    let pastCount = 0;
-    allEvents.forEach(ev => {
-      if (isUpcoming(ev.date)) upcomingCount++;
-      else pastCount++;
-    });
-    if (upcomingCountEl) upcomingCountEl.textContent = `(${upcomingCount})`;
-    if (pastCountEl) pastCountEl.textContent = `(${pastCount})`;
-
-    // Apply filters
-    const filter = filterSelect?.value || "all";
-    const typeFilter = (typeSelect?.value || "all").toLowerCase();
-    const sortMode = (sortSelect?.value || "asc").toLowerCase();
-    const locationFilter = (locationSelect?.value || "all").toLowerCase();
-
-    const filtered = allEvents
-      .sort((a, b) => {
-        const da = parseEventDate(a.date) || new Date(0);
-        const db = parseEventDate(b.date) || new Date(0);
-        if (sortMode === "desc") return db - da;
-        if (sortMode === "alpha") {
-          return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
+      // If we somehow have zero events, force a fresh fetch from PHP (XAMPP) to avoid stale empty local data.
+      if (!events.length) {
+        try {
+          data = await refreshDataFromServer();
+          events = Array.isArray(data?.events) ? data.events.slice() : [];
+          console.info("renderEvents: fetched fresh data from server", { events: events.length, collections: (data.collections || []).length });
+        } catch (e) {
+          console.error("renderEvents: refresh fallback failed", e);
         }
-        return da - db;
-      })
-      .filter(ev => {
-        if (filter === "upcoming" && !isUpcoming(ev.date)) return false;
-        if (filter === "past" && isUpcoming(ev.date)) return false;
-        if (typeFilter !== "all" && (ev.type || "").toLowerCase() !== typeFilter) return false;
-        if (locationFilter !== "all" && (ev.localization || "").toLowerCase() !== locationFilter) return false;
+      }
+      console.debug("renderEvents: dataset size", { events: events.length, collections: (data.collections || []).length, users: (data.users || []).length });
+
+      populateLocationFilterOptions(events);
+
+      const filterMode = filterSelect?.value || "upcoming";
+      const upcomingCount = events.filter(ev => isUpcoming(ev.date)).length;
+      const pastCount = events.filter(ev => isPastEvent(ev.date)).length;
+      if (upcomingCountEl) upcomingCountEl.textContent = upcomingCount;
+      if (pastCountEl) pastCountEl.textContent = pastCount;
+
+      let filtered = events.filter(ev => {
+        if (filterMode === "upcoming") return isUpcoming(ev.date);
+        if (filterMode === "past") return isPastEvent(ev.date);
         return true;
       });
 
-    const totalMatches = filtered.length;
-    let eventsToRender = filtered;
-    let startIndexForPage = 0;
-    if (hasEventsPagination && eventsPaginationState && eventsPaginationState.pageSize > 0) {
-      const effectiveSize = Math.max(eventsPaginationState.pageSize || defaultEventsPageSize || 1, 1);
-      eventsPaginationState.pageSize = effectiveSize;
-      const totalPages = effectiveSize > 0 ? Math.ceil((totalMatches || 0) / effectiveSize) : 0;
-      if (totalPages === 0) {
-        eventsPaginationState.pageIndex = 0;
-      } else if (eventsPaginationState.pageIndex >= totalPages) {
-        eventsPaginationState.pageIndex = totalPages - 1;
-      } else if (eventsPaginationState.pageIndex < 0) {
-        eventsPaginationState.pageIndex = 0;
+      const typeVal = (typeSelect?.value || "").toLowerCase();
+      const locVal = (locationSelect?.value || "").toLowerCase();
+      if (typeVal && typeVal !== "all") filtered = filtered.filter(ev => (ev.type || "").toLowerCase() === typeVal);
+      if (locVal && locVal !== "all") filtered = filtered.filter(ev => (ev.localization || "").toLowerCase() === locVal);
+
+      const sortVal = sortSelect?.value || "date-asc";
+      filtered.sort((a, b) => {
+        if (sortVal === "date-desc") return (new Date(b.date)) - (new Date(a.date));
+        if (sortVal === "name-asc") return (a.name || "").localeCompare(b.name || "");
+        if (sortVal === "name-desc") return (b.name || "").localeCompare(a.name || "");
+        return (new Date(a.date)) - (new Date(b.date));
+      });
+
+      let start = 0;
+      let pageSize = filtered.length;
+      if (hasEventsPagination && eventsPaginationState) {
+        pageSize = Math.max(eventsPaginationState.pageSize || defaultEventsPageSize || 10, 1);
+        start = Math.max(eventsPaginationState.pageIndex || 0, 0) * pageSize;
       }
-      startIndexForPage = eventsPaginationState.pageIndex * effectiveSize;
-      const endIndex = startIndexForPage + effectiveSize;
-      eventsToRender = filtered.slice(startIndexForPage, endIndex);
-    }
-    updateEventsPaginationUI(totalMatches, startIndexForPage, eventsToRender.length);
+      const pageItems = filtered.slice(start, start + pageSize);
+      updateEventsPaginationUI(filtered.length, start, pageItems.length);
 
-    if (eventsToRender.length === 0) {
-      eventsList.innerHTML = '<p class="muted">No events found for this filter.</p>';
-      return;
-    }
+      eventsList.innerHTML = "";
+      if (!pageItems.length) {
+        const empty = document.createElement("p");
+        empty.className = "muted empty-state";
+        empty.textContent = "No events available.";
+        eventsList.appendChild(empty);
+        // surface a warning in console so we can see why nothing rendered
+        console.warn("renderEvents: zero events after filtering", {
+          total: events.length,
+          filterMode,
+          typeVal,
+          locVal,
+          sortVal
+        });
+        return;
+      }
 
-    eventsToRender.forEach(ev => {
-      // determine if event is happening within the next 7 days (inclusive)
-      const today = todayStart();
-      const in7 = new Date(today.getTime() + 7 * 24 * 3600 * 1000);
-      const evDateObj = parseEventDate(ev.date);
-      const isSoon = evDateObj && evDateObj >= today && evDateObj <= in7;
-      const card = document.createElement("div");
-      card.className = "event-card";
-      // expose event id on the card for delegation/debugging
-      try { card.setAttribute('data-event-id', ev.id); } catch (e) { }
-      const isPast = isPastEvent(ev.date);
-      const eventLinks = getEventUserLinks(ev, data);
-      const { count: ratingCount, average: ratingAvg } = getEventRatingStats(eventLinks);
-      const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
-      const userCanRate = Boolean(currentUser && currentUser.active);
-      const sessionValue = userCanRate ? sessionRatings[ev.id] : undefined;
-      const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;
-      const userRating = userCanRate
-        ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null)
-        : storedUserRating ?? null;
-      const ownerProfiles = getEventOwnerProfiles(ev, data);
-      const ownerDisplayText = ownerProfiles
-        .map(profile => escapeHtml(profile.name))
-        .join(", ") || "Community host";
-      const ownerLinkId = ownerProfiles[0]?.id || null;
-      const ownerLinkHref = ownerLinkId
-        ? `user_page.html?owner=${encodeURIComponent(ownerLinkId)}`
-        : "user_page.html";
-      const ownerIdForDisplay = getActiveOwnerId(currentUser);
-      const isLiked = ownerIdForDisplay ? getEffectiveUserLike(ev.id, ownerIdForDisplay) : false;
-      const displayLikes = getDisplayLikes(ev.id, ownerIdForDisplay);
+      pageItems.forEach(ev => {
+        const isPast = isPastEvent(ev.date);
+        const card = document.createElement("article");
+        card.className = "card event-card";
+        const ownerProfiles = getEventOwnerProfiles(ev, data);
+        const ownerDisplayText = ownerProfiles.map(p => escapeHtml(p.name)).join(", ") || "Community host";
+        const ownerLinkHref = ownerProfiles[0]?.id
+          ? `user_page.html?owner=${encodeURIComponent(ownerProfiles[0].id)}`
+          : "user_page.html";
 
-      let ratingHtml = "";
-      if (isPast) {
-        const stars = [];
-        for (let i = 1; i <= 5; i++) {
-          // Show stars according to the user's own rating only.
-          // The average is shown in the summary text; do not color stars by average.
-          let classes = "star";
-          if (userRating && i <= userRating) classes += " user-rating";
-          classes += " clickable";
-          stars.push(`<span class="${classes}" data-value="${i}">★</span>`);
-        }
+        const eventLinks = getEventUserLinks(ev, data);
+        const hasRsvp = userHasRsvp(eventLinks, currentUser);
+        const userRating = getUserRatingFromEntries(eventLinks, currentUser);
+        const { count: ratingCount, average: ratingAvg } = getEventRatingStats(eventLinks);
+        const canManage = canCurrentUserManageEvent(ev.id, data, currentUser);
 
-        const showDemoOnly = userCanRate && sessionValue !== undefined;
-        let summary = "";
-        // First line: average + count (or no ratings)
-        if (!showDemoOnly) {
-          if (ratingAvg) {
-            summary += `<div class="rating-line"><span class="muted">★ ${ratingAvg.toFixed(1)}</span> <span class="rating-count">(${ratingCount})</span></div>`;
-          } else {
-            summary += `<div class="rating-line"><span class="muted">No ratings yet</span></div>`;
+        let ratingHtml = "";
+        if (isPast) {
+          const stars = [];
+          for (let i = 1; i <= 5; i++) {
+            const isOn = userRating && i <= userRating;
+            const disabledCls = hasRsvp ? "" : " disabled";
+            stars.push(`<span class="star${isOn ? " user-rating" : ""}${disabledCls}" data-value="${i}">*</span>`);
           }
-        }
-
-        // Second line: user-specific note (demo or recorded)
-        if (showDemoOnly) {
-          summary += `<div class="rating-note demo-rating-note">Your demo rating: ${sessionValue}/5 (not saved)</div>`;
-        } else if (userCanRate && userRating) {
-          summary += `<div class="rating-note">You rated this ${userRating}/5</div>`;
-        }
-
-        ratingHtml = `
+          const summary = ratingAvg
+            ? `<div class="rating-line"><span class="muted">${ratingAvg.toFixed(1)}</span> <span class="rating-count">(${ratingCount})</span></div>`
+            : `<div class="rating-line"><span class="muted">No ratings yet</span></div>`;
+          const note = hasRsvp
+            ? (userRating ? `<div class="rating-note">You rated this ${userRating}/5</div>` : `<div class="rating-note muted">RSVP required to rate.</div>`)
+            : `<div class="rating-note muted">RSVP required to rate.</div>`;
+          ratingHtml = `
             <div class="card-rating">
-              <div class="rating-stars" data-event-id="${ev.id}">${stars.join("")}</div>
-              <div class="rating-summary">${summary}</div>
+              <div class="rating-stars${hasRsvp ? "" : " disabled"}" data-event-id="${ev.id}">${stars.join("")}</div>
+              <div class="rating-summary">${summary}${note}</div>
             </div>
           `;
-      }
+        }
 
-      const alertBadgeHtml = isSoon && !isPast ? `<span class="event-alert-badge" aria-hidden="true">⚠️ Soon</span>` : "";
-      const ownerHtml = `
+        const associatedCollection = (data.collections || []).find(c => String(c.id) === String(ev.collectionId || ev.collection_id));
+        const collectionHtml = associatedCollection
+          ? `
+            <div class="event-meta-row event-collection-row">
+              <i class="bi bi-box-seam" aria-hidden="true"></i>
+              <span class="event-collection-label">Collection:</span>
+              <a class="event-collection-link" href="specific_collection.html?id=${encodeURIComponent(associatedCollection.id)}">
+                ${escapeHtml(associatedCollection.name || associatedCollection.id || "Collection")}
+              </a>
+            </div>
+          `
+          : "";
+
+        card.innerHTML = `
+          <h3 class="card-title">${escapeHtml(ev.name)}</h3>
+          <p class="card-summary">${escapeHtml(ev.summary || ev.description || "")}</p>
+          <div class="event-meta-row">
+            <i class="bi bi-calendar-event-fill" aria-hidden="true"></i>
+            <span class="event-meta-label">Date:</span>
+            <span>${formatDateShort(ev.date)}</span>
+          </div>
+          <div class="event-meta-row">
+            <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+            <span class="event-meta-label">Location:</span>
+            <span>${escapeHtml(ev.localization || "To be announced")}</span>
+          </div>
+          ${collectionHtml}
           <div class="event-meta-row event-owner-row">
             <i class="bi bi-person-circle" aria-hidden="true"></i>
             <span class="event-owner-label">Owner:</span>
@@ -1078,219 +792,86 @@ document.addEventListener("DOMContentLoaded", () => {
               ${ownerDisplayText}
             </a>
           </div>
-        `;
-
-      // Collection info (associated collection displayed on the event card)
-      const associatedCollection = (data.collections || []).find(c => String(c.id) === String(ev.collectionId || ev.collection_id));
-      let collectionHtml = "";
-      if (associatedCollection) {
-        const colHref = `specific_collection.html?id=${encodeURIComponent(associatedCollection.id)}`;
-        const colName = escapeHtml(associatedCollection.name || associatedCollection.id || 'Collection');
-        collectionHtml = `
-          <div class="event-meta-row event-collection-row">
-            <i class="bi bi-box-seam" aria-hidden="true"></i>
-            <span class="event-collection-label">Collection:</span>
-            <a class="event-collection-link" href="${colHref}">
-              ${colName}
-            </a>
-          </div>
-        `;
-      }
-
-      card.innerHTML = `
-          <h3 class="card-title">${escapeHtml(ev.name)} ${alertBadgeHtml}</h3>
-          <p class="card-summary">
-            ${escapeHtml(ev.summary || ev.description || "")}
-          </p>
-
-          <div class="event-meta-row">
-            <i class="bi bi-calendar-event-fill" aria-hidden="true"></i>
-            <span class="event-meta-label">Date:</span>
-            <span>${formatDateShort(ev.date)}</span>
-          </div>
-
-          <div class="event-meta-row">
-            <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-            <span class="event-meta-label">Location:</span>
-            <span>${escapeHtml(ev.localization || "To be announced")}</span>
-          </div>
-
-          ${collectionHtml}
-
-          ${ownerHtml}
-
           ${ratingHtml}
-
           <div class="card-actions">
             <button class="view-btn explore-btn ghost" data-id="${ev.id}" type="button">
               <i class="bi bi-eye-fill" aria-hidden="true"></i> View
             </button>
-            ${(() => {
-          // Build RSVP button according to whether the current user is attending
-          const isAttending = Boolean(eventLinks && currentUser && eventLinks.some(link => String(link.userId) === String(currentUser.id)));
-          // Use the same 'ghost' styling as the View button to keep design consistent
-          // Add `following` when attending so CSS can show the green state only when appropriate
-          const rsvpClass = isAttending ? 'explore-btn ghost rsvp-btn following' : 'explore-btn ghost rsvp-btn';
-          const rsvpIcon = isAttending ? 'bi-calendar-check' : 'bi-calendar-plus';
-          const rsvpLabel = isAttending ? 'Going' : 'RSVP';
-          return `
-              <button class="${rsvpClass}" data-id="${ev.id}" data-requires-login>
-                <i class="bi ${rsvpIcon}" aria-hidden="true"></i> ${rsvpLabel}
-              </button>`;
-        })()}
+            ${isPast ? "" : `
+              <button class="explore-btn ghost rsvp-btn ${hasRsvp ? "following" : ""}" data-id="${ev.id}" data-requires-login>
+                <i class="bi ${hasRsvp ? "bi-calendar-check" : "bi-calendar-plus"}" aria-hidden="true"></i> ${hasRsvp ? "Going" : "RSVP"}
+              </button>
+            `}
             ${canManage ? `
               <button class="edit-btn explore-btn warning" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit
               </button>
-            ` : ``}
-            ${canManage ? `
               <button class="delete-btn explore-btn danger" data-id="${ev.id}" data-requires-login>
                 <i class="bi bi-trash3" aria-hidden="true"></i> Delete
               </button>
-            ` : ``}
+            ` : ""}
           </div>
         `;
 
-      const viewBtnEl = card.querySelector(".view-btn");
-      if (viewBtnEl) {
-        // ensure button won't accidentally submit forms
-        try { viewBtnEl.setAttribute('type', 'button'); } catch (e) { }
-        viewBtnEl.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); console.debug('view-btn clicked', ev.id); openEventDetail(ev.id); });
-        viewBtnEl.addEventListener("keydown", (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEventDetail(ev.id); } });
-      }
-      // also attach delegated handler on the card to catch cases where the click target
-      // is an inner element or event propagation is different
-      card.addEventListener('click', (e) => {
-        const vb = e.target.closest ? e.target.closest('.view-btn') : null;
-        if (vb && card.contains(vb)) {
-          e.preventDefault(); e.stopPropagation(); console.debug('delegated view click', ev.id); openEventDetail(ev.id);
-        }
-      });
-      const rsvpBtnEl = card.querySelector(".rsvp-btn");
-      if (rsvpBtnEl) {
-        rsvpBtnEl.addEventListener("click", e => { e.preventDefault(); rsvpEvent(ev.id); });
-      }
-      const editBtn = card.querySelector(".edit-btn");
-      if (editBtn) {
-        editBtn.addEventListener("click", () => openEditModal(ev.id));
-      }
-      const deleteBtn = card.querySelector(".delete-btn");
-      if (deleteBtn) {
-        deleteBtn.addEventListener("click", () => deleteEventHandler(ev.id));
-      }
-
-      // Create a Like button next to the View button for all events (past and upcoming)
-      let likeBtnEl = null;
-      const actionsElForLike = card.querySelector('.card-actions');
-      if (actionsElForLike) {
-        const viewBtnElem = actionsElForLike.querySelector('.view-btn');
-        likeBtnEl = document.createElement('button');
-        // Use explore-btn so we can toggle the `following` style when liked
-        likeBtnEl.className = `explore-btn ghost like-btn ${isLiked ? 'following' : ''}`;
-        likeBtnEl.type = 'button';
-        likeBtnEl.setAttribute('data-event-id', ev.id);
-        likeBtnEl.innerHTML = `<i class="bi ${isLiked ? 'bi-star-fill' : 'bi-star'} me-1" aria-hidden="true"></i> <span class="vote-count">${displayLikes}</span>`;
-        likeBtnEl.addEventListener('click', (e) => { e.preventDefault(); toggleEventLike(ev.id); });
-        // Insert after the View button if present, otherwise prepend
-        try {
-          if (viewBtnElem && viewBtnElem.parentElement === actionsElForLike) {
-            viewBtnElem.insertAdjacentElement('afterend', likeBtnEl);
-          } else {
-            actionsElForLike.prepend(likeBtnEl);
-          }
-        } catch (e) {
-          actionsElForLike.appendChild(likeBtnEl);
-        }
-      }
-
-
-      // Add 'Add to My Calendar' button for upcoming events
-      if (!isPast) {
-        const actionsEl = card.querySelector('.card-actions');
-        if (actionsEl) {
-          // Create the calendar button
-          const calBtn = document.createElement('button');
-          calBtn.className = 'explore-btn calendar-btn';
-          calBtn.type = 'button';
-          calBtn.innerHTML = '<i class="bi bi-calendar-plus-fill me-1" aria-hidden="true"></i> Add to My Calendar';
-          calBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            addEventToCalendar({
-              name: ev.name,
-              date: ev.date,
-              endDate: ev.endDate || null,
-              description: ev.description || ev.summary || '',
-              location: ev.localization || ''
-            });
-          });
-
-          // Append calendar button next to existing like button (if present)
-          if (likeBtnEl && likeBtnEl.parentElement === actionsEl) {
-            likeBtnEl.insertAdjacentElement('afterend', calBtn);
-          } else {
-            actionsEl.appendChild(calBtn);
-          }
-        }
-      }
-
-      const starsContainer = card.querySelector(`.rating-stars[data-event-id="${ev.id}"]`);
-      if (starsContainer) {
-        const stars = Array.from(starsContainer.querySelectorAll('.star'));
-
-        function clearHover() {
-          stars.forEach(s => s.classList.remove('hovered'));
-        }
-
-        function highlightTo(val) {
-          stars.forEach(s => {
-            const v = Number(s.dataset.value);
-            if (v <= val) s.classList.add('hovered');
-            else s.classList.remove('hovered');
-          });
-        }
-
-        stars.forEach(s => {
-          const val = Number(s.dataset.value);
-
-          s.addEventListener('mouseenter', () => highlightTo(val));
-          s.addEventListener('focus', () => highlightTo(val));
-          s.addEventListener('mouseleave', () => clearHover());
-          s.addEventListener('blur', () => clearHover());
-
-          s.addEventListener('click', () => setRating(ev.id, val));
-          s.addEventListener('keydown', (evKey) => {
-            if (evKey.key === 'Enter' || evKey.key === ' ') {
-              evKey.preventDefault();
-              setRating(ev.id, val);
-            }
-          });
-          s.setAttribute('tabindex', '0');
-          s.setAttribute('role', 'button');
-          s.setAttribute('aria-label', `Rate ${val} out of 5`);
+        const viewBtnEl = card.querySelector(".view-btn");
+        viewBtnEl?.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openEventDetail(ev.id); });
+        card.addEventListener("click", (e) => {
+          if (e.target.closest && e.target.closest(".view-btn")) return;
+          openEventDetail(ev.id);
         });
 
-        starsContainer.addEventListener('mouseleave', clearHover);
+        const rsvpBtnEl = card.querySelector(".rsvp-btn");
+        if (rsvpBtnEl) {
+          rsvpBtnEl.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!isLoggedIn()) {
+              notify("Please sign in to RSVP.", "warning");
+              return;
+            }
+            rsvpEvent(ev.id);
+          });
+        }
+
+        const starsContainer = card.querySelector('.rating-stars[data-event-id="' + ev.id + '"]');
+        if (starsContainer && hasRsvp && isPast) {
+          Array.from(starsContainer.querySelectorAll(".star")).forEach(s => {
+            const val = Number(s.dataset.value);
+            s.addEventListener("click", () => setRating(ev.id, val));
+            s.addEventListener("keydown", (evKey) => {
+              if (evKey.key === "Enter" || evKey.key === " ") {
+                evKey.preventDefault();
+                setRating(ev.id, val);
+              }
+            });
+            s.setAttribute("tabindex", "0");
+            s.setAttribute("role", "button");
+            s.setAttribute("aria-label", "Rate " + val + " out of 5");
+          });
+        }
+
+        eventsList.appendChild(card);
+      });
+
+      try { renderCalendar(); } catch (e) { /* calendar optional */ }
+
+      if (!deepLinkHandled && deepLinkEventId) {
+        const exists = (data.events || []).some(ev => ev.id === deepLinkEventId);
+        if (exists) {
+          const ref =
+            (deepLinkReturnUrl && deepLinkReturnUrl.length) ? decodeURIComponent(deepLinkReturnUrl) :
+              (document.referrer && document.referrer.length ? document.referrer : null);
+          openEventDetail(deepLinkEventId, { returnUrl: ref });
+          if (!ref) clearDeepLinkParams();
+        } else {
+          clearDeepLinkParams();
+        }
+        deepLinkHandled = true;
+        deepLinkEventId = null;
       }
-
-      eventsList.appendChild(card);
-    });
-
-    // Update calendar after rendering list so highlights & alert match data
-    try { renderCalendar(); } catch (e) { /* ignore if calendar not present */ }
-
-    if (!deepLinkHandled && deepLinkEventId) {
-      const exists = (data.events || []).some(ev => ev.id === deepLinkEventId);
-      if (exists) {
-        const ref =
-          (deepLinkReturnUrl && deepLinkReturnUrl.length) ? decodeURIComponent(deepLinkReturnUrl) :
-            (document.referrer && document.referrer.length ? document.referrer : null);
-        openEventDetail(deepLinkEventId, { returnUrl: ref });
-        if (!ref) clearDeepLinkParams();
-      } else {
-        clearDeepLinkParams();
-      }
-      deepLinkHandled = true;
-      deepLinkEventId = null;
+    } catch (err) {
+      console.error("renderEvents failed", err);
+      try { alert("Erro a desenhar eventos: " + (err && err.message ? err.message : err)); } catch (_) { }
     }
   }
 
@@ -1345,6 +926,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (modalAttendeesCountEl) {
       modalAttendeesCountEl.textContent = eventLinks.length;
     }
+    const isPast = isPastEvent(ev.date);
 
     // Collections associated with this event
     try {
@@ -1384,13 +966,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Modal RSVP button appearance (use ghost style to match View button)
     if (modalRsvpBtn) {
       const isAttending = Boolean(eventLinks && currentUser && eventLinks.some(link => String(link.userId) === String(currentUser.id)));
-      modalRsvpBtn.className = isAttending ? 'explore-btn ghost following' : 'explore-btn ghost';
-      modalRsvpBtn.innerHTML = isAttending ? `<i class="bi bi-calendar-check" aria-hidden="true"></i> Going` : `<i class="bi bi-calendar-plus" aria-hidden="true"></i> RSVP`;
-      modalRsvpBtn.onclick = () => rsvpEvent(id);
+      if (isPast) {
+        modalRsvpBtn.style.display = 'none';
+        modalRsvpBtn.onclick = null;
+      } else {
+        modalRsvpBtn.style.display = '';
+        modalRsvpBtn.className = isAttending ? 'explore-btn ghost following' : 'explore-btn ghost';
+        modalRsvpBtn.innerHTML = isAttending ? `<i class="bi bi-calendar-check" aria-hidden="true"></i> Going` : `<i class="bi bi-calendar-plus" aria-hidden="true"></i> RSVP`;
+        modalRsvpBtn.onclick = () => rsvpEvent(id);
+      }
     }
 
     // Rating (only for past events)
-    const isPast = isPastEvent(ev.date);
     const { count, average: avg } = getEventRatingStats(eventLinks);
     const sessionValue = currentUser && currentUser.active ? sessionRatings[ev.id] : undefined;
     const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;
@@ -1455,15 +1042,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // RSVP button
     if (modalRsvpBtn) {
       modalRsvpBtn.onclick = () => rsvpEvent(id);
-    }
-
-    const ownerIdForDisplay = getActiveOwnerId(currentUser);
-    const isLiked = ownerIdForDisplay ? getEffectiveUserLike(ev.id, ownerIdForDisplay) : false;
-    const likeBtn = document.getElementById("modal-likeBtn");
-    if (likeBtn) {
-      likeBtn.classList.toggle("active", isLiked);
-      likeBtn.querySelector(".bi").className = `bi ${isLiked ? "bi-star-fill" : "bi-star"}`;
-      likeBtn.onclick = () => toggleEventLike(id);
     }
 
     // (Optional) share button: simple alert for now
@@ -1540,6 +1118,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const dataset = loadData();
         const eventLinks = getEventUserLinks(ev, dataset);
         const currentUser = getCurrentUser();
+        if (!userHasRsvp(eventLinks, currentUser)) {
+          notify("RSVP required to rate this event.", "warning");
+          return;
+        }
         const storedUserRating = currentUser ? getUserRatingFromEntries(eventLinks, currentUser) : null;
         const sessionValue = currentUser && currentUser.active ? sessionRatings[eventId] : undefined;
         const userRating = currentUser && currentUser.active ? (sessionValue !== undefined ? sessionValue : storedUserRating ?? null) : storedUserRating ?? null;
@@ -1856,7 +1438,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Optimistically update modal RSVP UI immediately
+        // Optimistically update modal/button UI immediately
         try {
           const rsvpState = action === 'rsvp';
           if (modalRsvpBtn) {
@@ -1867,17 +1449,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const current = Number(modalAttendeesCountEl.textContent || 0) || 0;
             modalAttendeesCountEl.textContent = String(current + (action === 'rsvp' ? 1 : -1));
           }
+          // Update any list button that matches this event
+          const listBtn = document.querySelector(`.rsvp-btn[data-id="${id}"]`);
+          if (listBtn) {
+            listBtn.classList.toggle('following', rsvpState);
+            listBtn.innerHTML = rsvpState
+              ? `<i class="bi bi-calendar-check" aria-hidden="true"></i> Going`
+              : `<i class="bi bi-calendar-plus" aria-hidden="true"></i> RSVP`;
+          }
         } catch (e) { }
 
-        // reload server data and re-render (best-effort)
+        // reload server data and re-render to sync RSVP state
         try {
-          const ga = await fetch('../PHP/get_all.php');
-          if (ga.status === 200) {
-            const serverData = await ga.json().catch(() => null);
-            if (serverData) {
-              try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
-            }
-          }
+          await refreshDataFromServer();
         } catch (e) {
           console.warn('Failed to reload server data after RSVP', e);
         }
@@ -1953,9 +1537,16 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("userStateChange", renderEvents);
 
   // ---------- INITIAL RENDER ----------
-  initEventsPaginationControls();
-  // Initialize calendar and render events (calendar will refresh from renderEvents)
-  try { initCalendar(); } catch (e) { /* ignore if calendar not present */ }
-  renderEvents();
-  handleNewEventParam();
+  (async function initEventsPage() {
+    try {
+      await refreshDataFromServer();
+      initEventsPaginationControls();
+      try { initCalendar(); } catch (e) { /* ignore if calendar not present */ }
+      renderEvents();
+      handleNewEventParam();
+    } catch (err) {
+      console.error('Events init failed:', err);
+      try { notify('Erro a carregar eventos. Veja a consola para detalhes.', 'error'); } catch (e) { }
+    }
+  })();
 });

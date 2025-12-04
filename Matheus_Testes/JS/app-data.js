@@ -81,11 +81,36 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error('❌ Unable to fetch server data synchronously:', err);
   }
 
+  // Fallback: if no data loaded, try async fetch and cache it
+  try {
+    const existing = JSON.parse(localStorage.getItem("collectionsData") || "null");
+    if (!existing || !existing.events || !existing.collections) {
+      fetch('../PHP/get_all.php', { cache: 'no-store' })
+        .then(res => res.ok ? res.json() : null)
+        .then(json => {
+          if (json && typeof json === 'object') {
+            localStorage.setItem('collectionsData', JSON.stringify(json));
+            try { window.dispatchEvent(new CustomEvent('appDataRefreshed')); } catch (e) { }
+          }
+        })
+        .catch(e => console.error('ƒ?O async fetch fallback failed', e));
+    }
+  } catch (e) {
+    console.error('ƒ?O async fetch fallback errored', e);
+  }
+
   // ============================================================
   // 2. Utility functions
   // ============================================================
   function loadData() {
-    return JSON.parse(localStorage.getItem("collectionsData"));
+    try {
+      const raw = localStorage.getItem("collectionsData");
+      const parsed = raw ? JSON.parse(raw) : null;
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (e) {
+      console.warn("loadData: failed to parse collectionsData", e);
+      return {};
+    }
   }
 
   function saveData(data) {

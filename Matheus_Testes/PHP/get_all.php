@@ -114,14 +114,51 @@ $collectionsUsers = array_map(function ($c) {
   return ['collectionId' => $c['id'], 'ownerId' => $c['ownerId']];
 }, $collections);
 
-// 8) eventsUsers (from event_ratings or user_event_ratings if present)
-$hasEventRatingsTable = table_exists($mysqli, 'user_event_ratings');
-$erRows = $hasEventRatingsTable
-  ? fetch_all($mysqli, "SELECT event_id,user_id,rating,collection_id FROM user_event_ratings")
-  : fetch_all($mysqli, "SELECT event_id,user_id,rating,collection_id FROM event_ratings");
-$eventsUsers = array_map(function ($r) {
-  return ['eventId' => $r['event_id'], 'userId' => $r['user_id'], 'rating' => $r['rating'], 'collectionId' => $r['collection_id']];
-}, $erRows);
+// 8) eventsUsers (ratings + RSVPs) with table existence guards
+$erRows = table_exists($mysqli, 'event_ratings')
+  ? fetch_all($mysqli, "SELECT event_id,user_id,rating,collection_id FROM event_ratings")
+  : [];
+$rsvpRows = table_exists($mysqli, 'event_rsvps')
+  ? fetch_all($mysqli, "SELECT event_id,user_id FROM event_rsvps")
+  : [];
+
+$rsvpMap = [];
+foreach ($rsvpRows as $r) {
+  $eid = $r['event_id'] ?? null;
+  $uid = $r['user_id'] ?? null;
+  if ($eid && $uid) {
+    $rsvpMap["{$eid}|{$uid}"] = true;
+  }
+}
+
+$eventsUsers = [];
+$seenKeys = [];
+foreach ($erRows as $r) {
+  $eid = $r['event_id'] ?? null;
+  $uid = $r['user_id'] ?? null;
+  if (!$eid || !$uid) continue;
+  $key = "{$eid}|{$uid}";
+  $seenKeys[$key] = true;
+  $eventsUsers[] = [
+    'eventId' => $eid,
+    'userId' => $uid,
+    'rating' => $r['rating'],
+    'collectionId' => $r['collection_id'] ?? null,
+    'rsvp' => isset($rsvpMap[$key]) ? 1 : 0
+  ];
+}
+// Add RSVPs without rating
+foreach ($rsvpMap as $key => $_) {
+  if (isset($seenKeys[$key])) continue;
+  [$eid, $uid] = explode('|', $key, 2);
+  $eventsUsers[] = [
+    'eventId' => $eid,
+    'userId' => $uid,
+    'rating' => null,
+    'collectionId' => null,
+    'rsvp' => 1
+  ];
+}
 
 // 9) userShowcases (migrated to separate tables)
 // Combine data from user_ratings_collections, user_ratings_events, user_ratings_items
@@ -139,7 +176,7 @@ function table_exists($mysqli, $tableName)
 // Prefer per-row tables when available
 $hasLikedCollectionsTable = table_exists($mysqli, 'user_liked_collections');
 $hasLikedItemsTable = table_exists($mysqli, 'user_liked_items');
-$hasLikedEventsTable = table_exists($mysqli, 'user_liked_events');
+$hasLikedEventsTable = false;
 
 // collections (prefer per-like table; only fall back to legacy if needed)
 $urc = $hasLikedCollectionsTable
@@ -166,29 +203,8 @@ foreach ($urc as $r) {
   }
 }
 
-// events
-$ure = $hasLikedEventsTable
-  ? fetch_all($mysqli, "SELECT user_id,last_updated,liked_event_id as liked_events FROM user_liked_events")
-  : fetch_all($mysqli, "SELECT user_id,last_updated,liked_events FROM user_ratings_events");
-foreach ($ure as $r) {
-  $uid = $r['user_id'] ?? null;
-  if (!$uid) continue;
-  if (!isset($showcaseMap[$uid])) {
-    $showcaseMap[$uid] = ['ownerId' => $uid, 'lastUpdated' => $r['last_updated'] ?? null, 'picks' => [], 'likes' => [], 'likedItems' => [], 'likedEvents' => []];
-  }
-  if (!empty($r['last_updated']) && (empty($showcaseMap[$uid]['lastUpdated']) || strtotime($r['last_updated']) > strtotime($showcaseMap[$uid]['lastUpdated']))) {
-    $showcaseMap[$uid]['lastUpdated'] = $r['last_updated'];
-  }
-  if (!empty($r['liked_events'])) {
-    $raw = $r['liked_events'];
-    $decoded = json_decode($raw, true);
-    if (is_array($decoded)) {
-      $showcaseMap[$uid]['likedEvents'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedEvents'], $decoded)));
-    } else {
-      $showcaseMap[$uid]['likedEvents'] = array_values(array_unique(array_merge($showcaseMap[$uid]['likedEvents'], [$raw])));
-    }
-  }
-}
+// events -> ignore liked events (deprecated)
+$ure = [];
 
 // items
 $uri = $hasLikedItemsTable

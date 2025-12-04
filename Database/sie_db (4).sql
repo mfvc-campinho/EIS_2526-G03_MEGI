@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 03-Dez-2025 às 23:22
+-- Tempo de geração: 04-Dez-2025 às 02:01
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.0.30
 
@@ -114,7 +114,7 @@ CREATE TABLE `events` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `host_user_id` varchar(100) DEFAULT NULL,
-  `collection_id` varchar(100) DEFAULT NULL
+  `collection_id` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -136,26 +136,27 @@ INSERT INTO `events` (`event_id`, `name`, `localization`, `event_date`, `type`, 
 --
 
 CREATE TABLE `event_ratings` (
-  `event_id` varchar(100) NOT NULL,
-  `user_id` varchar(100) NOT NULL,
-  `rating` tinyint(4) DEFAULT NULL,
-  `collection_id` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` int(11) NOT NULL,
+  `event_id` varchar(255) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `rating` tinyint(4) NOT NULL,
+  `collection_id` varchar(255) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
--- Extraindo dados da tabela `event_ratings`
+-- Estrutura da tabela `event_rsvps`
 --
 
-INSERT INTO `event_ratings` (`event_id`, `user_id`, `rating`, `collection_id`) VALUES
-('escudos-event-1', 'cristina_feira', 5, NULL),
-('escudos-event-1', 'rui_frio', NULL, NULL),
-('escudos-event-2', 'cristina_feira', NULL, NULL),
-('escudos-event-2', 'rui_frio', 5, NULL),
-('jerseys-event-1', 'rui_frio', NULL, NULL),
-('jerseys-event-2', 'rui_frio', 5, NULL),
-('pokemon-event-1', 'cristina_feira', 5, NULL),
-('pokemon-event-1', 'rui_frio', 5, NULL),
-('pokemon-event-2', 'rui_frio', 5, NULL);
+CREATE TABLE `event_rsvps` (
+  `id` int(11) NOT NULL,
+  `event_id` varchar(255) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `rsvp_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -215,31 +216,6 @@ INSERT INTO `users` (`user_id`, `user_name`, `user_photo`, `date_of_birth`, `ema
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `user_event_ratings`
---
-
-CREATE TABLE `user_event_ratings` (
-  `id` int(11) NOT NULL,
-  `event_id` varchar(255) NOT NULL,
-  `user_id` varchar(255) NOT NULL,
-  `rating` tinyint(4) DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Extraindo dados da tabela `user_event_ratings`
---
-
-INSERT INTO `user_event_ratings` (`id`, `event_id`, `user_id`, `rating`, `created_at`, `updated_at`) VALUES
-(1, 'pokemon-event-1', 'rui_frio', 5, '2025-12-03 22:09:25', '2025-12-03 22:09:25'),
-(2, 'escudos-event-2', 'rui_frio', 5, '2025-12-03 22:09:50', '2025-12-03 22:09:50'),
-(3, 'jerseys-event-2', 'rui_frio', 4, '2025-12-03 22:09:53', '2025-12-03 22:09:53'),
-(4, 'pokemon-event-2', 'rui_frio', 4, '2025-12-03 22:09:55', '2025-12-03 22:12:45');
-
--- --------------------------------------------------------
-
---
 -- Estrutura da tabela `user_followers`
 --
 
@@ -258,19 +234,6 @@ CREATE TABLE `user_liked_collections` (
   `id` int(11) NOT NULL,
   `user_id` varchar(255) NOT NULL,
   `liked_collection_id` varchar(255) NOT NULL,
-  `last_updated` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `user_liked_events`
---
-
-CREATE TABLE `user_liked_events` (
-  `id` int(11) NOT NULL,
-  `user_id` varchar(255) NOT NULL,
-  `liked_event_id` varchar(255) NOT NULL,
   `last_updated` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -332,8 +295,16 @@ ALTER TABLE `events`
 -- Índices para tabela `event_ratings`
 --
 ALTER TABLE `event_ratings`
-  ADD PRIMARY KEY (`event_id`,`user_id`),
-  ADD KEY `fk_eu_user` (`user_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_event_user` (`event_id`,`user_id`),
+  ADD KEY `idx_event_ratings_collection` (`collection_id`);
+
+--
+-- Índices para tabela `event_rsvps`
+--
+ALTER TABLE `event_rsvps`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_event_rsvp` (`event_id`,`user_id`);
 
 --
 -- Índices para tabela `items`
@@ -350,13 +321,6 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Índices para tabela `user_event_ratings`
---
-ALTER TABLE `user_event_ratings`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uniq_event_user` (`event_id`,`user_id`);
-
---
 -- Índices para tabela `user_followers`
 --
 ALTER TABLE `user_followers`
@@ -371,13 +335,6 @@ ALTER TABLE `user_liked_collections`
   ADD UNIQUE KEY `uniq_user_collection` (`user_id`,`liked_collection_id`);
 
 --
--- Índices para tabela `user_liked_events`
---
-ALTER TABLE `user_liked_events`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uniq_user_event` (`user_id`,`liked_event_id`);
-
---
 -- Índices para tabela `user_liked_items`
 --
 ALTER TABLE `user_liked_items`
@@ -389,21 +346,21 @@ ALTER TABLE `user_liked_items`
 --
 
 --
--- AUTO_INCREMENT de tabela `user_event_ratings`
+-- AUTO_INCREMENT de tabela `event_ratings`
 --
-ALTER TABLE `user_event_ratings`
+ALTER TABLE `event_ratings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `event_rsvps`
+--
+ALTER TABLE `event_rsvps`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `user_liked_collections`
 --
 ALTER TABLE `user_liked_collections`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `user_liked_events`
---
-ALTER TABLE `user_liked_events`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -440,15 +397,8 @@ ALTER TABLE `collection_items`
 -- Limitadores para a tabela `events`
 --
 ALTER TABLE `events`
-  ADD CONSTRAINT `fk_events_collection` FOREIGN KEY (`collection_id`) REFERENCES `collections` (`collection_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_events_collection` FOREIGN KEY (`collection_id`) REFERENCES `collections` (`collection_id`),
   ADD CONSTRAINT `fk_events_host` FOREIGN KEY (`host_user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
---
--- Limitadores para a tabela `event_ratings`
---
-ALTER TABLE `event_ratings`
-  ADD CONSTRAINT `fk_eu_event` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_eu_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Limitadores para a tabela `items`

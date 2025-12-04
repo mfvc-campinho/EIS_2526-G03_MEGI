@@ -6,6 +6,8 @@ require_once __DIR__ . '/../includes/flash.php';
 $data = load_app_data($mysqli);
 $mysqli->close();
 $events = $data['events'] ?? [];
+$eventsUsers = $data['eventsUsers'] ?? [];
+$eventsUsers = $data['eventsUsers'] ?? [];
 
 $isAuth = !empty($_SESSION['user']);
 $currentUserId = $_SESSION['user']['id'] ?? null;
@@ -77,6 +79,24 @@ if (!empty($eventsPage)) {
     if ($ts) $monthLabel = date('F Y', $ts);
   }
 }
+
+// Map eventId+userId => entry (rating / rsvp)
+$eventUserMap = [];
+foreach ($eventsUsers as $eu) {
+  $eid = $eu['eventId'] ?? null;
+  $uid = $eu['userId'] ?? null;
+  if (!$eid || !$uid) continue;
+  $eventUserMap["{$eid}|{$uid}"] = $eu;
+}
+
+// Map eventId+userId => entry (rating / rsvp)
+$eventUserMap = [];
+foreach ($eventsUsers as $eu) {
+  $eid = $eu['eventId'] ?? null;
+  $uid = $eu['userId'] ?? null;
+  if (!$eid || !$uid) continue;
+  $eventUserMap["{$eid}|{$uid}"] = $eu;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -111,10 +131,14 @@ if (!empty($eventsPage)) {
     .event-card h3 { margin: 0; }
     .event-meta { list-style: none; padding: 0; margin: 0; color: #6b7280; }
     .event-meta li { margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-    .event-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .event-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; align-items:center; }
     .badge-muted { color: #6b7280; font-weight: 600; }
     .hero-subtle { font-size: 0.95rem; margin-top: -4px; }
     .clear-btn { background: #fff0f0; color: #c53030; border: 1px solid #f5c2c0; border-radius: 12px; padding: 10px 16px; font-weight: 600; cursor: pointer; }
+    .stars { display:flex; gap:4px; }
+    .star-btn { border:none; background:transparent; cursor:pointer; padding:4px; color:#f5b301; font-size:18px; }
+    .star-btn i { pointer-events:none; }
+    .star-btn.active i { color:#f59e0b; }
   </style>
 </head>
 
@@ -201,6 +225,11 @@ if (!empty($eventsPage)) {
           <?php
           $hostId = $evt['hostUserId'] ?? $evt['host_user_id'] ?? null;
           $isOwner = $isAuth && $hostId && $hostId === $currentUserId;
+          $eventDate = substr($evt['date'] ?? '', 0, 10);
+          $isPast = $eventDate && $eventDate < date('Y-m-d');
+          $userEntry = $currentUserId ? ($eventUserMap[$evt['id'] . '|' . $currentUserId] ?? null) : null;
+          $hasRsvp = $userEntry && !empty($userEntry['rsvp']);
+          $rating = $userEntry['rating'] ?? null;
           ?>
           <article class="event-card">
             <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
@@ -219,6 +248,29 @@ if (!empty($eventsPage)) {
                   <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
                   <button type="submit" class="explore-btn ghost danger small" onclick="return confirm('Apagar este evento?');">Apagar</button>
                 </form>
+              <?php endif; ?>
+              <?php if ($isAuth): ?>
+                <?php if ($isPast): ?>
+                  <form action="events_action.php" method="POST" style="display:flex; align-items:center; gap:6px;">
+                    <input type="hidden" name="action" value="rate">
+                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
+                    <div class="stars">
+                      <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <button type="submit" name="rating" value="<?php echo $i; ?>" class="star-btn<?php echo ($rating >= $i) ? ' active' : ''; ?>" aria-label="Rate <?php echo $i; ?>">
+                          <i class="bi <?php echo ($rating >= $i) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
+                        </button>
+                      <?php endfor; ?>
+                    </div>
+                  </form>
+                <?php else: ?>
+                  <form action="events_action.php" method="POST" style="display:inline;">
+                    <input type="hidden" name="action" value="rsvp">
+                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
+                    <button type="submit" class="explore-btn small<?php echo $hasRsvp ? ' success' : ''; ?>">
+                      <i class="bi bi-check2-circle"></i> <?php echo $hasRsvp ? 'RSVP Feito' : 'RSVP'; ?>
+                    </button>
+                  </form>
+                <?php endif; ?>
               <?php endif; ?>
             </div>
           </article>

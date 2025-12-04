@@ -60,5 +60,39 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Simple client-side filter for cards (collections/items/events)
+  function initSearchFilter() {
+    var inputs = document.querySelectorAll('.search-bar');
+    if (!inputs.length) return;
+    var cards = Array.from(document.querySelectorAll('.product-card, .event-card, .item-card'));
+    if (!cards.length) return;
+
+    // Precompute searchable text
+    var cardText = new Map();
+    cards.forEach(function (card) {
+      var cached = card.getAttribute('data-search-text');
+      if (!cached) {
+        cached = card.innerText.toLowerCase();
+        card.setAttribute('data-search-text', cached);
+      }
+      cardText.set(card, cached);
+    });
+
+    function applyFilter(term) {
+      cards.forEach(function (card) {
+        var txt = cardText.get(card) || '';
+        var match = term === '' || txt.indexOf(term) !== -1;
+        card.style.display = match ? '' : 'none';
+      });
+    }
+
+    inputs.forEach(function (input) {
+      input.addEventListener('input', function () {
+        applyFilter((input.value || '').toLowerCase());
+      });
+    });
+  }
+
   initSearchToggles();
+  initSearchFilter();
 });

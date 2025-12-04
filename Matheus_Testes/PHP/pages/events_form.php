@@ -73,7 +73,7 @@ $existingCollections = array_unique($existingCollections);
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($event['id']); ?>">
       <?php endif; ?>
 
-      <label>Nome</label>
+      <label>Nome <span class="required-badge">R</span></label>
       <input type="text" name="name" required value="<?php echo htmlspecialchars($event['name']); ?>">
 
       <label>Resumo</label>
@@ -91,7 +91,7 @@ $existingCollections = array_unique($existingCollections);
       <label>Data</label>
       <input type="datetime-local" name="date" value="<?php echo htmlspecialchars(substr($event['date'], 0, 16)); ?>">
 
-      <label>Coleções (pode associar a várias das suas)</label>
+      <label>Coleções (pode associar a várias das suas) <span class="required-badge">R</span></label>
       <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">
         <?php foreach ($ownedCollections as $col): ?>
           <?php $checked = in_array($col['id'], $existingCollections, true) || (!$editing && ($event['collectionId'] ?? '') === $col['id']); ?>

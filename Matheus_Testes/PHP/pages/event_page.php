@@ -82,11 +82,19 @@ if (!empty($eventsPage)) {
 
 // Map eventId+userId => entry (rating / rsvp)
 $eventUserMap = [];
+$eventAvgMap = [];
+$eventCountMap = [];
 foreach ($eventsUsers as $eu) {
   $eid = $eu['eventId'] ?? null;
   $uid = $eu['userId'] ?? null;
   if (!$eid || !$uid) continue;
-  $eventUserMap["{$eid}|{$uid}"] = $eu;
+  $key = strval($eid) . '|' . strval($uid);
+  $eventUserMap[$key] = $eu;
+  if (isset($eu['rating']) && $eu['rating'] !== null) {
+    if (!isset($eventAvgMap[$eid])) { $eventAvgMap[$eid] = 0; $eventCountMap[$eid] = 0; }
+    $eventAvgMap[$eid] += (float)$eu['rating'];
+    $eventCountMap[$eid] += 1;
+  }
 }
 
 // Map eventId+userId => entry (rating / rsvp)
@@ -139,6 +147,17 @@ foreach ($eventsUsers as $eu) {
     .star-btn { border:none; background:transparent; cursor:pointer; padding:4px; color:#f5b301; font-size:18px; }
     .star-btn i { pointer-events:none; }
     .star-btn.active i { color:#f59e0b; }
+    .avg-stars { display:flex; gap:4px; color:#f5b301; align-items:center; font-weight:600; }
+    .avg-stars .count { color:#6b7280; font-size:0.9rem; margin-left:4px; }
+    .user-stars { display:flex; gap:4px; color:#f5b301; align-items:center; font-weight:600; }
+    .user-stars .label { color:#374151; font-size:0.9rem; margin-right:6px; }
+    /* Modal */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:1000; }
+    .modal-backdrop.open { display:flex; }
+    .modal-card { background:#fff; border-radius:18px; padding:20px; max-width:520px; width:90%; box-shadow:0 18px 36px rgba(0,0,0,0.18); }
+    .modal-card h3 { margin-top:0; margin-bottom:8px; }
+    .modal-card p { margin:4px 0; }
+    .modal-close { border:none; background:transparent; font-size:22px; cursor:pointer; float:right; }
   </style>
 </head>
 
@@ -227,7 +246,8 @@ foreach ($eventsUsers as $eu) {
           $isOwner = $isAuth && $hostId && $hostId === $currentUserId;
           $eventDate = substr($evt['date'] ?? '', 0, 10);
           $isPast = $eventDate && $eventDate < date('Y-m-d');
-          $userEntry = $currentUserId ? ($eventUserMap[$evt['id'] . '|' . $currentUserId] ?? null) : null;
+          $key = $currentUserId ? (strval($evt['id']) . '|' . strval($currentUserId)) : null;
+          $userEntry = $currentUserId && $key ? ($eventUserMap[$key] ?? null) : null;
           $hasRsvp = $userEntry && !empty($userEntry['rsvp']);
           $rating = $userEntry['rating'] ?? null;
           ?>
@@ -239,8 +259,25 @@ foreach ($eventsUsers as $eu) {
               <li><i class="bi bi-calendar-event"></i> <?php echo htmlspecialchars(substr($evt['date'], 0, 10)); ?></li>
               <li><i class="bi bi-geo-alt"></i> <?php echo htmlspecialchars($evt['localization']); ?></li>
             </ul>
+            <?php if ($isAuth && $rating !== null): ?>
+              <div class="user-stars" title="O seu rating">
+                <span class="label">O seu rating:</span>
+                <?php for ($i = 1; $i <= 5; $i++): ?>
+                  <i class="bi <?php echo ($rating >= $i) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
+                <?php endfor; ?>
+              </div>
+            <?php endif; ?>
             <div class="event-actions">
-              <a class="explore-btn small" href="event_page.php?id=<?php echo urlencode($evt['id']); ?>">Ver detalhes</a>
+              <button type="button"
+                      class="explore-btn small js-view-event"
+                      data-name="<?php echo htmlspecialchars($evt['name']); ?>"
+                      data-summary="<?php echo htmlspecialchars($evt['summary']); ?>"
+                      data-description="<?php echo htmlspecialchars($evt['description']); ?>"
+                      data-date="<?php echo htmlspecialchars(substr($evt['date'], 0, 16)); ?>"
+                      data-location="<?php echo htmlspecialchars($evt['localization']); ?>"
+                      data-type="<?php echo htmlspecialchars($evt['type']); ?>">
+                Ver detalhes
+              </button>
               <?php if ($isOwner): ?>
                 <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($evt['id']); ?>">Editar</a>
                 <form action="events_action.php" method="POST" style="display:inline;">
@@ -249,19 +286,35 @@ foreach ($eventsUsers as $eu) {
                   <button type="submit" class="explore-btn ghost danger small" onclick="return confirm('Apagar este evento?');">Apagar</button>
                 </form>
               <?php endif; ?>
+              <?php
+                $avg = ($eventCountMap[$evt['id']] ?? 0) ? ($eventAvgMap[$evt['id']] / $eventCountMap[$evt['id']]) : 0;
+                $count = $eventCountMap[$evt['id']] ?? 0;
+              ?>
+              <?php if ($avg > 0): ?>
+                <div class="avg-stars" title="Rating médio">
+                  <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <i class="bi <?php echo ($avg >= $i) ? 'bi-star-fill' : (($avg >= $i-0.5) ? 'bi-star-half' : 'bi-star'); ?>"></i>
+                  <?php endfor; ?>
+                  <span class="count">(<?php echo $count; ?>)</span>
+                </div>
+              <?php endif; ?>
               <?php if ($isAuth): ?>
                 <?php if ($isPast): ?>
-                  <form action="events_action.php" method="POST" style="display:flex; align-items:center; gap:6px;">
-                    <input type="hidden" name="action" value="rate">
-                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
-                    <div class="stars">
-                      <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <button type="submit" name="rating" value="<?php echo $i; ?>" class="star-btn<?php echo ($rating >= $i) ? ' active' : ''; ?>" aria-label="Rate <?php echo $i; ?>">
-                          <i class="bi <?php echo ($rating >= $i) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
-                        </button>
-                      <?php endfor; ?>
-                    </div>
-                  </form>
+                  <?php if ($hasRsvp): ?>
+                    <form action="events_action.php" method="POST" style="display:flex; align-items:center; gap:6px;">
+                      <input type="hidden" name="action" value="rate">
+                      <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
+                      <div class="stars">
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                          <button type="submit" name="rating" value="<?php echo $i; ?>" class="star-btn<?php echo ($rating >= $i) ? ' active' : ''; ?>" aria-label="Rate <?php echo $i; ?>">
+                            <i class="bi <?php echo ($rating >= $i) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
+                          </button>
+                        <?php endfor; ?>
+                      </div>
+                    </form>
+                  <?php else: ?>
+                    <span class="badge-muted">Faça RSVP para poder avaliar.</span>
+                  <?php endif; ?>
                 <?php else: ?>
                   <form action="events_action.php" method="POST" style="display:inline;">
                     <input type="hidden" name="action" value="rsvp">
@@ -283,6 +336,43 @@ foreach ($eventsUsers as $eu) {
 
   <?php include __DIR__ . '/../includes/footer.php'; ?>
   <script src="../../JS/search-toggle.js"></script>
+  <div class="modal-backdrop" id="event-modal">
+    <div class="modal-card">
+      <button class="modal-close" aria-label="Fechar" onclick="document.getElementById('event-modal').classList.remove('open')">&times;</button>
+      <h3 id="modal-title"></h3>
+      <p class="muted" id="modal-type"></p>
+      <p id="modal-summary"></p>
+      <p id="modal-description"></p>
+      <p><strong>Data:</strong> <span id="modal-date"></span></p>
+      <p><strong>Local:</strong> <span id="modal-location"></span></p>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var modal = document.getElementById('event-modal');
+      if (!modal) return;
+      var titleEl = document.getElementById('modal-title');
+      var typeEl = document.getElementById('modal-type');
+      var summaryEl = document.getElementById('modal-summary');
+      var descEl = document.getElementById('modal-description');
+      var dateEl = document.getElementById('modal-date');
+      var locEl = document.getElementById('modal-location');
+      function closeModal() { modal.classList.remove('open'); }
+      modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+      document.querySelectorAll('.js-view-event').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          titleEl.textContent = btn.dataset.name || '';
+          typeEl.textContent = btn.dataset.type || '';
+          summaryEl.textContent = btn.dataset.summary || '';
+          descEl.textContent = btn.dataset.description || '';
+          dateEl.textContent = btn.dataset.date || '';
+          locEl.textContent = btn.dataset.location || '';
+          modal.classList.add('open');
+        });
+      });
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+    })();
+  </script>
 </body>
 
 </html>

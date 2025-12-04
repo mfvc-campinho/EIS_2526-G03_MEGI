@@ -60,7 +60,7 @@ if ($id) {
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($collection['id']); ?>">
       <?php endif; ?>
 
-      <label>Nome</label>
+      <label>Nome <span class="required-badge">R</span></label>
       <input type="text" name="name" required value="<?php echo htmlspecialchars($collection['name']); ?>">
 
       <label>Tipo</label>

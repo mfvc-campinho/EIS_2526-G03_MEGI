@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Simple client-side filter for cards (collections/items/events)
   function initSearchFilter() {
+    var wrappers = document.querySelectorAll('.search-wrapper');
     var inputs = document.querySelectorAll('.search-bar');
     if (!inputs.length) return;
     var cards = Array.from(document.querySelectorAll('.product-card, .event-card, .item-card'));
@@ -90,7 +91,26 @@ document.addEventListener('DOMContentLoaded', function () {
       input.addEventListener('input', function () {
         applyFilter((input.value || '').toLowerCase());
       });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applyFilter((input.value || '').toLowerCase());
+        }
+      });
     });
+
+    // Allow clicking the search icon to trigger filter
+    wrappers.forEach(function (wrap) {
+      var icon = wrap.querySelector('.search-icon');
+      var input = wrap.querySelector('.search-bar');
+      if (!icon || !input) return;
+      icon.addEventListener('click', function () {
+        applyFilter((input.value || '').toLowerCase());
+      });
+    });
+
+    // Initial reset
+    applyFilter('');
   }
 
   initSearchToggles();

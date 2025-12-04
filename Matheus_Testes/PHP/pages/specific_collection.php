@@ -9,6 +9,7 @@ $items = $data['items'] ?? [];
 $events = $data['events'] ?? [];
 $collectionItems = $data['collectionItems'] ?? [];
 $collectionEvents = $data['collectionEvents'] ?? [];
+$userShowcases = $data['userShowcases'] ?? [];
 $isAuth = !empty($_SESSION['user']);
 $currentUserId = $isAuth ? ($_SESSION['user']['id'] ?? null) : null;
 
@@ -48,6 +49,17 @@ if ($img && !preg_match('#^https?://#', $img)) {
   $img = '../../' . ltrim($img, './');
 }
 $isOwner = $isAuth && $collection && ($collection['ownerId'] ?? null) === $currentUserId;
+
+$likedItems = [];
+$itemLikeCount = [];
+foreach ($userShowcases as $sc) {
+  $uid = $sc['ownerId'] ?? null;
+  $likes = $sc['likedItems'] ?? [];
+  foreach ($likes as $iid) {
+    $itemLikeCount[$iid] = ($itemLikeCount[$iid] ?? 0) + 1;
+    if ($uid === $currentUserId) $likedItems[$iid] = true;
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -167,6 +179,14 @@ $isOwner = $isAuth && $collection && ($collection['ownerId'] ?? null) === $curre
                   </div>
                   <div class="card-actions">
                     <a class="explore-btn" href="item_page.php?id=<?php echo urlencode($it['id']); ?>">Explore More</a>
+                    <form action="likes_action.php" method="POST" style="display:inline;">
+                      <input type="hidden" name="type" value="item">
+                      <input type="hidden" name="id" value="<?php echo htmlspecialchars($it['id']); ?>">
+                      <button type="submit" class="explore-btn ghost<?php echo isset($likedItems[$it['id']]) ? ' success' : ''; ?>">
+                        <i class="bi <?php echo isset($likedItems[$it['id']]) ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
+                        <?php echo $itemLikeCount[$it['id']] ?? 0; ?>
+                      </button>
+                    </form>
                     <?php if ($isItemOwner): ?>
                       <a class="explore-btn ghost" href="items_form.php?id=<?php echo urlencode($it['id']); ?>">Edit</a>
                       <form action="items_action.php" method="POST" style="display:inline;">

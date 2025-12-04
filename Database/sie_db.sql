@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 04-Dez-2025 às 02:01
+-- Tempo de geração: 05-Dez-2025 às 00:04
 -- Versão do servidor: 10.4.32-MariaDB
 -- versão do PHP: 8.0.30
 
@@ -43,10 +43,10 @@ CREATE TABLE `collections` (
 --
 
 INSERT INTO `collections` (`collection_id`, `name`, `type`, `cover_image`, `summary`, `description`, `created_at`, `user_id`) VALUES
-('escudos', 'Portuguese Escudos', 'Coins', '../images/coins.png', 'A journey through Portugal’s historical coins.', 'This collection showcases Portugal’s numismatic legacy, featuring original Escudo coins minted before the euro era. It highlights their unique designs, materials, and historical significance in the country’s economy.', '2018-04-10 00:00:00', 'cristina_feira'),
-('escudos-gold', 'Golden Escudos Vault', 'Coins', '../images/gold_coins.jpg', 'Handpicked gold Escudos from the monarchy to mid-century republic.', 'Focuses on premium gold-minted Escudo coins, documenting mint marks, alloys, and historical context tied to Portugal\'s treasury reforms.', '2020-11-18 00:00:00', 'cristina_feira'),
-('jerseys', 'Autographed Portuguese Football Jerseys', 'Sports Memorabilia', '../images/benfica.jpg', 'Signed memorabilia from legendary players.', 'An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.', '2019-06-25 00:00:00', 'rui_frio'),
-('pokemon', 'Pokémon Trading Cards', 'Collectible Cards', '../images/pikachuset.jpg', 'Rare and classic cards from the Pokémon universe.', 'A comprehensive Pokémon TCG collection featuring rare holographic cards, first editions, and limited releases from various generations. It celebrates both the nostalgic and competitive sides of Pokémon collecting.', '2021-04-20 00:00:00', 'rui_frio');
+('escudos', 'Portuguese Escudos', 'Coins', 'uploads/collections/coins.png', 'A journey through Portugal’s historical coins.', 'This collection showcases Portugal’s numismatic legacy, featuring original Escudo coins minted before the euro era. It highlights their unique designs, materials, and historical significance in the country’s economy.', '2018-04-10 00:00:00', 'cristina_feira'),
+('escudos-gold', 'Golden Escudos Vault', 'Coins', 'uploads/collections/gold_coins.jpg', 'Handpicked gold Escudos from the monarchy to mid-century republic.', 'Focuses on premium gold-minted Escudo coins, documenting mint marks, alloys, and historical context tied to Portugal\'s treasury reforms.', '2020-11-18 00:00:00', 'cristina_feira'),
+('jerseys', 'Autographed Portuguese Football Jerseys', 'Sports Memorabilia', 'uploads/collections/img_6931ad16abe3c.jpg', 'Signed memorabilia from legendary players.', 'An exclusive selection of football jerseys autographed by renowned athletes from Portuguese and international teams. Each item tells a story of sporting triumph, teamwork, and fan devotion.', '2019-06-25 00:00:00', 'rui_frio'),
+('pokemon', 'Pokémon Trading Cards', 'Collectible Cards', 'uploads/collections/img_6931acf789b9a.jpg', 'Rare and classic cards from the Pokémon universe.', 'A comprehensive Pokémon TCG collection featuring rare holographic cards, first editions, and limited releases from various generations. It celebrates both the nostalgic and competitive sides of Pokémon collecting.', '2021-04-20 00:00:00', 'rui_frio');
 
 -- --------------------------------------------------------
 
@@ -92,6 +92,7 @@ INSERT INTO `collection_items` (`collection_id`, `item_id`) VALUES
 ('escudos-gold', 'escudos-item-1'),
 ('jerseys', 'jerseys-item-1'),
 ('jerseys', 'jerseys-item-2'),
+('jerseys', 'pokemon-item-1'),
 ('pokemon', 'jerseys-item-1'),
 ('pokemon', 'jerseys-item-2'),
 ('pokemon', 'pokemon-item-1'),
@@ -145,6 +146,14 @@ CREATE TABLE `event_ratings` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Extraindo dados da tabela `event_ratings`
+--
+
+INSERT INTO `event_ratings` (`id`, `event_id`, `user_id`, `rating`, `collection_id`, `created_at`, `updated_at`) VALUES
+(1, 'pokemon-event-1', 'rui_frio', 5, 'pokemon', '2025-12-04 19:32:46', '2025-12-04 19:32:46'),
+(2, 'pokemon-event-2', 'rui_frio', 3, 'pokemon', '2025-12-04 19:33:26', '2025-12-04 19:33:26');
+
 -- --------------------------------------------------------
 
 --
@@ -157,6 +166,13 @@ CREATE TABLE `event_rsvps` (
   `user_id` varchar(255) NOT NULL,
   `rsvp_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `event_rsvps`
+--
+
+INSERT INTO `event_rsvps` (`id`, `event_id`, `user_id`, `rsvp_at`) VALUES
+(7, 'escudos-event-1', 'rui_frio', '2025-12-04 19:38:42');
 
 -- --------------------------------------------------------
 
@@ -182,9 +198,9 @@ CREATE TABLE `items` (
 --
 
 INSERT INTO `items` (`item_id`, `name`, `importance`, `weight`, `price`, `acquisition_date`, `created_at`, `updated_at`, `image`, `collection_id`) VALUES
-('escudos-item-1', '1950 Escudo', 'High', 4.500, 120.00, '2020-03-15', '2020-03-01 00:00:00', '2020-03-15 00:00:00', '../images/escudo1950.jpg', 'escudos'),
-('escudos-item-2', '1960 Escudo', 'Very High', 5.100, 250.00, '2021-07-10', '2021-06-20 00:00:00', '2021-07-10 00:00:00', '../images/escudo1960.jpg', 'escudos'),
-('jerseys-item-1', 'Deco\'s FC Porto 2004 Jersey', 'High', 0.400, 450.00, '2020-03-12', '2020-02-20 00:00:00', '2020-03-12 00:00:00', '../images/porto.jpg', 'pokemon'),
+('escudos-item-1', '1950 Escudo', 'High', 4.500, 120.00, '2020-03-15', '2020-03-01 00:00:00', '2020-03-15 00:00:00', 'uploads/collections/escudo1950.jpg', 'escudos'),
+('escudos-item-2', '1960 Escudo', 'Very High', 5.100, 250.00, '2021-07-10', '2021-06-20 00:00:00', '2021-07-10 00:00:00', 'uploads/collections/escudo1960.jpg', 'escudos'),
+('jerseys-item-1', 'Deco\'s FC Porto 2004 Jersey', 'High', 0.400, 450.00, '2020-03-12', '2020-02-20 00:00:00', '2020-03-12 00:00:00', 'uploads/items/img_6931b7b33f416.jpg', 'pokemon'),
 ('jerseys-item-2', 'Cardozo\'s Benfica 2010 Jersey', 'High', 0.400, 400.00, '2021-09-03', '2021-08-10 00:00:00', '2021-09-03 00:00:00', '../images/benfica.jpg', 'pokemon'),
 ('pokemon-item-1', 'Pikachu Base Set', 'Low', 0.005, 150.00, '2021-06-18', '2021-06-01 00:00:00', '2021-06-18 00:00:00', '../images/pikachuset.JPG', 'pokemon'),
 ('pokemon-item-2', 'Charizard Holo', 'Very High', 0.005, 2000.00, '2022-04-22', '2022-03-30 00:00:00', '2022-04-22 00:00:00', '../images/charizard.jpg', 'pokemon');
@@ -211,7 +227,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `user_name`, `user_photo`, `date_of_birth`, `email`, `password`, `member_since`) VALUES
 ('cristina_feira', 'Cristina Feira', '../images/cristina.jpg', '1985-05-20', 'collector.main@email.com', 'password123', '2015'),
-('rui_frio', 'Rui Frio', '../images/rui.jpg', '1982-07-14', 'rui.frio@email.com', '$2y$10$F61AxUcubEgZ61FVB8IXWe3u7rScokh4ojE2XMVvbzBeNLC.HAagC', '2018');
+('rui_frio', 'Rui Frio', '../images/rui.jpg', '1982-07-14', 'rui.frio@email.com', '$2y$10$A.gKXDnJhsg30zRhRhfBtet0vEK4JNdySm/0gjZCLGgsXEkpiImJe', '2018');
 
 -- --------------------------------------------------------
 
@@ -237,6 +253,14 @@ CREATE TABLE `user_liked_collections` (
   `last_updated` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Extraindo dados da tabela `user_liked_collections`
+--
+
+INSERT INTO `user_liked_collections` (`id`, `user_id`, `liked_collection_id`, `last_updated`) VALUES
+(2, 'rui_frio', 'jerseys', '2025-12-04 12:18:59'),
+(3, 'rui_frio', 'pokemon', '2025-12-04 12:18:59');
+
 -- --------------------------------------------------------
 
 --
@@ -256,7 +280,8 @@ CREATE TABLE `user_liked_items` (
 
 INSERT INTO `user_liked_items` (`id`, `user_id`, `liked_item_id`, `last_updated`) VALUES
 (5, 'rui_frio', 'jerseys-item-1', '2025-12-03 22:53:16'),
-(6, 'rui_frio', 'jerseys-item-2', '2025-12-03 22:53:16');
+(6, 'rui_frio', 'jerseys-item-2', '2025-12-03 22:53:16'),
+(7, 'rui_frio', 'escudos-item-1', '2025-12-04 20:02:46');
 
 --
 -- Índices para tabelas despejadas
@@ -349,25 +374,25 @@ ALTER TABLE `user_liked_items`
 -- AUTO_INCREMENT de tabela `event_ratings`
 --
 ALTER TABLE `event_ratings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `event_rsvps`
 --
 ALTER TABLE `event_rsvps`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de tabela `user_liked_collections`
 --
 ALTER TABLE `user_liked_collections`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `user_liked_items`
 --
 ALTER TABLE `user_liked_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Restrições para despejos de tabelas

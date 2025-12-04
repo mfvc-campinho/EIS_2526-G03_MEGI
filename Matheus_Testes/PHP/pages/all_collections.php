@@ -6,6 +6,7 @@ $mysqli->close();
 $collections = $data['collections'] ?? [];
 $items = $data['items'] ?? [];
 $collectionItems = $data['collectionItems'] ?? [];
+$userShowcases = $data['userShowcases'] ?? [];
 
 $itemsById = [];
 foreach ($items as $it) {
@@ -22,6 +23,18 @@ foreach ($collectionItems as $link) {
 
 $isAuth = !empty($_SESSION['user']);
 $currentUserId = $_SESSION['user']['id'] ?? null;
+$likedCollections = [];
+$collectionLikeCount = [];
+foreach ($userShowcases as $sc) {
+  $uid = $sc['ownerId'] ?? null;
+  $likes = $sc['likes'] ?? [];
+  foreach ($likes as $cid) {
+    $collectionLikeCount[$cid] = ($collectionLikeCount[$cid] ?? 0) + 1;
+    if ($uid === $currentUserId) {
+      $likedCollections[$cid] = true;
+    }
+  }
+}
 
 // Controls
 $sort = $_GET['sort'] ?? 'newest';
@@ -161,6 +174,14 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                   <label class="explore-btn ghost preview-show" for="<?php echo $previewId; ?>">Show Preview</label>
                   <label class="explore-btn ghost preview-hide" for="<?php echo $previewId; ?>">Hide Preview</label>
                   <a class="explore-btn" href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">Explore More</a>
+                  <form action="likes_action.php" method="POST" style="display:inline;">
+                    <input type="hidden" name="type" value="collection">
+                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
+                    <button type="submit" class="explore-btn ghost<?php echo isset($likedCollections[$col['id']]) ? ' success' : ''; ?>">
+                      <i class="bi <?php echo isset($likedCollections[$col['id']]) ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
+                      <?php echo $collectionLikeCount[$col['id']] ?? 0; ?>
+                    </button>
+                  </form>
                 </div>
                 <?php if ($isOwner): ?>
                   <div class="owner-actions">

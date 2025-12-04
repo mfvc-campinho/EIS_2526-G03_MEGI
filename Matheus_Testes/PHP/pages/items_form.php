@@ -76,7 +76,7 @@ $existingCollections = array_unique($existingCollections);
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($item['id']); ?>">
       <?php endif; ?>
 
-      <label>Nome</label>
+      <label>Nome <span class="required-badge">R</span></label>
       <input type="text" name="name" required value="<?php echo htmlspecialchars($item['name']); ?>">
 
       <label>Importância</label>
@@ -97,7 +97,7 @@ $existingCollections = array_unique($existingCollections);
         <p class="muted" style="margin-top:4px;">Imagem atual: <?php echo htmlspecialchars($item['image']); ?> (deixe vazio para manter)</p>
       <?php endif; ?>
 
-      <label>Coleções (escolha todas as suas que contêm este item)</label>
+      <label>Coleções (escolha todas as suas que contêm este item) <span class="required-badge">R</span></label>
       <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">
         <?php foreach ($ownedCollections as $col): ?>
           <?php $checked = in_array($col['id'], $existingCollections, true) || (!$editing && ($item['collectionId'] ?? '') === $col['id']); ?>

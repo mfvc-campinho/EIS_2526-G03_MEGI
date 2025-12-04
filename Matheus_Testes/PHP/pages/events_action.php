@@ -47,12 +47,14 @@ function replace_event_links($mysqli, $eventId, $collectionIds)
   $del->execute();
   $del->close();
 
-  $ins = $mysqli->prepare('INSERT INTO collection_events (collection_id,event_id) VALUES (?,?)');
-  foreach ($collectionIds as $cid) {
-    $ins->bind_param('ss', $cid, $eventId);
-    $ins->execute();
+  if ($collectionIds) {
+    $ins = $mysqli->prepare('INSERT INTO collection_events (collection_id,event_id) VALUES (?,?)');
+    foreach ($collectionIds as $cid) {
+      $ins->bind_param('ss', $cid, $eventId);
+      $ins->execute();
+    }
+    $ins->close();
   }
-  $ins->close();
 }
 
 if ($action === 'create') {
@@ -140,6 +142,53 @@ if ($action === 'delete') {
   $mysqli->close();
   if ($ok) redirect_success('Evento apagado.');
   redirect_error('Falha ao apagar evento.');
+}
+
+// Fetch helper
+$fetchEvent = function ($mysqli, $eventId) {
+  $stmt = $mysqli->prepare('SELECT event_id, host_user_id, collection_id FROM events WHERE event_id = ? LIMIT 1');
+  $stmt->bind_param('s', $eventId);
+  $stmt->execute();
+  $res = $stmt->get_result();
+  $row = $res->fetch_assoc();
+  $stmt->close();
+  return $row;
+};
+
+if ($action === 'rsvp') {
+  $id = $_POST['id'] ?? null;
+  if (!$id) redirect_error('ID em falta.');
+  $row = $fetchEvent($mysqli, $id);
+  if (!$row) {
+    $mysqli->close();
+    redirect_error('Evento não encontrado.');
+  }
+  $stmt = $mysqli->prepare('REPLACE INTO event_rsvps (event_id,user_id) VALUES (?,?)');
+  $stmt->bind_param('ss', $id, $currentUser);
+  $ok = $stmt->execute();
+  $stmt->close();
+  $mysqli->close();
+  if ($ok) redirect_success('RSVP registado.');
+  redirect_error('Falha ao registar RSVP.');
+}
+
+if ($action === 'rate') {
+  $id = $_POST['id'] ?? null;
+  $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : null;
+  if (!$id || !$rating || $rating < 1 || $rating > 5) redirect_error('Dados de rating inválidos.');
+  $row = $fetchEvent($mysqli, $id);
+  if (!$row) {
+    $mysqli->close();
+    redirect_error('Evento não encontrado.');
+  }
+  $collectionId = $row['collection_id'] ?? null;
+  $stmt = $mysqli->prepare('REPLACE INTO event_ratings (event_id,user_id,rating,collection_id) VALUES (?,?,?,?)');
+  $stmt->bind_param('ssis', $id, $currentUser, $rating, $collectionId);
+  $ok = $stmt->execute();
+  $stmt->close();
+  $mysqli->close();
+  if ($ok) redirect_success('Rating registado.');
+  redirect_error('Falha ao registar rating.');
 }
 
 $mysqli->close();

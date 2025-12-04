@@ -50,10 +50,10 @@ if (!$user) {
 
     <form class="form-card" action="users_action.php" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="action" value="update">
-      <label>Nome</label>
+      <label>Nome <span class="required-badge">R</span></label>
       <input type="text" name="name" required value="<?php echo htmlspecialchars($user['user_name']); ?>">
 
-      <label>Email</label>
+      <label>Email <span class="required-badge">R</span></label>
       <input type="email" name="email" required value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
 
       <label>Foto (upload)</label>

@@ -36,10 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ============================================================
   // Server data loader (module-level)
-  // - Fetches `../PHP/get_all.php` asynchronously and keeps a local copy
+  // - Uses PHP-preloaded data (SERVER_APP_DATA) instead of fetching over JS
   // - Overrides `appData.loadData` to return server data when available
   // ============================================================
-  let serverData = null;
+  let serverData = window.SERVER_APP_DATA || null;
   const _originalLoadData = window.appData && typeof window.appData.loadData === 'function'
     ? window.appData.loadData
     : null;
@@ -56,10 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function fetchServerData() {
     try {
-      const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
-      if (!res.ok) throw new Error(res.statusText || res.status);
-      const json = await res.json();
-      serverData = json || serverData;
+      serverData = window.SERVER_APP_DATA || serverData || (_originalLoadData ? _originalLoadData() : null);
       try {
         buildItemLikesMaps(serverData);
       } catch (e) {
@@ -67,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       return serverData;
     } catch (err) {
-      console.error('Failed to fetch server data for items module:', err);
+      console.error('Failed to load server data for items module:', err);
       // fallback to existing data if available
       serverData = _originalLoadData ? _originalLoadData() : serverData;
       return serverData;

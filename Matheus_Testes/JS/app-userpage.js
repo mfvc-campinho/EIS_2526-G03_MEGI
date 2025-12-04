@@ -888,13 +888,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Refresh full dataset from server so UI shows authoritative values
       try {
-        const ga = await fetch('../PHP/get_all.php');
-        if (ga.status === 200) {
-          const serverData = await ga.json().catch(() => null);
-          if (serverData) {
-            try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
-            latestData = serverData;
-          }
+        const data = window.appData?.loadData ? window.appData.loadData() : (latestData || null);
+        if (data) {
+          const users = Array.isArray(data.users) ? data.users.slice() : [];
+          const idx = users.findIndex(u => (u.id || u.user_id) === id);
+          const merged = {
+            ...(idx !== -1 ? users[idx] : {}),
+            id,
+            user_id: id,
+            user_name: name || (idx !== -1 ? users[idx].user_name : ''),
+            name: name || (idx !== -1 ? users[idx].name : ''),
+            email: email || (idx !== -1 ? users[idx].email : ''),
+            user_photo: photo || (idx !== -1 ? users[idx].user_photo : ''),
+            date_of_birth: dob || (idx !== -1 ? users[idx].date_of_birth : '')
+          };
+          if (idx !== -1) users[idx] = merged;
+          else users.push(merged);
+          data.users = users;
+          latestData = data;
+          localStorage.setItem('collectionsData', JSON.stringify(data));
+          window.SERVER_APP_DATA = data;
         }
       } catch (e) {
         console.warn('Failed to reload server data after profile update', e);

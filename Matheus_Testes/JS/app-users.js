@@ -6,24 +6,21 @@
 // ===============================================
 document.addEventListener("DOMContentLoaded", () => {
   let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-  // Try to sync server session to localStorage so UI reflects server auth when served via Apache
+  // Use PHP-bootstrapped session data when available instead of fetching via JS
   try {
-    fetch('../PHP/auth.php')
-      .then(r => r.json())
-      .then(json => {
-        if (json && json.user) {
-          const sess = { id: json.user.id || json.user.user_id, ownerName: json.user.name || json.user.user_name, active: true };
-          localStorage.setItem('currentUser', JSON.stringify(sess));
-          currentUser = sess;
-          // emit event so other scripts react
-          window.dispatchEvent(new CustomEvent('userStateChange', { detail: currentUser }));
-          // Re-render menu if already initialized
-          try { renderProfileMenu(); } catch (e) { /* ignore */ }
-        }
-      })
-      .catch(() => { /* ignore when not served by PHP */ });
+    if (!currentUser && window.SERVER_AUTH_USER) {
+      const sess = window.SERVER_AUTH_USER;
+      const normalized = sess
+        ? { id: sess.id || sess.user_id, ownerName: sess.name || sess.user_name, active: true }
+        : null;
+      if (normalized?.id) {
+        localStorage.setItem('currentUser', JSON.stringify(normalized));
+        currentUser = normalized;
+        window.dispatchEvent(new CustomEvent('userStateChange', { detail: currentUser }));
+      }
+    }
   } catch (err) {
-    // ignore errors (e.g., file:// access)
+    // ignore errors (e.g., missing globals)
   }
   const profileMenu = document.querySelector(".profile-dropdown .dropdown-content");
   const profileButton = document.querySelector(".profile-btn");
@@ -396,14 +393,25 @@ document.addEventListener("DOMContentLoaded", () => {
           accountForm.reset();
           setMemberSinceYear();
 
-          // Refresh cached dataset
+          // Update cached dataset locally instead of re-fetching over JS
           try {
-            const r2 = await fetch('../PHP/get_all.php');
-            if (r2.ok) {
-              const serverData = await r2.json();
-              localStorage.setItem('collectionsData', JSON.stringify(serverData));
+            const data = window.appData?.loadData ? window.appData.loadData() : null;
+            if (data) {
+              const newUser = {
+                id: authJson?.user?.id || email,
+                user_id: authJson?.user?.id || email,
+                user_name: ownerName,
+                email,
+                user_photo: ownerPhoto || null,
+                member_since: memberSince || new Date().getFullYear().toString()
+              };
+              const users = Array.isArray(data.users) ? data.users.filter(u => (u.id || u.user_id) !== newUser.id) : [];
+              users.push(newUser);
+              data.users = users;
+              localStorage.setItem('collectionsData', JSON.stringify(data));
+              window.SERVER_APP_DATA = data;
             }
-          } catch (err) { console.warn('Unable to refresh local dataset', err); }
+          } catch (err) { console.warn('Unable to refresh local dataset locally', err); }
 
         } catch (err) {
           console.error('Account creation error', err);

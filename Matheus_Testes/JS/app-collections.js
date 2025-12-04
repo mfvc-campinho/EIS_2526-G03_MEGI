@@ -620,12 +620,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 const json = await res.json();
                 if (json && json.success) {
-                    // Refresh client cache by reloading server-side dataset
                     try {
-                        const r2 = await fetch('../PHP/get_all.php');
-                        if (r2.ok) {
-                            const serverData = await r2.json();
-                            localStorage.setItem('collectionsData', JSON.stringify(serverData));
+                        const data = window.appData?.loadData ? window.appData.loadData() : null;
+                        if (data) {
+                            const ownerId = getEffectiveOwnerId();
+                            const collectionId = json.id || id || `col-${Date.now()}`;
+                            const existing = (data.collections || []).find(c => c.id === collectionId) || null;
+                            const createdAt = existing?.createdAt || new Date().toISOString().slice(0, 19).replace('T', ' ');
+                            const updated = {
+                                id: collectionId,
+                                name: formData.get('col-name') || existing?.name || '',
+                                type: formData.get('col-type') || existing?.type || '',
+                                coverImage: formData.get('col-image') || existing?.coverImage || '',
+                                summary: formData.get('col-summary') || existing?.summary || '',
+                                description: formData.get('col-description') || existing?.description || '',
+                                createdAt,
+                                ownerId
+                            };
+                            const list = Array.isArray(data.collections) ? data.collections.filter(c => c.id !== collectionId) : [];
+                            list.unshift(updated);
+                            data.collections = list;
+                            if (!Array.isArray(data.collectionsUsers)) data.collectionsUsers = [];
+                            const hasLink = data.collectionsUsers.some(l => l.collectionId === collectionId);
+                            if (!hasLink) data.collectionsUsers.push({ collectionId, ownerId });
+                            localStorage.setItem('collectionsData', JSON.stringify(data));
+                            window.SERVER_APP_DATA = data;
                         }
                     } catch (err) {
                         console.warn('Unable to refresh local dataset', err);

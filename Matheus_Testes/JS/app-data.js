@@ -48,58 +48,22 @@
   };
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(DOMContentLoaded, () => {
   // ============================================================
   // 1. Initialization
-  // - Import demo data from Data.js into localStorage if missing
+  // - Import server data (pre-rendered by PHP) into localStorage if present
   // ============================================================
-  // Load the application dataset from the server (synchronously) so existing scripts
-  // that expect `appData.loadData()` to return immediately keep working.
-  // The endpoint `../PHP/get_all.php` returns a JSON object with the same shape
-  // previously stored in localStorage under "collectionsData".
   try {
-    var xhr = new XMLHttpRequest();
-    // Use synchronous XHR so the data is available before other DOMContentLoaded handlers run.
-    xhr.open('GET', '../PHP/get_all.php', false);
-    xhr.send(null);
-    if (xhr.status === 200) {
-      try {
-        var serverData = JSON.parse(xhr.responseText || '{}');
-        if (serverData && typeof serverData === 'object') {
-          localStorage.setItem('collectionsData', JSON.stringify(serverData));
-          console.log('✅ Data loaded from server (get_all.php)');
-        } else {
-          console.error('❌ get_all.php returned invalid JSON');
-        }
-      } catch (e) {
-        console.error('❌ Error parsing server response:', e);
-      }
+    const preloaded = window.SERVER_APP_DATA;
+    if (preloaded && typeof preloaded === 'object') {
+      localStorage.setItem('collectionsData', JSON.stringify(preloaded));
+      try { window.dispatchEvent(new CustomEvent('appDataRefreshed')); } catch (e) { /* ignore */ }
     } else {
-      console.error('❌ Failed to load server data:', xhr.status, xhr.statusText);
+      console.warn('app-data: no SERVER_APP_DATA found; falling back to existing localStorage');
     }
   } catch (err) {
-    console.error('❌ Unable to fetch server data synchronously:', err);
+    console.error('app-data: unable to apply PHP bootstrap data', err);
   }
-
-  // Fallback: if no data loaded, try async fetch and cache it
-  try {
-    const existing = JSON.parse(localStorage.getItem("collectionsData") || "null");
-    if (!existing || !existing.events || !existing.collections) {
-      fetch('../PHP/get_all.php', { cache: 'no-store' })
-        .then(res => res.ok ? res.json() : null)
-        .then(json => {
-          if (json && typeof json === 'object') {
-            localStorage.setItem('collectionsData', JSON.stringify(json));
-            try { window.dispatchEvent(new CustomEvent('appDataRefreshed')); } catch (e) { }
-          }
-        })
-        .catch(e => console.error('ƒ?O async fetch fallback failed', e));
-    }
-  } catch (e) {
-    console.error('ƒ?O async fetch fallback errored', e);
-  }
-
-  // ============================================================
   // 2. Utility functions
   // ============================================================
   function loadData() {
@@ -155,86 +119,76 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setUserItemLike(ownerId, itemId, isLiked) {
     if (!ownerId || !itemId) return;
-    // Persist directly to server; rely on get_all.php to refresh local cache
-    fetch('../PHP/crud/ratings.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      credentials: 'same-origin',
-      body: new URLSearchParams({ action: isLiked ? 'likeItem' : 'unlikeItem', itemId })
-    })
-      .then(resp => resp.json())
-      .then(async (j) => {
-        if (!j || j.error || !j.success) {
-          console.warn('ratings: server responded with error', j);
-          return;
-        }
-        // Refresh cached data from server so UI mirrors DB
-        try {
-          const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
-          if (res.ok) {
-            const json = await res.json();
-            saveData(json);
-          }
-        } catch (err) {
-          console.warn('ratings: refresh failed', err);
-        }
-      })
-      .catch(e => console.warn('ratings: network error', e));
+    const data = loadData();
+    const showcase = findOrCreateUserShowcase(data, ownerId);
+    if (showcase) {
+      const liked = new Set(Array.isArray(showcase.likedItems) ? showcase.likedItems : []);
+      if (isLiked) liked.add(itemId);
+      else liked.delete(itemId);
+      showcase.likedItems = Array.from(liked);
+      saveData(data);
+      window.SERVER_APP_DATA = data;
+    }
+    // Persist directly to server (PHP) without re-fetching the dataset over JS
+    try {
+      fetch('../PHP/crud/ratings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        credentials: 'same-origin',
+        body: new URLSearchParams({ action: isLiked ? 'likeItem' : 'unlikeItem', itemId })
+      }).catch(e => console.warn('ratings: network error', e));
+    } catch (e) {
+      console.warn('ratings: unable to reach PHP endpoint', e);
+    }
   }
 
   function setUserEventLike(ownerId, eventId, isLiked) {
     if (!ownerId || !eventId) return;
-    fetch('../PHP/crud/ratings.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      credentials: 'same-origin',
-      body: new URLSearchParams({ action: isLiked ? 'likeEvent' : 'unlikeEvent', eventId })
-    })
-      .then(resp => resp.json())
-      .then(async (j) => {
-        if (!j || j.error || !j.success) {
-          console.warn('ratings: server responded with error', j);
-          return;
-        }
-        try {
-          const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
-          if (res.ok) {
-            const json = await res.json();
-            saveData(json);
-          }
-        } catch (err) {
-          console.warn('ratings: refresh failed', err);
-        }
-      })
-      .catch(e => console.warn('ratings: network error', e));
+    const data = loadData();
+    const showcase = findOrCreateUserShowcase(data, ownerId);
+    if (showcase) {
+      const liked = new Set(Array.isArray(showcase.likedEvents) ? showcase.likedEvents : []);
+      if (isLiked) liked.add(eventId);
+      else liked.delete(eventId);
+      showcase.likedEvents = Array.from(liked);
+      saveData(data);
+      window.SERVER_APP_DATA = data;
+    }
+    try {
+      fetch('../PHP/crud/ratings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        credentials: 'same-origin',
+        body: new URLSearchParams({ action: isLiked ? 'likeEvent' : 'unlikeEvent', eventId })
+      }).catch(e => console.warn('ratings: network error', e));
+    } catch (e) {
+      console.warn('ratings: unable to reach PHP endpoint', e);
+    }
   }
 
   // Like/unlike a collection for a user (mirror of items/events)
   function setUserCollectionLike(ownerId, collectionId, isLiked) {
     if (!ownerId || !collectionId) return;
-    fetch('../PHP/crud/ratings.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      credentials: 'same-origin',
-      body: new URLSearchParams({ action: isLiked ? 'likeCollection' : 'unlikeCollection', collectionId })
-    })
-      .then(resp => resp.json())
-      .then(async (j) => {
-        if (!j || j.error || !j.success) {
-          console.warn('ratings: server responded with error', j);
-          return;
-        }
-        try {
-          const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
-          if (res.ok) {
-            const json = await res.json();
-            saveData(json);
-          }
-        } catch (err) {
-          console.warn('ratings: refresh failed', err);
-        }
-      })
-      .catch(e => console.warn('ratings: network error', e));
+    const data = loadData();
+    const showcase = findOrCreateUserShowcase(data, ownerId);
+    if (showcase) {
+      const liked = new Set(Array.isArray(showcase.likes) ? showcase.likes : []);
+      if (isLiked) liked.add(collectionId);
+      else liked.delete(collectionId);
+      showcase.likes = Array.from(liked);
+      saveData(data);
+      window.SERVER_APP_DATA = data;
+    }
+    try {
+      fetch('../PHP/crud/ratings.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        credentials: 'same-origin',
+        body: new URLSearchParams({ action: isLiked ? 'likeCollection' : 'unlikeCollection', collectionId })
+      }).catch(e => console.warn('ratings: network error', e));
+    } catch (e) {
+      console.warn('ratings: unable to reach PHP endpoint', e);
+    }
   }
 
   function getUserFollowing(followerId) {

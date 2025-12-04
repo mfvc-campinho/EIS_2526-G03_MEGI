@@ -105,6 +105,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let inMemoryCollectionsData = null;
 
   function loadData() {
+    if (!inMemoryCollectionsData && window.SERVER_APP_DATA) {
+      inMemoryCollectionsData = window.SERVER_APP_DATA;
+    }
     if (inMemoryCollectionsData) return inMemoryCollectionsData;
     if (window.appData && typeof window.appData.loadData === "function") {
       try {
@@ -119,11 +122,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function refreshDataFromServer() {
     try {
-      const res = await fetch('../PHP/get_all.php', { cache: 'no-store' });
-      if (!res.ok) throw new Error('get_all.php returned ' + res.status);
-      const json = await res.json().catch(() => null);
-      if (!json || typeof json !== "object") throw new Error('Invalid JSON from get_all.php');
-      inMemoryCollectionsData = json;
+      if (window.SERVER_APP_DATA && typeof window.SERVER_APP_DATA === 'object') {
+        inMemoryCollectionsData = window.SERVER_APP_DATA;
+      } else if (window.appData?.loadData) {
+        inMemoryCollectionsData = window.appData.loadData();
+      } else {
+        inMemoryCollectionsData = inMemoryCollectionsData || { events: [], collections: [], users: [] };
+      }
       if (window.appData) {
         try {
           window.appData.loadData = () => inMemoryCollectionsData;
@@ -132,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         } catch (e) { console.warn('appData sync failed', e); }
       }
-      return json;
+      return inMemoryCollectionsData;
     } catch (e) {
       console.error('Failed to refresh data from server', e);
       throw e;
@@ -1160,12 +1165,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // reload server data and re-render (best-effort)
         try {
-          const ga = await fetch('../PHP/get_all.php');
-          if (ga.status === 200) {
-            const serverData = await ga.json().catch(() => null);
-            if (serverData) {
-              try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
-            }
+          const serverData = window.SERVER_APP_DATA || (window.appData?.loadData ? window.appData.loadData() : null);
+          if (serverData) {
+            try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
           }
         } catch (e) {
           console.warn('Failed to reload server data after rating', e);
@@ -1326,12 +1328,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Reload server data and re-render
         try {
-          const ga = await fetch('../PHP/get_all.php');
-          if (ga.status === 200) {
-            const serverData = await ga.json().catch(() => null);
-            if (serverData) {
-              try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
-            }
+          const serverData = window.SERVER_APP_DATA || (window.appData?.loadData ? window.appData.loadData() : null);
+          if (serverData) {
+            try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
           }
         } catch (e) {
           console.warn('Failed to reload server data after saving event', e);
@@ -1380,12 +1379,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-          const ga = await fetch('../PHP/get_all.php');
-          if (ga.status === 200) {
-            const serverData = await ga.json().catch(() => null);
-            if (serverData) {
-              try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
-            }
+          const serverData = window.SERVER_APP_DATA || (window.appData?.loadData ? window.appData.loadData() : null);
+          if (serverData) {
+            try { window.appData.saveData(serverData); } catch (e) { localStorage.setItem('collectionsData', JSON.stringify(serverData)); }
           }
         } catch (e) {
           console.warn('Failed to reload server data after delete', e);

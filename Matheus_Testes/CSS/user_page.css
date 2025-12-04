@@ -747,3 +747,25 @@
     min-width: 160px;
   }
 }
+
+/* ===== Footer stick-to-bottom for short pages (page-specific) =====
+   Keeps the footer at the bottom when content is short while letting
+   it follow document flow on long pages. Applied only to the user page.
+*/
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#content {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+}

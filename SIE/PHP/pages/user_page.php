@@ -68,29 +68,23 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Profile — PHP</title>
+
+  <!-- Fonte -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Estilos globais -->
   <link rel="stylesheet" href="../../CSS/general.css">
-  <link rel="stylesheet" href="../../CSS/profile.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <style>
-    .flash {padding:12px 14px;border-radius:6px;margin:12px 0;}
-    .flash-success{background:#d1e7dd;color:#0f5132;}
-    .flash-error{background:#f8d7da;color:#842029;}
-    body { background:#f5f6f8; }
-    .page-shell { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; }
-    .hero-title { text-align:center; margin: 30px 0 16px; }
-    .hero-title h1 { margin:0; font-size:2.2rem; }
-    .hero-underline { width:120px; height:4px; background:#4f9cf9; margin:10px auto 0; border-radius:999px; }
-    .cards-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:20px; }
-    .product-card { background:#fff; border-radius:18px; box-shadow:0 14px 30px rgba(0,0,0,0.08); overflow:hidden; display:flex; flex-direction:column; }
-    .product-card__media img { width:100%; height:180px; object-fit:cover; }
-    .product-card__body { padding:14px 16px; display:flex; flex-direction:column; gap:6px; }
-    .pill { display:inline-flex; padding:4px 10px; background:#eef2ff; color:#3b4cca; border-radius:999px; font-weight:600; font-size:0.85rem; }
-    .product-card__meta { display:flex; justify-content:space-between; color:#6b7280; font-size:0.9rem; }
-    .section-title { margin:26px 0 12px; font-size:1.3rem; }
-  </style>
-  <script src="../../JS/theme-toggle.js"></script>
+
+  <!-- Estilos específicos da página de perfil -->
+  <link rel="stylesheet" href="user_page.css">
+
+  <!-- Ícones -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <script src="././JS/theme-toggle.js"></script>
 </head>
+
 
 <body>
   <?php include __DIR__ . '/../includes/nav.php'; ?>

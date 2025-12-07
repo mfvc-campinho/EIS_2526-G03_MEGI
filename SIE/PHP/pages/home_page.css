@@ -1,0 +1,316 @@
+/* Layout base da home */
+.page-container {
+  width: 100%;
+}
+
+.page-main,
+.inner-block {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* Hero (título + subtítulo) */
+.home-hero .page-title {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.home-hero .page-subtitle {
+  text-align: center;
+  margin: 0 0 28px;
+  color: var(--muted-color);
+}
+
+/* Secção das Top Collections */
+.ranking-section {
+  margin-top: 8px;
+}
+
+/* Usamos o flex que já vem do general.css, só afinamos espaçamentos */
+.collection-container {
+  padding: 0;
+  gap: 24px;
+}
+
+/* Card da home: remove o min-height gigantesco do .card global */
+.card.home-card {
+  min-height: 0;
+}
+
+/* Imagem um pouco mais pequena para não esticar o card */
+.home-card .card-image {
+  height: 180px;
+}
+
+/* Meta-info da coleção */
+.home-card .card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  font-size: 0.85rem;
+  color: var(--muted-color);
+  margin-top: 6px;
+}
+
+/* Descrição: corta um bocadinho para evitar cards muito altos
+   se alguém escrever uma descrição gigante */
+.home-card .card-description {
+  max-height: 3.6em;      /* ~2 linhas */
+  overflow: hidden;
+}
+
+/* --- Preview toggle --- */
+
+.home-card .preview-toggle {
+  display: none;
+}
+
+/* estado inicial */
+.home-card .preview-hide {
+  display: none;
+}
+
+.home-card .preview-items {
+  display: none;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  text-align: left;
+}
+
+/* quando o input está checked, inverte labels e mostra preview */
+.home-card .preview-toggle:checked ~ .card-info .preview-show {
+  display: none;
+}
+
+.home-card .preview-toggle:checked ~ .card-info .preview-hide {
+  display: inline-flex;
+}
+
+.home-card .preview-toggle:checked ~ .card-info .preview-items {
+  display: block;
+}
+
+/* Itens dentro do preview – estilo lista compacta */
+.home-card .preview-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.home-card .preview-item img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.home-card .preview-item span {
+  font-size: 0.9rem;
+}
+
+/* Card da home: remove o min-height 420px dos cards globais */
+.card.home-card {
+  min-height: 0;
+  height: auto;
+}
+
+/* Se quiseres a imagem um bocadinho mais baixa */
+.home-card .card-image {
+  height: 180px;
+}
+.home-card .preview-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.home-card .preview-item img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+
+.preview-items .small {
+  font-size: 0.85rem;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .page-main,
+  .inner-block {
+    padding-inline: 16px;
+  }
+
+  .collection-container {
+    gap: 16px;
+  }
+}
+
+
+.home-actions {
+  margin: 16px 0 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.add-collection-btn {
+  padding: 10px 24px;
+  font-size: 0.95rem;
+}
+
+/* opcional: em ecrãs pequenos, centra o botão */
+@media (max-width: 768px) {
+  .home-actions {
+    justify-content: center;
+  }
+}
+/* ===============================
+   🌟 Home – Upcoming Events
+   =============================== */
+
+.upcoming-events {
+  margin-top: 24px;
+  margin-bottom: 48px;
+}
+
+.upcoming-inner {
+  background: var(--card-bg, #ffffff);
+  border-radius: 24px;
+  border: 1px solid var(--border-color, rgba(15, 23, 42, 0.06));
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.06);
+  padding: 26px 26px 28px;
+}
+
+/* Título + ícone */
+.upcoming-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.45rem;
+  margin: 0 0 4px;
+}
+
+.upcoming-title i {
+  font-size: 1.3rem;
+  color: #2563eb;
+}
+
+.upcoming-sub {
+  margin: 0 0 22px;
+  max-width: 620px;
+  color: var(--muted-color, #6b7280);
+  font-size: 0.96rem;
+}
+
+/* Grid de eventos */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* Card de evento */
+.event-card {
+  background: #f9fafb;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+  border-color: #bfdbfe;
+}
+
+/* Tipo do evento (fair / meetup / etc.) como “tag” */
+.event-card .pill {
+  align-self: flex-start;
+  margin: 0 0 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.event-card h3 {
+  margin: 0 0 4px;
+  font-size: 1.08rem;
+  color: var(--text-main, #0f172a);
+}
+
+.event-card .muted {
+  font-size: 0.9rem;
+}
+
+/* Meta-info (data + local) */
+.event-meta {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--muted-color, #6b7280);
+}
+
+.event-meta li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.event-meta i {
+  font-size: 1rem;
+  color: #2563eb;
+}
+
+/* Botão “Ver evento” dentro do card */
+.event-card .explore-btn.small {
+  align-self: flex-start;
+  margin-top: 10px;
+  padding-inline: 14px;
+}
+
+/* Botão “View Events” em baixo */
+.events-actions {
+  margin-top: 26px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.events-actions .explore-btn {
+  min-width: 0;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .upcoming-inner {
+    padding: 20px 16px 24px;
+  }
+
+  .events-actions {
+    justify-content: center;
+  }
+}

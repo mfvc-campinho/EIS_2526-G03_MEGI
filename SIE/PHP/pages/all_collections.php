@@ -69,38 +69,18 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
   <title>Collections - GoodCollections</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../CSS/general.css">
-  <link rel="stylesheet" href="../../CSS/likes.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <script src="../../JS/theme-toggle.js"></script>
-  <style>
-    body { background: #f5f6f8; }
-    .page-shell { max-width: 1200px; margin: 0 auto; padding: 20px 20px 60px; }
-    .top-controls { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 12px 0 24px; flex-wrap: wrap; }
-    .top-controls .left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; color: #555; font-weight: 500; }
-    .top-controls select { padding: 8px 10px; border-radius: 12px; border: 1px solid #d0d5dd; background: #fff; font-weight: 600; }
-    .paginate { display: flex; align-items: center; gap: 10px; color: #666; font-weight: 500; }
-    .paginate button { border: none; background: #e9ecf2; padding: 10px 12px; border-radius: 12px; cursor: pointer; }
-    .paginate button:disabled { opacity: .35; cursor: default; }
-    .collection-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .product-card { background: #fff; border-radius: 18px; box-shadow: 0 14px 30px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; transition: transform .15s ease, box-shadow .2s ease; min-height: 460px; }
-    .product-card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(0,0,0,0.1); }
-    .product-card__media img { width: 100%; height: 210px; object-fit: cover; display: block; }
-    .product-card__body { padding: 16px 18px 10px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
-    .product-card h3 { margin: 0; font-size: 1.05rem; }
-    .muted { color: #6b7280; }
-    .product-card__meta { display: flex; justify-content: space-between; color: #6b7280; font-size: 0.9rem; }
-    .card-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
-    .preview-toggle { display: none; }
-    .preview-items { display: none; padding: 0 18px 16px; }
-    .preview-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: #374151; text-decoration: none; }
-    .preview-item img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; }
-    .preview-toggle:not(:checked) + .product-card__body .preview-hide { display: none; }
-    .preview-toggle:checked + .product-card__body .preview-show { display: none; }
-    .preview-toggle:checked + .product-card__body .preview-hide { display: inline-flex; }
-    .preview-toggle:checked ~ .preview-items { display: block; }
-    .owner-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-  </style>
+
+<!-- estilos globais -->
+<link rel="stylesheet" href="../../CSS/general.css">
+<link rel="stylesheet" href="././CSS/likes.css">
+
+<!-- estilos específicos desta página -->
+<link rel="stylesheet" href="all_collections.css">
+
+<!-- ícones + tema -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="././JS/theme-toggle.js"></script>
+
 </head>
 
 <body>

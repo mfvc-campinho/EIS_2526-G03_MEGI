@@ -655,4 +655,30 @@
   color: #2563eb;
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+} 
+
+/* tornar o card de item um flex column */
+.collection-container > div {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  padding: 18px 16px 16px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* título + texto em cima, botões sempre alinhados em baixo */
+.collection-container > div .item-info {
+  flex: 1;
+}
+
+.collection-container > div .item-buttons,
+.collection-container > div .item-actions {
+  margin-top: auto;      /* 🔑 empurra os botões para o fundo do card */
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }

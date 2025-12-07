@@ -1,0 +1,267 @@
+/* ===============================
+   Layout base da página
+   =============================== */
+
+body {
+  background: #f5f6f8;
+}
+
+.page-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 20px 60px;
+}
+
+/* ===============================
+   Top controls (filtros + paginação)
+   =============================== */
+
+.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0 24px;
+  flex-wrap: wrap;
+}
+
+.top-controls .left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: #555;
+  font-weight: 500;
+}
+
+.top-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.top-controls select {
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.paginate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.paginate button {
+  border: none;
+  background: #e9ecf2;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginate button i {
+  font-size: 1rem;
+}
+
+.paginate button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ===============================
+   Grid de coleções
+   =============================== */
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* ===============================
+   Card de coleção
+   =============================== */
+
+.product-card {
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  min-height: 460px; /* garante altura consistente */
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.1);
+}
+
+/* imagem */
+
+.product-card__media img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
+}
+
+/* corpo do card: flex column para empurrar meta + botões para baixo */
+
+.product-card__body {
+  padding: 16px 18px 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+}
+
+.product-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.product-card h3 a {
+  text-decoration: none;
+  color: #111827;
+}
+
+.product-card h3 a:hover {
+  text-decoration: underline;
+}
+
+/* resumo — limitada a 3 linhas para não “explodir” o card */
+
+.product-card .muted {
+  font-size: 0.95rem;
+  color: #6b7280;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* info de owner / data – fica colada ao fundo do corpo */
+
+.product-card__meta {
+  margin-top: auto;          /* 🔑 isto empurra o meta + botões para o fundo */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* botões dentro do card (preview, explore, like) */
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* ações extra do owner (edit / delete) logo abaixo */
+
+.owner-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ===============================
+   Preview de itens (toggle)
+   =============================== */
+
+.preview-toggle {
+  display: none;
+}
+
+.preview-items {
+  display: none;
+  padding: 0 18px 16px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 6px;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: #374151;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.preview-item img {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* labels do toggle */
+
+.preview-hide {
+  /* começa escondido; é mostrado quando o checkbox está checked */
+}
+
+.preview-toggle:not(:checked) + .product-card__body .preview-hide {
+  display: none;
+}
+
+.preview-toggle:checked + .product-card__body .preview-show {
+  display: none;
+}
+
+.preview-toggle:checked + .product-card__body .preview-hide {
+  display: inline-flex;
+}
+
+.preview-toggle:checked ~ .preview-items {
+  display: block;
+}
+
+/* ===============================
+   Responsivo
+   =============================== */
+
+@media (max-width: 900px) {
+  .page-shell {
+    padding-inline: 16px;
+  }
+
+  .collection-grid {
+    gap: 18px;
+  }
+
+  .product-card {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 600px) {
+  .top-controls {
+    align-items: flex-start;
+  }
+
+  .paginate {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

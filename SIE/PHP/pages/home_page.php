@@ -2,6 +2,16 @@
 session_start();
 require_once __DIR__ . '/../includes/data_loader.php';
 $data = load_app_data($mysqli);
+$users = $data['users'] ?? [];
+$collections = $data['collections'] ?? [];
+$items = $data['items'] ?? [];
+$events = $data['events'] ?? [];
+
+$statsUsers = count($users);
+$statsCollections = count($collections);
+$statsItems = count($items);
+$statsEvents = count($events);
+
 $mysqli->close();
 
 $collections = $data['collections'] ?? [];
@@ -121,11 +131,6 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                                 <?php echo htmlspecialchars($col['name']); ?>
                                             </a>
                                         </h3>
-
-                                        <p class="muted card-description">
-                                            <?php echo htmlspecialchars($col['summary']); ?>
-                                        </p>
-
                                         <div class="card-meta">
                                             <span>
                                                 <i class="bi bi-people"></i>
@@ -233,6 +238,136 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                     </div>
                 </div>
             </section>
+            <!-- ===============================
+     GoodCollections Statistics
+     =============================== -->
+            <section class="stats-section">
+                <h2 class="stats-title">GoodCollections Statistics</h2>
+
+                <div class="stats-grid">
+                    <article class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-value"><?php echo $statsUsers; ?></div>
+                            <div class="stat-label">Registered users</div>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-calendar-event-fill"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-value"><?php echo $statsEvents; ?></div>
+                            <div class="stat-label">Total events</div>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-collection"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-value"><?php echo $statsCollections; ?></div>
+                            <div class="stat-label">Collections</div>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div class="stat-body">
+                            <div class="stat-value"><?php echo $statsItems; ?></div>
+                            <div class="stat-label">Items</div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ===============================
+                 Everything You Need...
+                 =============================== -->
+            <section class="features-section">
+                <h2 class="features-title">
+                    Everything You Need to <span>Manage Your Collections</span>
+                </h2>
+                <p class="features-subtitle">
+                    From automotive miniatures to rare stamps, GoodCollections gives you the tools
+                    to catalog, organize, and showcase every item with precision.
+                </p>
+
+                <div class="features-grid">
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-grid-3x3-gap-fill"></i>
+                        </div>
+                        <h3>Multiple Collections</h3>
+                        <p>
+                            Create unlimited collections for different item types. Keep coin separate
+                            from trading cards, all in one place.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-card-checklist"></i>
+                        </div>
+                        <h3>Detailed Item Tracking</h3>
+                        <p>
+                            Record every detail — name, importance rating, acquisition date, weight and price.
+                            Never forget what you paid or when you got it.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-calendar2-week"></i>
+                        </div>
+                        <h3>Event Management</h3>
+                        <p>
+                            Track exhibitions and collector events. Add descriptions, dates, and rate your
+                            experience after attending each event.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <h3>Easy Editing</h3>
+                        <p>
+                            Update collection details, add or remove items, and modify information anytime.
+                            Your catalog evolves with your collection.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-compass"></i>
+                        </div>
+                        <h3>Intuitive Interface</h3>
+                        <p>
+                            Clean, modern design that's easy to navigate. View your top collections at a
+                            glance on the homepage.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-person-badge-fill"></i>
+                        </div>
+                        <h3>Personal Profile</h3>
+                        <p>
+                            Your collector profile keeps track of your personal information and preferences
+                            in one central location.
+                        </p>
+                    </article>
+                </div>
+            </section>
+
 
             <?php include __DIR__ . '/../includes/footer.php'; ?>
         </div>

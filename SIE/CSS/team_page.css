@@ -115,181 +115,7 @@
 
 /* ===== TEAM HERO + PROJECT SUMMARY ===== */
 
-.team-hero {
-  text-align: center;
-  padding: 40px 16px 28px;
-}
 
-.project-summary-card {
-  max-width: 1150px;
-  margin: 0 auto 40px;
-  padding: 26px 32px 26px;
-  background-color: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e5e7eb;
-  box-sizing: border-box;
-}
-
-/* Linha com TEAM / COURSE / UNIVERSITY / ACADEMIC YEAR */
-.project-meta {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-  margin-top: 14px;
-  align-items: center;
-  justify-items: center;
-  /* centers each block inside the card */
-}
-
-/* Cada bloco (label + value) centrado */
-.meta-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* centers text within the column */
-  gap: 4px;
-}
-
-.meta-label {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #9ca3af;
-}
-
-.meta-value {
-  font-size: 0.98rem;
-  color: #111827;
-  font-weight: 500;
-}
-
-/* Blue pill used to highlight G03 */
-.meta-value.pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 14px;
-  border-radius: 999px;
-  background-color: #e8f2ff;
-  color: #1d4ed8;
-  font-size: 0.86rem;
-  font-weight: 600;
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-  .team-hero {
-    padding-top: 28px;
-  }
-
-  .page-title {
-    font-size: 2rem;
-  }
-
-  .project-summary-card {
-    padding: 20px 18px;
-  }
-
-  .project-meta {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .project-title h2 {
-    font-size: 1.4rem;
-  }
-}
-
-/* ===== TEAM MEMBERS HEADING ===== */
-
-.team-heading {
-  text-align: center;
-  margin-top: 10px;
-  margin-bottom: 35px;
-}
-
-.heading-content {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.team-heading h2 {
-  font-size: 1.8rem;
-  color: #1f2937;
-  /* dark gray */
-  font-weight: 600;
-  margin: 0;
-}
-
-.team-icon {
-  font-size: 2.1rem;
-  color: #2563eb;
-  /* blue-600 to match other accents */
-  line-height: 1;
-  transform: translateY(1px);
-  /* small vertical alignment fix */
-}
-
-@media (max-width: 520px) {
-  .team-heading h2 {
-    font-size: 1.4rem;
-  }
-
-}
-
-/* Project cap and team icons */
-.project-icon i,
-.team-icon {
-  font-size: 2rem;
-  color: #2563eb;
-  /* consistent blue */
-}
-
-/* Title alignment adjustment */
-.heading-content {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.team-heading h2 {
-  font-size: 1.8rem;
-  color: #1f2937;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* ===== PROJECT REPOSITORY CARD ===== */
-.project-repo {
-  text-align: center;
-  margin: 50px 0;
-}
-
-.repo-card {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 26px 36px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.repo-icon {
-  font-size: 4rem;
-  color: #111827;
-  margin-bottom: 1px;
-}
 
 .repo-card h3 {
   font-size: 1.3rem;
@@ -325,5 +151,258 @@
   /* Slightly reduce the repo icon size on small screens to avoid overflow */
   .repo-icon {
     font-size: 2.4rem;
+  }
+}
+
+/* ===============================
+   👥 Team Page – Hero + Summary
+   =============================== */
+/* ===============================
+   👥 Team Page – Hero + Summary
+   =============================== */
+
+/* hero "Our Team" */
+.team-hero {
+  max-width: 1150px;
+  margin: 24px auto 18px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.team-hero h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #111827;
+}
+
+.team-hero-underline {
+  width: 140px;
+  height: 3px;
+  border-radius: 999px;
+  background: #3b82f6;
+  margin: 10px auto 10px;
+}
+
+.team-hero p {
+  margin: 0;
+  font-size: 0.98rem;
+  color: #6b7280;
+}
+
+/* ======= big project summary card ======= */
+
+/* tanto faz usares project-summary-card ou team-summary-card no HTML */
+.project-summary-card,
+.team-summary-card {
+  max-width: 1150px;
+  margin: 0 auto 36px;
+  padding: 22px 32px 26px;
+  background: #ffffff;
+  border-radius: 26px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.10);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* ícone do chapéu */
+.project-icon,
+.team-summary-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 18px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  font-size: 1.4rem;
+  margin: 0 auto 10px;
+}
+
+/* título longo "GoodCollections — Information System..." */
+.project-title h2,
+.team-summary-title {
+  margin: 0 0 18px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* grelha com TEAM / COURSE / UNIVERSITY / ACADEMIC YEAR
+   (project-meta = nome antigo, team-summary-grid = novo) */
+.project-meta,
+.team-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 28px;
+  align-items: flex-start;
+  justify-items: center;
+}
+
+/* bloco individual: label + valor
+   (meta-block = nome antigo, team-summary-col = novo) */
+.meta-block,
+.team-summary-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* label pequenino em caps (TEAM, COURSE, etc) */
+.meta-label,
+.team-summary-col .eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* texto principal de cada coluna */
+.meta-value,
+.team-summary-col p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #111827;
+}
+
+/* pill azul (G03) – meta-value.pill é o nome antigo, team-pill o novo */
+.meta-value.pill,
+.team-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* título "Team Members" */
+.team-members-header {
+  max-width: 1150px;
+  margin: 10px auto 20px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.team-members-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-members-header i {
+  color: #2563eb;
+  font-size: 1.5rem;
+}
+
+/* responsivo */
+@media (max-width: 900px) {
+  .project-meta,
+  .team-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .project-summary-card,
+  .team-summary-card {
+    padding-inline: 18px;
+  }
+
+  .project-meta,
+  .team-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.team-summary-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.team-summary-col .eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.team-summary-col p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #111827;
+}
+
+.team-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* título para "Team Members" */
+
+.team-members-header {
+  max-width: 1150px;
+  margin: 10px auto 20px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.team-members-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-members-header i {
+  color: #2563eb;
+  font-size: 1.5rem;
+}
+
+/* responsivo */
+
+@media (max-width: 900px) {
+  .team-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .team-summary-card {
+    padding-inline: 18px;
+  }
+
+  .team-summary-grid {
+    grid-template-columns: 1fr;
   }
 }

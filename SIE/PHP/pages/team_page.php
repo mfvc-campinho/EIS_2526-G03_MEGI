@@ -44,6 +44,59 @@ $team = [
 <body>
   <?php include __DIR__ . '/../includes/nav.php'; ?>
   <main class="page">
+      
+          <!-- ===============================
+         Our Team – Hero + Summary
+         =============================== -->
+    <section class="team-hero">
+        <h1>Our Team</h1>
+        <div class="team-hero-underline"></div>
+        <p>Meet the people behind GoodCollections.</p>
+    </section>
+
+    <section class="team-summary">
+        <article class="team-summary-card">
+            <div class="team-summary-icon">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+
+            <h2 class="team-summary-title">
+                GoodCollections — Information System for Collection Management
+            </h2>
+
+            <div class="team-summary-grid">
+                <div class="team-summary-col">
+                    <span class="eyebrow">Team</span>
+                    <div class="team-pill">G03</div>
+                </div>
+
+                <div class="team-summary-col">
+                    <span class="eyebrow">Course</span>
+                    <p>Masters in Industrial<br>Engineering and Management<br>(MEGI)</p>
+                </div>
+
+                <div class="team-summary-col">
+                    <span class="eyebrow">University</span>
+                    <p>Faculty of Engineering of<br>University of Porto (FEUP)</p>
+                </div>
+
+                <div class="team-summary-col">
+                    <span class="eyebrow">Academic Year</span>
+                    <p>1S 2025/2026</p>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <!-- Título da secção de membros (antes dos cards com as fotos) -->
+    <section class="team-members-header">
+        <h2>
+            <i class="bi bi-people-fill"></i>
+            <span>Team Members</span>
+        </h2>
+    </section>
+
+    
     <section class="team-hero">
       <div class="icon-stack"><i class="bi bi-people-fill"></i></div>
       <h1>Team Members</h1>

@@ -265,3 +265,37 @@ body {
     justify-content: space-between;
   }
 }
+
+
+/* ===============================
+   🧭 All Collections – Hero intro
+   =============================== */
+
+.collections-hero {
+  max-width: 1150px;
+  margin: 10px auto 24px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.collections-hero h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #111827;
+}
+
+.collections-hero-underline {
+  width: 120px;
+  height: 3px;
+  border-radius: 999px;
+  background: #3b82f6;
+  margin: 10px auto 8px;
+}
+
+.collections-hero p {
+  margin: 0;
+  font-size: 0.98rem;
+  color: #6b7280;
+}

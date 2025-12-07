@@ -139,43 +139,103 @@ body {
 /* Texto e meta-info */
 
 .profile-body h1 {
-  margin: 0 0 6px;
-  font-size: 1.8rem;
+  margin: 0 0 8px;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(120deg, #0f172a, #1d4ed8, #4f46e5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .profile-body > .muted {
-  margin: 0 0 14px;
+  margin: 0 0 18px;
+  font-size: 0.96rem;
+  color: #4b5563;
 }
 
+
+.dynamic-intro {
+  margin: 4px 0 18px;
+  font-size: 0.98rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.dynamic-intro strong {
+  font-weight: 700;
+}
+
+.highlight-blue {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+
+
+/* Pequenas labels (Email, Date of Birth, etc.) */
 /* Pequenas labels (Email, Date of Birth, etc.) */
 .eyebrow-label {
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #9ca3af;
-  font-weight: 600;
-  margin-bottom: 2px;
+  font-weight: 700;
 }
 
 /* Grelha com email, DOB, member since, etc. */
-
 .profile-meta-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px 24px;
-  margin-top: 6px;
+  gap: 14px 22px;
+  margin-top: 10px;
+}
+
+/* cada bloco de meta-info vira um "cartão" moderno */
+.profile-meta-grid > div {
+  position: relative;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 0 0, #eff6ff, #f9fafb);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-meta-grid > div::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(
+    circle at 0 0,
+    rgba(59, 130, 246, 0.35),
+    transparent 60%
+  );
+  opacity: 0;
+  transform: translate3d(-20px, -10px, 0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.profile-meta-grid > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(37, 99, 235, 0.22);
+}
+
+.profile-meta-grid > div:hover::before {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
 }
 
 .profile-meta-grid .muted {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  color: #111827;
 }
 
 /* Números (collections, followers) com ligeiro destaque */
 .profile-meta-grid div:nth-child(n + 4) .muted {
-  font-weight: 600;
+  font-weight: 700;
 }
-
-/* Ações (botões editar / seguir / add collection) */
 
 .profile-actions {
   margin-top: 18px;
@@ -198,6 +258,81 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
 }
+
+/* ===============================
+   🎟️ Eventos em que o colecionador está inscrito
+   =============================== */
+
+.user-events {
+  margin-top: 40px;
+}
+
+.events-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.event-card {
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 0 0, #eff6ff, #e5e7eb);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-card::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(
+    circle at 0 0,
+    rgba(59, 130, 246, 0.4),
+    transparent 60%
+  );
+  opacity: 0;
+  transform: translate3d(-40px, -20px, 0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.28);
+}
+
+.event-card:hover::before {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.event-card h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.event-card-meta {
+  font-size: 0.85rem;
+  color: #4b5563;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.event-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.event-card-meta i {
+  font-size: 0.9rem;
+  color: #2563eb;
+}
+
 
 /* Card de coleção dentro da página de perfil */
 

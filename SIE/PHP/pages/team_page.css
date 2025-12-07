@@ -1,0 +1,252 @@
+/*
+  File: public_html/CSS/team_page.css
+  Purpose: Styles for the Team page and project summary card.
+  Major selector groups: Team grid, member cards, team hero, project summary.
+*/
+
+/* ===============================
+   👥 Team Page – Hero + Summary
+   =============================== */
+
+/* Hero "Our Team" */
+
+.team-hero {
+  max-width: 1150px;
+  margin: 24px auto 18px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.team-hero h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #111827;
+}
+
+.team-hero-underline {
+  width: 140px;
+  height: 3px;
+  border-radius: 999px;
+  background: #3b82f6;
+  margin: 10px auto 10px;
+}
+
+.team-hero p {
+  margin: 0;
+  font-size: 0.98rem;
+  color: #6b7280;
+}
+
+/* ======= big project summary card ======= */
+
+.team-summary {
+  max-width: 1150px;
+  margin: 0 auto 36px;
+  padding: 0 24px;
+}
+
+.team-summary-card {
+  background: #ffffff;
+  border-radius: 26px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.10);
+  padding: 22px 32px 26px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.team-summary-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 18px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+  font-size: 1.4rem;
+  margin: 0 auto 10px;
+}
+
+.team-summary-title {
+  margin: 0 0 18px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* grelha com TEAM / COURSE / UNIVERSITY / ACADEMIC YEAR */
+
+.team-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 28px;
+  align-items: flex-start;
+  justify-items: center;
+}
+
+.team-summary-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.team-summary-col .eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.team-summary-col p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #111827;
+}
+
+.team-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* título "Team Members" */
+
+.team-members-header {
+  max-width: 1150px;
+  margin: 10px auto 26px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.team-members-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.team-members-header i {
+  color: #2563eb;
+  font-size: 1.5rem;
+}
+
+/* ===============================
+   🧑‍💻 Team members grid + cards
+   =============================== */
+
+/* Grid with auto-wrap */
+
+.Team {
+  max-width: 1150px;
+  margin: 0 auto 60px;
+  padding: 0 24px 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 24px;
+}
+
+/* Single member card */
+
+.member {
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  padding: 18px 18px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.member-photo-wrapper {
+  width: 140px;
+  height: 140px;
+  border-radius: 999px;
+  padding: 4px;
+  background: conic-gradient(from 180deg, #3b82f6, #22c55e, #f97316, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.member img {
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+  border-radius: 999px;
+  background: #e5e7eb;
+  display: block;
+}
+
+.member h3 {
+  margin: 6px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: blue;
+}
+
+.member .id {
+  font-size: 0.86rem;
+  color: blue;
+}
+
+.member .desc {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* hover leve no card */
+
+.member {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member:hover {
+  transform: translateY(-15px);
+  box-shadow: 0 24px 45px lightblue;
+}
+
+/* ===============================
+   📱 Responsivo
+   =============================== */
+
+@media (max-width: 900px) {
+  .team-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .team-summary-card {
+    padding-inline: 18px;
+  }
+
+  .team-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .Team {
+    padding-inline: 16px;
+  }
+}

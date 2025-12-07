@@ -43,12 +43,48 @@ foreach ($collectionItems as $link) {
   $itemsByCollection[$cid][] = $link['itemId'];
 }
 
+
 // Map events per owned collection
 $eventsByCollection = [];
 foreach ($collectionEvents as $link) {
   $cid = $link['collectionId'] ?? null;
   if (!$cid) continue;
   $eventsByCollection[$cid][] = $link['eventId'];
+  
+  // =========================
+// Eventos do utilizador (via coleções que lhe pertencem)
+// =========================
+
+// índice rápido de eventos por id
+$eventsById = [];
+foreach ($events as $e) {
+  if (!empty($e['id'])) {
+    $eventsById[$e['id']] = $e;
+  }
+}
+
+// ids de eventos únicos onde este utilizador tem coleções inscritas
+$userEventIds = [];
+foreach ($ownedCollections as $c) {
+  $cid = $c['id'] ?? null;
+  if (!$cid) continue;
+  foreach ($eventsByCollection[$cid] ?? [] as $eid) {
+    $userEventIds[$eid] = true;
+  }
+}
+
+// array final de eventos do utilizador
+$userEvents = [];
+foreach (array_keys($userEventIds) as $eid) {
+  if (isset($eventsById[$eid])) {
+    $userEvents[] = $eventsById[$eid];
+  }
+}
+
+// ordenar por data (se o campo 'date' existir)
+usort($userEvents, function ($a, $b) {
+  return strcmp($a['date'] ?? '', $b['date'] ?? '');
+});
 }
 // Followers count and following map
 $userFollows = $data['userFollows'] ?? [];
@@ -59,6 +95,10 @@ foreach ($userFollows as $follower => $list) {
 }
 $isOwnerProfile = $currentUserId && $profileUserId && $currentUserId === $profileUserId;
 $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileUserId, $followingList, true);
+
+
+
+// Exemplo: depois de obter $user e $userCollections
 
 ?>
 <!DOCTYPE html>
@@ -193,6 +233,44 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
               </article>
             <?php endforeach; ?>
           </div>
+          <?php if (!empty($userEvents)): ?>
+  <section class="user-events">
+    <h2 class="section-title">
+      Eventos em que <?php echo htmlspecialchars($user['username']); ?> está inscrito
+    </h2>
+
+    <div class="events-list">
+      <?php foreach ($userEvents as $event): ?>
+        <article class="event-card">
+          <h3><?php echo htmlspecialchars($event['name']); ?></h3>
+
+          <div class="event-card-meta">
+            <?php if (!empty($event['date'])): ?>
+              <span>
+                <i class="bi bi-calendar-event"></i>
+                <?php echo htmlspecialchars($event['date']); ?>
+              </span>
+            <?php endif; ?>
+
+            <?php if (!empty($event['location'])): ?>
+              <span>
+                <i class="bi bi-geo-alt"></i>
+                <?php echo htmlspecialchars($event['location']); ?>
+              </span>
+            <?php endif; ?>
+
+            <?php if (!empty($event['status'])): ?>
+              <span>
+                <i class="bi bi-check-circle"></i>
+                <?php echo htmlspecialchars($event['status']); ?>
+              </span>
+            <?php endif; ?>
+          </div>
+        </article>
+      <?php endforeach; ?>
+    </div>
+  </section>
+<?php endif; ?>
         <?php endif; ?>
 
       <?php endif; ?>

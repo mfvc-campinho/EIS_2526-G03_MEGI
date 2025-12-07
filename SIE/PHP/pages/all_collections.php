@@ -156,7 +156,9 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                                     <p class="muted"><?php echo htmlspecialchars($col['summary']); ?></p>
                                     <div class="product-card__meta">
                                         <span><i class="bi bi-people"></i> <?php echo htmlspecialchars($col['ownerId']); ?></span>
-                                        <span><i class="bi bi-calendar3"></i> <?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?></span>
+                                        <span><i class="bi bi-calendar3"></i>
+                                            <?php echo htmlspecialchars(substr($col['createdAt'], 0, 7)); ?>
+                                        </span>
                                     </div>
                                     <div class="card-actions">
                                         <!-- Show Preview -->

@@ -1,77 +1,160 @@
+/* ===========================
+   🧾 Cartão do formulário
+   =========================== */
+
 .form-card {
   max-width: 780px;
   margin: 0 auto 32px;
-  padding: 24px 28px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+  padding: 26px 30px;
+  background: radial-gradient(circle at 0 0, #f5f7ff, #ffffff);
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
 }
 
-.form-card h1, .form-card h2 {
-  margin: 0 0 12px;
+/* brilho subtil no canto */
+.form-card::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.28), transparent 55%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* títulos */
+.form-card h1,
+.form-card h2 {
+  margin: 0 0 10px;
   text-align: center;
 }
 
-.form-card label {
-  font-weight: 600;
-  color: #2f3b66;
-  font-size: 0.95rem;
-  margin-top: 6px;
+.form-card h1 {
+  font-size: 1.6rem;
+  letter-spacing: -0.03em;
+  color: #0f172a;
 }
 
+.form-card h2 {
+  font-size: 1.1rem;
+  color: #4b5563;
+}
+
+/* ===========================
+   Campos e labels
+   =========================== */
+
+.form-card label {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.92rem;
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* hint opcional por baixo do label */
+.form-help {
+  margin-top: 2px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* inputs, selects, textareas */
 .form-card input,
 .form-card select,
 .form-card textarea {
   width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #dce4f5;
+  padding: 11px 13px;
+  border: 1px solid #d0d7ec;
   border-radius: 12px;
   background: #f9fbff;
-  font-size: 1rem;
+  font-size: 0.98rem;
   color: #1f2a44;
-  transition: all 0.15s ease;
+  font-family: inherit;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background-color 0.16s ease,
+    transform 0.08s ease;
 }
 
+/* hover leve */
+.form-card input:hover,
+.form-card select:hover,
+.form-card textarea:hover {
+  border-color: #b3c4ff;
+}
+
+/* focus */
 .form-card input:focus,
 .form-card select:focus,
 .form-card textarea:focus {
   outline: none;
-  border-color: #7aa5ff;
-  box-shadow: 0 0 0 3px rgba(122, 165, 255, 0.25);
-  background: #fff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.23);
+  background: #ffffff;
+  transform: translateY(-1px);
 }
 
+/* placeholders */
+.form-card input::placeholder,
+.form-card textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* textarea */
 .form-card textarea {
   min-height: 120px;
   resize: vertical;
 }
 
+/* estado disabled / readonly */
+.form-card input[disabled],
+.form-card select[disabled],
+.form-card textarea[disabled] {
+  cursor: not-allowed;
+  background: #eef1f7;
+  color: #9ca3af;
+}
+
+/* ===========================
+   Secções internas
+   =========================== */
+
 .form-section {
-  background: #f4f8ff;
+  background: #f4f7ff;
   border: 1px solid #dce4f5;
   border-radius: 14px;
-  padding: 16px;
+  padding: 16px 18px;
   margin-top: 8px;
 }
 
 .form-section h3 {
   margin-top: 0;
   margin-bottom: 10px;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   color: #1f4fd6;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+/* ===========================
+   Ações (botões)
+   =========================== */
 
 .actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
   flex-wrap: wrap;
-  margin-top: 10px;
+  margin-top: 16px;
 }
 
 .actions .explore-btn {
@@ -80,28 +163,33 @@
   text-align: center;
 }
 
+/* ===========================
+   Links & badge obrigatório
+   =========================== */
+
 .text-link {
   color: #1f4fd6;
   text-decoration: none;
+  font-weight: 500;
 }
-
-.text-link:hover {
-  text-decoration: underline;
-}
+.text-link:hover { text-decoration: underline; }
 
 .required-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 2px 8px;
-  margin-left: 6px;
   border-radius: 999px;
   background: #e53e3e;
   color: #fff;
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   line-height: 1;
 }
+
+/* ===========================
+   Header da página
+   =========================== */
 
 .page__header {
   display: flex;
@@ -115,12 +203,32 @@
   margin: 0;
 }
 
+/* ===========================
+   Flash messages
+   =========================== */
+
 .flash {
   margin: 0 auto 16px;
   max-width: 780px;
   border-radius: 12px;
   padding: 12px 14px;
+  font-size: 0.9rem;
 }
 
 .flash-success { background: #d1e7dd; color: #0f5132; }
-.flash-error { background: #f8d7da; color: #842029; }
+.flash-error   { background: #f8d7da; color: #842029; }
+
+/* ===========================
+   Estados de erro de campo
+   =========================== */
+
+.is-invalid {
+  border-color: #f97373 !important;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.35);
+}
+
+.error-message {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #b91c1c;
+}

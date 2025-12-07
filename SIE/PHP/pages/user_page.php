@@ -234,42 +234,41 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
             <?php endforeach; ?>
           </div>
           <?php if (!empty($userEvents)): ?>
-  <section class="user-events">
-    <h2 class="section-title">
-      Eventos em que <?php echo htmlspecialchars($user['username']); ?> está inscrito
-    </h2>
+<section class="user-events-section">
+  <h2 class="section-title">
+    Eventos em que
+    <?php echo htmlspecialchars($profileUser['user_name'] ?? $profileUser['username'] ?? 'este colecionador'); ?>
+    está inscrito
+  </h2>
 
-    <div class="events-list">
-      <?php foreach ($userEvents as $event): ?>
-        <article class="event-card">
-          <h3><?php echo htmlspecialchars($event['name']); ?></h3>
+  <?php if (!empty($userEvents)): ?>
+    <div class="user-events-grid">
+      <?php foreach ($userEvents as $evt): ?>
+        <article class="user-event-card">
+          <p class="pill pill--event">
+            <?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>
+          </p>
 
-          <div class="event-card-meta">
-            <?php if (!empty($event['date'])): ?>
-              <span>
+          <h3><?php echo htmlspecialchars($evt['name'] ?? 'Evento sem nome'); ?></h3>
+
+          <ul class="user-event-meta">
+            <?php if (!empty($evt['date'])): ?>
+              <li>
                 <i class="bi bi-calendar-event"></i>
-                <?php echo htmlspecialchars($event['date']); ?>
-              </span>
+                <?php echo htmlspecialchars($evt['date']); ?>
+              </li>
             <?php endif; ?>
-
-            <?php if (!empty($event['location'])): ?>
-              <span>
-                <i class="bi bi-geo-alt"></i>
-                <?php echo htmlspecialchars($event['location']); ?>
-              </span>
-            <?php endif; ?>
-
-            <?php if (!empty($event['status'])): ?>
-              <span>
-                <i class="bi bi-check-circle"></i>
-                <?php echo htmlspecialchars($event['status']); ?>
-              </span>
-            <?php endif; ?>
-          </div>
+          </ul>
         </article>
       <?php endforeach; ?>
     </div>
-  </section>
+  <?php else: ?>
+    <p class="muted">
+      Este colecionador ainda não está inscrito em nenhum evento.
+    </p>
+  <?php endif; ?>
+</section>
+
 <?php endif; ?>
         <?php endif; ?>
 

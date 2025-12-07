@@ -12,36 +12,28 @@ body {
   padding: 20px 20px 60px;
 }
 
-/* Flash messages (flash_render) */
+/* Flash messages */
 .flash {
   padding: 12px 14px;
   border-radius: 6px;
   margin: 12px 0;
   font-size: 0.95rem;
 }
+.flash-success { background: #d1e7dd; color: #0f5132; }
+.flash-error   { background: #f8d7da; color: #842029; }
 
-.flash-success {
-  background: #d1e7dd;
-  color: #0f5132;
-}
-
-.flash-error {
-  background: #f8d7da;
-  color: #842029;
-}
-
-/* Título "User Profile" */
+/* ===============================
+   🏷️ Hero do Perfil
+   =============================== */
 
 .hero-title {
   text-align: center;
   margin: 30px 0 16px;
 }
-
 .hero-title h1 {
   margin: 0;
   font-size: 2.2rem;
 }
-
 .hero-underline {
   width: 120px;
   height: 4px;
@@ -59,7 +51,7 @@ body {
 }
 
 .profile-card {
-  background: var(--card-bg, #ffffff);
+  background: #ffffff;
   border-radius: 24px;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
   padding: 26px 28px;
@@ -72,8 +64,7 @@ body {
   align-items: center;
 }
 
-/* Avatar + hover */
-
+/* Avatar */
 .profile-avatar {
   position: relative;
   display: flex;
@@ -102,7 +93,7 @@ body {
   color: #4b5563;
 }
 
-/* ring decorativo por trás do avatar */
+/* Ring decorativo */
 .profile-avatar::before {
   content: "";
   position: absolute;
@@ -123,7 +114,6 @@ body {
   z-index: -1;
 }
 
-/* efeito ao passar o rato */
 .profile-avatar:hover img,
 .profile-avatar:hover .avatar-placeholder {
   transform: translateY(-6px) scale(1.05) rotate(-1.5deg);
@@ -136,8 +126,7 @@ body {
   filter: blur(10px);
 }
 
-/* Texto e meta-info */
-
+/* Texto principal */
 .profile-body h1 {
   margin: 0 0 8px;
   font-size: 2rem;
@@ -155,27 +144,19 @@ body {
   color: #4b5563;
 }
 
-
 .dynamic-intro {
   margin: 4px 0 18px;
   font-size: 0.98rem;
   color: #4b5563;
   line-height: 1.5;
 }
+.dynamic-intro strong { font-weight: 700; }
+.highlight-blue       { color: #2563eb; font-weight: 600; }
 
-.dynamic-intro strong {
-  font-weight: 700;
-}
+/* ===============================
+   📇 Meta-info do utilizador
+   =============================== */
 
-.highlight-blue {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-
-
-/* Pequenas labels (Email, Date of Birth, etc.) */
-/* Pequenas labels (Email, Date of Birth, etc.) */
 .eyebrow-label {
   font-size: 0.75rem;
   letter-spacing: 0.14em;
@@ -184,7 +165,6 @@ body {
   font-weight: 700;
 }
 
-/* Grelha com email, DOB, member since, etc. */
 .profile-meta-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -192,7 +172,7 @@ body {
   margin-top: 10px;
 }
 
-/* cada bloco de meta-info vira um "cartão" moderno */
+/* Cartões */
 .profile-meta-grid > div {
   position: relative;
   padding: 10px 12px;
@@ -207,11 +187,9 @@ body {
   content: "";
   position: absolute;
   inset: -50%;
-  background: radial-gradient(
-    circle at 0 0,
+  background: radial-gradient(circle at 0 0,
     rgba(59, 130, 246, 0.35),
-    transparent 60%
-  );
+    transparent 60%);
   opacity: 0;
   transform: translate3d(-20px, -10px, 0);
   transition: opacity 0.4s ease, transform 0.4s ease;
@@ -221,7 +199,6 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 16px 28px rgba(37, 99, 235, 0.22);
 }
-
 .profile-meta-grid > div:hover::before {
   opacity: 1;
   transform: translate3d(0, 0, 0);
@@ -232,20 +209,14 @@ body {
   color: #111827;
 }
 
-/* Números (collections, followers) com ligeiro destaque */
-.profile-meta-grid div:nth-child(n + 4) .muted {
-  font-weight: 700;
-}
-
 .profile-actions {
-  margin-top: 18px;
+  margin-top: 26px;      /* aumenta o espaço para baixo dos cartões */
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
-
 /* ===============================
-   📚 Grelha de coleções do utilizador
+   📚 Coleções
    =============================== */
 
 .section-title {
@@ -259,83 +230,7 @@ body {
   gap: 20px;
 }
 
-/* ===============================
-   🎟️ Eventos em que o colecionador está inscrito
-   =============================== */
-
-.user-events {
-  margin-top: 40px;
-}
-
-.events-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 18px;
-}
-
-.event-card {
-  padding: 14px 18px;
-  border-radius: 18px;
-  background: radial-gradient(circle at 0 0, #eff6ff, #e5e7eb);
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.event-card::before {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: radial-gradient(
-    circle at 0 0,
-    rgba(59, 130, 246, 0.4),
-    transparent 60%
-  );
-  opacity: 0;
-  transform: translate3d(-40px, -20px, 0);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.event-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.28);
-}
-
-.event-card:hover::before {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
-.event-card h3 {
-  margin: 0 0 6px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.event-card-meta {
-  font-size: 0.85rem;
-  color: #4b5563;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.event-card-meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.event-card-meta i {
-  font-size: 0.9rem;
-  color: #2563eb;
-}
-
-
-/* Card de coleção dentro da página de perfil */
-
+/* Card de coleção */
 .product-card {
   background: #ffffff;
   border-radius: 18px;
@@ -349,7 +244,6 @@ body {
   width: 100%;
   height: 180px;
   object-fit: cover;
-  display: block;
 }
 
 .product-card__body {
@@ -368,12 +262,8 @@ body {
   text-decoration: none;
   color: inherit;
 }
+.product-card__body h3 a:hover { text-decoration: underline; }
 
-.product-card__body h3 a:hover {
-  text-decoration: underline;
-}
-
-/* Pill com o tipo da coleção */
 .pill {
   display: inline-flex;
   padding: 4px 10px;
@@ -388,9 +278,103 @@ body {
   margin-top: 8px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   color: #6b7280;
   font-size: 0.86rem;
+}
+
+/* ===============================
+   🎟️ EVENTOS DO UTILIZADOR — SUPER MODERNOS
+   =============================== */
+
+.user-events-section {
+  margin-top: 50px;
+}
+
+.user-events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.user-event-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 18px 20px 22px;
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.user-event-card::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.35), transparent);
+  opacity: 0;
+  transform: translate3d(-40px, -20px, 0);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.user-event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px rgba(37, 99, 235, 0.28);
+}
+.user-event-card:hover::before {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.pill--event {
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.user-event-card h3 {
+  margin: 6px 0 4px;
+  font-size: 1.04rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.user-event-card .muted {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 6px;
+}
+
+.user-event-meta {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #6b7280;
+  font-size: 0.88rem;
+}
+
+.user-event-meta li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-event-meta i {
+  color: #2563eb;
+  font-size: 1rem;
+}
+
+.explore-btn.small {
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
 }
 
 /* ===============================
@@ -408,24 +392,16 @@ body {
 }
 
 @media (max-width: 640px) {
-  .page-shell {
-    padding-inline: 16px;
-  }
+  .page-shell { padding-inline: 16px; }
 
   .profile-card--hero {
     grid-template-columns: 1fr;
     text-align: center;
   }
 
-  .profile-avatar {
-    order: -1; /* avatar aparece em cima no mobile */
-  }
+  .profile-avatar { order: -1; }
 
   .profile-meta-grid {
     grid-template-columns: 1fr;
-  }
-
-  .profile-actions {
-    justify-content: center;
   }
 }

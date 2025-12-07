@@ -89,7 +89,6 @@ if ($id) {
                     <?php endforeach; ?>
                 </select>
 
-
                 <label>Resumo</label>
                 <input type="text" name="summary" value="<?php echo htmlspecialchars($collection['summary']); ?>">
 

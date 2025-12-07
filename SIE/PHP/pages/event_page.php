@@ -371,7 +371,46 @@ foreach ($eventsUsers as $eu) {
       });
       document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
     })();
+
+
   </script>
+  <script>
+  // torna a data do evento disponível em JS
+  window.EVENT_DATE = "<?php echo htmlspecialchars($event['date']); ?>";
+  window.EVENT_NAME = "<?php echo htmlspecialchars($event['name']); ?>";
+</script>
+
+  <script>
+  (function () {
+    // só corre se estivermos numa página com EVENT_DATE definido
+    if (!window.EVENT_DATE) return;
+
+    const navEventsLink = document.getElementById("nav-events-link");
+    if (!navEventsLink) return;
+
+    const eventDate = new Date(window.EVENT_DATE);        // YYYY-MM-DD
+    const today = new Date();
+
+    // limpar horas (para evitar diferenças por fuso horário)
+    eventDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+    const diffDays = Math.round((eventDate - today) / MS_PER_DAY);
+
+    // se faltar entre 0 e 6 dias (inclui hoje), alerta + cor laranja
+    if (diffDays >= 0 && diffDays <= 6) {
+      // alerta
+      const eventName = window.EVENT_NAME || "este evento";
+      alert(`Atenção! Faltam ${diffDays} dia${diffDays === 1 ? "" : "s"} para ${eventName}.`);
+
+      // mudar cor do link de eventos no nav para laranja
+      navEventsLink.style.color = "#f97316";
+      navEventsLink.style.fontWeight = "700";
+    }
+  })();
+</script>
+
 </body>
 
 </html>

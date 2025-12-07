@@ -11,7 +11,7 @@ $team = [
     'name' => 'Ana Isabel Dias Cunha Amorim',
     'id' => 'up202107329',
     'photo' => '../../images/team/Ana.jpg',
-    'blurb' => "If I used this site, I'd collect airplane miniatures."
+    'blurb' => "If I used this site, I'd collect CS:GO Skins. I love them!."
   ],
   [
     'name' => 'Filipa Marisa Duarte Mota',

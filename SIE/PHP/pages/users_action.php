@@ -5,11 +5,15 @@ require_once __DIR__ . '/../config/db.php';
 
 $action = $_POST['action'] ?? null;
 $currentUser = $_SESSION['user']['id'] ?? null;
-if (!$currentUser) {
+
+// Só obriga a estar autenticado para ações que não sejam "create"
+if ($action !== 'create' && !$currentUser) {
   flash_set('error', 'Precisa de iniciar sessão.');
   header('Location: user_page.php');
   exit;
 }
+
+
 
 function redirect_success($msg)
 {
@@ -50,6 +54,65 @@ function handle_upload($field, $folder, $keep = '')
   return 'uploads/' . $folder . '/' . $filename;
 }
 
+if ($action === 'create') {
+
+  $name     = trim($_POST['name']  ?? '');
+  $email    = trim($_POST['email'] ?? '');
+  $dob      = $_POST['dob']        ?? null;
+  $password = $_POST['password']   ?? '';
+  $photoPath = handle_upload('photoFile', 'users', '');
+
+  if ($name === '' || $email === '' || $password === '') {
+    $mysqli->close();
+    redirect_error('Preencha todos os campos obrigatórios.');
+  }
+
+  // Verificar se já existe email
+  $stmt = $mysqli->prepare('SELECT user_id FROM users WHERE email = ? LIMIT 1');
+  $stmt->bind_param('s', $email);
+  $stmt->execute();
+  $stmt->store_result();
+  if ($stmt->num_rows > 0) {
+    $stmt->close();
+    $mysqli->close();
+    redirect_error('Já existe uma conta com este email.');
+  }
+  $stmt->close();
+
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+
+  // ID para a primary key
+  $newId = uniqid('u_', true);
+
+  // Data/hora em que a conta é criada
+  $memberSince = date('Y-m-d H:i:s');
+
+  // Agora incluímos também a coluna member_since
+  $stmt = $mysqli->prepare(
+    'INSERT INTO users (user_id, user_name, email, user_photo, date_of_birth, member_since, password)
+     VALUES (?, ?, ?, ?, ?, ?, ?)'
+  );
+  $stmt->bind_param('sssssss', $newId, $name, $email, $photoPath, $dob, $memberSince, $hash);
+  $ok = $stmt->execute();
+  $stmt->close();
+
+  if ($ok) {
+    $_SESSION['user'] = [
+      'id'         => $newId,
+      'name'       => $name,
+      'user_name'  => $name,
+      'email'      => $email,
+      'user_photo' => $photoPath,
+    ];
+
+    $mysqli->close();
+    redirect_success('Conta criada com sucesso.');
+  }
+
+
+
+
+
 if ($action === 'update') {
   // fetch existing photo
   $chk = $mysqli->prepare('SELECT user_photo FROM users WHERE user_id = ? LIMIT 1');
@@ -89,7 +152,9 @@ if ($action === 'update') {
   redirect_error('Falha ao atualizar perfil.');
 }
 
+
+
 $mysqli->close();
 redirect_error('Ação inválida.');
 
-
+}

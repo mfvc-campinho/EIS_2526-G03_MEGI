@@ -2437,3 +2437,34 @@ h1.page-title {
   gap: 6px;
   /* space between prev, text, next */
 }
+
+
+/* ===========================================
+   🌐 Global Page Title — UNIFIED STYLE
+   =========================================== */
+.page-title-unified {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+  background: linear-gradient(120deg, #0f172a, #1d4ed8, #4f46e5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  position: relative;
+}
+
+/* underline */
+.page-title-unified::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 120px;
+  height: 3px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: #3b82f6;
+}

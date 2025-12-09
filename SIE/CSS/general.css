@@ -2240,145 +2240,145 @@ section#buttons-bar .explore-btn.ghost {
       padding: 0 12px;
     }
   }
+}
 
-  /* ======================================
-   Theme helpers and dark-mode overrides
-   ====================================== */
+/* ======================================
+ Theme helpers and dark-mode overrides
+ ====================================== */
 
-  /* Use variables for important components so toggling themes is consistent */
+/* Use variables for important components so toggling themes is consistent */
 
-  .card {
-    background: var(--card-bg);
-    box-shadow: var(--card-shadow);
-  }
+.card {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
 
-  footer {
-    background-color: var(--footer-bg);
-    color: var(--footer-text);
-  }
+footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+}
 
-  .nav-link {
-    color: var(--nav-text);
-  }
+.nav-link {
+  color: var(--nav-text);
+}
 
-  .page-subtitle,
-  .card-info p,
-  .mini-item-list li,
-  .top-pick-form p {
-    color: var(--muted-color);
-  }
+.page-subtitle,
+.card-info p,
+.mini-item-list li,
+.top-pick-form p {
+  color: var(--muted-color);
+}
 
-  .card-info h3,
-  h1.page-title {
-    color: var(--text-color);
-  }
+.card-info h3,
+h1.page-title {
+  color: var(--text-color);
+}
 
-  .search-bar {
-    background-color: var(--input-bg);
-    color: var(--input-text);
-  }
+.search-bar {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
 
-  /* Base button now uses variables so buttons follow theme by default */
-  .explore-btn {
-    background: var(--btn-bg);
-    color: var(--btn-text);
-    border-color: rgba(0, 0, 0, 0.06);
-  }
+/* Base button now uses variables so buttons follow theme by default */
+.explore-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border-color: rgba(0, 0, 0, 0.06);
+}
 
-  /* Toggle pill (navbar button) */
-  .toggle-pill {
-    background: transparent;
-    border: none;
-    color: var(--nav-text);
-    font-size: 1.05rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 8px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
+/* Toggle pill (navbar button) */
+.toggle-pill {
+  background: transparent;
+  border: none;
+  color: var(--nav-text);
+  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
-  .toggle-pill:hover {
-    background: rgba(255, 255, 255, 0.03);
-  }
+.toggle-pill:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
 
-  /* Dark mode variables — applied when .dark-mode is present on <html> or <body> */
-  .dark-mode {
-    --bg-color: #0d1117;
-    --text-color: #e6edf3;
-    --muted-color: #9aa4b2;
-    --card-bg: #161b22;
-    --card-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
-    --nav-bg: #0d1117;
-    --nav-text: #e6edf3;
-    --footer-bg: #0d1117;
-    --footer-text: #dfe8f3;
-    --input-bg: #0f1720;
-    --input-text: #e6edf3;
-    --btn-bg: #0f1720;
-    --btn-text: #e6edf3;
-    --modal-bg: #0f1720;
-    --overlay-bg: rgba(2, 6, 23, 0.6);
-    /* Dark variants for button tokens */
-    --success-btn-bg: rgba(16, 185, 129, 0.04);
-    --success-btn-text: #7ee6a8;
-    --success-btn-bg-hover: rgba(16, 185, 129, 0.08);
-    --success-btn-text-hover: #bff0d8;
+/* Dark mode variables — applied when .dark-mode is present on <html> or <body> */
+.dark-mode {
+  --bg-color: #0d1117;
+  --text-color: #e6edf3;
+  --muted-color: #9aa4b2;
+  --card-bg: #161b22;
+  --card-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+  --nav-bg: #0d1117;
+  --nav-text: #e6edf3;
+  --footer-bg: #0d1117;
+  --footer-text: #dfe8f3;
+  --input-bg: #0f1720;
+  --input-text: #e6edf3;
+  --btn-bg: #0f1720;
+  --btn-text: #e6edf3;
+  --modal-bg: #0f1720;
+  --overlay-bg: rgba(2, 6, 23, 0.6);
+  /* Dark variants for button tokens */
+  --success-btn-bg: rgba(16, 185, 129, 0.04);
+  --success-btn-text: #7ee6a8;
+  --success-btn-bg-hover: rgba(16, 185, 129, 0.08);
+  --success-btn-text-hover: #bff0d8;
 
-    --danger-btn-bg: rgba(185, 28, 28, 0.04);
-    --danger-btn-text: #ffb4b4;
-    --danger-btn-bg-hover: rgba(185, 28, 28, 0.10);
-    --danger-btn-text-hover: #ffdede;
+  --danger-btn-bg: rgba(185, 28, 28, 0.04);
+  --danger-btn-text: #ffb4b4;
+  --danger-btn-bg-hover: rgba(185, 28, 28, 0.10);
+  --danger-btn-text-hover: #ffdede;
 
-    --warning-btn-bg: rgba(146, 64, 14, 0.04);
-    --warning-btn-text: #ffd8a8;
-    --warning-btn-bg-hover: rgba(146, 64, 14, 0.1);
-    --warning-btn-text-hover: #ffe9c8;
+  --warning-btn-bg: rgba(146, 64, 14, 0.04);
+  --warning-btn-text: #ffd8a8;
+  --warning-btn-bg-hover: rgba(146, 64, 14, 0.1);
+  --warning-btn-text-hover: #ffe9c8;
 
-    --save-btn-bg: linear-gradient(90deg, #0e8750, #2f9f6b);
-    --save-btn-text: #e6edf3;
-    /* Dark-mode aliases for the new variables */
-    --text-main: var(--text-color);
-    --text-muted: var(--muted-color);
-    --border-color: rgba(255, 255, 255, 0.06);
-    --shadow-elevated: 0 12px 30px rgba(0, 0, 0, 0.5);
-    --card-radius: 16px;
-  }
+  --save-btn-bg: linear-gradient(90deg, #0e8750, #2f9f6b);
+  --save-btn-text: #e6edf3;
+  /* Dark-mode aliases for the new variables */
+  --text-main: var(--text-color);
+  --text-muted: var(--muted-color);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --shadow-elevated: 0 12px 30px rgba(0, 0, 0, 0.5);
+  --card-radius: 16px;
+}
 
-  /* Ensure interactive elements keep accessible contrast in dark mode */
-  .dark-mode .explore-btn.ghost {
-    color: #9ed0ff;
-    border-color: rgba(158, 208, 255, 0.12);
-  }
+/* Ensure interactive elements keep accessible contrast in dark mode */
+.dark-mode .explore-btn.ghost {
+  color: #9ed0ff;
+  border-color: rgba(158, 208, 255, 0.12);
+}
 
-  .dark-mode .profile-menu {
-    background: #0b1220;
-  }
+.dark-mode .profile-menu {
+  background: #0b1220;
+}
 
+.list-pagination {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  /* space between label and arrows */
+  flex-wrap: nowrap;
+  /* keep everything on one line */
+}
 
-  .list-pagination {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    /* space between label and arrows */
-    flex-wrap: nowrap;
-    /* keep everything on one line */
-  }
+.page-size-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* space between "Ver", select, and text */
+  margin: 0;
+  white-space: nowrap;
+  /* avoid line breaks inside the label */
+}
 
-  .page-size-label {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    /* space between "Ver", select, and text */
-    margin: 0;
-    white-space: nowrap;
-    /* avoid line breaks inside the label */
-  }
-
-  .pagination-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    /* space between prev, text, next */
-    /* end */
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* space between prev, text, next */
+}

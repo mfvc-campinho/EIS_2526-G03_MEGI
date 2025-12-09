@@ -152,12 +152,25 @@ foreach ($eventsUsers as $eu) {
     .user-stars { display:flex; gap:4px; color:#f5b301; align-items:center; font-weight:600; }
     .user-stars .label { color:#374151; font-size:0.9rem; margin-right:6px; }
     /* Modal */
-    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:1000; }
-    .modal-backdrop.open { display:flex; }
-    .modal-card { background:#fff; border-radius:18px; padding:20px; max-width:520px; width:90%; box-shadow:0 18px 36px rgba(0,0,0,0.18); }
-    .modal-card h3 { margin-top:0; margin-bottom:8px; }
-    .modal-card p { margin:4px 0; }
-    .modal-close { border:none; background:transparent; font-size:22px; cursor:pointer; float:right; }
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:1000; backdrop-filter: blur(4px); }
+    .modal-backdrop.open { display:flex; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-card { background:#fff; border-radius:20px; padding:0; max-width:600px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; animation: slideUp 0.3s ease; overflow:hidden; }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); padding: 32px 28px; color: white; position: relative; text-align: center; }
+    .modal-close { position: absolute; top: 16px; right: 16px; border:none; background: rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-size:20px; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+    .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+    .modal-header h3 { margin:0 0 12px 0; font-size: 2.25rem; font-weight: 900 !important; color: white !important; line-height: 1.2; }
+    .modal-type-badge { display: inline-block; background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
+    .modal-body { padding: 28px; }
+    .modal-summary { font-size: 1.05rem; color: #374151; line-height: 1.6; margin: 0 0 24px 0; font-weight: 500; }
+    .modal-description { color: #6b7280; line-height: 1.7; margin: 0 0 24px 0; }
+    .modal-info-grid { display: grid; gap: 16px; }
+    .modal-info-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb; }
+    .modal-info-icon { width: 40px; height: 40px; min-width: 40px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
+    .modal-info-content { flex: 1; }
+    .modal-info-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 4px; }
+    .modal-info-value { font-size: 1rem; font-weight: 600; color: #1f2937; }
   </style>
 </head>
 
@@ -275,14 +288,14 @@ foreach ($eventsUsers as $eu) {
                       data-date="<?php echo htmlspecialchars(substr($evt['date'], 0, 16)); ?>"
                       data-location="<?php echo htmlspecialchars($evt['localization']); ?>"
                       data-type="<?php echo htmlspecialchars($evt['type']); ?>">
-                Ver detalhes
+                View Details
               </button>
               <?php if ($isOwner): ?>
-                <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($evt['id']); ?>">Editar</a>
+                <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($evt['id']); ?>">Edit</a>
                 <form action="events_action.php" method="POST" style="display:inline;">
                   <input type="hidden" name="action" value="delete">
                   <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
-                  <button type="submit" class="explore-btn ghost danger small" onclick="return confirm('Apagar este evento?');">Apagar</button>
+                  <button type="submit" class="explore-btn ghost danger small" onclick="return confirm('Delete this event?');">Delete</button>
                 </form>
               <?php endif; ?>
               <?php
@@ -337,13 +350,37 @@ foreach ($eventsUsers as $eu) {
   <script src="../../JS/search-toggle.js"></script>
   <div class="modal-backdrop" id="event-modal">
     <div class="modal-card">
-      <button class="modal-close" aria-label="Fechar" onclick="document.getElementById('event-modal').classList.remove('open')">&times;</button>
-      <h3 id="modal-title"></h3>
-      <p class="muted" id="modal-type"></p>
-      <p id="modal-summary"></p>
-      <p id="modal-description"></p>
-      <p><strong>Data:</strong> <span id="modal-date"></span></p>
-      <p><strong>Local:</strong> <span id="modal-location"></span></p>
+      <div class="modal-header">
+        <button class="modal-close" aria-label="Close" onclick="document.getElementById('event-modal').classList.remove('open')">
+          <i class="bi bi-x"></i>
+        </button>
+        <h3 id="modal-title"></h3>
+        <span class="modal-type-badge" id="modal-type"></span>
+      </div>
+      <div class="modal-body">
+        <p class="modal-summary" id="modal-summary"></p>
+        <p class="modal-description" id="modal-description"></p>
+        <div class="modal-info-grid">
+          <div class="modal-info-item">
+            <div class="modal-info-icon">
+              <i class="bi bi-calendar-event"></i>
+            </div>
+            <div class="modal-info-content">
+              <div class="modal-info-label">Date</div>
+              <div class="modal-info-value" id="modal-date"></div>
+            </div>
+          </div>
+          <div class="modal-info-item">
+            <div class="modal-info-icon">
+              <i class="bi bi-geo-alt-fill"></i>
+            </div>
+            <div class="modal-info-content">
+              <div class="modal-info-label">Place</div>
+              <div class="modal-info-value" id="modal-location"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <script>

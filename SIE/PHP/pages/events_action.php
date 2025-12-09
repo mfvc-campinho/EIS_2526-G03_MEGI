@@ -62,7 +62,7 @@ if ($action === 'create') {
   foreach ($collectionIds as $cid) {
     if (!user_owns_collection($mysqli, $cid, $currentUser)) {
       $mysqli->close();
-      redirect_error('Só pode associar eventos às suas coleções.');
+      redirect_error('You can only associate events to your own collections.');
     }
   }
 
@@ -83,7 +83,7 @@ if ($action === 'create') {
   replace_event_links($mysqli, $id, $collectionIds);
   $mysqli->close();
   if ($ok) redirect_success('Evento criado.');
-  redirect_error('Falha ao criar evento.');
+  redirect_error('Failed to create event.');
 }
 
 if ($action === 'update') {
@@ -95,7 +95,7 @@ if ($action === 'update') {
   foreach ($collectionIds as $cid) {
     if (!user_owns_collection($mysqli, $cid, $currentUser)) {
       $mysqli->close();
-      redirect_error('Sem permissão para editar este evento.');
+      redirect_error('You do not have permission to edit this event.');
     }
   }
 
@@ -131,7 +131,7 @@ if ($action === 'delete') {
   $chk->close();
   if (!$row || ($row['host_user_id'] ?? null) !== $currentUser) {
     $mysqli->close();
-    redirect_error('Sem permissão para apagar este evento.');
+    redirect_error('You do not have permission to delete this event.');
   }
 
   $stmt = $mysqli->prepare('DELETE FROM events WHERE event_id = ?');
@@ -141,7 +141,7 @@ if ($action === 'delete') {
   replace_event_links($mysqli, $id, []);
   $mysqli->close();
   if ($ok) redirect_success('Evento apagado.');
-  redirect_error('Falha ao apagar evento.');
+  redirect_error('Failed to delete event.');
 }
 
 // Fetch helper

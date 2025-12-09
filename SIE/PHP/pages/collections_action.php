@@ -6,7 +6,7 @@ require_once __DIR__ . '/../config/db.php';
 $action = $_POST['action'] ?? null;
 $currentUser = $_SESSION['user']['id'] ?? null;
 if (!$currentUser) {
-  flash_set('error', 'Precisa de iniciar sessão.');
+  flash_set('error', 'You need to log in.');
   header('Location: all_collections.php');
   exit;
 }
@@ -45,7 +45,7 @@ function handle_upload($field, $folder, $keep = '')
   $filename = uniqid('img_') . '.' . $ext;
   $target = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
   if (!move_uploaded_file($file['tmp_name'], $target)) {
-    redirect_error('Não foi possível guardar a imagem.');
+    redirect_error('Could not save the image.');
   }
   return 'uploads/' . $folder . '/' . $filename;
 }
@@ -63,7 +63,7 @@ if ($action === 'create') {
   $stmt->close();
   $mysqli->close();
   if ($ok) redirect_success('Coleção criada.');
-  redirect_error('Falha ao criar coleção.');
+    redirect_error('Failed to create collection.');
 }
 
 if ($action === 'update') {
@@ -79,7 +79,7 @@ if ($action === 'update') {
   $chk->close();
   if (!$row || ($row['user_id'] ?? null) !== $currentUser) {
     $mysqli->close();
-    redirect_error('Sem permissão para editar esta coleção.');
+    redirect_error('You do not have permission to edit this collection.');
   }
 
   $name = $_POST['name'] ?? '';
@@ -119,7 +119,7 @@ if ($action === 'delete') {
   $stmt->close();
   $mysqli->close();
   if ($ok) redirect_success('Coleção apagada.');
-  redirect_error('Falha ao apagar coleção.');
+  redirect_error('Failed to delete collection.');
 }
 
 $mysqli->close();

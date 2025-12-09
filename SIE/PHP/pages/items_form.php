@@ -80,7 +80,7 @@ $existingCollections = array_unique($existingCollections);
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><?php echo $editing ? 'Editar' : 'Novo'; ?> Item • PHP</title>
+        <title><?php echo $editing ? 'Edit' : 'New'; ?> Item • PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
         <script src="../../JS/theme-toggle.js"></script>
@@ -93,7 +93,7 @@ $existingCollections = array_unique($existingCollections);
             <?php flash_render(); ?>
 
             <header class="page__header">
-                <h1><?php echo $editing ? 'Editar Item' : 'Criar Item'; ?></h1>
+                <h1><?php echo $editing ? 'Edit Item' : 'Create Item'; ?></h1>
                 <a href="home_page.php" class="text-link">Voltar</a>
             </header>
 
@@ -161,7 +161,7 @@ $existingCollections = array_unique($existingCollections);
 
                 <div class="actions">
                     <button type="submit" class="explore-btn">
-                        <?php echo $editing ? 'Guardar' : 'Criar'; ?>
+                        <?php echo $editing ? 'Save' : 'Create'; ?>
                     </button>
                     <a class="explore-btn ghost" href="home_page.php">Cancelar</a>
                 </div>

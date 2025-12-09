@@ -50,7 +50,7 @@ if ($id) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><?php echo $editing ? 'Editar' : 'Nova'; ?> ColeÃ§Ã£o â€” PHP</title>
+        <title><?php echo $editing ? 'Edit' : 'New'; ?> Collection — PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
         <script src="../../JS/theme-toggle.js"></script>
@@ -62,8 +62,8 @@ if ($id) {
         <main class="page">
             <?php flash_render(); ?>
             <header class="page__header">
-                <h1><?php echo $editing ? 'Editar ColeÃ§Ã£o' : 'Criar ColeÃ§Ã£o'; ?></h1>
-                <a href="all_collections.php" class="text-link">Voltar</a>
+                <h1><?php echo $editing ? 'Edit Collection' : 'Create Collection'; ?></h1>
+                <a href="all_collections.php" class="text-link">Back</a>
             </header>
 
             <form class="form-card" action="collections_action.php" method="POST" enctype="multipart/form-data">

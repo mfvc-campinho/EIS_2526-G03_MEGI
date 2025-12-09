@@ -60,7 +60,7 @@ if ($action === 'create') {
   foreach ($collectionIds as $cid) {
     if (!user_owns_collection($mysqli, $cid, $currentUser)) {
       $mysqli->close();
-      redirect_error('Só pode criar itens nas suas coleções.');
+      redirect_error('You can only create items in your own collections.');
     }
   }
 
@@ -89,7 +89,7 @@ if ($action === 'create') {
   if ($ok) {
     redirect_success('Item criado com sucesso.');
   }
-  redirect_error('Falha ao criar item.');
+  redirect_error('Failed to create item.');
 }
 
 if ($action === 'update') {
@@ -120,7 +120,7 @@ if ($action === 'update') {
   foreach ($collectionIds as $cid) {
     if (!user_owns_collection($mysqli, $cid, $currentUser)) {
       $mysqli->close();
-      redirect_error('Só pode associar o item às suas coleções.');
+      redirect_error('You can only associate this item with your own collections.');
     }
   }
 
@@ -155,7 +155,7 @@ if ($action === 'update') {
   if ($ok) {
     redirect_success('Item atualizado.');
   }
-  redirect_error('Falha ao atualizar item.');
+  redirect_error('Failed to update item.');
 }
 
 if ($action === 'delete') {
@@ -189,7 +189,7 @@ if ($action === 'delete') {
 
     if (!$row || !user_owns_collection($mysqli, $row['collection_id'], $currentUser)) {
       $mysqli->close();
-      redirect_error('Sem permissão para apagar este item.');
+      redirect_error('You do not have permission to delete this item.');
     }
   }
 
@@ -206,7 +206,7 @@ if ($action === 'delete') {
   if ($ok) {
     redirect_success('Item apagado.');
   }
-  redirect_error('Falha ao apagar item.');
+  redirect_error('Failed to delete item.');
 }
 
 // se chegou aqui, ação inválida

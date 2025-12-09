@@ -228,7 +228,7 @@ if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
                         <a class="explore-btn"
                            href="collections_form.php?id=<?php echo urlencode($collection['id']); ?>">
                             <i class="bi bi-pencil-square"></i>
-                            Editar coleção
+                            Edit Collection
                         </a>
 
                         <a class="explore-btn"
@@ -243,7 +243,7 @@ if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
                                    value="<?php echo htmlspecialchars($collection['id']); ?>">
                             <button type="submit"
                                     class="explore-btn danger"
-                                    onclick="return confirm('Apagar coleção?');">
+                                    onclick="return confirm('Delete collection?');">
                                 <i class="bi bi-trash"></i>
                                 Delete
                             </button>

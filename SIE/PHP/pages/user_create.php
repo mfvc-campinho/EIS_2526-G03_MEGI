@@ -12,7 +12,7 @@ require_once __DIR__ . '/../includes/flash.php';
 
     <head>
         <meta charset="UTF-8" />
-        <title>Criar conta</title>
+        <title>Create Account</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo $editing ? 'Editar' : 'Novo'; ?> Evento • PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
@@ -31,12 +31,12 @@ require_once __DIR__ . '/../includes/flash.php';
                 <nav class="breadcrumb-nav" aria-label="Breadcrumb">
                     <ol class="breadcrumb-list">
                         <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
-                        <li class="breadcrumb-item" aria-current="page">Criar conta</li>
+                        <li class="breadcrumb-item" aria-current="page">Create Account</li>
                     </ol>
                 </nav>
 
                 <header class="page__header">
-                    <h1>Criar conta</h1>
+                    <h1>Create Account</h1>
                     <a href="home_page.php" class="text-link">Voltar</a>
                 </header>
 
@@ -59,8 +59,8 @@ require_once __DIR__ . '/../includes/flash.php';
                     <input type="password" name="password" required>
 
                     <div class="actions">
-                        <button type="submit" class="explore-btn">Criar conta</button>
-                        <a class="explore-btn ghost" href="home_page.php">Cancelar</a>
+                        <button type="submit" class="explore-btn">Create Account</button>
+                        <a class="explore-btn ghost" href="home_page.php">Cancel</a>
                     </div>
                 </form>
             </div>

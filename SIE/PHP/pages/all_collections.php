@@ -197,7 +197,7 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                                             <form action="collections_action.php" method="POST">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
-                                                <button type="submit" class="explore-btn ghost danger" onclick="return confirm('Apagar esta coleção?');"><i class="bi bi-trash"></i> Delete</button>
+                                                <button type="submit" class="explore-btn ghost danger" onclick="return confirm('Delete this collection?');"><i class="bi bi-trash"></i> Delete</button>
                                             </form>
                                         </div>
                                     <?php endif; ?>
@@ -223,7 +223,7 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                             </article>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p class="muted">Sem coleções registadas.</p>
+                        <p class="muted">No registered collections.</p>
                     <?php endif; ?>
                 </section>
             </main>

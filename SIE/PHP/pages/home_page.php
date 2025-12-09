@@ -234,7 +234,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p class="muted">Ainda não existem coleções.</p>
+                            <p class="muted">No collections yet.</p>
                         <?php endif; ?>
                     </div>
                 </section>

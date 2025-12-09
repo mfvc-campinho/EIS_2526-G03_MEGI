@@ -67,7 +67,7 @@ $currentType = $event['type'] ?? null;
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><?php echo $editing ? 'Editar' : 'Novo'; ?> Evento • PHP</title>
+        <title><?php echo $editing ? 'Edit' : 'New'; ?> Event • PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
         <script src="../../JS/theme-toggle.js"></script>
@@ -79,8 +79,8 @@ $currentType = $event['type'] ?? null;
         <main class="page">
             <?php flash_render(); ?>
             <header class="page__header">
-                <h1><?php echo $editing ? 'Editar Evento' : 'Criar Evento'; ?></h1>
-                <a href="event_page.php" class="text-link">Voltar</a>
+                <h1><?php echo $editing ? 'Edit Event' : 'Create Event'; ?></h1>
+                <a href="event_page.php" class="text-link">Back</a>
             </header>
 
             <form class="form-card" action="events_action.php" method="POST">
@@ -116,7 +116,7 @@ $currentType = $event['type'] ?? null;
                 <label>Data</label>
                 <input type="datetime-local" name="date" value="<?php echo htmlspecialchars(substr($event['date'], 0, 16)); ?>">
 
-                <label>Coleções (pode associar a várias das suas) <span class="required-badge">R</span></label>
+                <label>Collections (can associate to multiple of yours) <span class="required-badge">R</span></label>
                 <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">
                     <?php foreach ($ownedCollections as $col): ?>
                         <?php $checked = in_array($col['id'], $existingCollections, true) || (!$editing && ($event['collectionId'] ?? '') === $col['id']); ?>
@@ -126,7 +126,7 @@ $currentType = $event['type'] ?? null;
                         </label>
                     <?php endforeach; ?>
                 </div>
-                <p class="muted" style="margin-top:6px;">Só aparecem coleções que pertencem ao utilizador.</p>
+                <p class="muted" style="margin-top:6px;">Only collections that belong to you are shown.</p>
 
                 <div class="actions">
                     <button type="submit" class="explore-btn"><?php echo $editing ? 'Guardar' : 'Criar'; ?></button>

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/data_loader.php';
 require_once __DIR__ . '/../includes/flash.php';
 
 if (empty($_SESSION['user'])) {
-  flash_set('error', 'Precisa de iniciar sessÃ£o para editar o perfil.');
+  flash_set('error', 'You need to log in to edit your profile.');
   header('Location: user_page.php');
   exit;
 }
@@ -32,7 +32,7 @@ if (!$user) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editar Perfil â€” PHP</title>
+  <title>Edit Profile — PHP</title>
   <link rel="stylesheet" href="../../CSS/general.css">
   <link rel="stylesheet" href="../../CSS/forms.css">
   <script src="../../JS/theme-toggle.js"></script>
@@ -44,8 +44,8 @@ if (!$user) {
   <main class="page">
     <?php flash_render(); ?>
     <header class="page__header">
-      <h1>Editar Perfil</h1>
-      <a href="user_page.php" class="text-link">Voltar</a>
+      <h1>Edit Profile</h1>
+      <a href="user_page.php" class="text-link">Back</a>
     </header>
 
     <form class="form-card" action="users_action.php" method="POST" enctype="multipart/form-data">
@@ -69,8 +69,8 @@ if (!$user) {
       <input type="password" name="password" value="">
 
       <div class="actions">
-        <button type="submit" class="explore-btn">Guardar</button>
-        <a class="explore-btn ghost" href="user_page.php">Cancelar</a>
+        <button type="submit" class="explore-btn">Save</button>
+        <a class="explore-btn ghost" href="user_page.php">Cancel</a>
       </div>
     </form>
   </main>

@@ -49,7 +49,7 @@ function handle_upload($field, $folder, $keep = '')
   $filename = uniqid('img_') . '.' . $ext;
   $target = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
   if (!move_uploaded_file($file['tmp_name'], $target)) {
-    redirect_error('Não foi possível guardar a imagem.');
+    redirect_error('Could not save the image.');
   }
   return 'uploads/' . $folder . '/' . $filename;
 }

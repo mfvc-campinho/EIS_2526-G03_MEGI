@@ -78,11 +78,11 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
           <?php endif; ?>
           <?php if ($isOwner): ?>
             <div class="actions" style="margin-top:12px; gap:10px;">
-              <a class="explore-btn ghost" href="items_form.php?id=<?php echo urlencode($item['id']); ?>">Editar</a>
+              <a class="explore-btn ghost" href="items_form.php?id=<?php echo urlencode($item['id']); ?>">Edit</a>
               <form action="items_action.php" method="POST" style="display:inline;">
                 <input type="hidden" name="action" value="delete">
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($item['id']); ?>">
-                <button type="submit" class="explore-btn danger" onclick="return confirm('Apagar item?');">Delete</button>
+                <button type="submit" class="explore-btn danger" onclick="return confirm('Delete item?');">Delete</button>
               </form>
             </div>
           <?php endif; ?>

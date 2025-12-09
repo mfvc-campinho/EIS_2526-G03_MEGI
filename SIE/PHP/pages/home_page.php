@@ -270,12 +270,12 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                     </ul>
                                     <a class="explore-btn small"
                                        href="event_page.php?id=<?php echo urlencode($evt['id']); ?>">
-                                        Ver evento
+                                         See event
                                     </a>
                                 </article>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p class="muted">Sem eventos futuros registados.</p>
+                            <p class="muted">No upcoming events scheduled</p>
                         <?php endif; ?>
                     </div>
 

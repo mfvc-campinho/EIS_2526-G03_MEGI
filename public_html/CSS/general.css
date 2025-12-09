@@ -1006,15 +1006,12 @@ button {
 .collections-row,
 .collection-container,
 .item-container {
-  /* Adicionado para abranger ambos */
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  /* CSS Grid para layout responsivo */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
-  /* Increased spacing between cards for better readability */
   padding: 18px;
-  max-width: 2000px;
-  /* Reduced max-width to tighten the layout */
+  max-width: 1400px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -1028,9 +1025,6 @@ button {
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   overflow: hidden;
-  width: calc(20% - 24px);
-  /* 5 per row (adjusted to gap) */
-  min-width: 280px;
   /* keep good minimum visual weight but allow flexible height */
   min-height: 420px;
   display: flex;
@@ -1935,19 +1929,13 @@ section#buttons-bar .explore-btn.ghost {
     gap: 14px;
   }
 
-  /* Make grid containers center their content earlier */
+  /* Make grid containers responsive: 3 cards per row */
   .collections-row,
   .collection-container,
   .item-container {
-    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
     padding: 12px;
-  }
-
-  /* Ensure cards reduce to 3 per row on medium screens */
-  .card {
-    width: calc(33.33% - 24px);
-    min-width: 220px;
   }
 }
 
@@ -1988,6 +1976,13 @@ section#buttons-bar .explore-btn.ghost {
   .toggle-pill {
     min-height: 44px;
     min-width: 44px;
+  }
+
+  /* Grid: 2 cards per row on tablets */
+  .collections-row,
+  .collection-container,
+  .item-container {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
 
   /* Cards: make height auto to avoid text overlap and allow wrapping */
@@ -2064,7 +2059,6 @@ section#buttons-bar .explore-btn.ghost {
   #eventsList,
   .top-picks-grid,
   .liked-collections {
-    display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
     padding: 12px;
@@ -2072,8 +2066,6 @@ section#buttons-bar .explore-btn.ghost {
 
   /* Card full width and sensible spacing */
   .card {
-    width: 100% !important;
-    min-width: 0;
     padding: 14px;
     border-radius: 12px;
   }

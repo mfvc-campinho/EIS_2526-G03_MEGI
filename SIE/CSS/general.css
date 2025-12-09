@@ -1006,17 +1006,17 @@ button {
 .collections-row,
 .collection-container,
 .item-container {
-  /* Adicionado para abranger ambos */
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  /* CSS Grid para layout responsivo */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
-  /* Increased spacing between cards for better readability */
   padding: 18px;
-  max-width: 2000px;
-  /* Reduced max-width to tighten the layout */
+  max-width: 1400px;
   margin: 0 auto;
   box-sizing: border-box;
+  justify-content: center;
+  /* Centra a última linha dos cards */
+  grid-auto-flow: row dense;
 }
 
 /* ===============================
@@ -1028,8 +1028,6 @@ button {
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   overflow: hidden;
-  width: 350px;
-  /* Largura fixa */
   /* Altura uniforme para alinhar botões */
   height: 480px;
   display: flex;
@@ -1966,453 +1964,452 @@ section#buttons-bar .explore-btn.ghost {
     gap: 14px;
   }
 
-  /* Make grid containers center their content earlier */
+  /* Make grid containers responsive: 3 cards per row */
   .collections-row,
   .collection-container,
   .item-container {
-    justify-content: center;
-    gap: 20px;
-    padding: 12px;
-  }
-
-  /* Ensure cards reduce to 3 per row on medium screens */
-  .card {
-    width: calc(33.33% - 24px);
-    min-width: 220px;
-  }
-}
-
-@media (max-width: 768px) {
-
-  /* Navbar: allow sections to wrap cleanly and center contents */
-  .navbar {
-    padding: 10px 14px;
-    align-items: center;
-  }
-
-  .nav-left,
-  .nav-right {
-    gap: 10px;
-  }
-
-  /* Collapse right side beneath the logo and center action groups */
-  .nav-right {
-    flex-basis: 100%;
-    justify-content: center;
-    margin-top: 8px;
-  }
-
-  /* Make nav links wrap and center, avoid horizontal overflow */
-  .nav-link {
-    white-space: normal;
-    text-align: center;
-    padding: 8px 6px;
-    display: inline-flex;
-    justify-content: center;
-  }
-
-  /* Increase touch size for icons and search affordances */
-  .search-icon,
-  .profile-btn,
-  .explore-btn,
-  .metric-btn,
-  .toggle-pill {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Cards: make height auto to avoid text overlap and allow wrapping */
-  .card {
-    height: auto;
-    min-height: 320px;
-    padding: 14px;
-  }
-
-  .card-info h3 {
-    white-space: normal;
-    word-break: break-word;
-    font-size: 1.1rem;
-  }
-
-  .card-info p {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-  }
-
-  /* Footer: give more vertical space on tablets */
-  footer {
-    height: auto;
-    padding: 24px 18px;
-    text-align: center;
-  }
-
-  footer .footer-links {
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 600px) {
-
-  /* MOBILE: stack navbar sections, center everything and remove overflow */
-  .navbar {
-    padding: 10px 12px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  .nav-left,
-  .nav-right {
-    width: 100%;
-    justify-content: center;
-    gap: 8px;
-    padding: 4px 8px;
-  }
-
-  /* Make each nav link a block to prevent horizontal scrolling */
-  .nav-link {
-    display: block;
-    width: auto;
-    padding: 10px 12px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 18px;
+    max-width: 1400px;
     margin: 0 auto;
-    text-align: center;
-    font-size: 0.98rem;
+    box-sizing: border-box;
+    justify-content: center;
+    grid-auto-flow: row dense;
+
+    /* Navbar: allow sections to wrap cleanly and center contents */
+    .navbar {
+      padding: 10px 14px;
+      align-items: center;
+    }
+
+    .nav-left,
+    .nav-right {
+      gap: 10px;
+    }
+
+    /* Collapse right side beneath the logo and center action groups */
+    .nav-right {
+      flex-basis: 100%;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    /* Make nav links wrap and center, avoid horizontal overflow */
+    .nav-link {
+      white-space: normal;
+      text-align: center;
+      padding: 8px 6px;
+      display: inline-flex;
+      justify-content: center;
+    }
+
+    /* Increase touch size for icons and search affordances */
+    .search-icon,
+    .profile-btn,
+    .explore-btn,
+    .metric-btn,
+    .toggle-pill {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Grid: 2 cards per row on tablets */
+    .collections-row,
+    .collection-container,
+    .item-container {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    /* Cards: make height auto to avoid text overlap and allow wrapping */
+    .card {
+      height: auto;
+      min-height: 320px;
+      padding: 14px;
+    }
+
+    .card-info h3 {
+      white-space: normal;
+      word-break: break-word;
+      font-size: 1.1rem;
+    }
+
+    .card-info p {
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+    }
+
+    /* Footer: give more vertical space on tablets */
+    footer {
+      height: auto;
+      padding: 24px 18px;
+      text-align: center;
+    }
+
+    footer .footer-links {
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
   }
 
-  /* Ensure the search-bar doesn't push content; keep icon tappable */
-  .search-icon {
-    width: 44px;
-    height: 44px;
+  @media (max-width: 600px) {
+
+    /* MOBILE: stack navbar sections, center everything and remove overflow */
+    .navbar {
+      padding: 10px 12px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .nav-left,
+    .nav-right {
+      width: 100%;
+      justify-content: center;
+      gap: 8px;
+      padding: 4px 8px;
+    }
+
+    /* Make each nav link a block to prevent horizontal scrolling */
+    .nav-link {
+      display: block;
+      width: auto;
+      padding: 10px 12px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 0.98rem;
+    }
+
+    /* Ensure the search-bar doesn't push content; keep icon tappable */
+    .search-icon {
+      width: 44px;
+      height: 44px;
+    }
+
+    /* Grids: 1 column layout for small phones for comfortable reading */
+    .collections-row,
+    .collection-container,
+    .item-container,
+    .events-grid,
+    #eventsList,
+    .top-picks-grid,
+    .liked-collections {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 12px;
+    }
+
+    /* Card full width and sensible spacing */
+    .card {
+      padding: 14px;
+      border-radius: 12px;
+    }
+
+
+    .list-pagination {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color, rgba(15, 23, 42, 0.08));
+      border-radius: 16px;
+      background: var(--card-bg, #ffffff);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+    }
+
+    .list-pagination .page-size-label {
+      font-weight: 500;
+      color: var(--text-color, #0f172a);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .list-pagination .page-size-label select {
+      min-width: 72px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: var(--input-bg, #ffffff);
+      color: var(--text-color, #0f172a);
+    }
+
+    .pagination-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pagination-status {
+      font-size: 0.95rem;
+      color: var(--muted-color, #6b7280);
+    }
+
+    .list-pagination .explore-btn:disabled,
+    .list-pagination .explore-btn.disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 700px) {
+      .list-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .pagination-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    /* Responsive image heights for cards: larger on desktop, scale down on small devices */
+    @media (max-width: 900px) {
+
+      .card-image,
+      .item-image-wrapper {
+        height: 220px;
+      }
+    }
+
+    @media (max-width: 700px) {
+
+      .card-image,
+      .item-image-wrapper {
+        height: 220px;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+      .card-image,
+      .item-image-wrapper {
+        height: 180px;
+        max-height: 180px;
+      }
+    }
+
+    /* Card image reduced height to preserve vertical space */
+    .card-image,
+    .item-image-wrapper {
+      height: 140px;
+    }
+
+    /* Buttons and clickable controls should be easy to tap */
+    .explore-btn,
+    .metric-btn,
+    .profile-btn,
+    .mini-reset-btn,
+    .mini-btn,
+    .toggle-pill {
+      min-height: 44px;
+      padding-left: 14px;
+      padding-right: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    /* Footer stacking: links vertically centered */
+    footer .footer-links {
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .footer-content {
+      align-items: center;
+      padding: 18px 12px;
+    }
+
+    /* Small text adjustments to avoid overflow */
+    .page-title {
+      font-size: 1.6rem;
+      padding: 0 12px;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      padding: 0 12px;
+    }
   }
 
-  /* Grids: 1 column layout for small phones for comfortable reading */
-  .collections-row,
-  .collection-container,
-  .item-container,
-  .events-grid,
-  #eventsList,
-  .top-picks-grid,
-  .liked-collections {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 12px;
-  }
+  /* ======================================
+   Theme helpers and dark-mode overrides
+   ====================================== */
 
-  /* Card full width and sensible spacing */
+  /* Use variables for important components so toggling themes is consistent */
+
   .card {
-    width: 100% !important;
-    min-width: 0;
-    padding: 14px;
-    border-radius: 12px;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+  }
+
+  footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+  }
+
+  .nav-link {
+    color: var(--nav-text);
+  }
+
+  .page-subtitle,
+  .card-info p,
+  .mini-item-list li,
+  .top-pick-form p {
+    color: var(--muted-color);
+  }
+
+  .card-info h3,
+  h1.page-title {
+    color: var(--text-color);
+  }
+
+  .search-bar {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+  }
+
+  /* Base button now uses variables so buttons follow theme by default */
+  .explore-btn {
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border-color: rgba(0, 0, 0, 0.06);
+  }
+
+  /* Toggle pill (navbar button) */
+  .toggle-pill {
+    background: transparent;
+    border: none;
+    color: var(--nav-text);
+    font-size: 1.05rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .toggle-pill:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  /* Dark mode variables — applied when .dark-mode is present on <html> or <body> */
+  .dark-mode {
+    --bg-color: #0d1117;
+    --text-color: #e6edf3;
+    --muted-color: #9aa4b2;
+    --card-bg: #161b22;
+    --card-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+    --nav-bg: #0d1117;
+    --nav-text: #e6edf3;
+    --footer-bg: #0d1117;
+    --footer-text: #dfe8f3;
+    --input-bg: #0f1720;
+    --input-text: #e6edf3;
+    --btn-bg: #0f1720;
+    --btn-text: #e6edf3;
+    --modal-bg: #0f1720;
+    --overlay-bg: rgba(2, 6, 23, 0.6);
+    /* Dark variants for button tokens */
+    --success-btn-bg: rgba(16, 185, 129, 0.04);
+    --success-btn-text: #7ee6a8;
+    --success-btn-bg-hover: rgba(16, 185, 129, 0.08);
+    --success-btn-text-hover: #bff0d8;
+
+    --danger-btn-bg: rgba(185, 28, 28, 0.04);
+    --danger-btn-text: #ffb4b4;
+    --danger-btn-bg-hover: rgba(185, 28, 28, 0.10);
+    --danger-btn-text-hover: #ffdede;
+
+    --warning-btn-bg: rgba(146, 64, 14, 0.04);
+    --warning-btn-text: #ffd8a8;
+    --warning-btn-bg-hover: rgba(146, 64, 14, 0.1);
+    --warning-btn-text-hover: #ffe9c8;
+
+    --save-btn-bg: linear-gradient(90deg, #0e8750, #2f9f6b);
+    --save-btn-text: #e6edf3;
+    /* Dark-mode aliases for the new variables */
+    --text-main: var(--text-color);
+    --text-muted: var(--muted-color);
+    --border-color: rgba(255, 255, 255, 0.06);
+    --shadow-elevated: 0 12px 30px rgba(0, 0, 0, 0.5);
+    --card-radius: 16px;
+  }
+
+  /* Ensure interactive elements keep accessible contrast in dark mode */
+  .dark-mode .explore-btn.ghost {
+    color: #9ed0ff;
+    border-color: rgba(158, 208, 255, 0.12);
+  }
+
+  .dark-mode .profile-menu {
+    background: #0b1220;
   }
 
 
   .list-pagination {
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
     align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color, rgba(15, 23, 42, 0.08));
-    border-radius: 16px;
-    background: var(--card-bg, #ffffff);
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+    gap: 20px;
+    /* space between label and arrows */
+    flex-wrap: nowrap;
+    /* keep everything on one line */
   }
 
-  .list-pagination .page-size-label {
-    font-weight: 500;
-    color: var(--text-color, #0f172a);
+  .page-size-label {
     display: flex;
     align-items: center;
-    gap: 8px;
-  }
-
-  .list-pagination .page-size-label select {
-    min-width: 72px;
-    padding: 6px 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    background: var(--input-bg, #ffffff);
-    color: var(--text-color, #0f172a);
+    gap: 4px;
+    /* space between "Ver", select, and text */
+    margin: 0;
+    white-space: nowrap;
+    /* avoid line breaks inside the label */
   }
 
   .pagination-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    gap: 6px;
+    /* space between prev, text, next */
   }
 
-  .pagination-status {
-    font-size: 0.95rem;
-    color: var(--muted-color, #6b7280);
-  }
 
-  .list-pagination .explore-btn:disabled,
-  .list-pagination .explore-btn.disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 700px) {
-    .list-pagination {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .pagination-actions {
-      width: 100%;
-      justify-content: space-between;
-    }
-  }
-
-  /* Responsive image heights for cards: larger on desktop, scale down on small devices */
-  @media (max-width: 900px) {
-
-    .card-image,
-    .item-image-wrapper {
-      height: 220px;
-    }
-  }
-
-  @media (max-width: 700px) {
-
-    .card-image,
-    .item-image-wrapper {
-      height: 220px;
-    }
-  }
-
-  @media (max-width: 480px) {
-
-    .card-image,
-    .item-image-wrapper {
-      height: 180px;
-      max-height: 180px;
-    }
-  }
-
-  /* Card image reduced height to preserve vertical space */
-  .card-image,
-  .item-image-wrapper {
-    height: 140px;
-  }
-
-  /* Buttons and clickable controls should be easy to tap */
-  .explore-btn,
-  .metric-btn,
-  .profile-btn,
-  .mini-reset-btn,
-  .mini-btn,
-  .toggle-pill {
-    min-height: 44px;
-    padding-left: 14px;
-    padding-right: 14px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: manipulation;
-  }
-
-  /* Footer stacking: links vertically centered */
-  footer .footer-links {
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .footer-content {
-    align-items: center;
-    padding: 18px 12px;
-  }
-
-  /* Small text adjustments to avoid overflow */
-  .page-title {
-    font-size: 1.6rem;
-    padding: 0 12px;
-  }
-
-  .page-subtitle {
-    font-size: 0.95rem;
-    padding: 0 12px;
-  }
-}
-
-/* ======================================
-   Theme helpers and dark-mode overrides
-   ====================================== */
-
-/* Use variables for important components so toggling themes is consistent */
-
-.card {
-  background: var(--card-bg);
-  box-shadow: var(--card-shadow);
-}
-
-footer {
-  background-color: var(--footer-bg);
-  color: var(--footer-text);
-}
-
-.nav-link {
-  color: var(--nav-text);
-}
-
-.page-subtitle,
-.card-info p,
-.mini-item-list li,
-.top-pick-form p {
-  color: var(--muted-color);
-}
-
-.card-info h3,
-h1.page-title {
-  color: var(--text-color);
-}
-
-.search-bar {
-  background-color: var(--input-bg);
-  color: var(--input-text);
-}
-
-/* Base button now uses variables so buttons follow theme by default */
-.explore-btn {
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-/* Toggle pill (navbar button) */
-.toggle-pill {
-  background: transparent;
-  border: none;
-  color: var(--nav-text);
-  font-size: 1.05rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 8px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.toggle-pill:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-/* Dark mode variables — applied when .dark-mode is present on <html> or <body> */
-.dark-mode {
-  --bg-color: #0d1117;
-  --text-color: #e6edf3;
-  --muted-color: #9aa4b2;
-  --card-bg: #161b22;
-  --card-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
-  --nav-bg: #0d1117;
-  --nav-text: #e6edf3;
-  --footer-bg: #0d1117;
-  --footer-text: #dfe8f3;
-  --input-bg: #0f1720;
-  --input-text: #e6edf3;
-  --btn-bg: #0f1720;
-  --btn-text: #e6edf3;
-  --modal-bg: #0f1720;
-  --overlay-bg: rgba(2, 6, 23, 0.6);
-  /* Dark variants for button tokens */
-  --success-btn-bg: rgba(16, 185, 129, 0.04);
-  --success-btn-text: #7ee6a8;
-  --success-btn-bg-hover: rgba(16, 185, 129, 0.08);
-  --success-btn-text-hover: #bff0d8;
-
-  --danger-btn-bg: rgba(185, 28, 28, 0.04);
-  --danger-btn-text: #ffb4b4;
-  --danger-btn-bg-hover: rgba(185, 28, 28, 0.10);
-  --danger-btn-text-hover: #ffdede;
-
-  --warning-btn-bg: rgba(146, 64, 14, 0.04);
-  --warning-btn-text: #ffd8a8;
-  --warning-btn-bg-hover: rgba(146, 64, 14, 0.1);
-  --warning-btn-text-hover: #ffe9c8;
-
-  --save-btn-bg: linear-gradient(90deg, #0e8750, #2f9f6b);
-  --save-btn-text: #e6edf3;
-  /* Dark-mode aliases for the new variables */
-  --text-main: var(--text-color);
-  --text-muted: var(--muted-color);
-  --border-color: rgba(255, 255, 255, 0.06);
-  --shadow-elevated: 0 12px 30px rgba(0, 0, 0, 0.5);
-  --card-radius: 16px;
-}
-
-/* Ensure interactive elements keep accessible contrast in dark mode */
-.dark-mode .explore-btn.ghost {
-  color: #9ed0ff;
-  border-color: rgba(158, 208, 255, 0.12);
-}
-
-.dark-mode .profile-menu {
-  background: #0b1220;
-}
-
-
-.list-pagination {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  /* space between label and arrows */
-  flex-wrap: nowrap;
-  /* keep everything on one line */
-}
-
-.page-size-label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  /* space between "Ver", select, and text */
-  margin: 0;
-  white-space: nowrap;
-  /* avoid line breaks inside the label */
-}
-
-.pagination-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  /* space between prev, text, next */
-}
-
-
-/* ===========================================
+  /* ===========================================
    🌐 Global Page Title — UNIFIED STYLE
    =========================================== */
-.page-title-unified {
-  text-align: center;
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 0 0 10px;
-  background: linear-gradient(120deg, #0f172a, #1d4ed8, #4f46e5);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-  position: relative;
-}
+  .page-title-unified {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 10px;
+    background: linear-gradient(120deg, #0f172a, #1d4ed8, #4f46e5);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    position: relative;
+  }
 
-/* underline */
-.page-title-unified::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -10px;
-  width: 120px;
-  height: 3px;
-  border-radius: 999px;
-  transform: translateX(-50%);
-  background: #3b82f6;
-}
+  /* underline */
+  .page-title-unified::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    width: 120px;
+    height: 3px;
+    border-radius: 999px;
+    transform: translateX(-50%);
+    background: #3b82f6;
+  }

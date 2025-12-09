@@ -131,10 +131,12 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                                 <?php echo htmlspecialchars($col['name']); ?>
                                             </a>
                                         </h3>
-                                        <div class="card-meta">
+                                        <div class="product-card__meta">
                                             <span>
                                                 <i class="bi bi-people"></i>
-                                                <?php echo htmlspecialchars($col['ownerId']); ?>
+                                                <a href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>" style="color: inherit; text-decoration: none;">
+                                                    <?php echo htmlspecialchars($col['ownerId']); ?>
+                                                </a>
                                             </span>
 
                                             <?php if (!empty($col['createdAt'])): ?>

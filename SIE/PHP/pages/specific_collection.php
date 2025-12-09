@@ -14,6 +14,16 @@ $events = $data['events'] ?? [];
 $collectionItems = $data['collectionItems'] ?? [];
 $collectionEvents = $data['collectionEvents'] ?? [];
 $userShowcases = $data['userShowcases'] ?? [];
+$users = $data['users'] ?? [];
+
+// Build user lookup by ID
+$usersById = [];
+foreach ($users as $u) {
+    $uid = $u['id'] ?? $u['user_id'] ?? null;
+    if ($uid) {
+        $usersById[$uid] = $u;
+    }
+}
 
 // Utilizador autenticado
 $isAuthenticated = !empty($_SESSION['user']);
@@ -118,7 +128,13 @@ foreach ($userShowcases as $sc) {
 // Hero / avatar (fallbacks)
 $ownerAvatar = $collection['owner_avatar'] ?? $collection['user_image'] ?? '../../images/default-avatar.png';
 
-$ownerName = $collection['owner_name'] ?? $collection['username'] ?? $collection['user_name'] ?? 'Collection owner';
+// Get owner name from users array if available
+$ownerName = 'Collection owner';
+if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
+    $ownerName = $usersById[$collectionOwnerId]['user_name'] ?? $usersById[$collectionOwnerId]['username'] ?? 'Collection owner';
+} else {
+    $ownerName = $collection['owner_name'] ?? $collection['username'] ?? $collection['user_name'] ?? 'Collection owner';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

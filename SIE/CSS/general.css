@@ -1028,11 +1028,10 @@ button {
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   overflow: hidden;
-  width: calc(20% - 24px);
-  /* 5 per row (adjusted to gap) */
-  min-width: 280px;
-  /* keep good minimum visual weight but allow flexible height */
-  min-height: 420px;
+  width: 350px;
+  /* Largura fixa */
+  /* Altura uniforme para alinhar botões */
+  height: 480px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -1175,9 +1174,13 @@ button {
    🔹 CARD INFO
 =============================== */
 .card-info {
-  padding: 22px 20px 24px;
+  padding: 22px 20px 0px;
   text-align: center;
-  flex-grow: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .card-info h3 {
@@ -1205,9 +1208,13 @@ button {
 /* Support project-specific internal classes without changing HTML structure
    .item-info is used by JS-generated cards; make sure it matches the new card body style */
 .item-info {
-  padding: 22px 18px 24px;
+  padding: 22px 18px 0px;
   text-align: center;
-  flex-grow: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .item-info h3 {
@@ -1342,7 +1349,8 @@ button {
   justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: auto;
+  padding: 16px 20px 20px;
 }
 
 /* Standardize small action buttons inside cards (rating, preview, top5) */
@@ -1420,50 +1428,13 @@ button {
   transition: color 0.25s ease;
 }
 
-/* Animated underline bar - uses CSS variables so variants can change the color */
-.explore-btn::after {
-  content: "";
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  width: 0%;
-  height: 2px;
-  background: linear-gradient(90deg, var(--btn-accent-start, #2563eb), var(--btn-accent-end, #3b82f6));
-  border-radius: 2px;
-  transform: translateX(-50%);
-  transition: width 0.3s ease;
-}
-
-/* Hover interaction */
-.explore-btn:hover {
-  color: #2563eb;
-  border-color: #dbeafe;
-  background: #f9fafb;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.08);
-}
-
-.explore-btn:hover::after {
-  width: 50%;
-}
-
-/* Ghost variant (back buttons) - defined globally so all pages share the same style */
+/* Ghost variant - Show Preview button - inherits from .explore-btn */
 .explore-btn.ghost {
-  background: transparent;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
-  padding: 10px 20px;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.06);
+  background: #ffffff;
 }
 
 .explore-btn.ghost:hover {
-  background: #eff6ff;
-  color: #1d4ed8;
-  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
+  background: #ffffff;
 }
 
 /* Optional active press feedback */
@@ -1581,36 +1552,13 @@ section#buttons-bar .explore-btn.ghost {
    🔹 RESPONSIVE FIXES
 =============================== */
 
-@media (max-width: 1300px) {
-  .card {
-    width: calc(25% - 24px);
-  }
-
-  /* 4 por linha */
-}
-
-@media (max-width: 900px) {
-  .card {
-    width: calc(33.33% - 24px);
-  }
-
-  /* 3 por linha */
-}
-
-@media (max-width: 600px) {
-  .card {
-    width: calc(50% - 24px);
-  }
-
-  /* 2 por linha */
-}
-
 @media (max-width: 480px) {
   .card {
-    width: 100%;
+    height: auto;
+    min-height: 380px;
   }
 
-  /* 1 por linha */
+  /* Mobile */
 }
 
 
@@ -1783,7 +1731,7 @@ section#buttons-bar .explore-btn.ghost {
   transform: translateY(-1px);
 }
 
-.checkbox-pill input[type="checkbox"]:checked + span {
+.checkbox-pill input[type="checkbox"]:checked+span {
   color: #0f172a;
   font-weight: 600;
 }

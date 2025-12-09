@@ -217,10 +217,9 @@
   justify-content: center;
 }
 
-/* Botões principais da home (Add collection + Show/Hide Preview + Explore) */
+/* Botões principais da home */
 .explore-btn,
 .add-collection-btn {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -235,57 +234,42 @@
   text-decoration: none;
   cursor: pointer;
   box-shadow: 0 12px 26px rgba(37, 99, 235, 0.25);
-  overflow: hidden;
-  transition:
-    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
-    box-shadow 0.28s ease,
-    border-color 0.28s ease,
-    background 0.28s ease;
-}
-
-.explore-btn>*,
-.add-collection-btn>* {
-  position: relative;
-  z-index: 1;
-}
-
-/* “shine” a atravessar o botão */
-.explore-btn::before,
-.add-collection-btn::before {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: linear-gradient(120deg,
-      rgba(255, 255, 255, 0.85),
-      rgba(191, 219, 254, 0),
-      rgba(255, 255, 255, 0.85));
-  transform: translateX(-130%) skewX(-18deg);
-  transition: transform 0.65s ease;
+  transition: box-shadow 0.28s ease, border-color 0.28s ease, background 0.28s ease;
 }
 
 .explore-btn:hover,
 .add-collection-btn:hover {
-  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 18px 38px rgba(37, 99, 235, 0.35);
   border-color: #2563eb;
   background: radial-gradient(circle at 0 0, #e0ecff, #c7d2fe);
 }
 
-.explore-btn:hover::before,
-.add-collection-btn:hover::before {
-  transform: translateX(130%) skewX(-18deg);
-}
-
 .explore-btn:active,
 .add-collection-btn:active {
-  transform: translateY(0) scale(0.99);
   box-shadow: 0 10px 22px rgba(37, 99, 235, 0.3);
 }
 
-/* variações opcionais se já existirem */
+/* Ghost variant - Show Preview button */
 .explore-btn.ghost {
   background: #ffffff;
-  box-shadow: none;
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.25);
+}
+
+.explore-btn.ghost::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+.explore-btn.ghost:hover::after {
+  width: 50%;
 }
 
 .explore-btn.success {

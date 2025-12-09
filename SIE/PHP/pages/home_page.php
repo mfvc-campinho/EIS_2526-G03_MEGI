@@ -36,7 +36,30 @@ foreach ($collectionItems as $link) {
     }
 }
 
-$topCollections = array_slice($collections, 0, 5);
+$sort = $_GET['sort'] ?? 'newest';
+$perPage = max(1, (int) ($_GET['perPage'] ?? 5));
+$page = max(1, (int) ($_GET['page'] ?? 1));
+
+usort($collections, function ($a, $b) use ($sort) {
+    $aDate = $a['createdAt'] ?? '';
+    $bDate = $b['createdAt'] ?? '';
+    if ($sort === 'oldest') {
+        return strcmp($aDate, $bDate);
+    }
+    if ($sort === 'name') {
+        return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
+    }
+    return strcmp($bDate, $aDate);
+});
+
+$totalCollections = count($collections);
+$pages = max(1, (int) ceil($totalCollections / $perPage));
+$page = min($page, $pages);
+$offset = ($page - 1) * $perPage;
+$collectionsPage = array_slice($collections, $offset, $perPage);
+$startDisplay = $totalCollections ? $offset + 1 : 0;
+$endDisplay = $totalCollections ? min($offset + $perPage, $totalCollections) : 0;
+
 $upcomingEvents = array_filter($events, function ($e) {
     return empty($e['date']) ? false : (strtotime($e['date']) >= strtotime('today'));
 });
@@ -83,19 +106,40 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
 
                 </header>
-                <?php if ($isAuthenticated): ?>
-                    <div class="collection-actions">
-                        <a href="collections_form.php" class="explore-btn">
-                            + Adicionar coleção
-                        </a>
-                    </div>
-                <?php endif; ?>
-
-
                 <section class="ranking-section">
+                    <div class="top-controls">
+                        <div class="left">
+                            <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
+                                <select name="sort" id="sort-select" onchange="this.form.submit()">
+                                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
+                                    <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
+                                    <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
+                                </select>
+                                <label>Show
+                                    <select name="perPage" onchange="this.form.submit()">
+                                        <?php foreach ([5, 10, 20] as $opt): ?>
+                                            <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    collections per page
+                                </label>
+                                <input type="hidden" name="page" value="1">
+                            </form>
+                        </div>
+                        <div class="paginate">
+                            <?php if ($isAuthenticated): ?>
+                                <a class="explore-btn success" href="collections_form.php">+ Add Collection</a>
+                            <?php endif; ?>
+                            <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="window.location = '?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>'"><i class="bi bi-chevron-left"></i></button>
+                            <span>Showing <?php echo $startDisplay; ?>-<?php echo $endDisplay; ?> of <?php echo $totalCollections; ?></span>
+                            <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="window.location = '?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>'"><i class="bi bi-chevron-right"></i></button>
+                        </div>
+                    </div>
+
                     <div class="collection-container" data-limit="5">
-                        <?php if ($topCollections): ?>
-                            <?php foreach ($topCollections as $col): ?>
+                        <?php if ($collectionsPage): ?>
+                            <?php foreach ($collectionsPage as $col): ?>
                                 <?php
                                 $img = $col['coverImage'] ?? '';
                                 if ($img && !preg_match('#^https?://#', $img)) {

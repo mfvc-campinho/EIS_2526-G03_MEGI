@@ -135,7 +135,7 @@
       <h1 class="page-title">Top 5 Collections</h1>
       <p class="page-subtitle">Explore the most popular and recently added collections curated by our community.</p>
 
-      <!-- Filter -->
+      <!-- Filter (matches All Collections page) -->
       <section class="filter-section">
         <h2 class="sr-only">Collection filters</h2>
         <div class="filter-control">
@@ -154,11 +154,25 @@
       <!-- Collections Container -->
       <section class="ranking-section">
         <h2 class="sr-only">Collection ranking controls</h2>
-        <!-- Hidden pagination control to enforce a page size of 5 for the script -->
-        <div class="list-pagination" data-pagination-for="homeCollections" style="display: none;">
-          <select data-page-size>
-            <option value="5" selected>5</option>
-          </select>
+        <div class="list-pagination" data-pagination-for="homeCollections">
+          <label class="page-size-label">
+            Show
+            <select data-page-size>
+              <option value="5" selected>5</option>
+              <option value="10">10</option>
+              <option value="50">50</option>
+            </select>
+            collections per page
+          </label>
+          <div class="pagination-actions">
+            <button type="button" class="explore-btn ghost icon-only" data-page-prev aria-label="Show previous results">
+              <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <span class="pagination-status" data-pagination-status>Showing 0-0 of 0</span>
+            <button type="button" class="explore-btn ghost icon-only" data-page-next aria-label="Show next results">
+              <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
         <div class="collection-container" id="homeCollections" data-limit="5"></div>
       </section>

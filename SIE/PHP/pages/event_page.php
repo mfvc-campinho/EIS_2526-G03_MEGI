@@ -263,10 +263,13 @@ foreach ($eventsUsers as $eu) {
           $isOwner = $isAuth && $hostId && $hostId === $currentUserId;
           $eventDate = substr($evt['date'] ?? '', 0, 10);
           $isPast = $eventDate && $eventDate < date('Y-m-d');
+          $today = date('Y-m-d');
+          $eventHasStarted = $eventDate && $eventDate <= $today; // Event has started (today or later)
           $key = $currentUserId ? (strval($evt['id']) . '|' . strval($currentUserId)) : null;
           $userEntry = $currentUserId && $key ? ($eventUserMap[$key] ?? null) : null;
           $hasRsvp = $userEntry && !empty($userEntry['rsvp']);
           $rating = $userEntry['rating'] ?? null;
+          $canRate = $hasRsvp && $eventHasStarted; // Can rate if RSVP'd and event date has arrived
           ?>
           <article class="event-card">
             <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
@@ -276,7 +279,7 @@ foreach ($eventsUsers as $eu) {
               <li><i class="bi bi-calendar-event"></i> <?php echo htmlspecialchars(substr($evt['date'], 0, 10)); ?></li>
               <li><i class="bi bi-geo-alt"></i> <?php echo htmlspecialchars($evt['localization']); ?></li>
             </ul>
-            <?php if ($isAuth && $rating !== null): ?>
+            <?php if ($isAuth && $rating !== null && $canRate): ?>
               <div class="user-stars" title="O seu rating">
                 <span class="label">O seu rating:</span>
                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -316,11 +319,13 @@ foreach ($eventsUsers as $eu) {
                 </div>
               <?php endif; ?>
               <?php if ($isAuth): ?>
-                <?php if ($isPast): ?>
+                <?php if ($eventHasStarted): ?>
+                  <!-- Event has started: Show rating if attended, otherwise show message -->
                   <?php if ($hasRsvp): ?>
                     <form action="events_action.php" method="POST" style="display:flex; align-items:center; gap:6px;">
                       <input type="hidden" name="action" value="rate">
                       <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
+                      <span class="label" style="font-size:0.9rem; font-weight:600; color:#4b5563;">O seu rating:</span>
                       <div class="stars">
                         <?php for ($i = 1; $i <= 5; $i++): ?>
                           <button type="submit" name="rating" value="<?php echo $i; ?>" class="star-btn<?php echo ($rating >= $i) ? ' active' : ''; ?>" aria-label="Rate <?php echo $i; ?>">
@@ -330,9 +335,10 @@ foreach ($eventsUsers as $eu) {
                       </div>
                     </form>
                   <?php else: ?>
-                    <span class="badge-muted">Faça RSVP para poder avaliar.</span>
+                    <span class="badge-muted">Não assististe a este evento.</span>
                   <?php endif; ?>
                 <?php else: ?>
+                  <!-- Event hasn't started yet: Show RSVP button -->
                   <form action="events_action.php" method="POST" style="display:inline;">
                     <input type="hidden" name="action" value="rsvp">
                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">

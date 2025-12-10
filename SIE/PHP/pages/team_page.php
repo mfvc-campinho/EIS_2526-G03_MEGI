@@ -43,14 +43,21 @@ $team = [
 
 <body>
   <?php include __DIR__ . '/../includes/nav.php'; ?>
-  <main class="page">
+  <main class="page-shell">
       
+      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
+          <li class="breadcrumb-item" aria-current="page">Team</li>
+        </ol>
+      </nav>
+
           <!-- ===============================
          Our Team – Hero + Summary
          =============================== -->
-    <section class="team-hero">
+    <section class="collections-hero">
         <h1>Our Team</h1>
-        <div class="team-hero-underline"></div>
+        <div class="collections-hero-underline"></div>
         <p>Meet the people behind GoodCollections.</p>
     </section>
 

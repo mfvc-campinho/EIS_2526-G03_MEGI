@@ -70,15 +70,8 @@ $page = min($page, $pages);
 $offset = ($page - 1) * $perPage;
 $eventsPage = array_slice($filtered, $offset, $perPage);
 
-// Month label (use current month or first event)
+// Month label: always show current month
 $monthLabel = date('F Y');
-if (!empty($eventsPage)) {
-  $firstDate = $eventsPage[0]['date'] ?? null;
-  if ($firstDate) {
-    $ts = strtotime($firstDate);
-    if ($ts) $monthLabel = date('F Y', $ts);
-  }
-}
 
 // Map eventId+userId => entry (rating / rsvp)
 $eventUserMap = [];
@@ -119,10 +112,8 @@ foreach ($eventsUsers as $eu) {
   <script src="../../JS/theme-toggle.js"></script>
   <style>
     body { background: #f5f6f8; }
-    .hero.events-hero { text-align: center; padding: 40px 20px 10px; }
-    .hero.events-hero h1.page-title { margin: 0; font-size: 2.2rem; }
     /* Subtitle spacing */
-    .hero.events-hero p.hero-subtle {
+    .collections-hero p {
       margin: 4px auto 0;
       max-width: 620px;
       font-size: 0.96rem;
@@ -183,14 +174,21 @@ foreach ($eventsUsers as $eu) {
 <body>
   <?php include __DIR__ . '/../includes/nav.php'; ?>
 
-  <main class="page">
+  <main class="page-shell">
     <?php flash_render(); ?>
 
-    <div class="hero events-hero no-title-underline">
-      <h1 class="page-title title-gradient">Events</h1>
-      <div class="title-underline"></div>
-      <p class="hero-subtle">Browse upcoming and past events related to your collections. View details, RSVP, and keep track of important dates.</p>
-    </div>
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
+        <li class="breadcrumb-item" aria-current="page">Events</li>
+      </ol>
+    </nav>
+
+    <section class="collections-hero">
+      <h1>Events</h1>
+      <div class="collections-hero-underline"></div>
+      <p>Browse upcoming and past events related to your collections. View details, RSVP, and keep track of important dates.</p>
+    </section>
 
     <div class="month-bar">
       <div class="month-chip">

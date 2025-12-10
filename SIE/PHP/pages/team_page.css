@@ -4,41 +4,6 @@
   Major selector groups: Team grid, member cards, team hero, project summary.
 */
 
-/* ===============================
-   👥 Team Page – Hero + Summary
-   =============================== */
-
-/* Hero "Our Team" */
-
-.team-hero {
-  max-width: 1150px;
-  margin: 24px auto 18px;
-  padding: 0 24px;
-  text-align: center;
-}
-
-.team-hero h1 {
-  margin: 0;
-  font-size: 2.2rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #111827;
-}
-
-.team-hero-underline {
-  width: 140px;
-  height: 3px;
-  border-radius: 999px;
-  background: #3b82f6;
-  margin: 10px auto 10px;
-}
-
-.team-hero p {
-  margin: 0;
-  font-size: 0.98rem;
-  color: #6b7280;
-}
-
 /* ======= big project summary card ======= */
 
 .team-summary {

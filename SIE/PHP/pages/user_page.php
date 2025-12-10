@@ -11,6 +11,7 @@ $items = $data['items'] ?? [];
 $events = $data['events'] ?? [];
 $collectionItems = $data['collectionItems'] ?? [];
 $collectionEvents = $data['collectionEvents'] ?? [];
+$eventsUsers = $data['eventsUsers'] ?? [];
 
 $isAuthenticated = !empty($_SESSION['user']);
 $currentUserId = $isAuthenticated ? ($_SESSION['user']['id'] ?? null) : null;
@@ -52,42 +53,74 @@ foreach ($collectionEvents as $link) {
     if (!$cid)
         continue;
     $eventsByCollection[$cid][] = $link['eventId'];
+}
 
-    // =========================
+// =========================
 // Eventos do utilizador (via coleções que lhe pertencem)
 // =========================
 // índice rápido de eventos por id
-    $eventsById = [];
-    foreach ($events as $e) {
-        if (!empty($e['id'])) {
-            $eventsById[$e['id']] = $e;
-        }
+$eventsById = [];
+foreach ($events as $e) {
+    if (!empty($e['id'])) {
+        $eventsById[$e['id']] = $e;
     }
+}
 
 // ids de eventos únicos onde este utilizador tem coleções inscritas
-    $userEventIds = [];
-    foreach ($ownedCollections as $c) {
-        $cid = $c['id'] ?? null;
-        if (!$cid)
-            continue;
-        foreach ($eventsByCollection[$cid] ?? [] as $eid) {
-            $userEventIds[$eid] = true;
-        }
+$userEventIds = [];
+foreach ($ownedCollections as $c) {
+    $cid = $c['id'] ?? null;
+    if (!$cid)
+        continue;
+    foreach ($eventsByCollection[$cid] ?? [] as $eid) {
+        $userEventIds[$eid] = true;
     }
+}
+
+// Build RSVP map for the profile user
+$userRsvpMap = [];
+foreach ($eventsUsers as $eu) {
+    $uid = $eu['userId'] ?? $eu['user_id'] ?? null;
+    $eid = $eu['eventId'] ?? $eu['event_id'] ?? null;
+    $rsvp = $eu['rsvp'] ?? null;
+    if ($uid == $profileUserId && $eid && $rsvp) {
+        $userRsvpMap[$eid] = $rsvp;
+    }
+}
 
 // array final de eventos do utilizador
-    $userEvents = [];
-    foreach (array_keys($userEventIds) as $eid) {
-        if (isset($eventsById[$eid])) {
-            $userEvents[] = $eventsById[$eid];
+$today = date('Y-m-d');
+$upcomingEvents = [];
+$pastEvents = [];
+
+foreach (array_keys($userEventIds) as $eid) {
+    if (isset($eventsById[$eid])) {
+        $evt = $eventsById[$eid];
+        $eventDate = substr($evt['date'] ?? '', 0, 10);
+        $rsvp = $userRsvpMap[$eid] ?? null;
+        
+        if ($eventDate >= $today) {
+            // Upcoming: only include if RSVP is 'yes'
+            if ($rsvp === 'yes') {
+                $upcomingEvents[] = $evt;
+            }
+        } else {
+            // Past: only include if RSVP is 'yes'
+            if ($rsvp === 'yes') {
+                $pastEvents[] = $evt;
+            }
         }
     }
-
-// ordenar por data (se o campo 'date' existir)
-    usort($userEvents, function ($a, $b) {
-        return strcmp($a['date'] ?? '', $b['date'] ?? '');
-    });
 }
+
+// Sort both by date
+usort($upcomingEvents, function ($a, $b) {
+    return strcmp($a['date'] ?? '', $b['date'] ?? '');
+});
+usort($pastEvents, function ($a, $b) {
+    return strcmp($b['date'] ?? '', $a['date'] ?? ''); // descending for past
+});
+
 // Followers count and following map
 $userFollows = $data['userFollows'] ?? [];
 $followingList = $userFollows[$currentUserId] ?? [];
@@ -129,21 +162,20 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
     <body>
         <?php include __DIR__ . '/../includes/nav.php'; ?>
 
-        <main class="page">
+        <main class="page-shell">
             <?php flash_render(); ?>
 
-            <div class="page-shell">
-                <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-                    <ol class="breadcrumb-list">
-                        <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
-                        <li class="breadcrumb-item" aria-current="page">User Profile</li>
-                    </ol>
-                </nav>
+            <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
+                    <li class="breadcrumb-item" aria-current="page">User Profile</li>
+                </ol>
+            </nav>
 
-                <div class="hero-title">
-                    <h1>User Profile</h1>
-                    <div class="hero-underline"></div>
-                </div>
+            <section class="collections-hero">
+                <h1>User Profile</h1>
+                <div class="collections-hero-underline"></div>
+            </section>
 
                 <?php if (!$currentUser): ?>
                     <section class="profile-hero">
@@ -263,14 +295,16 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                     // Secção de eventos: mostra sempre o título, e ou a lista ou a mensagem de vazio
                     $collectorName = htmlspecialchars($profileUser['user_name'] ?? $profileUser['username'] ?? 'este colecionador');
                     ?>
+                    
+                    <!-- Upcoming Events Section -->
                     <section class="user-events-section">
                         <h2 class="section-title">
-                            Eventos em que <?php echo $collectorName; ?> está inscrito
+                            Upcoming Events you're attending
                         </h2>
 
-                        <?php if (!empty($userEvents)): ?>
+                        <?php if (!empty($upcomingEvents)): ?>
                             <div class="user-events-grid">
-                                <?php foreach ($userEvents as $evt): ?>
+                                <?php foreach ($upcomingEvents as $evt): ?>
                                     <article class="user-event-card">
                                         <p class="pill pill--event">
                                             <?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>
@@ -291,13 +325,46 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                             </div>
                         <?php else: ?>
                             <p class="muted">
-                                Este colecionador ainda não está inscrito em nenhum evento.
+                                No upcoming events with RSVP confirmed.
+                            </p>
+                        <?php endif; ?>
+                    </section>
+
+                    <!-- Past Events Section -->
+                    <section class="user-events-section">
+                        <h2 class="section-title">
+                            Past Events
+                        </h2>
+
+                        <?php if (!empty($pastEvents)): ?>
+                            <div class="user-events-grid">
+                                <?php foreach ($pastEvents as $evt): ?>
+                                    <article class="user-event-card">
+                                        <p class="pill pill--event">
+                                            <?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>
+                                        </p>
+
+                                        <h3><?php echo htmlspecialchars($evt['name'] ?? 'Evento sem nome'); ?></h3>
+
+                                        <ul class="user-event-meta">
+                                            <?php if (!empty($evt['date'])): ?>
+                                                <li>
+                                                    <i class="bi bi-calendar-event"></i>
+                                                    <?php echo htmlspecialchars($evt['date']); ?>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="muted">
+                                No past events attended.
                             </p>
                         <?php endif; ?>
                     </section>
 
                 <?php endif; ?>  <!-- fecha if ($currentUser) -->
-            </div>
         </main>
 
         <?php include __DIR__ . '/../includes/footer.php'; ?>

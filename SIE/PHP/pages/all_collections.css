@@ -101,7 +101,8 @@ body {
   display: flex;
   flex-direction: column;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
-  min-height: 460px; /* garante altura consistente */
+  min-height: 460px;
+  /* garante altura consistente */
 }
 
 .product-card:hover {
@@ -170,7 +171,8 @@ body {
 /* info de owner / data – fica colada ao fundo do corpo */
 
 .product-card__meta {
-  margin-top: auto;          /* 🔑 isto empurra o meta + botões para o fundo */
+  margin-top: auto;
+  /* 🔑 isto empurra o meta + botões para o fundo */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -266,19 +268,19 @@ body {
   /* começa escondido; é mostrado quando o checkbox está checked */
 }
 
-.preview-toggle:not(:checked) + .product-card__body .preview-hide {
+.preview-toggle:not(:checked)+.product-card__body .preview-hide {
   display: none;
 }
 
-.preview-toggle:checked + .product-card__body .preview-show {
+.preview-toggle:checked+.product-card__body .preview-show {
   display: none;
 }
 
-.preview-toggle:checked + .product-card__body .preview-hide {
+.preview-toggle:checked+.product-card__body .preview-hide {
   display: inline-flex;
 }
 
-.preview-toggle:checked ~ .preview-items {
+.preview-toggle:checked~.preview-items {
   display: block;
 }
 
@@ -313,26 +315,8 @@ body {
 
 
 /* ===============================
-   🧭 All Collections – Hero intro
+   🧭 All Collections – Hero intro - Styled by global collections-hero in general.css
    =============================== */
-
-.collections-hero {
-  max-width: 1150px;
-  margin: 10px auto 24px;
-  padding: 0 24px;
-  text-align: center;
-}
-
-.collections-hero h1 {
-  margin: 0;
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  background: linear-gradient(120deg, #0f172a, #1d4ed8, #4f46e5);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
 
 
 .collections-hero-underline {
@@ -349,3 +333,7 @@ body {
   color: #4b5563;
   max-width: 620px;
 }
+
+/* ===============================
+   🔍 Filters + controls section
+   =============================== */

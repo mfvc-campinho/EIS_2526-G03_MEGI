@@ -58,6 +58,42 @@ h1.page-title::after {
   display: none;
 }
 
+/* ===============================
+   🧭 Collections Hero – Shared title styling
+   =============================== */
+.collections-hero {
+  max-width: 1150px;
+  margin: 10px auto 24px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.collections-hero h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(120deg, #0f172a, #1d4ed8, #4f46e5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.collections-hero-underline {
+  width: 120px;
+  height: 3px;
+  border-radius: 999px;
+  background: #3b82f6;
+  margin: 10px auto 8px;
+}
+
+.collections-hero p {
+  margin: 4px auto 0;
+  font-size: 0.96rem;
+  color: #4b5563;
+  max-width: 620px;
+}
+
 /* Subtitle under the main page title. Matches site typography and spacing. */
 .page-subtitle {
   margin: 12px auto 0;

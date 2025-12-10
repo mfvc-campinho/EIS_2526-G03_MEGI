@@ -1,37 +1,63 @@
-/* Layout base da home */
+/* Statistics Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 32px 0 48px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-.home-hero {
+.stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
   text-align: center;
-  margin-bottom: 32px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.home-hero .page-title {
-  margin: 0;
-  font-size: 2.2rem;
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.home-hero .page-subtitle {
-  margin: 4px auto 0;
-  max-width: 620px;
-  font-size: 0.96rem;
-  color: #4b5563;
+.stat-icon {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 12px;
+  display: block;
 }
 
-width: 70%;
-max-width: 230px;
-height: 3px;
-border-radius: 999px;
-transform: translateX(-50%);
-background: linear-gradient(90deg, #2563eb, #4f46e5);
+.stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
 }
 
-.home-hero .page-subtitle {
-  margin: 20px auto 30px;
-  max-width: 540px;
-  font-size: 0.96rem;
+.stat-label {
+  font-size: 0.9rem;
   color: var(--muted-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}
 
 /* Secção das Top Collections */
 .ranking-section {

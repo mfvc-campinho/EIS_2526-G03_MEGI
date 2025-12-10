@@ -98,13 +98,38 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             <?php include __DIR__ . '/../includes/nav.php'; ?>
 
             <main class="page-main">
-                <header class="home-hero collections-hero no-title-underline">
-                    <h1 class="page-title title-gradient">Top Collections</h1>
-                    <div class="title-underline"></div>
-                    <p class="page-subtitle">
+                <section class="collections-hero">
+                    <h1>Top Collections</h1>
+                    <div class="collections-hero-underline"></div>
+                    <p>
                         Explore the most popular and recently added collections curated by our community.
                     </p>
-                </header>
+                </section>
+
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="bi bi-people-fill stat-icon"></i>
+                        <div class="stat-value"><?php echo $statsUsers; ?></div>
+                        <div class="stat-label">Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="bi bi-collection-fill stat-icon"></i>
+                        <div class="stat-value"><?php echo $statsCollections; ?></div>
+                        <div class="stat-label">Collections</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="bi bi-box-fill stat-icon"></i>
+                        <div class="stat-value"><?php echo $statsItems; ?></div>
+                        <div class="stat-label">Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="bi bi-calendar-event-fill stat-icon"></i>
+                        <div class="stat-value"><?php echo $statsEvents; ?></div>
+                        <div class="stat-label">Events</div>
+                    </div>
+                </div>
+
                 <section class="ranking-section">
                     <div class="top-controls">
                         <div class="left">

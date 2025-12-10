@@ -125,8 +125,40 @@ foreach ($userShowcases as $sc) {
     }
 }
 
+// -----------------------------
+//   Sorting for items (match All Collections style)
+// -----------------------------
+$sort = $_GET['sort'] ?? 'newest';
+$perPage = (int)($_GET['perPage'] ?? 10);
+if (!in_array($perPage, [5,10,20], true)) { $perPage = 10; }
+$page = max(1, (int)($_GET['page'] ?? 1));
+
+if (!empty($itemsForCollection)) {
+    usort($itemsForCollection, function ($a, $b) use ($sort, $itemLikeCount) {
+        // Map item fields: use acquisitionDate/acquisition_date for date comparisons
+        $dateA = strtotime($a['acquisitionDate'] ?? $a['acquisition_date'] ?? '') ?: 0;
+        $dateB = strtotime($b['acquisitionDate'] ?? $b['acquisition_date'] ?? '') ?: 0;
+
+        if ($sort === 'oldest') {
+            return $dateA <=> $dateB;
+        }
+        if ($sort === 'name') {
+            return strcasecmp($a['name'] ?? '', $b['name'] ?? '');
+        }
+        // default: newest
+        return $dateB <=> $dateA;
+    });
+}
+
+// paginate items
+$totalItems = count($itemsForCollection);
+$pages = max(1, (int)ceil($totalItems / $perPage));
+if ($page > $pages) { $page = $pages; }
+$offset = ($page - 1) * $perPage;
+$itemsPage = array_slice($itemsForCollection, $offset, $perPage);
+
 // Hero / avatar (fallbacks)
-$ownerAvatar = $collection['owner_avatar'] ?? $collection['user_image'] ?? '../../images/default-avatar.png';
+$ownerAvatar = $collection['owner_avatar'] ?? $collection['user_image'] ?? '../../images/default.jpg';
 
 // Get owner name from users array if available
 $ownerName = 'Collection owner';
@@ -134,6 +166,75 @@ if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
     $ownerName = $usersById[$collectionOwnerId]['user_name'] ?? $usersById[$collectionOwnerId]['username'] ?? 'Collection owner';
 } else {
     $ownerName = $collection['owner_name'] ?? $collection['username'] ?? $collection['user_name'] ?? 'Collection owner';
+}
+
+$collectionStats = [];
+
+if ($collection) {
+    $coverImage = $collection['coverImage'] ?? $collection['cover_image'] ?? $collection['cover'] ?? '';
+    if ($coverImage) {
+        if (!preg_match('#^https?://#', $coverImage) && strpos($coverImage, '../../') !== 0) {
+            $coverImage = '../../' . ltrim($coverImage, './');
+        }
+    }
+
+    if ($ownerAvatar && !preg_match('#^https?://#', $ownerAvatar) && strpos($ownerAvatar, '../../') !== 0) {
+        $ownerAvatar = '../../' . ltrim($ownerAvatar, './');
+    }
+
+    $itemsCount = count($itemsForCollection);
+    $eventsCount = count($eventsForCollection);
+    $totalValue = 0.0;
+    $totalLikes = 0;
+
+    foreach ($itemsForCollection as $it) {
+        $priceRaw = $it['price'] ?? $it['value'] ?? 0;
+        if (is_numeric($priceRaw)) {
+            $totalValue += (float) $priceRaw;
+        }
+
+        $itemId = $it['id'] ?? null;
+        if ($itemId && isset($itemLikeCount[$itemId])) {
+            $totalLikes += (int) $itemLikeCount[$itemId];
+        }
+    }
+
+    $createdAtRaw = $collection['createdAt'] ?? $collection['created_at'] ?? null;
+    $createdLabel = 'Not available';
+    if ($createdAtRaw) {
+        $timestamp = strtotime($createdAtRaw);
+        if ($timestamp) {
+            $createdLabel = date('M d, Y', $timestamp);
+        }
+    }
+
+    $collectionStats = [
+        [
+            'icon' => 'bi-box-seam',
+            'value' => number_format($itemsCount),
+            'label' => 'Items in collection',
+        ],
+        [
+            'icon' => 'bi-heart',
+            'value' => number_format($totalLikes),
+            'label' => 'Total item likes',
+        ],
+        [
+            'icon' => 'bi-currency-euro',
+            'value' => $totalValue > 0 ? '€' . number_format($totalValue, 2, '.', ',') : '—',
+            'label' => 'Estimated value',
+        ],
+        [
+            'icon' => 'bi-calendar-event',
+            'value' => number_format($eventsCount),
+            'label' => 'Linked events',
+        ],
+        [
+            'icon' => 'bi-clock-history',
+            'value' => $createdLabel,
+            'label' => 'Created on',
+        ],
+    ];
 }
 ?>
 <!DOCTYPE html>
@@ -180,41 +281,68 @@ if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
                      HERO / OVERVIEW DA COLEÇÃO
                      ========================= -->
                 <section class="collection-hero">
-                    <div id="collection-meta" class="collection-meta--compact">
-                        <div class="collection-type-line">
-                            <span class="collection-type">
-    <?php echo htmlspecialchars($collection['type'] ?? ''); ?>
-                            </span>
-                            <span class="dot">·</span>
-                            <span class="collection-category">
-                                Collection
-                            </span>
-                        </div>
-
-                        <h1 class="collection-title">
-    <?php echo htmlspecialchars($collection['name'] ?? ''); ?>
-                        </h1>
-
-    <?php if (!empty($collection['summary'])): ?>
-                            <p class="collection-summary">
-        <?php echo htmlspecialchars($collection['summary']); ?>
-                            </p>
-    <?php endif; ?>
-
-    <?php if (!empty($collection['description'])): ?>
-                            <p id="description-line">
-                                <?php echo htmlspecialchars($collection['description']); ?>
-                            </p>
+                    <div id="collection-meta">
+                        <?php if (!empty($coverImage)): ?>
+                               <img class="collection-cover--circle"
+                                   src="<?php echo htmlspecialchars($coverImage); ?>"
+                                   alt="Cover image for <?php echo htmlspecialchars($collection['name'] ?? 'collection'); ?>"
+                                   style="display:block; margin:0 auto 12px; width:140px; height:140px; border-radius:50%; object-fit:cover;">
                         <?php endif; ?>
+                        <div id="meta-text">
+                            <div class="collection-type-line">
+                                <span class="collection-type">
+        <?php echo htmlspecialchars($collection['type'] ?? ''); ?>
+                                </span>
+                                <span class="dot">·</span>
+                                <span class="collection-category">
+                                    Collection
+                                </span>
+                            </div>
 
-                        <p class="collection-owner-line">
-                            Collection owner:
-                            <span class="owner-link">
-                        <?php echo htmlspecialchars($ownerName); ?>
-                            </span>
-                        </p>
+                            <h1 class="collection-title">
+        <?php echo htmlspecialchars($collection['name'] ?? ''); ?>
+                            </h1>
+
+        <?php if (!empty($collection['summary'])): ?>
+                                <p class="collection-summary">
+            <?php echo htmlspecialchars($collection['summary']); ?>
+                                </p>
+        <?php endif; ?>
+
+        <?php if (!empty($collection['description'])): ?>
+                                <p id="description-line">
+                                    <?php echo htmlspecialchars($collection['description']); ?>
+                                </p>
+        <?php endif; ?>
+
+                            <p class="collection-owner-line">
+                                Collection owner:
+                                <span class="owner-link">
+            <?php echo htmlspecialchars($ownerName); ?>
+                                </span>
+                            </p>
+                        </div>
                     </div>
                 </section>
+
+    <?php if (!empty($collectionStats)): ?>
+                <section id="collection-stats" aria-labelledby="collection-stats-heading">
+                    <h2 id="collection-stats-heading">Collection statistics</h2>
+                    <div class="stats-grid">
+        <?php foreach ($collectionStats as $stat): ?>
+                        <article class="stat-card">
+                            <div class="stat-icon" aria-hidden="true">
+                                <i class="bi <?php echo htmlspecialchars($stat['icon']); ?>"></i>
+                            </div>
+                            <div class="stat-body">
+                                <span class="stat-value"><?php echo htmlspecialchars($stat['value']); ?></span>
+                                <span class="stat-label"><?php echo htmlspecialchars($stat['label']); ?></span>
+                            </div>
+                        </article>
+        <?php endforeach; ?>
+                    </div>
+                </section>
+    <?php endif; ?>
 
 
                 <!-- BOTÕES PRINCIPAIS DA COLEÇÃO -->
@@ -257,11 +385,39 @@ if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
                 <section class="items-section">
                     <h2>Items</h2>
 
+                    <div class="top-controls">
+                        <div class="left">
+                            <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($collectionId); ?>">
+                                <input type="hidden" name="page" value="1">
+                                <select name="sort" id="sort-select" onchange="this.form.submit()">
+                                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
+                                    <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
+                                    <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
+                                </select>
+                                <label>Show
+                                    <select name="perPage" onchange="this.form.submit()">
+                                        <?php foreach ([5, 10, 20] as $opt): ?>
+                                            <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    items per page
+                                </label>
+                            </form>
+                        </div>
+                        <div class="paginate">
+                            <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="window.location = 'specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>'"><i class="bi bi-chevron-left"></i></button>
+                            <span>Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $perPage, $totalItems); ?> of <?php echo $totalItems; ?></span>
+                            <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="window.location = 'specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>'"><i class="bi bi-chevron-right"></i></button>
+                        </div>
+                    </div>
+
     <?php if (!$itemsForCollection): ?>
                         <p class="muted">No items in this collection.</p>
                     <?php else: ?>
                         <div class="collection-container">
-        <?php foreach ($itemsForCollection as $it): ?>
+        <?php foreach ($itemsPage as $it): ?>
             <?php
             $itemId = $it['id'] ?? null;
             $priceRaw = $it['price'] ?? 0;
@@ -275,16 +431,20 @@ if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
                 $thumb = '../../' . ltrim($thumb, './');
             }
             ?>
-                                <div class="item-card">
-                                    <div class="item-info">
+                                <article class="card item-card">
+                                    <div class="item-image-wrapper">
                                 <?php if ($thumb): ?>
                                             <a href="item_page.php?id=<?php echo urlencode($itemId); ?>">
-                                                <img src="<?php echo htmlspecialchars($thumb); ?>"
-                                                     alt="<?php echo htmlspecialchars($it['name'] ?? ''); ?>"
-                                                     style="width:100%; height:180px; object-fit:cover; border-radius:12px; margin-bottom:10px;">
+                                                <img class="item-image"
+                                                     src="<?php echo htmlspecialchars($thumb); ?>"
+                                                     alt="<?php echo htmlspecialchars($it['name'] ?? ''); ?>">
                                             </a>
+                                <?php else: ?>
+                                            <div class="item-image-placeholder">No image available</div>
                                 <?php endif; ?>
+                                    </div>
 
+                                    <div class="item-info">
                                         <h3>
                                             <a href="item_page.php?id=<?php echo urlencode($itemId); ?>">
                                         <?php echo htmlspecialchars($it['name'] ?? ''); ?>
@@ -305,7 +465,7 @@ if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
                                         </p>
                                     </div>
 
-                                    <div class="item-buttons">
+                                    <div class="card-buttons item-buttons">
                                         <a class="explore-btn"
                                            href="item_page.php?id=<?php echo urlencode($itemId); ?>">
                                             Explore More
@@ -342,7 +502,7 @@ if ($collectionOwnerId && isset($usersById[$collectionOwnerId])) {
                                             </form>
             <?php endif; ?>
                                     </div>
-                                </div>
+                                </article>
         <?php endforeach; ?>
                         </div>
     <?php endif; ?>

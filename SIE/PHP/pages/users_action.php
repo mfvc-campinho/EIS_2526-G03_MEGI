@@ -8,7 +8,7 @@ $currentUser = $_SESSION['user']['id'] ?? null;
 
 // Só obriga a estar autenticado para ações que não sejam "create"
 if ($action !== 'create' && !$currentUser) {
-  flash_set('error', 'Precisa de iniciar sessão.');
+  flash_set('error', 'You need to be logged in.');
   header('Location: user_page.php');
   exit;
 }
@@ -36,11 +36,11 @@ function handle_upload($field, $folder, $keep = '')
   }
   $file = $_FILES[$field];
   if ($file['error'] !== UPLOAD_ERR_OK) {
-    redirect_error('Falha no upload da imagem.');
+    redirect_error('Image upload failed.');
   }
   $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
   if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-    redirect_error('Formato de imagem inválido.');
+    redirect_error('Invalid image format.');
   }
   $dir = __DIR__ . '/../uploads/' . $folder;
   if (!is_dir($dir)) {
@@ -64,7 +64,7 @@ if ($action === 'create') {
 
   if ($name === '' || $email === '' || $password === '') {
     $mysqli->close();
-    redirect_error('Preencha todos os campos obrigatórios.');
+    redirect_error('Please fill in all required fields.');
   }
 
   // Verificar se já existe email
@@ -75,7 +75,7 @@ if ($action === 'create') {
   if ($stmt->num_rows > 0) {
     $stmt->close();
     $mysqli->close();
-    redirect_error('Já existe uma conta com este email.');
+    redirect_error('This email is already registered.');
   }
   $stmt->close();
 
@@ -123,7 +123,7 @@ if ($action === 'update') {
   $chk->close();
   if (!$row) {
     $mysqli->close();
-    redirect_error('Utilizador não encontrado.');
+    redirect_error('User not found.');
   }
   $existingPhoto = $row['user_photo'] ?? '';
 
@@ -148,13 +148,13 @@ if ($action === 'update') {
   $_SESSION['user']['email'] = $email;
   $_SESSION['user']['user_photo'] = $photoPath;
   $mysqli->close();
-  if ($ok) redirect_success('Perfil atualizado.');
-  redirect_error('Falha ao atualizar perfil.');
+  if ($ok) redirect_success('Profile updated.');
+  redirect_error('Failed to update profile.');
 }
 
 
 
 $mysqli->close();
-redirect_error('Ação inválida.');
+redirect_error('Invalid action.');
 
 }

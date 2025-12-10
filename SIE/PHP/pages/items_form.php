@@ -103,15 +103,21 @@ $existingCollections = array_unique($existingCollections);
                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($item['id']); ?>">
                 <?php endif; ?>
 
-                  <label>Name <span class="required-badge">R</span></label>
+                <label>Name <span class="required-badge">R</span></label>
                 <input type="text" name="name" required
                        value="<?php echo htmlspecialchars($item['name']); ?>">
 
-                  <label>Importance</label>
-                <input type="text" name="importance"
-                       value="<?php echo htmlspecialchars($item['importance']); ?>">
+                <label>Importance</label>
+                <select name="importance">
+                    <option value="">Select importance...</option>
+                    <option value="very_low" <?php echo ($item['importance'] ?? '') === 'very_low' ? 'selected' : ''; ?>>Very Low</option>
+                    <option value="low" <?php echo ($item['importance'] ?? '') === 'low' ? 'selected' : ''; ?>>Low</option>
+                    <option value="medium" <?php echo ($item['importance'] ?? '') === 'medium' ? 'selected' : ''; ?>>Medium</option>
+                    <option value="high" <?php echo ($item['importance'] ?? '') === 'high' ? 'selected' : ''; ?>>High</option>
+                    <option value="very_high" <?php echo ($item['importance'] ?? '') === 'very_high' ? 'selected' : ''; ?>>Very High</option>
+                </select>
 
-                  <label>Weight</label>
+                <label>Weight</label>
                 <input type="text" name="weight"
                        value="<?php echo htmlspecialchars($item['weight']); ?>">
 

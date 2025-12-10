@@ -120,7 +120,7 @@ $currentType = $event['type'] ?? null;
                     <?php foreach ($ownedCollections as $col): ?>
                         <?php $checked = in_array($col['id'], $existingCollections, true) || (!$editing && ($event['collectionId'] ?? '') === $col['id']); ?>
                         <label style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid #e5e7eb; font-weight:600; color:#1f2937;">
-                            <input type="checkbox" name="collectionIds[]" value="<?php echo htmlspecialchars($col['id']); ?>" <?php echo $checked ? 'checked' : ''; ?>>
+                            <input type="checkbox" name="collectionIds[]" value="<?php echo htmlspecialchars($col['id']); ?>" <?php echo $checked ? 'checked' : ''; ?> style="width:18px; height:18px;">
                             <span><?php echo htmlspecialchars($col['name']); ?></span>
                         </label>
                     <?php endforeach; ?>

@@ -943,6 +943,34 @@ footer .heart {
   background: linear-gradient(90deg, #0066dd, #00a1e6);
 }
 
+.logout-form {
+  margin: 0;
+}
+
+.logout-link {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  font: inherit;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.logout-link:hover,
+.logout-link:focus {
+  background: rgba(0, 120, 255, 0.1);
+}
+
+.logout-link i {
+  margin-right: 8px;
+  font-size: 1rem;
+}
+
 /* Shared action buttons (Home + All Collections) */
 
 .collection-actions {

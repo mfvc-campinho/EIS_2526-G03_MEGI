@@ -98,10 +98,10 @@ if ($method === 'GET') {
   // GET /auth.php?action=logout
   $action = isset($_GET['action']) ? $_GET['action'] : null;
   if ($action === 'logout') {
-    session_unset();
-    session_destroy();
+    $_SESSION = [];
+    flash_set('success', 'Signed out successfully.');
+    session_regenerate_id(true);
     if ($redirect) {
-      flash_set('success', 'Sessão terminada.');
       header('Location: ' . $redirect);
       exit;
     }

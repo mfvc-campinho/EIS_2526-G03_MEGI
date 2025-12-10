@@ -44,8 +44,14 @@ function nav_active($basename) {
                 </button>
                 <div class="dropdown-content profile-menu">
 <?php if ($isAuth): ?>
-                        <a href="user_page.php">See Profile</a>
-                        <a href="../auth.php?action=logout&redirect=<?php echo urlencode('pages/home_page.php'); ?>">Sign Out</a>
+                            <a href="user_page.php">See Profile</a>
+                            <form action="../auth.php" method="GET" class="logout-form">
+                                <input type="hidden" name="action" value="logout">
+                                <input type="hidden" name="redirect" value="pages/home_page.php">
+                                <button type="submit" class="logout-link">
+                                    <i class="bi bi-box-arrow-right"></i> Sign Out
+                                </button>
+                            </form>
 <?php else: ?>
                         <form action="../auth.php" method="POST" class="login-form" style="padding:10px; min-width:220px;">
                             <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'home_page.php'); ?>">

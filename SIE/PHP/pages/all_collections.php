@@ -184,7 +184,7 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
 
                                         <!-- Like -->
                                         <?php if ($isAuth): ?>
-                                            <form action="likes_action.php" method="POST" style="display:inline;">
+                                            <form action="likes_action.php" method="POST" class="card-like-form">
                                                 <input type="hidden" name="type" value="collection">
                                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
                                                 <button type="submit" class="explore-btn ghost<?php echo isset($likedCollections[$col['id']]) ? ' success' : ''; ?>">

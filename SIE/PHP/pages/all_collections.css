@@ -218,8 +218,13 @@ body {
 .card-actions {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-top: 10px;
+}
+
+.card-actions .card-like-form {
+  margin: 0;
+  display: inline-flex;
 }
 
 .card-actions .explore-btn .like-count {
@@ -230,6 +235,12 @@ body {
 
 .card-actions .explore-btn .like-count.is-zero {
   visibility: hidden;
+}
+
+@media (max-width: 640px) {
+  .card-actions {
+    flex-wrap: wrap;
+  }
 }
 
 /* ações extra do owner (edit / delete) logo abaixo */

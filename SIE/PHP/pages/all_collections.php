@@ -109,13 +109,13 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                     <div class="left">
                         <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                             <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
-                            <select name="sort" id="sort-select" onchange="this.form.submit()">
+                            <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
                                 <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
                                 <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
                                 <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
                             </select>
                             <label>Show
-                                <select name="perPage" onchange="this.form.submit()">
+                                <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
                                     <?php foreach ([5, 10, 20] as $opt): ?>
                                         <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
                                     <?php endforeach; ?>
@@ -129,9 +129,9 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                         <?php if ($isAuth): ?>
                             <a class="explore-btn success" href="collections_form.php">+ Add Collection</a>
                         <?php endif; ?>
-                        <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="window.location = '?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>'"><i class="bi bi-chevron-left"></i></button>
+                        <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
                         <span>Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $perPage, $total); ?> of <?php echo $total; ?></span>
-                        <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="window.location = '?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>'"><i class="bi bi-chevron-right"></i></button>
+                        <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
                     </div>
                 </div>
 
@@ -353,6 +353,53 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                 })();
             </script>
         <?php endif; ?>
+        <script>
+            (function () {
+                var scrollKey = 'gc-scroll-all-collections';
+                var hasStorage = false;
+                try {
+                    sessionStorage.setItem('__gc_test', '1');
+                    sessionStorage.removeItem('__gc_test');
+                    hasStorage = true;
+                } catch (err) {
+                    hasStorage = false;
+                }
+
+                function saveScroll() {
+                    if (!hasStorage) {
+                        return;
+                    }
+                    var top = window.scrollY || document.documentElement.scrollTop || 0;
+                    sessionStorage.setItem(scrollKey, String(top));
+                }
+
+                window.gcSubmitWithScroll = function (form) {
+                    saveScroll();
+                    form.submit();
+                };
+
+                window.gcRememberScroll = function (url) {
+                    saveScroll();
+                    window.location = url;
+                };
+
+                window.addEventListener('pageshow', function () {
+                    if (!hasStorage) {
+                        return;
+                    }
+                    var stored = sessionStorage.getItem(scrollKey);
+                    if (stored !== null) {
+                        window.scrollTo(0, parseFloat(stored));
+                        sessionStorage.removeItem(scrollKey);
+                    }
+                });
+
+                var filtersForm = document.getElementById('filters');
+                if (filtersForm) {
+                    filtersForm.addEventListener('submit', saveScroll);
+                }
+            })();
+        </script>
     </body>
 
 </html>

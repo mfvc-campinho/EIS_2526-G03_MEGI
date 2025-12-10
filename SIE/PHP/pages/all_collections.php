@@ -189,13 +189,15 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
                                                 <button type="submit" class="explore-btn ghost<?php echo isset($likedCollections[$col['id']]) ? ' success' : ''; ?>">
                                                     <i class="bi <?php echo isset($likedCollections[$col['id']]) ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
-                                                    <?php echo $collectionLikeCount[$col['id']] ?? 0; ?>
+                                                    <?php $count = (int) ($collectionLikeCount[$col['id']] ?? 0); ?>
+                                                    <span class="like-count<?php echo $count === 0 ? ' is-zero' : ''; ?>"><?php echo $count; ?></span>
                                                 </button>
                                             </form>
                                         <?php else: ?>
                                             <button class="explore-btn ghost" type="button" data-action="login-popup" data-login-url="auth.php">
                                                 <i class="bi bi-heart"></i>
-                                                <?php echo $collectionLikeCount[$col['id']] ?? 0; ?>
+                                                <?php $count = (int) ($collectionLikeCount[$col['id']] ?? 0); ?>
+                                                <span class="like-count<?php echo $count === 0 ? ' is-zero' : ''; ?>"><?php echo $count; ?></span>
                                             </button>
                                         <?php endif; ?>
                                     </div>

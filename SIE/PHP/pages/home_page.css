@@ -1,43 +1,28 @@
 /* Layout base da home */
-.page-container {
-  width: 100%;
-}
 
-.page-main,
-.inner-block {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 20px 60px;
-}
-
-/* Hero (título + subtítulo) */
-/* Hero (título + subtítulo) */
 .home-hero {
   text-align: center;
   margin-bottom: 32px;
 }
 
 .home-hero .page-title {
-  display: inline-block;
-  margin: 6px 0 10px;
+  margin: 0;
   font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #0f172a;
-  position: relative;
 }
 
-.home-hero .page-title::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -10px;
-  width: 70%;
-  max-width: 230px;
-  height: 3px;
-  border-radius: 999px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, #2563eb, #4f46e5);
+.home-hero .page-subtitle {
+  margin: 4px auto 0;
+  max-width: 620px;
+  font-size: 0.96rem;
+  color: #4b5563;
+}
+
+width: 70%;
+max-width: 230px;
+height: 3px;
+border-radius: 999px;
+transform: translateX(-50%);
+background: linear-gradient(90deg, #2563eb, #4f46e5);
 }
 
 .home-hero .page-subtitle {

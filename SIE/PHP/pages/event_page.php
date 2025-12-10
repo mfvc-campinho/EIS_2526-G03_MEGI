@@ -119,9 +119,15 @@ foreach ($eventsUsers as $eu) {
   <script src="../../JS/theme-toggle.js"></script>
   <style>
     body { background: #f5f6f8; }
-    .hero { text-align: center; padding: 40px 20px 10px; }
-    .hero h1 { margin-bottom: 6px; }
-    .hero p { color: #6b7280; max-width: 820px; margin: 0 auto; }
+    .hero.events-hero { text-align: center; padding: 40px 20px 10px; }
+    .hero.events-hero h1.page-title { margin: 0; font-size: 2.2rem; }
+    /* Subtitle spacing */
+    .hero.events-hero p.hero-subtle {
+      margin: 4px auto 0;
+      max-width: 620px;
+      font-size: 0.96rem;
+      color: #4b5563;
+    }
     .pill-toggle { display: flex; justify-content: center; gap: 14px; margin: 26px auto 18px; max-width: 400px; background: #eef0ff; padding: 10px; border-radius: 24px; box-shadow: inset 0 0 0 1px rgba(99,102,241,.12); }
     .pill-toggle a { flex: 1; text-align: center; padding: 10px 12px; border-radius: 18px; font-weight: 600; color: #6b6e82; text-decoration: none; }
     .pill-toggle a.active { background: #fff; box-shadow: 0 8px 16px rgba(99,102,241,.15); color: #2f2f3f; }
@@ -180,8 +186,9 @@ foreach ($eventsUsers as $eu) {
   <main class="page">
     <?php flash_render(); ?>
 
-    <div class="hero">
-      <h1>Events</h1>
+    <div class="hero events-hero no-title-underline">
+      <h1 class="page-title title-gradient">Events</h1>
+      <div class="title-underline"></div>
       <p class="hero-subtle">Browse upcoming and past events related to your collections. View details, RSVP, and keep track of important dates.</p>
     </div>
 

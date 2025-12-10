@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/data_loader.php';
 require_once __DIR__ . '/../includes/flash.php';
 
 if (empty($_SESSION['user'])) {
-    flash_set('error', 'Precisa de iniciar sessão para gerir itens.');
+    flash_set('error', 'You need to log in to manage items.');
     header('Location: home_page.php');
     exit;
 }
@@ -38,7 +38,7 @@ $ownedCollections = array_filter($collections, function ($c) use ($currentUserId
 $existingCollections = [];
 
 if ($id) {
-    // editar: carregar item e coleções associadas
+    // edit: load item and its collections
     foreach ($items as $it) {
         if ($it['id'] === $id) {
             $item = $it;
@@ -58,13 +58,13 @@ if ($id) {
     }
 
     if (!$editing) {
-        flash_set('error', 'Item não encontrado.');
+        flash_set('error', 'Item not found.');
         header('Location: home_page.php');
         exit;
     }
 }
 
-// se estamos a criar e veio um collectionId na query, pré-seleciona-o
+// if creating and a collectionId came in the query, preselect it
 if (!$id && $preferredCollectionId) {
     $existingCollections[] = $preferredCollectionId;
 }
@@ -94,7 +94,7 @@ $existingCollections = array_unique($existingCollections);
 
             <header class="page__header">
                 <h1><?php echo $editing ? 'Edit Item' : 'Create Item'; ?></h1>
-                <a href="home_page.php" class="text-link">Voltar</a>
+                <a href="home_page.php" class="text-link">Back</a>
             </header>
 
             <form class="form-card" action="items_action.php" method="POST" enctype="multipart/form-data">
@@ -103,36 +103,36 @@ $existingCollections = array_unique($existingCollections);
                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($item['id']); ?>">
                 <?php endif; ?>
 
-                <label>Nome <span class="required-badge">R</span></label>
+                  <label>Name <span class="required-badge">R</span></label>
                 <input type="text" name="name" required
                        value="<?php echo htmlspecialchars($item['name']); ?>">
 
-                <label>Importância</label>
+                  <label>Importance</label>
                 <input type="text" name="importance"
                        value="<?php echo htmlspecialchars($item['importance']); ?>">
 
-                <label>Peso</label>
+                  <label>Weight</label>
                 <input type="text" name="weight"
                        value="<?php echo htmlspecialchars($item['weight']); ?>">
 
-                <label>Preço</label>
+                  <label>Price</label>
                 <input type="text" name="price"
                        value="<?php echo htmlspecialchars($item['price']); ?>">
 
-                <label>Data de aquisição</label>
+                  <label>Acquisition date</label>
                 <input type="date" name="acquisitionDate"
                        value="<?php echo htmlspecialchars($item['acquisitionDate']); ?>">
 
-                <label>Imagem (upload)</label>
+                  <label>Image (upload)</label>
                 <input type="file" name="imageFile" accept="image/*">
                 <?php if (!empty($item['image'])): ?>
                     <p class="muted" style="margin-top:4px;">
-                        Imagem atual: <?php echo htmlspecialchars($item['image']); ?> (deixe vazio para manter)
+                       Current image: <?php echo htmlspecialchars($item['image']); ?> (leave empty to keep)
                     </p>
                 <?php endif; ?>
 
                 <label>
-                    Coleções (escolha todas as suas que contêm este item)
+                      Collections (choose all of yours that contain this item)
                     <span class="required-badge">R</span>
                 </label>
 
@@ -155,7 +155,7 @@ $existingCollections = array_unique($existingCollections);
                 </div>
 
                 <p class="muted" style="margin-top:6px;">
-                    Apenas aparecem coleções que pertencem ao utilizador.
+                    Only collections that belong to you are shown.
                 </p>
 
 
@@ -163,7 +163,7 @@ $existingCollections = array_unique($existingCollections);
                     <button type="submit" class="explore-btn">
                         <?php echo $editing ? 'Save' : 'Create'; ?>
                     </button>
-                    <a class="explore-btn ghost" href="home_page.php">Cancelar</a>
+                    <a class="explore-btn ghost" href="home_page.php">Cancel</a>
                 </div>
             </form>
         </main>

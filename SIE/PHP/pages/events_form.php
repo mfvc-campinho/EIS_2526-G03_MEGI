@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/data_loader.php';
 require_once __DIR__ . '/../includes/flash.php';
 
 if (empty($_SESSION['user'])) {
-    flash_set('error', 'Precisa de iniciar sessão para gerir eventos.');
+    flash_set('error', 'You need to log in to manage events.');
     header('Location: event_page.php');
     exit;
 }
@@ -38,7 +38,7 @@ if ($id) {
         }
     }
     if (!$editing) {
-        flash_set('error', 'Evento não encontrado.');
+        flash_set('error', 'Event not found.');
         header('Location: event_page.php');
         exit;
     }
@@ -89,13 +89,13 @@ $currentType = $event['type'] ?? null;
                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($event['id']); ?>">
                 <?php endif; ?>
 
-                <label>Nome <span class="required-badge">R</span></label>
+                <label>Name <span class="required-badge">R</span></label>
                 <input type="text" name="name" required value="<?php echo htmlspecialchars($event['name']); ?>">
 
-                <label>Resumo</label>
+                <label>Summary</label>
                 <input type="text" name="summary" value="<?php echo htmlspecialchars($event['summary']); ?>">
 
-                <label>Descrição</label>
+                <label>Description</label>
                 <textarea name="description" rows="4"><?php echo htmlspecialchars($event['description']); ?></textarea>
 
                 <label for="event_type">Type</label>
@@ -109,11 +109,10 @@ $currentType = $event['type'] ?? null;
                     <?php endforeach; ?>
                 </select>
 
-
-                <label>Localização</label>
+                <label>Location</label>
                 <input type="text" name="localization" value="<?php echo htmlspecialchars($event['localization']); ?>">
 
-                <label>Data</label>
+                <label>Date</label>
                 <input type="datetime-local" name="date" value="<?php echo htmlspecialchars(substr($event['date'], 0, 16)); ?>">
 
                 <label>Collections (can associate to multiple of yours) <span class="required-badge">R</span></label>
@@ -129,8 +128,8 @@ $currentType = $event['type'] ?? null;
                 <p class="muted" style="margin-top:6px;">Only collections that belong to you are shown.</p>
 
                 <div class="actions">
-                    <button type="submit" class="explore-btn"><?php echo $editing ? 'Guardar' : 'Criar'; ?></button>
-                    <a class="explore-btn ghost" href="event_page.php">Cancelar</a>
+                    <button type="submit" class="explore-btn"><?php echo $editing ? 'Save' : 'Create'; ?></button>
+                    <a class="explore-btn ghost" href="event_page.php">Cancel</a>
                 </div>
             </form>
         </main>

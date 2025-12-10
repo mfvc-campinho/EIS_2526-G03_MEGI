@@ -98,13 +98,12 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             <?php include __DIR__ . '/../includes/nav.php'; ?>
 
             <main class="page-main">
-                <header class="home-hero">
-                    <h1 class="page-title">Top Collections</h1>
+                <header class="home-hero collections-hero no-title-underline">
+                    <h1 class="page-title title-gradient">Top Collections</h1>
+                    <div class="title-underline"></div>
                     <p class="page-subtitle">
                         Explore the most popular and recently added collections curated by our community.
                     </p>
-
-
                 </header>
                 <section class="ranking-section">
                     <div class="top-controls">

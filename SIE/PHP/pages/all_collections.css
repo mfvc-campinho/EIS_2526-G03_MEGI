@@ -227,6 +227,10 @@ body {
   display: inline-flex;
 }
 
+.card-actions .explore-btn {
+  white-space: nowrap;
+}
+
 .card-actions .explore-btn .like-count {
   display: inline-block;
   min-width: 1.6ch;
@@ -241,6 +245,14 @@ body {
   .card-actions {
     flex-wrap: wrap;
   }
+
+  .card-actions .explore-btn {
+    white-space: normal;
+  }
+
+  .owner-actions {
+    min-height: 0;
+  }
 }
 
 /* ações extra do owner (edit / delete) logo abaixo */
@@ -251,6 +263,12 @@ body {
   flex-wrap: wrap;
   margin-top: 8px;
   justify-content: center;
+  min-height: 44px;
+}
+
+.owner-actions--placeholder {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* ===============================

@@ -85,7 +85,7 @@ if ($method === 'POST') {
   ];
 
   if ($redirect) {
-    flash_set('success', 'Login efetuado com sucesso.');
+    flash_set('success', 'Logged in successfully.');
     header('Location: ' . $redirect);
     exit;
   }

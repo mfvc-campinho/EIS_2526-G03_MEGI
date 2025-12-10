@@ -202,16 +202,16 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                                         <?php endif; ?>
                                     </div>
 
-                                    <?php if ($isOwner): ?>
-                                        <div class="owner-actions">
+                                    <div class="owner-actions<?php echo $isOwner ? '' : ' owner-actions--placeholder'; ?>"<?php echo $isOwner ? '' : ' aria-hidden="true"'; ?>>
+                                        <?php if ($isOwner): ?>
                                             <a class="explore-btn ghost" href="collections_form.php?id=<?php echo urlencode($col['id']); ?>"><i class="bi bi-pencil"></i> Edit</a>
                                             <form action="collections_action.php" method="POST">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
                                                 <button type="submit" class="explore-btn ghost danger" onclick="return confirm('Delete this collection?');"><i class="bi bi-trash"></i> Delete</button>
                                             </form>
-                                        </div>
-                                    <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div class="preview-items">
                                     <?php if ($previewItems): ?>

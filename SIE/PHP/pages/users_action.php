@@ -106,7 +106,7 @@ if ($action === 'create') {
     ];
 
     $mysqli->close();
-    redirect_success('Conta criada com sucesso.');
+    redirect_success('Account created successfully.');
   }
 
 

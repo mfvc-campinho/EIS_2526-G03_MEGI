@@ -21,7 +21,7 @@ foreach ($users as $u) {
   }
 }
 if (!$user) {
-  flash_set('error', 'Utilizador nÃ£o encontrado.');
+  flash_set('error', 'User not found.');
   header('Location: user_page.php');
   exit;
 }
@@ -50,22 +50,22 @@ if (!$user) {
 
     <form class="form-card" action="users_action.php" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="action" value="update">
-      <label>Nome <span class="required-badge">R</span></label>
+      <label>Name <span class="required-badge">R</span></label>
       <input type="text" name="name" required value="<?php echo htmlspecialchars($user['user_name']); ?>">
 
       <label>Email <span class="required-badge">R</span></label>
       <input type="email" name="email" required value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
 
-      <label>Foto (upload)</label>
+      <label>Photo (upload)</label>
       <input type="file" name="photoFile" accept="image/*">
       <?php if (!empty($user['user_photo'])): ?>
-        <p class="muted" style="margin-top:4px;">Foto atual: <?php echo htmlspecialchars($user['user_photo']); ?> (deixe vazio para manter)</p>
+        <p class="muted" style="margin-top:4px;">Current photo: <?php echo htmlspecialchars($user['user_photo']); ?> (leave empty to keep)</p>
       <?php endif; ?>
 
-      <label>Data de nascimento</label>
+      <label>Date of birth</label>
       <input type="date" name="dob" value="<?php echo htmlspecialchars($user['date_of_birth'] ?? ''); ?>">
 
-      <label>Palavra-passe (deixe vazio para manter)</label>
+      <label>Password (leave empty to keep)</label>
       <input type="password" name="password" value="">
 
       <div class="actions">

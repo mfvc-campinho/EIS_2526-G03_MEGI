@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../includes/flash.php';
 ?>
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 
 
 
@@ -12,9 +12,8 @@ require_once __DIR__ . '/../includes/flash.php';
 
     <head>
         <meta charset="UTF-8" />
-        <title>Create Account</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><?php echo $editing ? 'Editar' : 'Novo'; ?> Evento • PHP</title>
+        <title>Create Account • PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
         <script src="../../JS/theme-toggle.js"></script>
@@ -37,25 +36,25 @@ require_once __DIR__ . '/../includes/flash.php';
 
                 <header class="page__header">
                     <h1>Create Account</h1>
-                    <a href="home_page.php" class="text-link">Voltar</a>
+                    <a href="home_page.php" class="text-link">Back</a>
                 </header>
 
                 <form class="form-card" action="users_action.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="create">
 
-                    <label>Nome <span class="required-badge">R</span></label>
+                    <label>Name <span class="required-badge">R</span></label>
                     <input type="text" name="name" required>
 
                     <label>Email <span class="required-badge">R</span></label>
                     <input type="email" name="email" required>
 
-                    <label>Foto (upload)</label>
+                    <label>Photo (upload)</label>
                     <input type="file" name="photoFile" accept="image/*">
 
-                    <label>Data de nascimento</label>
+                    <label>Date of birth</label>
                     <input type="date" name="dob">
 
-                    <label>Palavra-passe <span class="required-badge">R</span></label>
+                    <label>Password <span class="required-badge">R</span></label>
                     <input type="password" name="password" required>
 
                     <div class="actions">

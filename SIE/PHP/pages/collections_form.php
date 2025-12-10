@@ -38,7 +38,7 @@ if ($id) {
         }
     }
     if (!$editing) {
-        flash_set('error', 'ColeÃ§Ã£o nÃ£o encontrada.');
+        flash_set('error', 'Collection not found.');
         header('Location: all_collections.php');
         exit;
     }
@@ -72,12 +72,12 @@ if ($id) {
                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($collection['id']); ?>">
                 <?php endif; ?>
 
-                <label>Nome <span class="required-badge">R</span></label>
+                <label>Name <span class="required-badge">R</span></label>
                 <input type="text" name="name" required value="<?php echo htmlspecialchars($collection['name']); ?>">
 
-                <label>Tipo <span class="required-badge">R</span></label>
+                <label>Type <span class="required-badge">R</span></label>
                 <select name="type" required>
-                    <option value="">Selecione um tipo...</option>
+                    <option value="">Select a type...</option>
                     <?php
                     $currentType = $collection['type'] ?? '';
                     foreach ($collectionTypes as $typeOption):
@@ -89,21 +89,21 @@ if ($id) {
                     <?php endforeach; ?>
                 </select>
 
-                <label>Resumo</label>
+                <label>Summary</label>
                 <input type="text" name="summary" value="<?php echo htmlspecialchars($collection['summary']); ?>">
 
-                <label>DescriÃ§Ã£o</label>
+                <label>Description</label>
                 <textarea name="description" rows="4"><?php echo htmlspecialchars($collection['description']); ?></textarea>
 
-                <label>Imagem (upload)</label>
+                <label>Cover image (upload)</label>
                 <input type="file" name="coverImageFile" accept="image/*">
                 <?php if (!empty($collection['coverImage'])): ?>
-                    <p class="muted" style="margin-top:4px;">Imagem atual: <?php echo htmlspecialchars($collection['coverImage']); ?> (deixe vazio para manter)</p>
+                    <p class="muted" style="margin-top:4px;">Current image: <?php echo htmlspecialchars($collection['coverImage']); ?> (leave empty to keep)</p>
                 <?php endif; ?>
 
                 <div class="actions">
-                    <button type="submit" class="explore-btn"><?php echo $editing ? 'Guardar' : 'Criar'; ?></button>
-                    <a class="explore-btn ghost" href="all_collections.php">Cancelar</a>
+                    <button type="submit" class="explore-btn"><?php echo $editing ? 'Save' : 'Create'; ?></button>
+                    <a class="explore-btn ghost" href="all_collections.php">Cancel</a>
                 </div>
             </form>
         </main>

@@ -382,22 +382,22 @@ if ($collection) {
                 <!-- =========================
                      ITEMS
                      ========================= -->
-                <section class="items-section">
+                <section class="items-section" id="items-section">
                     <h2>Items</h2>
 
                     <div class="top-controls">
                         <div class="left">
-                            <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <form id="filters" method="GET" action="specific_collection.php" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                                 <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($collectionId); ?>">
                                 <input type="hidden" name="page" value="1">
-                                <select name="sort" id="sort-select" onchange="this.form.submit()">
+                                <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
                                     <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
                                     <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
                                     <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
                                 </select>
                                 <label>Show
-                                    <select name="perPage" onchange="this.form.submit()">
+                                    <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
                                         <?php foreach ([5, 10, 20] as $opt): ?>
                                             <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
                                         <?php endforeach; ?>
@@ -407,9 +407,9 @@ if ($collection) {
                             </form>
                         </div>
                         <div class="paginate">
-                            <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="window.location = 'specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>'"><i class="bi bi-chevron-left"></i></button>
+                            <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
                             <span>Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $perPage, $totalItems); ?> of <?php echo $totalItems; ?></span>
-                            <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="window.location = 'specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>'"><i class="bi bi-chevron-right"></i></button>
+                            <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
                         </div>
                     </div>
 
@@ -547,6 +547,53 @@ if ($collection) {
         </main>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
+        <script>
+            (function () {
+                var scrollKey = 'gc-scroll-specific-<?php echo (int) $collectionId; ?>';
+                var filtersForm = document.getElementById('filters');
+                var hasStorage = false;
+                try {
+                    sessionStorage.setItem('__gc_test', '1');
+                    sessionStorage.removeItem('__gc_test');
+                    hasStorage = true;
+                } catch (err) {
+                    hasStorage = false;
+                }
+
+                function saveScroll() {
+                    if (!hasStorage) {
+                        return;
+                    }
+                    var top = window.scrollY || document.documentElement.scrollTop || 0;
+                    sessionStorage.setItem(scrollKey, String(top));
+                }
+
+                window.gcSubmitWithScroll = function (form) {
+                    saveScroll();
+                    form.submit();
+                };
+
+                window.gcRememberScroll = function (url) {
+                    saveScroll();
+                    window.location = url;
+                };
+
+                window.addEventListener('pageshow', function () {
+                    if (!hasStorage) {
+                        return;
+                    }
+                    var stored = sessionStorage.getItem(scrollKey);
+                    if (stored !== null) {
+                        window.scrollTo(0, parseFloat(stored));
+                        sessionStorage.removeItem(scrollKey);
+                    }
+                });
+
+                if (filtersForm) {
+                    filtersForm.addEventListener('submit', saveScroll);
+                }
+            })();
+        </script>
     </body>
 
 </html>

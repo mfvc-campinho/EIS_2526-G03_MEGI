@@ -104,8 +104,7 @@ $team = [
     </section>
 
     <section class="team-hero">
-      <div class="icon-stack"><i class="bi bi-people-fill"></i></div>
-      <h1>Team Members</h1>
+      
       <p class="muted">The crew behind GoodCollections.</p>
     </section>
 

@@ -182,6 +182,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                         <p class="muted">Please log in to see your profile.</p>
                     </section>
                 <?php else: ?>
+                    <!-- Photo + Name Section -->
                     <section class="profile-hero">
                         <div class="profile-card profile-card--hero">
                             <div class="profile-avatar">
@@ -200,49 +201,53 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                             <div class="profile-body">
                                 <h1><?php echo htmlspecialchars($profileUser['user_name']); ?></h1>
                                 <p class="muted">This is your personal space to manage collections, items, and events.</p>
+                            </div>
+                        </div>
+                    </section>
 
-                                <div class="profile-meta-grid">
-                                    <div>
-                                        <p class="eyebrow-label"><i class="bi bi-envelope"></i> Email</p>
-                                        <p class="muted"><?php echo htmlspecialchars($profileUser['email'] ?? ''); ?></p>
-                                    </div>
-                                    <div>
-                                        <p class="eyebrow-label"><i class="bi bi-calendar3"></i> Date of Birth</p>
-                                        <p class="muted"><?php echo htmlspecialchars($profileUser['date_of_birth'] ?? '-'); ?></p>
-                                    </div>
-                                    <div>
-                                        <p class="eyebrow-label"><i class="bi bi-clock-history"></i> Member Since</p>
-                                        <p class="muted"><?php echo htmlspecialchars(substr($profileUser['member_since'] ?? '', 0, 10)); ?></p>
-                                    </div>
-                                    <div>
-                                        <p class="eyebrow-label"><i class="bi bi-collection"></i> Collections</p>
-                                        <p class="muted">
-                                            <?php
-                                            $collectionsCount = count($ownedCollections);
-                                            echo $collectionsCount > 0 ? $collectionsCount : 'No collections yet';
-                                            ?>
-                                        </p>
-
-                                    </div>
-                                    <div>
-                                        <p class="eyebrow-label"><i class="bi bi-heart"></i> Followers</p>
-                                        <p class="muted"><?php echo $followersCount; ?></p>
-                                    </div>
+                    <!-- Info Section (Meta Grid + Actions) -->
+                    <section class="profile-info">
+                        <div class="profile-card profile-card--info">
+                            <div class="profile-meta-grid">
+                                <div>
+                                    <p class="eyebrow-label"><i class="bi bi-envelope"></i> Email</p>
+                                    <p class="muted"><?php echo htmlspecialchars($profileUser['email'] ?? ''); ?></p>
                                 </div>
-
-                                <div class="profile-actions">
-                                    <?php if ($isOwnerProfile): ?>
-                                        <a class="explore-btn ghost" href="users_form.php">Edit Profile</a>
-                                        <a class="explore-btn success" href="collections_form.php">Add Collection</a>
-                                    <?php elseif ($isAuthenticated): ?>
-                                        <form action="follow_action.php" method="POST" style="display:inline;">
-                                            <input type="hidden" name="target_id" value="<?php echo htmlspecialchars($profileUserId); ?>">
-                                            <button type="submit" class="explore-btn <?php echo $isFollowingProfile ? 'success' : 'ghost'; ?>">
-                                                <?php echo $isFollowingProfile ? 'Following' : 'Follow'; ?>
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
+                                <div>
+                                    <p class="eyebrow-label"><i class="bi bi-calendar3"></i> Date of Birth</p>
+                                    <p class="muted"><?php echo htmlspecialchars($profileUser['date_of_birth'] ?? '-'); ?></p>
                                 </div>
+                                <div>
+                                    <p class="eyebrow-label"><i class="bi bi-clock-history"></i> Member Since</p>
+                                    <p class="muted"><?php echo htmlspecialchars(substr($profileUser['member_since'] ?? '', 0, 10)); ?></p>
+                                </div>
+                                <div>
+                                    <p class="eyebrow-label"><i class="bi bi-collection"></i> Collections</p>
+                                    <p class="muted">
+                                        <?php
+                                        $collectionsCount = count($ownedCollections);
+                                        echo $collectionsCount > 0 ? $collectionsCount : 'No collections yet';
+                                        ?>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="eyebrow-label"><i class="bi bi-heart"></i> Followers</p>
+                                    <p class="muted"><?php echo $followersCount; ?></p>
+                                </div>
+                            </div>
+
+                            <div class="profile-actions">
+                                <?php if ($isOwnerProfile): ?>
+                                    <a class="explore-btn ghost" href="users_form.php">Edit Profile</a>
+                                    <a class="explore-btn success" href="collections_form.php">Add Collection</a>
+                                <?php elseif ($isAuthenticated): ?>
+                                    <form action="follow_action.php" method="POST" style="display:inline;">
+                                        <input type="hidden" name="target_id" value="<?php echo htmlspecialchars($profileUserId); ?>">
+                                        <button type="submit" class="explore-btn <?php echo $isFollowingProfile ? 'success' : 'ghost'; ?>">
+                                            <?php echo $isFollowingProfile ? 'Following' : 'Follow'; ?>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </section>

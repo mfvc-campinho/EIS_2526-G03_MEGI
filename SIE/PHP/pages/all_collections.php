@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../includes/data_loader.php';
+require_once __DIR__ . '/../includes/flash.php';
 $data = load_app_data($mysqli);
 $mysqli->close();
 $collections = $data['collections'] ?? [];
@@ -89,6 +90,7 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
             <?php include __DIR__ . '/../includes/nav.php'; ?>
 
             <main class="page-shell">
+                <?php flash_render(); ?>
                 <nav class="breadcrumb-nav" aria-label="Breadcrumb">
                     <ol class="breadcrumb-list">
                         <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
@@ -155,10 +157,14 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                                     <h3><a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name']); ?></a></h3>
                                     <p class="muted"><?php echo htmlspecialchars($col['summary']); ?></p>
                                     <div class="product-card__meta">
-                                        <span><i class="bi bi-people"></i> <?php echo htmlspecialchars($col['ownerId']); ?></span>
-                                        <span><i class="bi bi-calendar3"></i>
+                                        <div class="product-card__owner">
+                                            <i class="bi bi-people"></i>
+                                            <?php echo htmlspecialchars($col['ownerId']); ?>
+                                        </div>
+                                        <div class="product-card__date">
+                                            <i class="bi bi-calendar3"></i>
                                             <?php echo htmlspecialchars(substr($col['createdAt'], 0, 7)); ?>
-                                        </span>
+                                        </div>
                                     </div>
                                     <div class="card-actions">
                                         <!-- Show Preview -->

@@ -570,10 +570,19 @@
 .product-card__meta {
   margin-top: auto;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  gap: 6px;
   font-size: 0.9rem;
   color: #64748b;
+  text-align: center;
+}
+
+.product-card__meta span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-card__meta span:first-child {

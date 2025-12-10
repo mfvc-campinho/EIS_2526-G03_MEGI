@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../includes/data_loader.php';
+require_once __DIR__ . '/../includes/flash.php';
 $data = load_app_data($mysqli);
 $users = $data['users'] ?? [];
 $collections = $data['collections'] ?? [];
@@ -98,6 +99,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             <?php include __DIR__ . '/../includes/nav.php'; ?>
 
             <main class="page-main">
+                <?php flash_render(); ?>
                 <section class="collections-hero">
                     <h1>Top Collections</h1>
                     <div class="collections-hero-underline"></div>
@@ -200,18 +202,18 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                             </a>
                                         </h3>
                                         <div class="product-card__meta">
-                                            <span>
+                                            <div class="product-card__owner">
                                                 <i class="bi bi-people"></i>
                                                 <a href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>" style="color: inherit; text-decoration: none;">
                                                     <?php echo htmlspecialchars($col['ownerId']); ?>
                                                 </a>
-                                            </span>
+                                            </div>
 
                                             <?php if (!empty($col['createdAt'])): ?>
-                                                <span>
+                                                <div class="product-card__date">
                                                     <i class="bi bi-calendar3"></i>
                                                     <?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?>
-                                                </span>
+                                                </div>
                                             <?php endif; ?>
                                         </div>
 

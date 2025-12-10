@@ -172,7 +172,10 @@
   text-decoration: none;
   font-weight: 500;
 }
-.text-link:hover { text-decoration: underline; }
+
+.text-link:hover {
+  text-decoration: underline;
+}
 
 .required-badge {
   display: inline-flex;
@@ -202,21 +205,6 @@
 .page__header h1 {
   margin: 0;
 }
-
-/* ===========================
-   Flash messages
-   =========================== */
-
-.flash {
-  margin: 0 auto 16px;
-  max-width: 780px;
-  border-radius: 12px;
-  padding: 12px 14px;
-  font-size: 0.9rem;
-}
-
-.flash-success { background: #d1e7dd; color: #0f5132; }
-.flash-error   { background: #f8d7da; color: #842029; }
 
 /* ===========================
    Estados de erro de campo

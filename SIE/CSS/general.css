@@ -94,6 +94,142 @@ h1.page-title::after {
   max-width: 620px;
 }
 
+/* Flash modal overlays (success/error popups) */
+.flash-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: flashModalFadeIn 0.25s ease forwards;
+}
+
+.flash-modal.is-closing {
+  animation: flashModalFadeOut 0.2s ease forwards;
+}
+
+.flash-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+}
+
+.flash-modal__card {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 26px 80px rgba(15, 23, 42, 0.4);
+  width: min(420px, calc(100% - 48px));
+  padding: 26px 28px 24px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  transform: translateY(24px);
+  animation: flashModalSlideIn 0.3s ease forwards;
+  outline: none;
+}
+
+.flash-modal.is-closing .flash-modal__card {
+  animation: flashModalSlideOut 0.22s ease forwards;
+}
+
+.flash-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.flash-modal__close:hover,
+.flash-modal__close:focus {
+  color: #1d4ed8;
+  transform: scale(1.05);
+}
+
+.flash-modal__icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.9rem;
+  color: #ffffff;
+}
+
+.flash-modal--success .flash-modal__icon {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.flash-modal--error .flash-modal__icon {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.flash-modal__content h3 {
+  margin: 0 0 6px;
+  font-size: 1.35rem;
+  color: #111827;
+  font-weight: 700;
+}
+
+.flash-modal__content p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.55;
+  font-size: 0.98rem;
+}
+
+@keyframes flashModalFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes flashModalFadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes flashModalSlideIn {
+  from {
+    transform: translateY(32px) scale(0.96);
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes flashModalSlideOut {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(20px) scale(0.96);
+    opacity: 0;
+  }
+}
+
 /* Subtitle under the main page title. Matches site typography and spacing. */
 .page-subtitle {
   margin: 12px auto 0;

@@ -150,46 +150,57 @@ body {
   transition: background-position 0.35s ease, transform 0.15s ease;
 }
 
-.product-card h3 a:hover {
-  background-position: 100% 0;
-  transform: translateY(-1px);
-}
-
-
-
-/* resumo — limitada a 3 linhas para não “explodir” o card */
-
-.product-card .muted {
-  font-size: 0.95rem;
-  color: #6b7280;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* info de owner / data – fica colada ao fundo do corpo */
-
 .product-card__meta {
-  margin-top: auto;
-  /* 🔑 isto empurra o meta + botões para o fundo */
+  display: -ms-flexbox;
   display: flex;
-  justify-content: space-between;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -ms-flex-align: center;
   align-items: center;
-  font-size: 0.9rem;
-  color: #64748b;
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+  gap: 8px;
+  text-align: center;
 }
 
-/* primeiro span – normalmente o autor (ex: Rui Frio) */
-.product-card__meta span:first-child {
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: rgba(191, 219, 254, 0.65);
+.product-card__owner,
+.product-card__date {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  text-align: center;
+}
+
+.product-card__owner {
   color: #1d4ed8;
   font-weight: 600;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+}
+
+.product-card__date {
+  font-size: 0.85rem;
+}
+
+.product-card__meta i {
+  font-size: 0.95rem;
+  color: #60a5fa;
+}
+
+color: #1d4ed8;
+font-weight: 600;
+font-size: 0.8rem;
+text-transform: uppercase;
+letter-spacing: 0.08em;
 }
 
 /* segundo span – data / nº de itens */

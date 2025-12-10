@@ -104,7 +104,6 @@ $team = [
     </section>
 
     <section class="team-hero">
-      
       <p class="muted">The crew behind GoodCollections.</p>
     </section>
 

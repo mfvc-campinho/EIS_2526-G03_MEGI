@@ -109,11 +109,11 @@ $currentType = $event['type'] ?? null;
                     <?php endforeach; ?>
                 </select>
 
-                <label>Location</label>
-                <input type="text" name="localization" value="<?php echo htmlspecialchars($event['localization']); ?>">
+                <label>Location <span class="required-badge">R</span></label>
+                <input type="text" name="localization" required value="<?php echo htmlspecialchars($event['localization']); ?>">
 
-                <label>Date</label>
-                <input type="datetime-local" name="date" value="<?php echo htmlspecialchars(substr($event['date'], 0, 16)); ?>">
+                <label>Date <span class="required-badge">R</span></label>
+                <input type="datetime-local" name="date" required value="<?php echo htmlspecialchars(substr($event['date'], 0, 16)); ?>">
 
                 <label>Collections (can associate to multiple of yours) <span class="required-badge">R</span></label>
                 <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">

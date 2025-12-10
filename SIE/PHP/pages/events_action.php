@@ -67,12 +67,16 @@ if ($action === 'create') {
   }
 
   $id = uniqid('evt-');
-  $name = $_POST['name'] ?? '';
-  $summary = $_POST['summary'] ?? '';
-  $description = $_POST['description'] ?? '';
-  $type = $_POST['type'] ?? '';
-  $localization = $_POST['localization'] ?? '';
-  $date = $_POST['date'] ?? null;
+  $name = trim($_POST['name'] ?? '');
+  $summary = trim($_POST['summary'] ?? '');
+  $description = trim($_POST['description'] ?? '');
+  $type = trim($_POST['type'] ?? '');
+  $localization = trim($_POST['localization'] ?? '');
+  $date = trim($_POST['date'] ?? '');
+  if ($localization === '' || $date === '') {
+    $mysqli->close();
+    redirect_error('Indique a localização e a data do evento.');
+  }
   $primaryCol = $collectionIds[0];
 
   $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,created_at,host_user_id,collection_id) VALUES (?,?,?,?,?,?,?,NOW(),?,?)');
@@ -99,12 +103,16 @@ if ($action === 'update') {
     }
   }
 
-  $name = $_POST['name'] ?? '';
-  $summary = $_POST['summary'] ?? '';
-  $description = $_POST['description'] ?? '';
-  $type = $_POST['type'] ?? '';
-  $localization = $_POST['localization'] ?? '';
-  $date = $_POST['date'] ?? null;
+  $name = trim($_POST['name'] ?? '');
+  $summary = trim($_POST['summary'] ?? '');
+  $description = trim($_POST['description'] ?? '');
+  $type = trim($_POST['type'] ?? '');
+  $localization = trim($_POST['localization'] ?? '');
+  $date = trim($_POST['date'] ?? '');
+  if ($localization === '' || $date === '') {
+    $mysqli->close();
+    redirect_error('Indique a localização e a data do evento.');
+  }
   $primaryCol = $collectionIds[0];
 
   $stmt = $mysqli->prepare('UPDATE events SET name=?, localization=?, event_date=?, type=?, summary=?, description=?, collection_id=? WHERE event_id=?');

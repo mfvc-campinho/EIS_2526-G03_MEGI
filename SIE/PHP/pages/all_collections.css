@@ -37,7 +37,7 @@ body {
 .top-controls label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  font-weight: 500;
   font-size: 0.95rem;
 }
 
@@ -79,20 +79,10 @@ body {
   cursor: default;
 }
 
-/* ===============================
-   Grid de coleções
-   =============================== */
-
-.collection-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-}
 
 /* ===============================
-   Card de coleção
+   Collection cards
    =============================== */
-
 .product-card {
   background: #ffffff;
   border-radius: 18px;
@@ -103,6 +93,13 @@ body {
   transition: transform 0.15s ease, box-shadow 0.2s ease;
   min-height: 460px;
   /* garante altura consistente */
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  align-items: stretch;
 }
 
 .product-card:hover {
@@ -161,10 +158,9 @@ body {
   align-items: center;
   margin-top: auto;
   padding-top: 10px;
+  gap: 8px;
   font-size: 0.95rem;
   color: var(--text-muted);
-  border-top: 1px solid rgba(148, 163, 184, 0.25);
-  gap: 8px;
   text-align: center;
 }
 
@@ -189,28 +185,12 @@ body {
 
 .product-card__date {
   font-size: 0.85rem;
-}
-
-.product-card__meta i {
-  font-size: 0.95rem;
-  color: #60a5fa;
-}
-
-color: #1d4ed8;
-font-weight: 600;
-font-size: 0.8rem;
-text-transform: uppercase;
-letter-spacing: 0.08em;
-}
-
-/* segundo span – data / nº de itens */
-.product-card__meta span:last-child {
-  font-size: 0.82rem;
   color: #94a3b8;
 }
 
 .product-card__meta i {
   margin-right: 4px;
+  font-size: 0.95rem;
   color: #60a5fa;
 }
 

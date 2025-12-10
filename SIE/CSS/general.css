@@ -188,6 +188,12 @@ h1.page-title::after {
   font-size: 0.98rem;
 }
 
+.flash-modal__content a {
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 @keyframes flashModalFadeIn {
   from {
     opacity: 0;

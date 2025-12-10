@@ -86,7 +86,7 @@ if ($action === 'create') {
 
   replace_event_links($mysqli, $id, $collectionIds);
   $mysqli->close();
-  if ($ok) redirect_success('Evento criado.');
+  if ($ok) redirect_success('Event created.');
   redirect_error('Failed to create event.');
 }
 
@@ -122,13 +122,13 @@ if ($action === 'update') {
 
   replace_event_links($mysqli, $id, $collectionIds);
   $mysqli->close();
-  if ($ok) redirect_success('Evento atualizado.');
-  redirect_error('Falha ao atualizar evento.');
+  if ($ok) redirect_success('Event updated.');
+  redirect_error('Failed to update event.');
 }
 
 if ($action === 'delete') {
   $id = $_POST['id'] ?? null;
-  if (!$id) redirect_error('ID em falta.');
+  if (!$id) redirect_error('ID missing.');
 
   // ownership check via event host
   $chk = $mysqli->prepare('SELECT host_user_id FROM events WHERE event_id = ? LIMIT 1');
@@ -148,7 +148,7 @@ if ($action === 'delete') {
   $stmt->close();
   replace_event_links($mysqli, $id, []);
   $mysqli->close();
-  if ($ok) redirect_success('Evento apagado.');
+  if ($ok) redirect_success('Event deleted.');
   redirect_error('Failed to delete event.');
 }
 
@@ -169,7 +169,7 @@ if ($action === 'rsvp') {
   $row = $fetchEvent($mysqli, $id);
   if (!$row) {
     $mysqli->close();
-    redirect_error('Evento não encontrado.');
+    redirect_error('Event not found.');
   }
   $stmt = $mysqli->prepare('REPLACE INTO event_rsvps (event_id,user_id) VALUES (?,?)');
   $stmt->bind_param('ss', $id, $currentUser);
@@ -187,7 +187,7 @@ if ($action === 'rate') {
   $row = $fetchEvent($mysqli, $id);
   if (!$row) {
     $mysqli->close();
-    redirect_error('Evento não encontrado.');
+    redirect_error('Event not found.');
   }
   $collectionId = $row['collection_id'] ?? null;
   $stmt = $mysqli->prepare('REPLACE INTO event_ratings (event_id,user_id,rating,collection_id) VALUES (?,?,?,?)');

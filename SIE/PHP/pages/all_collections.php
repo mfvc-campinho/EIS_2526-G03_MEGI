@@ -168,33 +168,36 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                                     </div>
                                     <div class="card-actions">
                                         <!-- Show Preview -->
-                                        <label class="explore-btn preview-show"
-                                               for="<?php echo $previewId; ?>">
+                                        <label class="explore-btn preview-show" for="<?php echo $previewId; ?>">
                                             Show Preview
                                         </label>
 
                                         <!-- Hide Preview (mesmo estilo que Show/Explore) -->
-                                        <label class="explore-btn preview-hide"
-                                               for="<?php echo $previewId; ?>">
+                                        <label class="explore-btn preview-hide" for="<?php echo $previewId; ?>">
                                             Hide Preview
                                         </label>
 
                                         <!-- Explore More -->
-                                        <a class="explore-btn"
-                                           href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
+                                        <a class="explore-btn" href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
                                             Explore More
                                         </a>
 
                                         <!-- Like -->
-                                        <form action="likes_action.php" method="POST" style="display:inline;">
-                                            <input type="hidden" name="type" value="collection">
-                                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
-                                            <button type="submit"
-                                                    class="explore-btn ghost<?php echo isset($likedCollections[$col['id']]) ? ' success' : ''; ?>">
-                                                <i class="bi <?php echo isset($likedCollections[$col['id']]) ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
+                                        <?php if ($isAuth): ?>
+                                            <form action="likes_action.php" method="POST" style="display:inline;">
+                                                <input type="hidden" name="type" value="collection">
+                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
+                                                <button type="submit" class="explore-btn ghost<?php echo isset($likedCollections[$col['id']]) ? ' success' : ''; ?>">
+                                                    <i class="bi <?php echo isset($likedCollections[$col['id']]) ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
+                                                    <?php echo $collectionLikeCount[$col['id']] ?? 0; ?>
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <button class="explore-btn ghost" type="button" data-action="login-popup" data-login-url="auth.php">
+                                                <i class="bi bi-heart"></i>
                                                 <?php echo $collectionLikeCount[$col['id']] ?? 0; ?>
                                             </button>
-                                        </form>
+                                        <?php endif; ?>
                                     </div>
 
                                     <?php if ($isOwner): ?>
@@ -236,6 +239,118 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
 
             <?php include __DIR__ . '/../includes/footer.php'; ?>
         </div>
+        <?php if (!$isAuth): ?>
+            <script>
+                (function () {
+                    var triggers = document.querySelectorAll('[data-action="login-popup"]');
+                    if (!triggers.length) return;
+
+                    function escapeHtml(str) {
+                        return String(str)
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+                    }
+
+                    function createFlash(detail) {
+                        detail = detail || {};
+                        var type = detail.type || 'info';
+                        var title = detail.title || (type === 'success' ? 'Success' : type === 'error' ? 'Oops!' : 'Heads up');
+                        var message = detail.message || '';
+                        var htmlMessage = detail.htmlMessage || null;
+
+                        document.querySelectorAll('.flash-modal[data-dynamic="true"]').forEach(function (node) {
+                            if (node && node.parentNode) {
+                                node.parentNode.removeChild(node);
+                            }
+                        });
+
+                        var modal = document.createElement('div');
+                        modal.className = 'flash-modal flash-modal--' + type;
+                        modal.setAttribute('role', 'alertdialog');
+                        modal.setAttribute('aria-live', 'assertive');
+                        modal.setAttribute('aria-modal', 'true');
+                        modal.setAttribute('aria-label', title);
+                        modal.dataset.flashType = type;
+                        modal.setAttribute('data-dynamic', 'true');
+                        modal.innerHTML = '' +
+                            '<div class="flash-modal__backdrop"></div>' +
+                            '<div class="flash-modal__card" tabindex="-1">' +
+                            '  <button class="flash-modal__close" type="button" aria-label="Close notification">&times;</button>' +
+                            '  <div class="flash-modal__icon" aria-hidden="true">' + (type === 'success' ? '&#10003;' : '&#9888;') + '</div>' +
+                            '  <div class="flash-modal__content">' +
+                            '    <h3>' + escapeHtml(title) + '</h3>' +
+                            '    <p></p>' +
+                            '  </div>' +
+                            '</div>';
+
+                        document.body.appendChild(modal);
+
+                        var messageNode = modal.querySelector('.flash-modal__content p');
+                        if (htmlMessage) {
+                            messageNode.innerHTML = htmlMessage;
+                        } else {
+                            messageNode.textContent = message;
+                        }
+
+                        var card = modal.querySelector('.flash-modal__card');
+                        var closeBtn = modal.querySelector('.flash-modal__close');
+                        var delay = type === 'error' ? 8000 : 5000;
+                        var timer;
+
+                        function remove() {
+                            if (timer) {
+                                clearTimeout(timer);
+                            }
+                            modal.classList.add('is-closing');
+                            setTimeout(function () {
+                                if (modal && modal.parentNode) {
+                                    modal.parentNode.removeChild(modal);
+                                }
+                                document.removeEventListener('keydown', onKey);
+                            }, 220);
+                        }
+
+                        function onKey(ev) {
+                            if (ev.key === 'Escape') {
+                                remove();
+                            }
+                        }
+
+                        modal.addEventListener('click', function (ev) {
+                            if (ev.target === modal || ev.target.classList.contains('flash-modal__backdrop')) {
+                                remove();
+                            }
+                        });
+
+                        if (closeBtn) {
+                            closeBtn.addEventListener('click', remove);
+                        }
+
+                        document.addEventListener('keydown', onKey);
+                        timer = setTimeout(remove, delay);
+
+                        if (card && typeof card.focus === 'function') {
+                            requestAnimationFrame(function () {
+                                card.focus();
+                            });
+                        }
+                    }
+
+                    window.appShowFlash = createFlash;
+
+                    triggers.forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            createFlash({
+                                type: 'error',
+                                title: 'Oops!',
+                                message: 'Log in to like this collection.',
+                            });
+                        });
+                    });
+                })();
+            </script>
+        <?php endif; ?>
     </body>
 
 </html>

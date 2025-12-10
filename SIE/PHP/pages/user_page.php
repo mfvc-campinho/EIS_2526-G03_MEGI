@@ -100,13 +100,13 @@ foreach (array_keys($userEventIds) as $eid) {
         $rsvp = $userRsvpMap[$eid] ?? null;
         
         if ($eventDate >= $today) {
-            // Upcoming: only include if RSVP is 'yes'
-            if ($rsvp === 'yes') {
+            // Upcoming: only include if RSVP exists
+            if ($rsvp) {
                 $upcomingEvents[] = $evt;
             }
         } else {
-            // Past: only include if RSVP is 'yes'
-            if ($rsvp === 'yes') {
+            // Past: only include if RSVP exists
+            if ($rsvp) {
                 $pastEvents[] = $evt;
             }
         }
@@ -203,19 +203,19 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
                                 <div class="profile-meta-grid">
                                     <div>
-                                        <p class="eyebrow-label">Email</p>
+                                        <p class="eyebrow-label"><i class="bi bi-envelope"></i> Email</p>
                                         <p class="muted"><?php echo htmlspecialchars($profileUser['email'] ?? ''); ?></p>
                                     </div>
                                     <div>
-                                        <p class="eyebrow-label">Date of Birth</p>
+                                        <p class="eyebrow-label"><i class="bi bi-calendar3"></i> Date of Birth</p>
                                         <p class="muted"><?php echo htmlspecialchars($profileUser['date_of_birth'] ?? '-'); ?></p>
                                     </div>
                                     <div>
-                                        <p class="eyebrow-label">Member Since</p>
+                                        <p class="eyebrow-label"><i class="bi bi-clock-history"></i> Member Since</p>
                                         <p class="muted"><?php echo htmlspecialchars(substr($profileUser['member_since'] ?? '', 0, 10)); ?></p>
                                     </div>
                                     <div>
-                                        <p class="eyebrow-label">Collections</p>
+                                        <p class="eyebrow-label"><i class="bi bi-collection"></i> Collections</p>
                                         <p class="muted">
                                             <?php
                                             $collectionsCount = count($ownedCollections);
@@ -225,7 +225,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
                                     </div>
                                     <div>
-                                        <p class="eyebrow-label">Followers</p>
+                                        <p class="eyebrow-label"><i class="bi bi-heart"></i> Followers</p>
                                         <p class="muted"><?php echo $followersCount; ?></p>
                                     </div>
                                 </div>

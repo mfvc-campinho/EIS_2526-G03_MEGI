@@ -171,13 +171,43 @@ if ($action === 'rsvp') {
     $mysqli->close();
     redirect_error('Event not found.');
   }
-  $stmt = $mysqli->prepare('REPLACE INTO event_rsvps (event_id,user_id) VALUES (?,?)');
-  $stmt->bind_param('ss', $id, $currentUser);
-  $ok = $stmt->execute();
-  $stmt->close();
-  $mysqli->close();
-  if ($ok) redirect_success('RSVP registado.');
-  redirect_error('Falha ao registar RSVP.');
+  
+  // Check if user already has RSVP
+  $chk = $mysqli->prepare('SELECT user_id FROM event_rsvps WHERE event_id = ? AND user_id = ? LIMIT 1');
+  $chk->bind_param('ss', $id, $currentUser);
+  $chk->execute();
+  $hasRsvp = $chk->get_result()->fetch_assoc();
+  $chk->close();
+  
+  if ($hasRsvp) {
+    // Remove RSVP
+    $stmt = $mysqli->prepare('DELETE FROM event_rsvps WHERE event_id = ? AND user_id = ?');
+    $stmt->bind_param('ss', $id, $currentUser);
+    $ok = $stmt->execute();
+    $stmt->close();
+    $mysqli->close();
+    if ($ok) {
+      flash_set('success', 'RSVP removido.');
+      $_SESSION['rsvp_removed'] = true;
+      header('Location: event_page.php');
+      exit;
+    }
+    redirect_error('Falha ao remover RSVP.');
+  } else {
+    // Add RSVP
+    $stmt = $mysqli->prepare('INSERT INTO event_rsvps (event_id,user_id) VALUES (?,?)');
+    $stmt->bind_param('ss', $id, $currentUser);
+    $ok = $stmt->execute();
+    $stmt->close();
+    $mysqli->close();
+    if ($ok) {
+      flash_set('success', 'RSVP registado.');
+      $_SESSION['rsvp_removed'] = false;
+      header('Location: event_page.php');
+      exit;
+    }
+    redirect_error('Falha ao registar RSVP.');
+  }
 }
 
 if ($action === 'rate') {

@@ -24,7 +24,16 @@ function flash_render()
   echo '  <div class="flash-modal__backdrop"></div>';
   echo '  <div class="flash-modal__card" tabindex="-1">';
   echo '    <button class="flash-modal__close" type="button" aria-label="Close notification">&times;</button>';
-  $iconGlyph = $type === 'success' ? '&#10003;' : '&#9888;';
+  
+  // Choose icon based on type and rsvp_removed flag
+  $iconGlyph = '&#10003;'; // default checkmark for success
+  if ($type === 'success' && isset($_SESSION['rsvp_removed']) && $_SESSION['rsvp_removed']) {
+    $iconGlyph = '&#10006;'; // X icon for removal
+    unset($_SESSION['rsvp_removed']);
+  } elseif ($type === 'error') {
+    $iconGlyph = '&#9888;';
+  }
+  
   echo '    <div class="flash-modal__icon" aria-hidden="true">' . $iconGlyph . '</div>';
   echo '    <div class="flash-modal__content">';
   echo '      <h3>' . htmlspecialchars($title) . '</h3>';

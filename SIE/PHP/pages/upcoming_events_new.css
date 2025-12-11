@@ -1,0 +1,149 @@
+/* ===============================
+   🌟 Home – Upcoming Events
+   =============================== */
+
+.upcoming-events {
+  max-width: 1200px;
+  margin: 48px auto;
+  padding: 0 32px;
+}
+
+.upcoming-inner {
+  background: var(--card-bg, #ffffff);
+  border: 2px solid #0b3b70;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(11, 59, 112, 0.12);
+}
+
+.upcoming-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.75rem;
+  margin: 0 0 8px;
+  color: var(--text-color, #0f172a);
+  font-weight: 700;
+}
+
+.upcoming-title i {
+  font-size: 1.4rem;
+  color: #0b3b70;
+}
+
+.upcoming-sub {
+  margin: 0 0 28px;
+  color: var(--muted-color, #6b7280);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.event-card {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid #0b3b70;
+  border-radius: 14px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(11, 59, 112, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(11, 59, 112, 0.15);
+  border-color: #0d3f7a;
+}
+
+.event-card .pill {
+  align-self: flex-start;
+  margin: 0 0 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #e6f2ff;
+  color: #0b3b70;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.event-card h3 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  color: var(--text-main, #0f172a);
+  font-weight: 700;
+}
+
+.event-card .muted {
+  font-size: 0.9rem;
+  color: var(--muted-color, #6b7280);
+  line-height: 1.5;
+}
+
+.event-meta {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--muted-color, #6b7280);
+}
+
+.event-meta li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.event-meta i {
+  font-size: 1rem;
+  color: #0b3b70;
+  width: 16px;
+}
+
+.event-card .explore-btn.small {
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.events-actions {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.events-actions .explore-btn {
+  min-width: 180px;
+}
+
+@media (max-width: 768px) {
+  .upcoming-events {
+    padding: 0 20px;
+    margin: 32px auto;
+  }
+
+  .upcoming-inner {
+    padding: 24px 20px;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .events-actions {
+    justify-content: center;
+  }
+}

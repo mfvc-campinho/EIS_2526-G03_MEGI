@@ -1,0 +1,254 @@
+/* ===============================
+   🎄 CHRISTMAS THEME
+   =============================== */
+
+html.christmas-theme {
+  /* Christmas color palette */
+  --christmas-red: #c41e3a;
+  --christmas-green: #165b33;
+  --christmas-gold: #d4af37;
+  --christmas-snow: #f0f8ff;
+  --christmas-dark-red: #8b0000;
+  --christmas-dark-green: #0f3d1f;
+}
+
+/* ===============================
+   🎨 NAVIGATION
+   =============================== */
+
+html.christmas-theme .navbar {
+  background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green)) !important;
+  border-bottom: 3px solid var(--christmas-gold);
+}
+
+html.christmas-theme .nav-link,
+html.christmas-theme .logo,
+html.christmas-theme .profile-btn {
+  color: var(--christmas-snow) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+html.christmas-theme .nav-link:hover {
+  color: var(--christmas-gold) !important;
+}
+
+/* ===============================
+   🎁 CARDS
+   =============================== */
+
+html.christmas-theme .product-card,
+html.christmas-theme .user-event-card,
+html.christmas-theme .event-card,
+html.christmas-theme .profile-card,
+html.christmas-theme .collection-card {
+  border: 2px solid var(--christmas-gold);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+html.christmas-theme .product-card:hover,
+html.christmas-theme .user-event-card:hover,
+html.christmas-theme .event-card:hover,
+html.christmas-theme .collection-card:hover {
+  border-color: var(--christmas-red);
+  box-shadow: 0 8px 24px rgba(196, 30, 58, 0.4);
+  transform: translateY(-3px);
+}
+
+/* ===============================
+   📝 TYPOGRAPHY
+   =============================== */
+
+html.christmas-theme h1,
+html.christmas-theme h2,
+html.christmas-theme .section-title {
+  background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+html.christmas-theme .page-title::after,
+html.christmas-theme .title-underline {
+  background: linear-gradient(90deg, var(--christmas-red), var(--christmas-gold), var(--christmas-green));
+}
+
+/* ===============================
+   🔘 BUTTONS
+   =============================== */
+
+html.christmas-theme .explore-btn {
+  background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+  border: 2px solid var(--christmas-gold);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+html.christmas-theme .explore-btn:hover {
+  background: linear-gradient(135deg, var(--christmas-green), var(--christmas-red));
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+}
+
+html.christmas-theme .explore-btn.ghost {
+  background: transparent;
+  color: var(--christmas-red);
+  border-color: var(--christmas-red);
+  text-shadow: none;
+}
+
+html.christmas-theme .explore-btn.ghost:hover {
+  background: var(--christmas-red);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+html.christmas-theme .explore-btn.success {
+  background: var(--christmas-green);
+  border-color: var(--christmas-gold);
+}
+
+html.christmas-theme .explore-btn.success:hover {
+  background: var(--christmas-dark-green);
+}
+
+/* ===============================
+   🎨 FOOTER
+   =============================== */
+
+html.christmas-theme footer {
+  background: linear-gradient(135deg, var(--christmas-green), var(--christmas-red));
+  color: var(--christmas-snow);
+  border-top: 3px solid var(--christmas-gold);
+}
+
+html.christmas-theme footer a {
+  color: var(--christmas-snow);
+}
+
+html.christmas-theme footer a:hover {
+  color: var(--christmas-gold);
+}
+
+/* ===============================
+   ❄️ SNOWFLAKES
+   =============================== */
+
+html.christmas-theme .snowflake {
+  position: fixed;
+  top: -10px;
+  z-index: 9999;
+  user-select: none;
+  cursor: default;
+  animation: snowfall linear infinite;
+  color: #fff;
+  font-size: 1.5em;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+
+/* ===============================
+   🎅 SANTA DECORATION
+   =============================== */
+
+html.christmas-theme::before {
+  content: "🎅";
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 3rem;
+  z-index: 1000;
+  animation: bounce 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* ===============================
+   🌟 SPECIAL EFFECTS
+   =============================== */
+
+html.christmas-theme body {
+  background: linear-gradient(180deg, #0f3d1f 0%, #1a1a1a 100%);
+}
+
+html.christmas-theme .pill,
+html.christmas-theme .pill--event {
+  background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+  color: white;
+  border-color: var(--christmas-gold);
+}
+
+/* ===============================
+   🎁 ACTION ICONS
+   =============================== */
+
+html.christmas-theme .action-icon {
+  border-color: var(--christmas-gold);
+  color: var(--christmas-red);
+}
+
+html.christmas-theme .action-icon:hover {
+  background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+  color: white;
+  border-color: var(--christmas-gold);
+}
+
+/* ===============================
+   🎄 SEARCH BAR
+   =============================== */
+
+html.christmas-theme .search-bar {
+  border: 2px solid var(--christmas-gold);
+  background: rgba(240, 248, 255, 0.9);
+}
+
+html.christmas-theme .search-bar:focus {
+  border-color: var(--christmas-red);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+}
+
+/* ===============================
+   🌟 THEME TOGGLE BUTTON
+   =============================== */
+
+html.christmas-theme .theme-toggle-btn {
+  background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+  border: 2px solid var(--christmas-gold);
+  color: white;
+}
+
+html.christmas-theme .theme-toggle-btn:hover {
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5);
+  transform: scale(1.1);
+}
+
+/* Christmas toggle button in profile */
+#christmas-toggle {
+  transition: all 0.3s ease;
+}
+
+#christmas-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.5);
+}

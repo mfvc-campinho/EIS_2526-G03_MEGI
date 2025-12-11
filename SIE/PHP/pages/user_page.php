@@ -148,7 +148,11 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
         <link rel="stylesheet"
               href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+        <!-- Christmas Theme CSS -->
+        <link rel="stylesheet" href="../../CSS/christmas.css">
+
         <script src="././JS/theme-toggle.js"></script>
+        <script src="../../JS/christmas-theme.js"></script>
     </head>
 
 
@@ -204,20 +208,20 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                             <div class="profile-meta-grid">
                                 <?php if ($isOwnerProfile): ?>
                                 <div>
-                                    <p class="eyebrow-label"><i class="bi bi-envelope"></i> Email</p>
-                                    <p class="muted"><?php echo htmlspecialchars($profileUser['email'] ?? ''); ?></p>
+                                    <p class="eyebrow-label"><i class="bi bi-envelope"></i> EMAIL</p>
+                                    <p class="muted" style="font-size: 0.92rem;"><?php echo htmlspecialchars($profileUser['email'] ?? ''); ?></p>
                                 </div>
                                 <div>
-                                    <p class="eyebrow-label"><i class="bi bi-calendar3"></i> Date of Birth</p>
+                                    <p class="eyebrow-label"><i class="bi bi-calendar3"></i> DATE OF BIRTH</p>
                                     <p class="muted"><?php echo htmlspecialchars($profileUser['date_of_birth'] ?? '-'); ?></p>
                                 </div>
                                 <?php endif; ?>
                                 <div>
-                                    <p class="eyebrow-label"><i class="bi bi-clock-history"></i> Member Since</p>
-                                    <p class="muted"><?php echo htmlspecialchars(substr($profileUser['member_since'] ?? '', 0, 10)); ?></p>
+                                    <p class="eyebrow-label"><i class="bi bi-clock-history"></i> MEMBER SINCE</p>
+                                    <p class="muted"><?php echo htmlspecialchars(substr($profileUser['member_since'] ?? '', 0, 4)); ?></p>
                                 </div>
                                 <div>
-                                    <p class="eyebrow-label"><i class="bi bi-collection"></i> Collections</p>
+                                    <p class="eyebrow-label"><i class="bi bi-collection"></i> COLLECTIONS</p>
                                     <p class="muted">
                                         <?php
                                         $collectionsCount = count($ownedCollections);
@@ -226,7 +230,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                     </p>
                                 </div>
                                 <div>
-                                    <p class="eyebrow-label"><i class="bi bi-heart"></i> Followers</p>
+                                    <p class="eyebrow-label"><i class="bi bi-heart"></i> FOLLOWERS</p>
                                     <p class="muted">
                                         <?php echo $followersCount; ?>
                                         <?php if ($followersCount > 0): ?>
@@ -242,6 +246,9 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 <?php if ($isOwnerProfile): ?>
                                     <a class="explore-btn ghost" href="users_form.php">Edit Profile</a>
                                     <a class="explore-btn success" href="collections_form.php">Add Collection</a>
+                                    <button id="christmas-toggle" class="explore-btn" style="background: linear-gradient(135deg, #c41e3a, #165b33); border-color: #d4af37; color: white;">
+                                        🎄 <span class="btn-text">Natal</span>
+                                    </button>
                                 <?php elseif ($isAuthenticated): ?>
                                     <form action="follow_action.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="target_id" value="<?php echo htmlspecialchars($profileUserId); ?>">

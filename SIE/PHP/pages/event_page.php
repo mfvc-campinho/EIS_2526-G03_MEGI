@@ -109,7 +109,9 @@ foreach ($eventsUsers as $eu) {
   <link rel="stylesheet" href="../../CSS/general.css">
   <link rel="stylesheet" href="../../CSS/events.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../../CSS/christmas.css">
   <script src="../../JS/theme-toggle.js"></script>
+  <script src="../../JS/christmas-theme.js"></script>
   <style>
     body { background: #f5f6f8; }
     /* Subtitle spacing */
@@ -410,6 +412,47 @@ foreach ($eventsUsers as $eu) {
   </div>
   </script>
   <script>
+    // Modal de detalhes do evento
+    (function() {
+      const modal = document.getElementById('event-modal');
+      if (!modal) return;
+
+      const buttons = document.querySelectorAll('.js-view-event');
+      
+      buttons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          const name = btn.getAttribute('data-name') || '';
+          const summary = btn.getAttribute('data-summary') || '';
+          const description = btn.getAttribute('data-description') || '';
+          const date = btn.getAttribute('data-date') || '';
+          const location = btn.getAttribute('data-location') || '';
+          const type = btn.getAttribute('data-type') || '';
+
+          document.getElementById('modal-title').textContent = name;
+          document.getElementById('modal-type').textContent = type;
+          document.getElementById('modal-summary').textContent = summary;
+          document.getElementById('modal-description').textContent = description;
+          document.getElementById('modal-date').textContent = date;
+          document.getElementById('modal-location').textContent = location;
+
+          modal.classList.add('open');
+        });
+      });
+
+      // Fechar ao clicar fora do modal
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.remove('open');
+        }
+      });
+
+      // Fechar com ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) {
+          modal.classList.remove('open');
+        }
+      });
+    })();
   </script>
 
   <script>

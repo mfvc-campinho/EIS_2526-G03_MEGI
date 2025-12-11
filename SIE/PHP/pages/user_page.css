@@ -240,7 +240,7 @@ main img {
 
 .profile-meta-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr;
   gap: 16px;
   margin-top: 0;
 }
@@ -255,6 +255,12 @@ main img {
   box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
   overflow: hidden;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* Email específico - permitir quebra de linha */
+.profile-meta-grid>div:first-child .muted {
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .profile-meta-grid>div::before {

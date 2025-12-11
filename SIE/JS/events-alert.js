@@ -1,4 +1,4 @@
-(function() {
+(function () {
   const endpoint = new URL('../events_alert.php', window.location.href).toString();
 
   function addDot(link) {
@@ -42,7 +42,7 @@
           addDot(link);
         }
       })
-      .catch(() => {/* silent */});
+      .catch(() => {/* silent */ });
   }
 
   if (document.readyState === 'loading') {

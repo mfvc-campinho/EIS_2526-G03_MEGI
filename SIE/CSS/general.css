@@ -2517,165 +2517,284 @@ h1.page-title {
 }
 
 /* ===============================
-   🌙 DARK MODE — Complete System
+   🌙 DARK MODE — Rebuilt Clean System
    =============================== */
 
 html.dark-mode {
-  --bg-color: #0d1117;
-  --text-color: #c9d1d9;
-  --muted-color: #8b949e;
-  --card-bg: #161b22;
-  --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --nav-bg: #010409;
-  --nav-text: #f0f6fc;
-  --footer-bg: #010409;
-  --footer-text: #c9d1d9;
-  --input-bg: #0d1117;
-  --input-text: #c9d1d9;
-  --btn-bg: #21262d;
-  --btn-text: #c9d1d9;
-  --modal-bg: #161b22;
-  --overlay-bg: rgba(1, 4, 9, 0.85);
-  --text-main: #c9d1d9;
-  --text-muted: #8b949e;
-  --border-color: #30363d;
-  --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.7);
-  --card-radius: 14px;
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --text-primary: #c9d1d9;
+  --text-secondary: #8b949e;
+  --text-link: #58a6ff;
+  --border-default: #30363d;
+  --border-hover: #484f58;
+  --success-color: #238636;
+  --danger-color: #f85149;
 }
 
+/* Base elements */
 html.dark-mode body {
-  background: #0d1117;
-  color: #c9d1d9;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
+/* Typography */
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4,
+html.dark-mode h5,
+html.dark-mode h6,
+html.dark-mode .section-title {
+  color: var(--text-primary);
+}
+
+html.dark-mode p,
+html.dark-mode .muted {
+  color: var(--text-secondary);
+}
+
+html.dark-mode a {
+  color: var(--text-link);
+}
+
+/* Cards */
 html.dark-mode .product-card,
 html.dark-mode .user-event-card,
 html.dark-mode .event-card,
 html.dark-mode .item-card,
-html.dark-mode .profile-card {
-  background: #161b22;
-  border-color: #30363d;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+html.dark-mode .profile-card,
+html.dark-mode .collection-card {
+  background: var(--bg-secondary);
+  border-color: var(--border-default);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  color: var(--text-primary);
 }
 
 html.dark-mode .product-card:hover,
 html.dark-mode .user-event-card:hover,
-html.dark-mode .event-card:hover {
-  border-color: #484f58;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-}
-
-html.dark-mode h1,
-html.dark-mode h2,
-html.dark-mode h3,
-html.dark-mode .section-title {
-  color: #f0f6fc;
+html.dark-mode .event-card:hover,
+html.dark-mode .collection-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
 }
 
 html.dark-mode .product-card h3 a,
-html.dark-mode .muted,
-html.dark-mode .product-card__body .muted {
-  color: #8b949e;
+html.dark-mode .collection-card h3 a {
+  color: var(--text-link);
 }
 
+html.dark-mode .product-card h3 a:hover,
+html.dark-mode .collection-card h3 a:hover {
+  color: #79c0ff;
+}
+
+/* Meta information */
+html.dark-mode .product-card__meta,
+html.dark-mode .product-card__owner,
+html.dark-mode .product-card__date {
+  color: var(--text-secondary);
+  border-color: var(--border-default);
+}
+
+/* Pills & Badges */
 html.dark-mode .pill,
 html.dark-mode .pill--event {
   background: rgba(88, 166, 255, 0.15);
-  border-color: rgba(88, 166, 255, 0.25);
-  color: #58a6ff;
+  border-color: rgba(88, 166, 255, 0.3);
+  color: var(--text-link);
 }
 
+/* Form inputs */
 html.dark-mode input,
 html.dark-mode textarea,
 html.dark-mode select {
-  background: #0d1117;
-  color: #c9d1d9;
-  border-color: #30363d;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+html.dark-mode input:focus,
+html.dark-mode textarea:focus,
+html.dark-mode select:focus {
+  border-color: var(--text-link);
+  outline: none;
 }
 
 html.dark-mode input::placeholder,
 html.dark-mode textarea::placeholder {
-  color: #6e7681;
+  color: var(--text-secondary);
+  opacity: 0.6;
 }
 
+/* Buttons */
 html.dark-mode .explore-btn {
-  background: #21262d;
-  color: #c9d1d9;
-  border-color: #30363d;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-default);
 }
 
 html.dark-mode .explore-btn:hover {
-  background: #30363d;
+  background: var(--border-default);
+  border-color: var(--border-hover);
 }
 
 html.dark-mode .explore-btn.ghost {
   background: transparent;
-  color: #58a6ff;
-  border-color: #30363d;
+  color: var(--text-link);
+  border-color: var(--border-default);
+}
+
+html.dark-mode .explore-btn.ghost:hover {
+  background: rgba(88, 166, 255, 0.1);
+  border-color: var(--text-link);
 }
 
 html.dark-mode .explore-btn.success {
-  background: #238636;
+  background: var(--success-color);
   color: #ffffff;
+  border-color: var(--success-color);
 }
 
+html.dark-mode .explore-btn.success:hover {
+  background: #2ea043;
+}
+
+html.dark-mode .explore-btn.danger {
+  background: var(--danger-color);
+  color: #ffffff;
+  border-color: var(--danger-color);
+}
+
+html.dark-mode .action-icon {
+  background: var(--bg-primary);
+  color: var(--text-link);
+  border-color: var(--border-default);
+}
+
+html.dark-mode .action-icon:hover {
+  background: var(--text-link);
+  color: var(--bg-primary);
+}
+
+/* Navigation */
 html.dark-mode .navbar {
   background: #010409;
-  border-bottom: 1px solid #30363d;
+  border-bottom: 1px solid var(--border-default);
 }
 
-html.dark-mode footer {
-  background: #010409;
-  border-top: 1px solid #30363d;
+html.dark-mode .nav-link {
+  color: var(--text-primary);
 }
 
-html.dark-mode .modal-content,
-html.dark-mode .modal-card {
-  background: #161b22;
-  border-color: #30363d;
+html.dark-mode .nav-link:hover {
+  color: var(--text-link);
 }
 
-html.dark-mode .product-card__meta,
-html.dark-mode .user-event-meta {
-  border-color: #30363d;
-  color: #8b949e;
-}
-
-html.dark-mode .breadcrumb-list a {
-  color: #58a6ff;
+html.dark-mode .search-bar {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-default);
 }
 
 html.dark-mode .theme-toggle-btn {
   background: rgba(255, 255, 255, 0.05);
-  border-color: #30363d;
+  border-color: var(--border-default);
+  color: var(--text-primary);
 }
 
 html.dark-mode .theme-toggle-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* Footer */
+html.dark-mode footer {
+  background: #010409;
+  border-top: 1px solid var(--border-default);
+  color: var(--text-primary);
+}
+
+/* Modals */
+html.dark-mode .modal-content,
+html.dark-mode .modal-card {
+  background: var(--bg-secondary);
+  border-color: var(--border-default);
+}
+
+html.dark-mode .modal-overlay {
+  background: rgba(1, 4, 9, 0.9);
+}
+
+/* Dropdown */
+html.dark-mode .dropdown-content {
+  background: var(--bg-secondary);
+  border-color: var(--border-default);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+}
+
+html.dark-mode .dropdown-content a:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Profile specific */
+html.dark-mode .profile-meta-grid>div {
+  background: var(--bg-primary);
+  border-color: var(--border-default);
+}
+
+html.dark-mode .profile-body h1 {
+  color: var(--text-link);
+}
+
+html.dark-mode .eyebrow-label {
+  color: var(--text-secondary);
+}
+
+/* Tables */
+html.dark-mode table {
+  background: var(--bg-secondary);
+  border-color: var(--border-default);
+}
+
+html.dark-mode th,
+html.dark-mode td {
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+/* Pagination */
+html.dark-mode .paginate button {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+html.dark-mode .paginate button:hover:not(:disabled) {
+  background: var(--border-default);
+}
+
+html.dark-mode .paginate button:disabled {
+  opacity: 0.3;
+}
+
 .list-pagination {
   display: flex;
   align-items: center;
   gap: 20px;
-  /* space between label and arrows */
   flex-wrap: nowrap;
-  /* keep everything on one line */
 }
 
 .page-size-label {
   display: flex;
   align-items: center;
   gap: 4px;
-  /* space between "Ver", select, and text */
   margin: 0;
   white-space: nowrap;
-  /* avoid line breaks inside the label */
 }
 
 .pagination-actions {
   display: flex;
   align-items: center;
   gap: 6px;
-  /* space between prev, text, next */
 }

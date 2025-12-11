@@ -98,9 +98,13 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
         <!-- Ícones -->
         <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        
+        <!-- Christmas Theme -->
+        <link rel="stylesheet" href="../../CSS/christmas.css">
 
         <script src="../../JS/theme-toggle.js"></script>
+        <script src="../../JS/christmas-theme.js"></script>
     </head>
 
     <body>
@@ -459,6 +463,11 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             <?php include __DIR__ . '/../includes/footer.php'; ?>
         </div>
 
+        <!-- Back to Top Button -->
+        <button id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
+            <i class="bi bi-arrow-up"></i>
+        </button>
+
         <script src="../../JS/search-toggle.js"></script>
         <script>
             (function () {
@@ -505,6 +514,31 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 if (filtersForm) {
                     filtersForm.addEventListener('submit', saveScroll);
                 }
+            })();
+
+            // Back to Top functionality
+            (function () {
+                var backToTopBtn = document.getElementById('backToTop');
+                if (!backToTopBtn) return;
+
+                function toggleBackToTop() {
+                    var scrollTop = window.scrollY || document.documentElement.scrollTop;
+                    if (scrollTop > 300) {
+                        backToTopBtn.classList.add('show');
+                    } else {
+                        backToTopBtn.classList.remove('show');
+                    }
+                }
+
+                backToTopBtn.addEventListener('click', function () {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                window.addEventListener('scroll', toggleBackToTop);
+                toggleBackToTop(); // Check initial state
             })();
         </script>
     </body>

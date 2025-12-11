@@ -311,9 +311,9 @@ if ($collection) {
 
                             <p class="collection-owner-line">
                                 Collection owner:
-                                <span class="owner-link">
+                                <a href="user_page.php?id=<?php echo urlencode($collectionOwnerId); ?>" class="owner-link">
             <?php echo htmlspecialchars($ownerName); ?>
-                                </span>
+                                </a>
                             </p>
                         </div>
                     </div>

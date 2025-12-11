@@ -161,9 +161,9 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                 <div class="collections-hero-underline"></div>
             </section>
 
-                <?php if (!$currentUser): ?>
+                <?php if (!$profileUser): ?>
                     <section class="profile-hero">
-                        <p class="muted">Please log in to see your profile.</p>
+                        <p class="muted">User not found.</p>
                     </section>
                 <?php else: ?>
                     <!-- Photo + Name Section -->
@@ -171,20 +171,20 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                         <div class="profile-card profile-card--hero">
                             <div class="profile-avatar">
                                 <?php
-                                $avatar = $currentUser['user_photo'] ?? '';
+                                $avatar = $profileUser['user_photo'] ?? '';
                                 if ($avatar && !preg_match('#^https?://#', $avatar)) {
                                     $avatar = '../../' . ltrim($avatar, './');
                                 }
                                 ?>
                                 <?php if (!empty($avatar)): ?>
-                                    <img src="<?php echo htmlspecialchars($avatar); ?>" alt="<?php echo htmlspecialchars($currentUser['user_name']); ?>">
+                                    <img src="<?php echo htmlspecialchars($avatar); ?>" alt="<?php echo htmlspecialchars($profileUser['user_name']); ?>">
                                 <?php else: ?>
-                                    <div class="avatar-placeholder"><?php echo strtoupper(substr($currentUser['user_name'] ?? 'U', 0, 1)); ?></div>
+                                    <div class="avatar-placeholder"><?php echo strtoupper(substr($profileUser['user_name'] ?? 'U', 0, 1)); ?></div>
                                 <?php endif; ?>
                             </div>
                             <div class="profile-body">
                                 <h1><?php echo htmlspecialchars($profileUser['user_name']); ?></h1>
-                                <p class="muted">This is your personal space to manage collections, items, and events.</p>
+                                <p class="muted"><?php echo $isOwnerProfile ? 'This is your personal space to manage collections, items, and events.' : 'View ' . htmlspecialchars($profileUser['user_name']) . '\'s public profile.'; ?></p>
                             </div>
                         </div>
                     </section>
@@ -193,6 +193,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                     <section class="profile-info">
                         <div class="profile-card profile-card--info">
                             <div class="profile-meta-grid">
+                                <?php if ($isOwnerProfile): ?>
                                 <div>
                                     <p class="eyebrow-label"><i class="bi bi-envelope"></i> Email</p>
                                     <p class="muted"><?php echo htmlspecialchars($profileUser['email'] ?? ''); ?></p>
@@ -201,6 +202,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                     <p class="eyebrow-label"><i class="bi bi-calendar3"></i> Date of Birth</p>
                                     <p class="muted"><?php echo htmlspecialchars($profileUser['date_of_birth'] ?? '-'); ?></p>
                                 </div>
+                                <?php endif; ?>
                                 <div>
                                     <p class="eyebrow-label"><i class="bi bi-clock-history"></i> Member Since</p>
                                     <p class="muted"><?php echo htmlspecialchars(substr($profileUser['member_since'] ?? '', 0, 10)); ?></p>

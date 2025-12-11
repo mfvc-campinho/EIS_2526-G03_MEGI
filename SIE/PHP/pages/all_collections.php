@@ -52,22 +52,28 @@ foreach ($userShowcases as $sc) {
 $sort = $_GET['sort'] ?? 'newest';
 $perPage = max(1, (int) ($_GET['perPage'] ?? 10));
 $page = max(1, (int) ($_GET['page'] ?? 1));
-$search = trim($_GET['search'] ?? '');
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Filter by search query
-if ($search !== '') {
-    $collections = array_filter($collections, function($col) use ($search) {
-        $name = $col['name'] ?? '';
-        $summary = $col['summary'] ?? '';
-        $type = $col['type'] ?? '';
-        $searchLower = mb_strtolower($search);
-        return mb_stripos(mb_strtolower($name), $searchLower) !== false
-            || mb_stripos(mb_strtolower($summary), $searchLower) !== false
-            || mb_stripos(mb_strtolower($type), $searchLower) !== false;
-    });
+// Apply search filter BEFORE sorting
+$filteredCollections = $collections;
+if ($searchQuery !== '') {
+    $filteredCollections = [];
+    foreach ($collections as $col) {
+        $name = strtolower($col['name'] ?? '');
+        $summary = strtolower($col['summary'] ?? '');
+        $type = strtolower($col['type'] ?? '');
+        $query = strtolower($searchQuery);
+        
+        if (strpos($name, $query) !== false || 
+            strpos($summary, $query) !== false || 
+            strpos($type, $query) !== false) {
+            $filteredCollections[] = $col;
+        }
+    }
 }
 
-usort($collections, function ($a, $b) use ($sort) {
+// Sort the filtered collections
+usort($filteredCollections, function ($a, $b) use ($sort) {
     $aDate = $a['createdAt'] ?? '';
     $bDate = $b['createdAt'] ?? '';
     if ($sort === 'oldest') {
@@ -80,11 +86,11 @@ usort($collections, function ($a, $b) use ($sort) {
     return strcmp($bDate, $aDate);
 });
 
-$total = count($collections);
+$total = count($filteredCollections);
 $pages = max(1, (int) ceil($total / $perPage));
 $page = min($page, $pages);
 $offset = ($page - 1) * $perPage;
-$collectionsPage = array_slice($collections, $offset, $perPage);
+$collectionsPage = array_slice($filteredCollections, $offset, $perPage);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -132,19 +138,6 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                 <div class="top-controls">
                     <div class="left">
                         <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <label for="search-input"><i class="bi bi-search"></i></label>
-                                <input type="text" 
-                                       id="search-input" 
-                                       name="search" 
-                                       placeholder="Search collections..." 
-                                       value="<?php echo htmlspecialchars($search ?? ''); ?>"
-                                       style="padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.95rem; min-width:200px;">
-                                <button type="submit" class="explore-btn ghost" style="padding:8px 16px;">Search</button>
-                                <?php if (!empty($search)): ?>
-                                    <a href="all_collections.php" class="explore-btn ghost" style="padding:8px 16px;">Clear</a>
-                                <?php endif; ?>
-                            </div>
                             <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
                             <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
                                 <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>

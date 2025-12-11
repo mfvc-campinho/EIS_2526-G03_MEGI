@@ -32,11 +32,6 @@ function nav_active($basename) {
                 <i class="bi bi-person-fill me-1"></i> Profile
             </a>
 
-            <!-- Dark mode toggle -->
-            <button id="theme-toggle" class="toggle-pill" aria-pressed="false" aria-label="Toggle theme">
-                <i class="bi bi-brightness-high-fill" aria-hidden="true"></i>
-            </button>
-
             <!-- Login dropdown -->
             <div class="dropdown profile-dropdown">
                 <button class="dropbtn profile-btn">
@@ -68,11 +63,16 @@ function nav_active($basename) {
                 </div>
             </div>
 
-            <!-- Search -->
-            <div class="search-wrapper">
+            <!-- Search Collections -->
+            <form action="all_collections.php" method="GET" class="search-wrapper">
                 <i class="bi bi-search search-icon"></i>
-                <input type="search" class="search-bar" placeholder="Search...">
-            </div>
+                <input type="search" name="search" class="search-bar" placeholder="Search collections..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+            </form>
+
+            <!-- Dark Mode Toggle -->
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+                <i class="bi bi-moon-fill"></i>
+            </button>
         </div>
     </nav>
 </header>

@@ -85,14 +85,15 @@ body {
    =============================== */
 .product-card {
   background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(11, 59, 112, 0.13), 0 7px 18px rgba(15, 23, 42, 0.08);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
-  min-height: 460px;
+  min-height: 410px;
   /* garante altura consistente */
+  border: 1px solid #0b3b70;
 }
 
 .collection-grid {
@@ -104,14 +105,15 @@ body {
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 34px rgba(11, 59, 112, 0.16), 0 11px 22px rgba(15, 23, 42, 0.11);
+  border-color: #0d3f7a;
 }
 
 /* imagem */
 
 .product-card__media img {
   width: 100%;
-  height: 210px;
+  height: 190px;
   object-fit: cover;
   display: block;
 }
@@ -119,11 +121,11 @@ body {
 /* corpo do card: flex column para empurrar meta + botões para baixo */
 
 .product-card__body {
-  padding: 16px 18px 14px;
+  padding: 12px 15px 12px;
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 8px;
+  gap: 9px;
 }
 
 .product-card__body>.muted {
@@ -163,63 +165,136 @@ body {
 .product-card__meta {
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  -ms-flex-pack: center;
-  justify-content: center;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
   -ms-flex-align: center;
   align-items: center;
   margin-top: auto;
   padding-top: 10px;
-  gap: 8px;
+  gap: 10px;
   font-size: 0.95rem;
-  color: var(--text-muted);
-  text-align: center;
-  min-height: 56px;
+  color: #0b3b70;
+  text-align: left;
+  min-height: 48px;
 }
 
 .product-card__owner,
 .product-card__date {
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-pack: center;
-  justify-content: center;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
   -ms-flex-align: center;
   align-items: center;
   gap: 6px;
-  width: 100%;
-  text-align: center;
-  min-height: 24px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .product-card__owner {
-  color: #1d4ed8;
+  color: #0b3b70;
   font-weight: 600;
   font-size: 0.85rem;
 }
 
 .product-card__date {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: #4b5f82;
 }
 
 .product-card__meta i {
   margin-right: 4px;
   font-size: 0.95rem;
-  color: #60a5fa;
+  color: #1b6bca;
 }
 
 
-/* botões dentro do card (preview, explore, like) */
+/* BOTÕES DE AÇÃO - REDESENHADOS */
 
+.action-icon {
+  /* Tamanho reduzido e mais curto */
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+
+  /* Cores - branco, contorno azul escuro */
+  background: #ffffff;
+  color: #1e3a8a;
+  border: 2.5px solid #1e3a8a;
+
+  /* Estilo elegante */
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.12);
+}
+
+.action-icon:hover {
+  background: #1e3a8a;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
+  transform: translateY(-3px);
+}
+
+.action-icon:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(30, 58, 138, 0.15);
+}
+
+/* Like ativo - também azul escuro */
+.action-icon.is-liked {
+  color: #1e3a8a;
+  border-color: #1e3a8a;
+  background: #eff6ff;
+}
+
+.action-icon.is-liked:hover {
+  background: #1e3a8a;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
+}
+
+/* Delete - também azul escuro */
+.action-icon.is-danger {
+  color: #1e3a8a;
+  border-color: #1e3a8a;
+}
+
+.action-icon.is-danger:hover {
+  background: #1e3a8a;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
+}
+
+/* Form wrapper - sem espaçamento */
+.action-icon-form {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+/* Container dos botões */
 .card-actions {
   display: flex;
-  gap: 10px;
+  gap: 14px;
   flex-wrap: nowrap;
-  margin-top: 10px;
+  margin-top: 14px;
+  margin-bottom: 4px;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-actions .card-like-form {
@@ -255,15 +330,11 @@ body {
   }
 }
 
-/* ações extra do owner (edit / delete) logo abaixo */
+/* ações extra do owner (agora integradas com os outros) */
 
-.owner-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-  justify-content: center;
-  min-height: 44px;
+.owner-actions,
+.card-actions-owner {
+  display: none;
 }
 
 .owner-actions--placeholder {

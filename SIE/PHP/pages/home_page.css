@@ -212,9 +212,11 @@
 .card.home-card {
   min-height: 0;
   height: auto;
-  border-radius: 24px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.06);
+  border-radius: 14px;
+  border: 1px solid #0b3b70;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(11, 59, 112, 0.13),
+    0 7px 18px rgba(15, 23, 42, 0.08);
   overflow: hidden;
   transition: transform 0.22s ease,
     box-shadow 0.22s ease,
@@ -222,13 +224,14 @@
 }
 
 .card.home-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 22px 48px rgba(37, 99, 235, 0.22);
-  border-color: #bfdbfe;
+  transform: translateY(-5px);
+  box-shadow: 0 16px 34px rgba(11, 59, 112, 0.16),
+    0 11px 22px rgba(15, 23, 42, 0.11);
+  border-color: #0d3f7a;
 }
 
 .home-card .card-image {
-  height: 180px;
+  height: 190px;
   overflow: hidden;
 }
 
@@ -237,6 +240,12 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.home-card .card-info,
+.home-card .card-body {
+  padding: 12px 15px 14px;
+  gap: 9px;
 }
 
 .home-card .preview-item {
@@ -585,34 +594,33 @@
   margin-top: auto;
   display: -ms-flexbox !important;
   display: flex !important;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  -ms-flex-pack: center !important;
-  justify-content: center !important;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -ms-flex-pack: justify !important;
+  justify-content: space-between !important;
   -ms-flex-align: center !important;
   align-items: center !important;
-  gap: 8px;
+  gap: 10px;
   font-size: 0.9rem;
-  color: #64748b;
-  text-align: center !important;
+  color: #0b3b70;
+  text-align: left !important;
 }
 
 .product-card__owner,
 .product-card__date {
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-pack: center;
-  justify-content: center;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
   -ms-flex-align: center;
   align-items: center;
   gap: 6px;
-  width: 100%;
-  text-align: center;
+  white-space: nowrap;
 }
 
 /* Owner “pill” */
 .product-card__owner {
-  color: #1d4ed8;
+  color: #0b3b70;
   font-weight: 600;
   font-size: 0.85rem;
 }
@@ -620,13 +628,13 @@
 /* Date line */
 .product-card__date {
   font-size: 0.82rem;
-  color: #94a3b8;
+  color: #4b5f82;
 }
 
 /* Little gap between icon and text */
 .product-card__meta i {
   margin-right: 4px;
-  color: #60a5fa;
+  color: #1b6bca;
 }
 
 /* Responsivo extra */

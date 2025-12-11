@@ -76,3 +76,7 @@ function nav_active($basename) {
         </div>
     </nav>
 </header>
+
+<!-- Alert dot script (checks upcoming RSVPs via PHP endpoint) -->
+<script src="../../JS/events-alert.js"></script>
+

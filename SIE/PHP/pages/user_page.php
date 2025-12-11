@@ -56,7 +56,7 @@ foreach ($collectionEvents as $link) {
 }
 
 // =========================
-// Eventos do utilizador (via coleções que lhe pertencem)
+// Eventos do utilizador (via RSVP, não apenas via coleções)
 // =========================
 // índice rápido de eventos por id
 $eventsById = [];
@@ -66,18 +66,7 @@ foreach ($events as $e) {
     }
 }
 
-// ids de eventos únicos onde este utilizador tem coleções inscritas
-$userEventIds = [];
-foreach ($ownedCollections as $c) {
-    $cid = $c['id'] ?? null;
-    if (!$cid)
-        continue;
-    foreach ($eventsByCollection[$cid] ?? [] as $eid) {
-        $userEventIds[$eid] = true;
-    }
-}
-
-// Build RSVP map for the profile user
+// Build RSVP map for the profile user: get all events where user RSVP'd
 $userRsvpMap = [];
 foreach ($eventsUsers as $eu) {
     $uid = $eu['userId'] ?? $eu['user_id'] ?? null;
@@ -88,27 +77,22 @@ foreach ($eventsUsers as $eu) {
     }
 }
 
-// array final de eventos do utilizador
+// array final de eventos do utilizador (based on RSVP, not collection ownership)
 $today = date('Y-m-d');
 $upcomingEvents = [];
 $pastEvents = [];
 
-foreach (array_keys($userEventIds) as $eid) {
+foreach (array_keys($userRsvpMap) as $eid) {
     if (isset($eventsById[$eid])) {
         $evt = $eventsById[$eid];
         $eventDate = substr($evt['date'] ?? '', 0, 10);
-        $rsvp = $userRsvpMap[$eid] ?? null;
         
         if ($eventDate >= $today) {
-            // Upcoming: only include if RSVP exists
-            if ($rsvp) {
-                $upcomingEvents[] = $evt;
-            }
+            // Upcoming: include if RSVP exists
+            $upcomingEvents[] = $evt;
         } else {
-            // Past: only include if RSVP exists
-            if ($rsvp) {
-                $pastEvents[] = $evt;
-            }
+            // Past: include if RSVP exists
+            $pastEvents[] = $evt;
         }
     }
 }

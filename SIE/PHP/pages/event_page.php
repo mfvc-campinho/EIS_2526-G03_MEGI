@@ -122,8 +122,8 @@ foreach ($eventsUsers as $eu) {
     .pill-toggle { display: flex; justify-content: center; gap: 14px; margin: 26px auto 18px; max-width: 400px; background: #eef0ff; padding: 10px; border-radius: 24px; box-shadow: inset 0 0 0 1px rgba(99,102,241,.12); }
     .pill-toggle a { flex: 1; text-align: center; padding: 10px 12px; border-radius: 18px; font-weight: 600; color: #6b6e82; text-decoration: none; }
     .pill-toggle a.active { background: #fff; box-shadow: 0 8px 16px rgba(99,102,241,.15); color: #2f2f3f; }
-    .month-bar { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 10px auto 16px; }
-    .month-chip { min-width: 220px; padding: 12px 18px; background: #fff; border-radius: 16px; box-shadow: 0 12px 28px rgba(0,0,0,.07); font-weight: 700; }
+    .month-bar { display: flex; justify-content: center; margin: 28px auto 24px; }
+    .month-chip { padding: 14px 28px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 1.1rem; font-weight: 600; color: #374151; letter-spacing: 0.5px; }
     .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; align-items: center; margin: 18px auto 10px; max-width: 1100px; }
     .controls label { display: block; color: #6b7280; font-weight: 600; margin-bottom: 6px; }
     .controls select { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid #d0d5dd; background: #fff; font-weight: 600; }
@@ -188,12 +188,12 @@ foreach ($eventsUsers as $eu) {
       <h1>Events</h1>
       <div class="collections-hero-underline"></div>
       <p>Browse upcoming and past events related to your collections. View details, RSVP, and keep track of important dates.</p>
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      </div>
     </section>
 
     <div class="month-bar">
-      <div class="month-chip">
-        <?php echo htmlspecialchars($monthLabel); ?>
-      </div>
+      <div class="month-chip"><?php echo htmlspecialchars($monthLabel); ?></div>
     </div>
 
     <div class="pill-toggle">
@@ -262,14 +262,15 @@ foreach ($eventsUsers as $eu) {
           $hostId = $evt['hostUserId'] ?? $evt['host_user_id'] ?? null;
           $isOwner = $isAuth && $hostId && $hostId === $currentUserId;
           $eventDate = substr($evt['date'] ?? '', 0, 10);
-          $isPast = $eventDate && $eventDate < date('Y-m-d');
+          $isPast = $eventDate && $eventDate <= date('Y-m-d'); // Event is today or in the past
           $today = date('Y-m-d');
-          $eventHasStarted = $eventDate && $eventDate <= $today; // Event has started (today or later)
+          $eventHasStarted = $eventDate && $eventDate <= $today; // Event has started (today or before)
           $key = $currentUserId ? (strval($evt['id']) . '|' . strval($currentUserId)) : null;
           $userEntry = $currentUserId && $key ? ($eventUserMap[$key] ?? null) : null;
           $hasRsvp = $userEntry && !empty($userEntry['rsvp']);
           $rating = $userEntry['rating'] ?? null;
-          $canRate = $hasRsvp && $eventHasStarted; // Can rate if RSVP'd and event date has arrived
+          // Can only rate PAST events (not just started, must be fully past) AND must have RSVP'd
+          $canRate = $hasRsvp && $isPast;
           ?>
           <article class="event-card">
             <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
@@ -319,26 +320,39 @@ foreach ($eventsUsers as $eu) {
                 </div>
               <?php endif; ?>
               <?php if ($isAuth): ?>
-                <?php if ($eventHasStarted): ?>
-                  <!-- Event has started: Show rating if attended, otherwise show message -->
+                <?php if ($isPast): ?>
+                  <!-- Past event: Show star rating form if RSVP'd -->
                   <?php if ($hasRsvp): ?>
-                    <form action="events_action.php" method="POST" style="display:flex; align-items:center; gap:6px;">
+                    <form method="POST" action="events_action.php" style="display: inline;">
                       <input type="hidden" name="action" value="rate">
-                      <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
-                      <span class="label" style="font-size:0.9rem; font-weight:600; color:#4b5563;">O seu rating:</span>
-                      <div class="stars">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                          <button type="submit" name="rating" value="<?php echo $i; ?>" class="star-btn<?php echo ($rating >= $i) ? ' active' : ''; ?>" aria-label="Rate <?php echo $i; ?>">
-                            <i class="bi <?php echo ($rating >= $i) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
-                          </button>
-                        <?php endfor; ?>
+                      <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id'], ENT_QUOTES); ?>">
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                        <label for="rating-<?php echo htmlspecialchars($evt['id'], ENT_QUOTES); ?>" style="font-weight: 600; font-size: 0.9rem; color: #4b5563;">Avaliar:</label>
+                        <select name="rating" id="rating-<?php echo htmlspecialchars($evt['id'], ENT_QUOTES); ?>" style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                          <option value="">Selecionar...</option>
+                          <option value="1" <?php echo $rating == 1 ? 'selected' : ''; ?>>1 ⭐</option>
+                          <option value="2" <?php echo $rating == 2 ? 'selected' : ''; ?>>2 ⭐⭐</option>
+                          <option value="3" <?php echo $rating == 3 ? 'selected' : ''; ?>>3 ⭐⭐⭐</option>
+                          <option value="4" <?php echo $rating == 4 ? 'selected' : ''; ?>>4 ⭐⭐⭐⭐</option>
+                          <option value="5" <?php echo $rating == 5 ? 'selected' : ''; ?>>5 ⭐⭐⭐⭐⭐</option>
+                        </select>
+                        <button type="submit" class="explore-btn small" style="padding: 6px 12px;">Guardar</button>
                       </div>
                     </form>
                   <?php else: ?>
                     <span class="badge-muted">Não assististe a este evento.</span>
                   <?php endif; ?>
+                  <!-- Show current user rating if they've already rated -->
+                  <?php if ($isAuth && $rating !== null): ?>
+                    <div class="user-stars" title="O seu rating">
+                      <span class="label">O seu rating:</span>
+                      <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <i class="bi <?php echo ($rating >= $i) ? 'bi-star-fill' : 'bi-star'; ?>"></i>
+                      <?php endfor; ?>
+                    </div>
+                  <?php endif; ?>
                 <?php else: ?>
-                  <!-- Event hasn't started yet: Show RSVP button -->
+                  <!-- Upcoming event: Show RSVP button only, no rating UI -->
                   <form action="events_action.php" method="POST" style="display:inline;">
                     <input type="hidden" name="action" value="rsvp">
                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
@@ -394,34 +408,10 @@ foreach ($eventsUsers as $eu) {
       </div>
     </div>
   </div>
-  <script>
-    (function(){
-      var modal = document.getElementById('event-modal');
-      if (!modal) return;
-      var titleEl = document.getElementById('modal-title');
-      var typeEl = document.getElementById('modal-type');
-      var summaryEl = document.getElementById('modal-summary');
-      var descEl = document.getElementById('modal-description');
-      var dateEl = document.getElementById('modal-date');
-      var locEl = document.getElementById('modal-location');
-      function closeModal() { modal.classList.remove('open'); }
-      modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
-      document.querySelectorAll('.js-view-event').forEach(function(btn){
-        btn.addEventListener('click', function(){
-          titleEl.textContent = btn.dataset.name || '';
-          typeEl.textContent = btn.dataset.type || '';
-          summaryEl.textContent = btn.dataset.summary || '';
-          descEl.textContent = btn.dataset.description || '';
-          dateEl.textContent = btn.dataset.date || '';
-          locEl.textContent = btn.dataset.location || '';
-          modal.classList.add('open');
-        });
-      });
-      document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
-    })();
-
-
   </script>
+  <script>
+  </script>
+
   <script>
   // torna a data do evento disponível em JS
   window.EVENT_DATE = "<?php echo htmlspecialchars($event['date']); ?>";
@@ -450,7 +440,8 @@ foreach ($eventsUsers as $eu) {
     if (diffDays >= 0 && diffDays <= 6) {
       // alerta
       const eventName = window.EVENT_NAME || "este evento";
-      alert(`Atenção! Faltam ${diffDays} dia${diffDays === 1 ? "" : "s"} para ${eventName}.`);
+      const daysText = diffDays === 1 ? "dia" : "dias";
+      alert("Atenção! Faltam " + diffDays + " " + daysText + " para " + eventName + ".");
 
       // mudar cor do link de eventos no nav para laranja
       navEventsLink.style.color = "#f97316";

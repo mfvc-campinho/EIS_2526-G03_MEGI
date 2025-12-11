@@ -282,12 +282,6 @@ if ($collection) {
                      ========================= -->
                 <section class="collection-hero">
                     <div id="collection-meta">
-                        <?php if (!empty($coverImage)): ?>
-                               <img class="collection-cover--circle"
-                                   src="<?php echo htmlspecialchars($coverImage); ?>"
-                                   alt="Cover image for <?php echo htmlspecialchars($collection['name'] ?? 'collection'); ?>"
-                                   style="display:block; margin:0 auto 12px; width:140px; height:140px; border-radius:50%; object-fit:cover;">
-                        <?php endif; ?>
                         <div id="meta-text">
                             <div class="collection-type-line">
                                 <span class="collection-type">
@@ -451,18 +445,9 @@ if ($collection) {
                                             </a>
                                         </h3>
 
-                                        <p class="muted">
-                                            Price:
-                                        <?php echo number_format($price, 2, '.', ''); ?>
-                                        </p>
-
-                                        <p class="muted">
-                                            <i class="bi bi-calendar3"></i>
-                                                <?php echo htmlspecialchars($date ?: ''); ?>
-                                            &nbsp;
-                                            <i class="bi bi-box-seam"></i>
-            <?php echo htmlspecialchars($collection['name'] ?? ''); ?>
-                                        </p>
+                                        <div class="item-price">
+                                            €<?php echo number_format($price, 2, '.', ''); ?>
+                                        </div>
                                     </div>
 
                                     <div class="card-buttons item-buttons">
@@ -520,22 +505,24 @@ if ($collection) {
                         <div class="collection-events-list">
         <?php foreach ($eventsForCollection as $ev): ?>
             <?php
-            $evDate = substr($ev['date'] ?? $ev['start_date'] ?? '', 0, 16);
+            $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
+            $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
+            $category = $ev['category'] ?? $ev['type'] ?? 'Event';
             ?>
                                 <article class="collection-event-card">
                                     <div>
                                         <h3><?php echo htmlspecialchars($ev['name'] ?? ''); ?></h3>
                                         <p><?php echo htmlspecialchars($ev['summary'] ?? ''); ?></p>
                                     </div>
-                                    <div class="event-meta">
-                                        <div>
-                                            <i class="bi bi-calendar-event"></i>
-                                <?php echo htmlspecialchars($evDate); ?>
-                                        </div>
-                                        <div>
-                                            <i class="bi bi-geo-alt"></i>
-            <?php echo htmlspecialchars($ev['localization'] ?? $ev['location'] ?? ''); ?>
-                                        </div>
+                                    <div class="event-meta-row">
+                                        <span class="meta-chip">
+                                            <i class="bi bi-cash-coin"></i>
+                                            <?php echo $price !== null ? '€' . number_format($price, 2, '.', '') : '—'; ?>
+                                        </span>
+                                        <span class="meta-chip">
+                                            <i class="bi bi-tag"></i>
+                                            <?php echo htmlspecialchars($category); ?>
+                                        </span>
                                     </div>
                                 </article>
         <?php endforeach; ?>

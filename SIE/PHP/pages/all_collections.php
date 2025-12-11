@@ -167,48 +167,41 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                                         </div>
                                     </div>
                                     <div class="card-actions">
-                                        <!-- Show Preview -->
-                                        <label class="explore-btn preview-show" for="<?php echo $previewId; ?>">
-                                            Show Preview
-                                        </label>
-
-                                        <!-- Hide Preview (mesmo estilo que Show/Explore) -->
-                                        <label class="explore-btn preview-hide" for="<?php echo $previewId; ?>">
-                                            Hide Preview
+                                        <!-- Expand/Collapse Preview -->
+                                        <label class="action-icon" for="<?php echo $previewId; ?>" title="Expand">
+                                            <i class="bi bi-plus-lg"></i>
                                         </label>
 
                                         <!-- Explore More -->
-                                        <a class="explore-btn" href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
-                                            Explore More
+                                        <a class="action-icon" href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>" title="Explore">
+                                            <i class="bi bi-search"></i>
                                         </a>
 
                                         <!-- Like -->
                                         <?php if ($isAuth): ?>
-                                            <form action="likes_action.php" method="POST" class="card-like-form">
+                                            <form action="likes_action.php" method="POST" class="action-icon-form">
                                                 <input type="hidden" name="type" value="collection">
                                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
-                                                <button type="submit" class="explore-btn ghost<?php echo isset($likedCollections[$col['id']]) ? ' success' : ''; ?>">
+                                                <button type="submit" class="action-icon<?php echo isset($likedCollections[$col['id']]) ? ' is-liked' : ''; ?>" title="Like">
                                                     <i class="bi <?php echo isset($likedCollections[$col['id']]) ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
-                                                    <?php $count = (int) ($collectionLikeCount[$col['id']] ?? 0); ?>
-                                                    <span class="like-count<?php echo $count === 0 ? ' is-zero' : ''; ?>"><?php echo $count; ?></span>
                                                 </button>
                                             </form>
                                         <?php else: ?>
-                                            <button class="explore-btn ghost" type="button" data-action="login-popup" data-login-url="auth.php">
+                                            <button type="button" class="action-icon" data-action="login-popup" data-login-url="auth.php" title="Like">
                                                 <i class="bi bi-heart"></i>
-                                                <?php $count = (int) ($collectionLikeCount[$col['id']] ?? 0); ?>
-                                                <span class="like-count<?php echo $count === 0 ? ' is-zero' : ''; ?>"><?php echo $count; ?></span>
                                             </button>
                                         <?php endif; ?>
-                                    </div>
 
-                                    <div class="owner-actions<?php echo $isOwner ? '' : ' owner-actions--placeholder'; ?>"<?php echo $isOwner ? '' : ' aria-hidden="true"'; ?>>
                                         <?php if ($isOwner): ?>
-                                            <a class="explore-btn ghost" href="collections_form.php?id=<?php echo urlencode($col['id']); ?>"><i class="bi bi-pencil"></i> Edit</a>
-                                            <form action="collections_action.php" method="POST">
+                                            <a class="action-icon" href="collections_form.php?id=<?php echo urlencode($col['id']); ?>" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form action="collections_action.php" method="POST" class="action-icon-form">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
-                                                <button type="submit" class="explore-btn ghost danger" onclick="return confirm('Delete this collection?');"><i class="bi bi-trash"></i> Delete</button>
+                                                <button type="submit" class="action-icon is-danger" title="Delete" onclick="return confirm('Delete this collection?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
                                             </form>
                                         <?php endif; ?>
                                     </div>

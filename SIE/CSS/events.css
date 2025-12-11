@@ -156,7 +156,7 @@
 .events-grid,
 #eventsList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 340px));
   gap: 18px;
   margin-top: 10px;
 }

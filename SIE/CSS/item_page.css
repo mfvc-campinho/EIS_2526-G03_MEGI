@@ -236,14 +236,20 @@ body {
 }
 
 .item-relations-card {
-  background: #ffffff;
+  background: var(--card-bg, #ffffff);
   border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e5e7eb;
+  padding: 26px;
+  box-shadow: 0 4px 12px rgba(11, 59, 112, 0.1), 0 8px 24px rgba(11, 59, 112, 0.08);
+  border: 2px solid #0b3b70;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.item-relations-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(11, 59, 112, 0.15), 0 12px 32px rgba(11, 59, 112, 0.12);
 }
 
 .item-relations-card .card-header {
@@ -254,24 +260,76 @@ body {
 
 .item-relations-card .card-header i {
   font-size: 1.8rem;
-  color: #2563eb;
-  background: #eff6ff;
+  color: #0b3b70;
+  background: #e6f2ff;
   border-radius: 12px;
-  padding: 10px;
+  padding: 12px;
+  flex-shrink: 0;
 }
 
 .eyebrow-label {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.78rem;
-  color: #9ca3af;
+  color: #6b7280;
   margin: 0;
+  font-weight: 600;
 }
 
 .item-relations-card h2 {
   margin: 2px 0 0;
+  font-size: 1.15rem;
+  color: var(--text-main, #111827);
+  font-weight: 700;
+}
+
+.related-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.related-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--card-bg, #f8fafc);
+  border: 1px solid #0b3b70;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.related-chip:hover {
+  background: #e6f2ff;
+  border-color: #0d3f7a;
+  transform: translateX(4px);
+}
+
+.related-chip i {
   font-size: 1.1rem;
-  color: #111827;
+  color: #0b3b70;
+}
+
+.related-chip a {
+  color: var(--text-main, #0f172a);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.related-chip a:hover {
+  color: #0b3b70;
+  text-decoration: underline;
+}
+
+.related-list .muted {
+  color: #6b7280;
+  font-style: italic;
+  margin: 0;
+  padding: 8px 0;
 }
 
 .pill-list {

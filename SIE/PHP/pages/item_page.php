@@ -6,6 +6,8 @@ $mysqli->close();
 
 $items = $data['items'] ?? [];
 $collections = $data['collections'] ?? [];
+$collectionItems = $data['collectionItems'] ?? [];
+
 $collectionMap = [];
 foreach ($collections as $c) {
   if (!empty($c['id'])) $collectionMap[$c['id']] = $c;
@@ -19,6 +21,21 @@ foreach ($items as $it) {
     break;
   }
 }
+
+// Find collection through collectionItems relationship
+$col = null;
+if ($item) {
+  foreach ($collectionItems as $link) {
+    if (($link['itemId'] ?? null) === $itemId) {
+      $cid = $link['collectionId'] ?? null;
+      if ($cid && isset($collectionMap[$cid])) {
+        $col = $collectionMap[$cid];
+        break;
+      }
+    }
+  }
+}
+
 $isAuth = !empty($_SESSION['user']);
 $currentUserId = $isAuth ? ($_SESSION['user']['id'] ?? null) : null;
 
@@ -26,7 +43,6 @@ $img = $item['image'] ?? '../../images/default.jpg';
 if ($img && !preg_match('#^https?://#', $img)) {
   $img = '../../' . ltrim($img, './');
 }
-$col = $item && isset($collectionMap[$item['collectionId'] ?? null]) ? $collectionMap[$item['collectionId']] : null;
 $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
 ?>
 <!DOCTYPE html>

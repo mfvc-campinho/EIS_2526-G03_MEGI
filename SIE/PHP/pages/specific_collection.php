@@ -90,16 +90,23 @@ if (!$itemsForCollection && $collectionId) {
 }
 
 // -----------------------------
-//   Eventos da coleção
+//   Eventos da coleção (apenas futuros)
 // -----------------------------
 $eventsForCollection = [];
+$today = date('Y-m-d');
 
 foreach ($collectionEvents as $link) {
     $cid = $link['collectionId'] ?? $link['collection_id'] ?? null;
     $eid = $link['eventId'] ?? $link['event_id'] ?? null;
 
     if ($cid === $collectionId && $eid && isset($eventsById[$eid])) {
-        $eventsForCollection[] = $eventsById[$eid];
+        $event = $eventsById[$eid];
+        $eventDate = substr($event['date'] ?? '', 0, 10);
+        
+        // Apenas eventos futuros (data >= hoje)
+        if ($eventDate >= $today) {
+            $eventsForCollection[] = $event;
+        }
     }
 }
 
@@ -508,21 +515,30 @@ if ($collection) {
             $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
             $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
             $category = $ev['category'] ?? $ev['type'] ?? 'Event';
+            $eventDate = substr($ev['date'] ?? '', 0, 16);
+            $location = $ev['localization'] ?? $ev['location'] ?? '';
             ?>
                                 <article class="collection-event-card">
-                                    <div>
-                                        <h3><?php echo htmlspecialchars($ev['name'] ?? ''); ?></h3>
-                                        <p><?php echo htmlspecialchars($ev['summary'] ?? ''); ?></p>
+                                    <div class="event-card-header">
+                                        <span class="event-type-badge"><?php echo htmlspecialchars($category); ?></span>
                                     </div>
-                                    <div class="event-meta-row">
-                                        <span class="meta-chip">
+                                    <h3><?php echo htmlspecialchars($ev['name'] ?? ''); ?></h3>
+                                    <p class="event-summary"><?php echo htmlspecialchars($ev['summary'] ?? ''); ?></p>
+                                    <div class="event-info-grid">
+                                        <div class="event-info-item">
+                                            <i class="bi bi-calendar-event"></i>
+                                            <span><?php echo htmlspecialchars($eventDate); ?></span>
+                                        </div>
+                                        <?php if ($location): ?>
+                                        <div class="event-info-item">
+                                            <i class="bi bi-geo-alt"></i>
+                                            <span><?php echo htmlspecialchars($location); ?></span>
+                                        </div>
+                                        <?php endif; ?>
+                                        <div class="event-info-item">
                                             <i class="bi bi-cash-coin"></i>
-                                            <?php echo $price !== null ? '€' . number_format($price, 2, '.', '') : '—'; ?>
-                                        </span>
-                                        <span class="meta-chip">
-                                            <i class="bi bi-tag"></i>
-                                            <?php echo htmlspecialchars($category); ?>
-                                        </span>
+                                            <span><?php echo $price !== null ? '€' . number_format($price, 2, '.', '') : 'Free'; ?></span>
+                                        </div>
                                     </div>
                                 </article>
         <?php endforeach; ?>

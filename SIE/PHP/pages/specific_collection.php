@@ -457,19 +457,17 @@ if ($collection) {
                                         </a>
 
                                             <?php if ($isAuthenticated): ?>
-                                            <form action="likes_action.php" method="POST" style="display:inline;">
+                                            <form action="likes_action.php" method="POST" class="like-form" style="display:inline;">
                                                 <input type="hidden" name="type" value="item">
                                                 <input type="hidden" name="id"
                                                        value="<?php echo htmlspecialchars($itemId); ?>">
                                                 <button type="submit"
                                                         class="explore-btn ghost<?php echo $isLiked ? ' success' : ''; ?>">
                                                     <i class="bi <?php echo $isLiked ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
-                <?php echo $likes; ?>
+				<?php echo $likes; ?>
                                                 </button>
                                             </form>
-                                        <?php endif; ?>
-
-            <?php if ($isOwner): ?>
+                                        <?php endif; ?>            <?php if ($isOwner): ?>
                                             <a class="explore-btn ghost"
                                                href="items_form.php?id=<?php echo urlencode($itemId); ?>">
                                                 Edit
@@ -579,6 +577,35 @@ if ($collection) {
                 if (filtersForm) {
                     filtersForm.addEventListener('submit', saveScroll);
                 }
+
+                // Prevent page scroll on like forms
+                document.querySelectorAll('.like-form').forEach(function(form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        var formData = new FormData(form);
+                        fetch('likes_action.php', {
+                            method: 'POST',
+                            body: formData
+                        }).then(function() {
+                            var button = form.querySelector('button');
+                            var icon = button.querySelector('i');
+                            var likeCount = button.textContent.trim();
+                            var currentCount = parseInt(likeCount) || 0;
+                            
+                            if (button.classList.contains('success')) {
+                                button.classList.remove('success');
+                                icon.classList.remove('bi-heart-fill');
+                                icon.classList.add('bi-heart');
+                                button.innerHTML = '<i class="bi bi-heart"></i> ' + Math.max(0, currentCount - 1);
+                            } else {
+                                button.classList.add('success');
+                                icon.classList.remove('bi-heart');
+                                icon.classList.add('bi-heart-fill');
+                                button.innerHTML = '<i class="bi bi-heart-fill"></i> ' + (currentCount + 1);
+                            }
+                        });
+                    });
+                });
             })();
         </script>
     </body>

@@ -2512,57 +2512,273 @@ h1.page-title {
   background: rgba(255, 255, 255, 0.03);
 }
 
-/* Dark mode variables — applied when .dark-mode is present on <html> or <body> */
+/* ===============================
+   🌙 DARK MODE — Complete Redesign
+   =============================== */
+
+/* Dark mode variables */
 .dark-mode {
   --bg-color: #0d1117;
   --text-color: #e6edf3;
-  --muted-color: #9aa4b2;
+  --muted-color: #8b949e;
   --card-bg: #161b22;
-  --card-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+  --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   --nav-bg: #0d1117;
   --nav-text: #e6edf3;
   --footer-bg: #0d1117;
-  --footer-text: #dfe8f3;
-  --input-bg: #0f1720;
+  --footer-text: #e6edf3;
+  --input-bg: #0d1117;
   --input-text: #e6edf3;
-  --btn-bg: #0f1720;
+  --btn-bg: #21262d;
   --btn-text: #e6edf3;
-  --modal-bg: #0f1720;
-  --overlay-bg: rgba(2, 6, 23, 0.6);
-  /* Dark variants for button tokens */
-  --success-btn-bg: rgba(16, 185, 129, 0.04);
-  --success-btn-text: #7ee6a8;
-  --success-btn-bg-hover: rgba(16, 185, 129, 0.08);
-  --success-btn-text-hover: #bff0d8;
-
-  --danger-btn-bg: rgba(185, 28, 28, 0.04);
-  --danger-btn-text: #ffb4b4;
-  --danger-btn-bg-hover: rgba(185, 28, 28, 0.10);
-  --danger-btn-text-hover: #ffdede;
-
-  --warning-btn-bg: rgba(146, 64, 14, 0.04);
-  --warning-btn-text: #ffd8a8;
-  --warning-btn-bg-hover: rgba(146, 64, 14, 0.1);
-  --warning-btn-text-hover: #ffe9c8;
-
-  --save-btn-bg: linear-gradient(90deg, #0e8750, #2f9f6b);
-  --save-btn-text: #e6edf3;
-  /* Dark-mode aliases for the new variables */
-  --text-main: var(--text-color);
-  --text-muted: var(--muted-color);
-  --border-color: rgba(255, 255, 255, 0.06);
-  --shadow-elevated: 0 12px 30px rgba(0, 0, 0, 0.5);
-  --card-radius: 16px;
+  --modal-bg: #161b22;
+  --overlay-bg: rgba(1, 4, 9, 0.8);
+  --text-main: #e6edf3;
+  --text-muted: #8b949e;
+  --border-color: #30363d;
+  --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --card-radius: 14px;
 }
 
-/* Ensure interactive elements keep accessible contrast in dark mode */
+/* Body and main elements */
+.dark-mode,
+.dark-mode body,
+html.dark-mode body {
+  background-color: #0d1117;
+  color: #e6edf3;
+}
+
+/* Cards */
+.dark-mode .product-card,
+.dark-mode .user-event-card,
+.dark-mode .event-card,
+.dark-mode .item-card,
+.dark-mode .profile-card,
+.dark-mode .collection-event-card {
+  background: #161b22;
+  border-color: #30363d;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  color: #e6edf3;
+}
+
+.dark-mode .product-card:hover,
+.dark-mode .user-event-card:hover,
+.dark-mode .event-card:hover {
+  border-color: #484f58;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+/* Headings and titles */
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode .section-title,
+.dark-mode .page-title,
+.dark-mode .product-card h3,
+.dark-mode .user-event-card h3,
+.dark-mode .profile-body h1 {
+  color: #e6edf3;
+}
+
+.dark-mode .product-card h3 a,
+.dark-mode .user-event-card h3 a {
+  color: #58a6ff;
+}
+
+.dark-mode .product-card h3 a:hover,
+.dark-mode .user-event-card h3 a:hover {
+  color: #79c0ff;
+}
+
+/* Muted text */
+.dark-mode .muted,
+.dark-mode .product-card__body .muted,
+.dark-mode .user-event-card .muted {
+  color: #8b949e;
+}
+
+/* Pills/badges */
+.dark-mode .pill,
+.dark-mode .pill--event {
+  background: rgba(88, 166, 255, 0.15);
+  border-color: rgba(88, 166, 255, 0.3);
+  color: #58a6ff;
+}
+
+/* Inputs and form elements */
+.dark-mode input[type="text"],
+.dark-mode input[type="email"],
+.dark-mode input[type="password"],
+.dark-mode input[type="date"],
+.dark-mode input[type="datetime-local"],
+.dark-mode input[type="number"],
+.dark-mode input[type="search"],
+.dark-mode textarea,
+.dark-mode select {
+  background: #0d1117;
+  color: #e6edf3;
+  border-color: #30363d;
+}
+
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+  color: #6e7681;
+}
+
+/* Buttons */
+.dark-mode .explore-btn {
+  background: #21262d;
+  color: #e6edf3;
+  border-color: #30363d;
+}
+
+.dark-mode .explore-btn:hover {
+  background: #30363d;
+  border-color: #484f58;
+}
+
 .dark-mode .explore-btn.ghost {
-  color: #9ed0ff;
-  border-color: rgba(158, 208, 255, 0.12);
+  background: transparent;
+  color: #58a6ff;
+  border-color: #30363d;
 }
 
-.dark-mode .profile-menu {
-  background: #0b1220;
+.dark-mode .explore-btn.ghost:hover {
+  background: rgba(88, 166, 255, 0.1);
+  border-color: #58a6ff;
+}
+
+.dark-mode .explore-btn.success {
+  background: #238636;
+  color: #ffffff;
+  border-color: #238636;
+}
+
+.dark-mode .explore-btn.success:hover {
+  background: #2ea043;
+  border-color: #2ea043;
+}
+
+/* Meta info and icons */
+.dark-mode .product-card__meta,
+.dark-mode .user-event-meta,
+.dark-mode .profile-meta-grid {
+  border-color: #30363d;
+  color: #8b949e;
+}
+
+.dark-mode .product-card__meta i,
+.dark-mode .user-event-meta i {
+  color: #58a6ff;
+}
+
+/* Profile specific */
+.dark-mode .profile-avatar-circle {
+  border-color: #30363d;
+  background: #161b22;
+}
+
+.dark-mode .profile-actions .explore-btn {
+  background: #21262d;
+  border-color: #30363d;
+}
+
+/* Breadcrumbs */
+.dark-mode .breadcrumb-list a {
+  color: #58a6ff;
+}
+
+.dark-mode .breadcrumb-list a:hover {
+  color: #79c0ff;
+}
+
+/* Top controls */
+.dark-mode .top-controls select,
+.dark-mode .top-controls label {
+  color: #e6edf3;
+}
+
+/* Modals */
+.dark-mode .modal-content,
+.dark-mode .modal-card {
+  background: #161b22;
+  border-color: #30363d;
+}
+
+.dark-mode .modal-header {
+  background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+}
+
+/* Footer */
+.dark-mode footer {
+  background: #0d1117;
+  color: #e6edf3;
+  border-top: 1px solid #30363d;
+}
+
+/* Navbar adjustments */
+.dark-mode .navbar {
+  background: #0d1117;
+  border-bottom: 1px solid #30363d;
+}
+
+/* Collection grid and items */
+.dark-mode .collection-grid,
+.dark-mode .items-grid {
+  background: transparent;
+}
+
+/* Hover effects for interactive elements */
+.dark-mode .action-icon:hover {
+  background: rgba(88, 166, 255, 0.1);
+  color: #58a6ff;
+}
+
+/* Specific collection page elements */
+.dark-mode .collection-hero,
+.dark-mode .collections-hero {
+  color: #e6edf3;
+}
+
+.dark-mode .collection-meta span {
+  color: #8b949e;
+}
+
+/* Item page specific */
+.dark-mode .item-info,
+.dark-mode .item-details-card {
+  background: #161b22;
+  border-color: #30363d;
+}
+
+/* Event cards */
+.dark-mode .event-meta li {
+  color: #8b949e;
+}
+
+/* Tables and lists */
+.dark-mode table {
+  border-color: #30363d;
+}
+
+.dark-mode table th {
+  background: #161b22;
+  color: #e6edf3;
+}
+
+.dark-mode table td {
+  border-color: #30363d;
+  color: #e6edf3;
+}
+
+/* Links */
+.dark-mode a {
+  color: #58a6ff;
+}
+
+.dark-mode a:hover {
+  color: #79c0ff;
 }
 
 .list-pagination {

@@ -277,7 +277,7 @@ foreach ($eventsUsers as $eu) {
             <h3><?php echo htmlspecialchars($evt['name']); ?></h3>
             <p class="muted"><?php echo htmlspecialchars($evt['summary']); ?></p>
             <ul class="event-meta">
-              <li><i class="bi bi-calendar-event"></i> <?php echo htmlspecialchars(substr($evt['date'], 0, 10)); ?></li>
+              <li><i class="bi bi-calendar-event"></i> <?php echo htmlspecialchars(substr($evt['date'], 0, 16)); ?></li>
               <li><i class="bi bi-geo-alt"></i> <?php echo htmlspecialchars($evt['localization']); ?></li>
             </ul>
             <?php if ($isAuth && $rating !== null && $canRate): ?>

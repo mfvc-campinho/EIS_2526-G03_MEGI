@@ -8,6 +8,16 @@ $collections = $data['collections'] ?? [];
 $items = $data['items'] ?? [];
 $collectionItems = $data['collectionItems'] ?? [];
 $userShowcases = $data['userShowcases'] ?? [];
+$users = $data['users'] ?? [];
+
+// Build usersById lookup
+$usersById = [];
+foreach ($users as $u) {
+    $uid = $u['id'] ?? $u['user_id'] ?? null;
+    if ($uid) {
+        $usersById[$uid] = $u;
+    }
+}
 
 $itemsById = [];
 foreach ($items as $it) {
@@ -42,6 +52,20 @@ foreach ($userShowcases as $sc) {
 $sort = $_GET['sort'] ?? 'newest';
 $perPage = max(1, (int) ($_GET['perPage'] ?? 10));
 $page = max(1, (int) ($_GET['page'] ?? 1));
+$search = trim($_GET['search'] ?? '');
+
+// Filter by search query
+if ($search !== '') {
+    $collections = array_filter($collections, function($col) use ($search) {
+        $name = $col['name'] ?? '';
+        $summary = $col['summary'] ?? '';
+        $type = $col['type'] ?? '';
+        $searchLower = mb_strtolower($search);
+        return mb_stripos(mb_strtolower($name), $searchLower) !== false
+            || mb_stripos(mb_strtolower($summary), $searchLower) !== false
+            || mb_stripos(mb_strtolower($type), $searchLower) !== false;
+    });
+}
 
 usort($collections, function ($a, $b) use ($sort) {
     $aDate = $a['createdAt'] ?? '';
@@ -108,6 +132,19 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                 <div class="top-controls">
                     <div class="left">
                         <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <label for="search-input"><i class="bi bi-search"></i></label>
+                                <input type="text" 
+                                       id="search-input" 
+                                       name="search" 
+                                       placeholder="Search collections..." 
+                                       value="<?php echo htmlspecialchars($search ?? ''); ?>"
+                                       style="padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.95rem; min-width:200px;">
+                                <button type="submit" class="explore-btn ghost" style="padding:8px 16px;">Search</button>
+                                <?php if (!empty($search)): ?>
+                                    <a href="all_collections.php" class="explore-btn ghost" style="padding:8px 16px;">Clear</a>
+                                <?php endif; ?>
+                            </div>
                             <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
                             <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
                                 <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
@@ -129,9 +166,9 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                         <?php if ($isAuth): ?>
                             <a class="explore-btn success" href="collections_form.php">+ Add Collection</a>
                         <?php endif; ?>
-                        <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
+                        <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(array_merge($_GET, ['page' => max(1, $page - 1)])); ?>')"><i class="bi bi-chevron-left"></i></button>
                         <span>Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $perPage, $total); ?> of <?php echo $total; ?></span>
-                        <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
+                        <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(array_merge($_GET, ['page' => min($pages, $page + 1)])); ?>')"><i class="bi bi-chevron-right"></i></button>
                     </div>
                 </div>
 
@@ -159,7 +196,15 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                                     <div class="product-card__meta">
                                         <div class="product-card__owner">
                                             <i class="bi bi-people"></i>
-                                            <?php echo htmlspecialchars($col['ownerId']); ?>
+                                            <a href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>" style="color: inherit; text-decoration: none;">
+                                                <?php 
+                                                    $ownerId = $col['ownerId'] ?? null;
+                                                    $ownerName = $ownerId && isset($usersById[$ownerId]) 
+                                                        ? ($usersById[$ownerId]['user_name'] ?? $usersById[$ownerId]['username'] ?? 'Unknown')
+                                                        : 'Unknown';
+                                                    echo htmlspecialchars($ownerName);
+                                                ?>
+                                            </a>
                                         </div>
                                         <div class="product-card__date">
                                             <i class="bi bi-calendar3"></i>
@@ -179,7 +224,7 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
 
                                         <!-- Like -->
                                         <?php if ($isAuth): ?>
-                                            <form action="likes_action.php" method="POST" class="action-icon-form">
+                                            <form action="likes_action.php" method="POST" class="action-icon-form like-form">
                                                 <input type="hidden" name="type" value="collection">
                                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
                                                 <button type="submit" class="action-icon<?php echo isset($likedCollections[$col['id']]) ? ' is-liked' : ''; ?>" title="Like">
@@ -391,6 +436,30 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
                 if (filtersForm) {
                     filtersForm.addEventListener('submit', saveScroll);
                 }
+
+                // Prevent page scroll on like forms
+                document.querySelectorAll('.like-form').forEach(function(form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        var formData = new FormData(form);
+                        fetch('likes_action.php', {
+                            method: 'POST',
+                            body: formData
+                        }).then(function() {
+                            var button = form.querySelector('button');
+                            var icon = button.querySelector('i');
+                            if (button.classList.contains('is-liked')) {
+                                button.classList.remove('is-liked');
+                                icon.classList.remove('bi-heart-fill');
+                                icon.classList.add('bi-heart');
+                            } else {
+                                button.classList.add('is-liked');
+                                icon.classList.remove('bi-heart');
+                                icon.classList.add('bi-heart-fill');
+                            }
+                        });
+                    });
+                });
             })();
         </script>
     </body>

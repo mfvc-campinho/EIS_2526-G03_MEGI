@@ -109,9 +109,18 @@ usort($pastEvents, function ($a, $b) {
 $userFollows = $data['userFollows'] ?? [];
 $followingList = $userFollows[$currentUserId] ?? [];
 $followersCount = 0;
-foreach ($userFollows as $follower => $list) {
-    if (in_array($profileUserId, $list ?? [], true))
+$followersList = [];
+foreach ($userFollows as $followerId => $list) {
+    if (in_array($profileUserId, $list ?? [], true)) {
         $followersCount++;
+        // Find follower user data
+        foreach ($users as $u) {
+            if ((string)($u['id'] ?? $u['user_id']) === (string)$followerId) {
+                $followersList[] = $u;
+                break;
+            }
+        }
+    }
 }
 $isOwnerProfile = $currentUserId && $profileUserId && $currentUserId === $profileUserId;
 $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileUserId, $followingList, true);
@@ -218,7 +227,14 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 </div>
                                 <div>
                                     <p class="eyebrow-label"><i class="bi bi-heart"></i> Followers</p>
-                                    <p class="muted"><?php echo $followersCount; ?></p>
+                                    <p class="muted">
+                                        <?php echo $followersCount; ?>
+                                        <?php if ($followersCount > 0): ?>
+                                            <button type="button" class="explore-btn small ghost" onclick="document.getElementById('followers-modal').classList.add('open')" style="margin-left:8px; padding:4px 10px; font-size:0.85rem;">
+                                                <i class="bi bi-eye"></i> View
+                                            </button>
+                                        <?php endif; ?>
+                                    </p>
                                 </div>
                             </div>
 
@@ -357,6 +373,62 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
                 <?php endif; ?>  <!-- fecha if ($currentUser) -->
         </main>
+
+        <!-- Followers Modal -->
+        <div class="modal-backdrop" id="followers-modal">
+            <div class="modal-card" style="max-width:500px;">
+                <div class="modal-header" style="background: linear-gradient(135deg, #0b3b70 0%, #1e40af 100%);">
+                    <button class="modal-close" aria-label="Close" onclick="document.getElementById('followers-modal').classList.remove('open')">
+                        <i class="bi bi-x"></i>
+                    </button>
+                    <h3 style="font-size:1.8rem; margin:0; color:white;">Followers</h3>
+                </div>
+                <div class="modal-body" style="padding:24px; max-height:400px; overflow-y:auto;">
+                    <?php if (!empty($followersList)): ?>
+                        <ul style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;">
+                            <?php foreach ($followersList as $follower): ?>
+                                <?php
+                                $followerId = $follower['id'] ?? $follower['user_id'] ?? null;
+                                $followerName = $follower['user_name'] ?? $follower['username'] ?? 'Unknown';
+                                $followerPhoto = $follower['user_photo'] ?? '';
+                                if ($followerPhoto && !preg_match('#^https?://#', $followerPhoto)) {
+                                    $followerPhoto = '../../' . ltrim($followerPhoto, './');
+                                }
+                                ?>
+                                <li style="display:flex; align-items:center; gap:12px; padding:12px; background:#f9fafb; border-radius:12px; border:1px solid #e5e7eb;">
+                                    <div style="width:48px; height:48px; border-radius:50%; overflow:hidden; background:#e5e7eb; flex-shrink:0;">
+                                        <?php if (!empty($followerPhoto)): ?>
+                                            <img src="<?php echo htmlspecialchars($followerPhoto); ?>" alt="<?php echo htmlspecialchars($followerName); ?>" style="width:100%; height:100%; object-fit:cover;">
+                                        <?php else: ?>
+                                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-weight:700; color:#0b3b70; font-size:1.2rem;">
+                                                <?php echo strtoupper(substr($followerName, 0, 1)); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <a href="user_page.php?id=<?php echo urlencode($followerId); ?>" style="flex:1; font-weight:600; color:#0b3b70; text-decoration:none; font-size:1rem;" onmouseover="this.style.color='#0d3f7a';" onmouseout="this.style.color='#0b3b70';">
+                                        <?php echo htmlspecialchars($followerName); ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <p class="muted" style="text-align:center; color:#6b7280;">No followers yet.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:1000; backdrop-filter: blur(4px); }
+            .modal-backdrop.open { display:flex; animation: fadeIn 0.2s ease; }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            .modal-card { background:#fff; border-radius:18px; padding:0; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; animation: slideUp 0.3s ease; overflow:hidden; }
+            @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            .modal-header { padding: 24px 28px; position: relative; text-align: center; }
+            .modal-close { position: absolute; top: 12px; right: 12px; border:none; background: rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-size:20px; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+            .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+            .modal-body { padding: 24px; }
+        </style>
 
         <?php include __DIR__ . '/../includes/footer.php'; ?>
     </body>

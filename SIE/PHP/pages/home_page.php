@@ -22,6 +22,15 @@ $collectionItems = $data['collectionItems'] ?? [];
 $items = $data['items'] ?? [];
 $isAuthenticated = !empty($_SESSION['user']);
 
+// Build usersById lookup
+$usersById = [];
+foreach ($users as $u) {
+    $uid = $u['id'] ?? $u['user_id'] ?? null;
+    if ($uid) {
+        $usersById[$uid] = $u;
+    }
+}
+
 // Build lookup for items by id and collection
 $itemsById = [];
 foreach ($items as $it) {
@@ -205,7 +214,13 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                             <div class="product-card__owner">
                                                 <i class="bi bi-people"></i>
                                                 <a href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>" style="color: inherit; text-decoration: none;">
-                                                    <?php echo htmlspecialchars($col['ownerId']); ?>
+                                                    <?php 
+                                                        $ownerId = $col['ownerId'] ?? null;
+                                                        $ownerName = $ownerId && isset($usersById[$ownerId]) 
+                                                            ? ($usersById[$ownerId]['user_name'] ?? $usersById[$ownerId]['username'] ?? 'Unknown')
+                                                            : 'Unknown';
+                                                        echo htmlspecialchars($ownerName);
+                                                    ?>
                                                 </a>
                                             </div>
 

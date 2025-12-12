@@ -141,7 +141,7 @@ CREATE TABLE `event_ratings` (
   `event_id` varchar(255) NOT NULL,
   `user_id` varchar(255) NOT NULL,
   `rating` tinyint(4) NOT NULL,
-  `collection_id` varchar(255) DEFAULT NULL,
+  `collection_id` varchar(255) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -321,7 +321,7 @@ ALTER TABLE `events`
 --
 ALTER TABLE `event_ratings`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uniq_event_user` (`event_id`,`user_id`),
+  ADD UNIQUE KEY `uniq_event_user_collection` (`event_id`,`user_id`,`collection_id`),
   ADD KEY `idx_event_ratings_collection` (`collection_id`);
 
 --

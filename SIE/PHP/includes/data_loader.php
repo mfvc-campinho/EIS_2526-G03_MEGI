@@ -181,31 +181,30 @@ function load_app_data($mysqli)
   }
 
   $eventsUsers = [];
-  $seenKeys = [];
   foreach ($erRows as $r) {
     $eid = $r['event_id'] ?? null;
     $uid = $r['user_id'] ?? null;
     if (!$eid || !$uid) continue;
     $key = "{$eid}|{$uid}";
-    $seenKeys[$key] = true;
     $eventsUsers[] = [
       'eventId' => $eid,
       'userId' => $uid,
       'rating' => $r['rating'],
       'collectionId' => $r['collection_id'] ?? null,
-      'rsvp' => isset($rsvpMap[$key]) ? 1 : 0
+      'rsvp' => isset($rsvpMap[$key]) ? 1 : 0,
+      'type' => 'rating'
     ];
   }
-  // Add RSVPs without rating
+  // Add RSVPs (even if the user has rated specific collections)
   foreach ($rsvpMap as $key => $_) {
-    if (isset($seenKeys[$key])) continue;
     [$eid, $uid] = explode('|', $key, 2);
     $eventsUsers[] = [
       'eventId' => $eid,
       'userId' => $uid,
       'rating' => null,
       'collectionId' => null,
-      'rsvp' => 1
+      'rsvp' => 1,
+      'type' => 'rsvp'
     ];
   }
 

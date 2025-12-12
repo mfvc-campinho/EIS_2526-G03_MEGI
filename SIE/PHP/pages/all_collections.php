@@ -33,32 +33,36 @@ foreach ($collectionItems as $link) {
     }
 }
 
+// Collection types (same as in collections_form.php)
+$collectionTypes = [
+    'Collectible Cards',
+    'Coins',
+    'Stamps',
+    'Board Games',
+    'Toys & Figures',
+    'Comics',
+    'Memorabilia',
+    'Other'
+];
+
 $isAuth = !empty($_SESSION['user']);
 $currentUserId = $_SESSION['user']['id'] ?? null;
 $likedCollections = [];
-$collectionLikeCount = [];
-foreach ($userShowcases as $sc) {
-    $uid = $sc['ownerId'] ?? null;
-    $likes = $sc['likes'] ?? [];
-    foreach ($likes as $cid) {
-        $collectionLikeCount[$cid] = ($collectionLikeCount[$cid] ?? 0) + 1;
-        if ($uid === $currentUserId) {
-            $likedCollections[$cid] = true;
-        }
-    }
-}
-
 // Controls
 $sort = $_GET['sort'] ?? 'newest';
 $perPage = max(1, (int) ($_GET['perPage'] ?? 10));
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
+$typeFilter = isset($_GET['type']) ? trim($_GET['type']) : '';
+$myCollections = isset($_GET['mine']) && $_GET['mine'] === '1';
 
-// Apply search filter BEFORE sorting
+// Apply search and type filters BEFORE sorting
 $filteredCollections = $collections;
+
+// Filter by search query
 if ($searchQuery !== '') {
-    $filteredCollections = [];
-    foreach ($collections as $col) {
+    $temp = [];
+    foreach ($filteredCollections as $col) {
         $name = strtolower($col['name'] ?? '');
         $summary = strtolower($col['summary'] ?? '');
         $type = strtolower($col['type'] ?? '');
@@ -67,9 +71,32 @@ if ($searchQuery !== '') {
         if (strpos($name, $query) !== false || 
             strpos($summary, $query) !== false || 
             strpos($type, $query) !== false) {
-            $filteredCollections[] = $col;
+            $temp[] = $col;
         }
     }
+    $filteredCollections = $temp;
+}
+
+// Filter by type/category
+if ($typeFilter !== '' && $typeFilter !== 'all') {
+    $temp = [];
+    foreach ($filteredCollections as $col) {
+        if (($col['type'] ?? '') === $typeFilter) {
+            $temp[] = $col;
+        }
+    }
+    $filteredCollections = $temp;
+}
+
+// Filter by ownership (My Collections)
+if ($myCollections && $isAuth && $currentUserId) {
+    $temp = [];
+    foreach ($filteredCollections as $col) {
+        if (($col['ownerId'] ?? null) === $currentUserId) {
+            $temp[] = $col;
+        }
+    }
+    $filteredCollections = $temp;
 }
 
 // Sort the filtered collections
@@ -137,21 +164,71 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
 
                 <div class="top-controls">
                     <div class="left">
-                        <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                            <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
-                            <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
-                                <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
-                                <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
-                                <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
-                            </select>
-                            <label>Show
-                                <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
+                        <form id="filters" class="filters-form" method="GET">
+                            <div class="filter-chip">
+                                <label class="filter-chip__label" for="sort-select">
+                                    <i class="bi bi-funnel"></i>
+                                    <span>Sort by</span>
+                                </label>
+                                <select name="sort" id="sort-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+                                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
+                                    <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
+                                    <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-chip">
+                                <label class="filter-chip__label" for="type-select">
+                                    <i class="bi bi-tag"></i>
+                                    <span>Type</span>
+                                </label>
+                                <select name="type" id="type-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+                                    <option value="all" <?php echo $typeFilter === '' || $typeFilter === 'all' ? 'selected' : ''; ?>>All Types</option>
+                                    <?php foreach ($collectionTypes as $typeOption): ?>
+                                        <option value="<?php echo htmlspecialchars($typeOption); ?>" 
+                                            <?php echo $typeFilter === $typeOption ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($typeOption); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <?php if ($isAuth): ?>
+                                <?php 
+                                    $myCollectionsCount = 0;
+                                    foreach ($collections as $col) {
+                                        if (($col['ownerId'] ?? null) === $currentUserId) {
+                                            $myCollectionsCount++;
+                                        }
+                                    }
+                                ?>
+                                <button type="button" class="filter-chip filter-toggle <?php echo $myCollections ? 'is-active' : ''; ?>" 
+                                    onclick="toggleMyCollections(this.form, <?php echo $myCollections ? 'false' : 'true'; ?>)">
+                                    <?php if ($myCollections): ?>
+                                        <i class="bi bi-grid-3x3-gap"></i>
+                                        <span>All Collections</span>
+                                    <?php else: ?>
+                                        <i class="bi bi-person-circle"></i>
+                                        <span>My Collections</span>
+                                        <span class="filter-toggle__badge"><?php echo $myCollectionsCount; ?></span>
+                                    <?php endif; ?>
+                                </button>
+                                <input type="hidden" name="mine" value="<?php echo $myCollections ? '1' : '0'; ?>">
+                            <?php endif; ?>
+
+                            <div class="filter-chip filter-chip--compact">
+                                <label class="filter-chip__label" for="per-page-select">
+                                    <i class="bi bi-collection"></i>
+                                    <span>Show</span>
+                                </label>
+                                <select name="perPage" id="per-page-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
                                     <?php foreach ([5, 10, 20] as $opt): ?>
                                         <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                collections per page
-                            </label>
+                                <span class="filter-chip__hint">per page</span>
+                            </div>
+
                             <input type="hidden" name="page" value="1">
                         </form>
                     </div>
@@ -185,7 +262,6 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                 <div class="product-card__body">
                                     <p class="pill"><?php echo htmlspecialchars($col['type'] ?? ''); ?></p>
                                     <h3><a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name']); ?></a></h3>
-                                    <p class="muted"><?php echo htmlspecialchars($col['summary']); ?></p>
                                     <div class="product-card__meta">
                                         <div class="product-card__owner">
                                             <i class="bi bi-people"></i>
@@ -429,6 +505,16 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                 if (filtersForm) {
                     filtersForm.addEventListener('submit', saveScroll);
                 }
+
+                // Toggle My Collections filter
+                window.toggleMyCollections = function(form, enable) {
+                    var input = form.querySelector('input[name="mine"]');
+                    if (input) {
+                        input.value = enable ? '1' : '0';
+                    }
+                    saveScroll();
+                    form.submit();
+                };
 
                 // Prevent page scroll on like forms
                 document.querySelectorAll('.like-form').forEach(function(form) {

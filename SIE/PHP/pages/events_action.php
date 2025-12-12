@@ -11,6 +11,44 @@ if (!$currentUser) {
   exit;
 }
 
+$appTimezone = new DateTimeZone(date_default_timezone_get());
+$now = new DateTime('now', $appTimezone);
+$today = $now->format('Y-m-d');
+
+if (!function_exists('parse_event_datetime_helper')) {
+  function parse_event_datetime_helper($raw, DateTimeZone $tz)
+  {
+    $result = ['date' => null, 'hasTime' => false];
+    if (!$raw) return $result;
+    $trim = trim((string)$raw);
+    if ($trim === '') return $result;
+
+    $formats = [
+      ['Y-m-d H:i:s', true],
+      ['Y-m-d H:i', true],
+      ['Y-m-d\TH:i:s', true],
+      ['Y-m-d\TH:i', true],
+      [DateTime::ATOM, true],
+      ['Y-m-d', false]
+    ];
+
+    foreach ($formats as [$format, $hasTime]) {
+      $dt = DateTime::createFromFormat($format, $trim, $tz);
+      if ($dt instanceof DateTime) {
+        return ['date' => $dt, 'hasTime' => $hasTime];
+      }
+    }
+
+    try {
+      $dt = new DateTime($trim, $tz);
+      $hasTime = (bool)preg_match('/\d{1,2}:\d{2}/', $trim);
+      return ['date' => $dt, 'hasTime' => $hasTime];
+    } catch (Exception $e) {
+      return $result;
+    }
+  }
+}
+
 function redirect_success($msg)
 {
   flash_set('success', $msg);
@@ -72,15 +110,33 @@ if ($action === 'create') {
   $description = trim($_POST['description'] ?? '');
   $type = trim($_POST['type'] ?? '');
   $localization = trim($_POST['localization'] ?? '');
-  $date = trim($_POST['date'] ?? '');
-  if ($localization === '' || $date === '') {
+  $rawDate = trim($_POST['date'] ?? '');
+  if ($localization === '' || $rawDate === '') {
     $mysqli->close();
     redirect_error('Indique a localização e a data do evento.');
   }
+  $parsedInput = parse_event_datetime_helper($rawDate, $appTimezone);
+  $dateObj = $parsedInput['date'];
+  $inputHasTime = $parsedInput['hasTime'];
+  if (!$dateObj) {
+    $mysqli->close();
+    redirect_error('Data/hora do evento inválida.');
+  }
+  $isPast = $inputHasTime
+    ? ($dateObj <= $now)
+    : ($dateObj->format('Y-m-d') < $today);
+  if ($isPast) {
+    $mysqli->close();
+    redirect_error('Não pode marcar eventos para datas ou horas no passado.');
+  }
+  if (!$inputHasTime) {
+    $dateObj->setTime(0, 0, 0);
+  }
+  $dateForSql = $dateObj->format('Y-m-d H:i:s');
   $primaryCol = $collectionIds[0];
 
   $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,created_at,host_user_id,collection_id) VALUES (?,?,?,?,?,?,?,NOW(),?,?)');
-  $stmt->bind_param('sssssssss', $id, $name, $localization, $date, $type, $summary, $description, $currentUser, $primaryCol);
+  $stmt->bind_param('sssssssss', $id, $name, $localization, $dateForSql, $type, $summary, $description, $currentUser, $primaryCol);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -95,6 +151,32 @@ if ($action === 'update') {
   if (!$id) redirect_error('ID em falta.');
   if (!$collectionIds) redirect_error('Selecione pelo menos uma coleção.');
 
+  $currentEventStmt = $mysqli->prepare('SELECT host_user_id, event_date FROM events WHERE event_id = ? LIMIT 1');
+  $currentEventStmt->bind_param('s', $id);
+  $currentEventStmt->execute();
+  $currentEvent = $currentEventStmt->get_result()->fetch_assoc();
+  $currentEventStmt->close();
+  if (!$currentEvent) {
+    $mysqli->close();
+    redirect_error('Evento não encontrado.');
+  }
+  if (($currentEvent['host_user_id'] ?? null) !== $currentUser) {
+    $mysqli->close();
+    redirect_error('Não tem permissões para editar este evento.');
+  }
+  $parsedEventDate = parse_event_datetime_helper($currentEvent['event_date'] ?? null, $appTimezone);
+  $eventDateObj = $parsedEventDate['date'];
+  $hasTime = $parsedEventDate['hasTime'];
+  if ($eventDateObj) {
+    $eventHasEnded = $hasTime
+      ? ($eventDateObj <= $now)
+      : ($eventDateObj->format('Y-m-d') < $today);
+    if ($eventHasEnded) {
+      $mysqli->close();
+      redirect_error('Eventos que já aconteceram não podem ser editados.');
+    }
+  }
+
   // ownership check
   foreach ($collectionIds as $cid) {
     if (!user_owns_collection($mysqli, $cid, $currentUser)) {
@@ -108,15 +190,33 @@ if ($action === 'update') {
   $description = trim($_POST['description'] ?? '');
   $type = trim($_POST['type'] ?? '');
   $localization = trim($_POST['localization'] ?? '');
-  $date = trim($_POST['date'] ?? '');
-  if ($localization === '' || $date === '') {
+  $rawDate = trim($_POST['date'] ?? '');
+  if ($localization === '' || $rawDate === '') {
     $mysqli->close();
     redirect_error('Indique a localização e a data do evento.');
   }
+  $parsedInput = parse_event_datetime_helper($rawDate, $appTimezone);
+  $dateObj = $parsedInput['date'];
+  $inputHasTime = $parsedInput['hasTime'];
+  if (!$dateObj) {
+    $mysqli->close();
+    redirect_error('Data/hora do evento inválida.');
+  }
+  $isPast = $inputHasTime
+    ? ($dateObj <= $now)
+    : ($dateObj->format('Y-m-d') < $today);
+  if ($isPast) {
+    $mysqli->close();
+    redirect_error('Não pode marcar eventos para datas ou horas no passado.');
+  }
+  if (!$inputHasTime) {
+    $dateObj->setTime(0, 0, 0);
+  }
+  $dateForSql = $dateObj->format('Y-m-d H:i:s');
   $primaryCol = $collectionIds[0];
 
   $stmt = $mysqli->prepare('UPDATE events SET name=?, localization=?, event_date=?, type=?, summary=?, description=?, collection_id=? WHERE event_id=?');
-  $stmt->bind_param('ssssssss', $name, $localization, $date, $type, $summary, $description, $primaryCol, $id);
+  $stmt->bind_param('ssssssss', $name, $localization, $dateForSql, $type, $summary, $description, $primaryCol, $id);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -154,7 +254,7 @@ if ($action === 'delete') {
 
 // Fetch helper
 $fetchEvent = function ($mysqli, $eventId) {
-  $stmt = $mysqli->prepare('SELECT event_id, host_user_id, collection_id FROM events WHERE event_id = ? LIMIT 1');
+  $stmt = $mysqli->prepare('SELECT event_id, host_user_id, collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
   $stmt->bind_param('s', $eventId);
   $stmt->execute();
   $res = $stmt->get_result();
@@ -211,22 +311,71 @@ if ($action === 'rsvp') {
 }
 
 if ($action === 'rate') {
-  $id = $_POST['id'] ?? null;
+  $eventId = $_POST['id'] ?? null;
+  $collectionId = $_POST['collection_id'] ?? null;
   $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : null;
-  if (!$id || !$rating || $rating < 1 || $rating > 5) redirect_error('Dados de rating inválidos.');
-  $row = $fetchEvent($mysqli, $id);
+  if (!$eventId || !$collectionId || !$rating || $rating < 1 || $rating > 5) {
+    $mysqli->close();
+    redirect_error('Dados de avaliação inválidos.');
+  }
+
+  $row = $fetchEvent($mysqli, $eventId);
   if (!$row) {
     $mysqli->close();
-    redirect_error('Event not found.');
+    redirect_error('Evento não encontrado.');
   }
-  $collectionId = $row['collection_id'] ?? null;
-  $stmt = $mysqli->prepare('REPLACE INTO event_ratings (event_id,user_id,rating,collection_id) VALUES (?,?,?,?)');
-  $stmt->bind_param('ssis', $id, $currentUser, $rating, $collectionId);
+
+  // Apenas permitir avaliação após o evento
+  $parsedEventDate = parse_event_datetime_helper($row['event_date'] ?? null, $appTimezone);
+  $eventDateObj = $parsedEventDate['date'];
+  $hasTime = $parsedEventDate['hasTime'];
+  if (!$eventDateObj) {
+    $mysqli->close();
+    redirect_error('Data do evento inválida.');
+  }
+  $eventHasEnded = $hasTime
+    ? ($eventDateObj <= $now)
+    : ($eventDateObj->format('Y-m-d') < $today);
+  if (!$eventHasEnded) {
+    $mysqli->close();
+    redirect_error('Só pode avaliar coleções após o evento ocorrer.');
+  }
+
+  // Verificar RSVP
+  $chkRsvp = $mysqli->prepare('SELECT 1 FROM event_rsvps WHERE event_id = ? AND user_id = ? LIMIT 1');
+  $chkRsvp->bind_param('ss', $eventId, $currentUser);
+  $chkRsvp->execute();
+  $hasRsvp = $chkRsvp->get_result()->fetch_assoc();
+  $chkRsvp->close();
+  if (!$hasRsvp) {
+    $mysqli->close();
+    redirect_error('Só participantes podem avaliar coleções.');
+  }
+
+  // Garantir que a coleção pertence ao evento
+  $linked = false;
+  $linkStmt = $mysqli->prepare('SELECT 1 FROM collection_events WHERE event_id = ? AND collection_id = ? LIMIT 1');
+  $linkStmt->bind_param('ss', $eventId, $collectionId);
+  $linkStmt->execute();
+  if ($linkStmt->get_result()->fetch_assoc()) {
+    $linked = true;
+  }
+  $linkStmt->close();
+  if (!$linked && !empty($row['collection_id']) && $row['collection_id'] === $collectionId) {
+    $linked = true;
+  }
+  if (!$linked) {
+    $mysqli->close();
+    redirect_error('Coleção não está associada a este evento.');
+  }
+
+  $stmt = $mysqli->prepare('REPLACE INTO event_ratings (event_id,user_id,collection_id,rating) VALUES (?,?,?,?)');
+  $stmt->bind_param('sssi', $eventId, $currentUser, $collectionId, $rating);
   $ok = $stmt->execute();
   $stmt->close();
   $mysqli->close();
-  if ($ok) redirect_success('Rating registado.');
-  redirect_error('Falha ao registar rating.');
+  if ($ok) redirect_success('Avaliação registada.');
+  redirect_error('Falha ao registar avaliação.');
 }
 
 $mysqli->close();

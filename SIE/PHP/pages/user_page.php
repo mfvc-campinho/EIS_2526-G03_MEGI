@@ -176,7 +176,11 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
                 <?php if (!$profileUser): ?>
                     <section class="profile-hero">
-                        <p class="muted">User not found.</p>
+                        <?php if (!$isAuthenticated): ?>
+                            <p class="muted">Please <a href="user_create.php">login</a> to view your profile.</p>
+                        <?php else: ?>
+                            <p class="muted">User not found.</p>
+                        <?php endif; ?>
                     </section>
                 <?php else: ?>
                     <!-- Photo + Name Section -->

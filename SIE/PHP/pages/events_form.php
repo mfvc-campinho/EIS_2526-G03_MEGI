@@ -16,6 +16,44 @@ $collections = $data['collections'] ?? [];
 $collectionEvents = $data['collectionEvents'] ?? [];
 $mysqli->close();
 
+$appTimezone = new DateTimeZone(date_default_timezone_get());
+$now = new DateTime('now', $appTimezone);
+$today = $now->format('Y-m-d');
+
+if (!function_exists('parse_event_datetime_helper')) {
+    function parse_event_datetime_helper($raw, DateTimeZone $tz)
+    {
+        $result = ['date' => null, 'hasTime' => false];
+        if (!$raw) return $result;
+        $trim = trim((string)$raw);
+        if ($trim === '') return $result;
+
+        $formats = [
+            ['Y-m-d H:i:s', true],
+            ['Y-m-d H:i', true],
+            ['Y-m-d\TH:i:s', true],
+            ['Y-m-d\TH:i', true],
+            [DateTime::ATOM, true],
+            ['Y-m-d', false]
+        ];
+
+        foreach ($formats as [$format, $hasTime]) {
+            $dt = DateTime::createFromFormat($format, $trim, $tz);
+            if ($dt instanceof DateTime) {
+                return ['date' => $dt, 'hasTime' => $hasTime];
+            }
+        }
+
+        try {
+            $dt = new DateTime($trim, $tz);
+            $hasTime = (bool)preg_match('/\d{1,2}:\d{2}/', $trim);
+            return ['date' => $dt, 'hasTime' => $hasTime];
+        } catch (Exception $e) {
+            return $result;
+        }
+    }
+}
+
 $id = $_GET['id'] ?? null;
 $editing = false;
 $event = ['id' => '', 'name' => '', 'summary' => '', 'description' => '', 'type' => '', 'localization' => '', 'date' => '', 'collectionId' => ''];
@@ -42,8 +80,40 @@ if ($id) {
         header('Location: event_page.php');
         exit;
     }
+
+    $hostId = $event['hostUserId'] ?? $event['host_user_id'] ?? null;
+    if ($hostId !== $currentUserId) {
+        flash_set('error', 'Não tem permissões para editar este evento.');
+        header('Location: event_page.php');
+        exit;
+    }
+
+    $parsedDate = parse_event_datetime_helper($event['date'] ?? null, $appTimezone);
+    $eventDateObj = $parsedDate['date'];
+    $hasTime = $parsedDate['hasTime'];
+    if ($eventDateObj) {
+        $eventHasEnded = $hasTime
+            ? ($eventDateObj <= $now)
+            : ($eventDateObj->format('Y-m-d') < $today);
+        if ($eventHasEnded) {
+            flash_set('error', 'Eventos que já aconteceram não podem ser editados.');
+            header('Location: event_page.php');
+            exit;
+        }
+    }
 }
 $existingCollections = array_unique($existingCollections);
+
+$prefillDateValue = '';
+$rawEventDate = $event['date'] ?? '';
+if ($rawEventDate !== '') {
+    $parsedPrefill = parse_event_datetime_helper($rawEventDate, $appTimezone);
+    if ($parsedPrefill['date'] instanceof DateTime) {
+        $prefillDateValue = $parsedPrefill['date']->format('Y-m-d\TH:i');
+    } else {
+        $prefillDateValue = str_replace(' ', 'T', substr($rawEventDate, 0, 16));
+    }
+}
 ?>
 
 
@@ -113,7 +183,9 @@ $currentType = $event['type'] ?? null;
                 <input type="text" name="localization" required value="<?php echo htmlspecialchars($event['localization']); ?>">
 
                 <label>Date <span class="required-badge">R</span></label>
-                <input type="datetime-local" name="date" required value="<?php echo htmlspecialchars(substr($event['date'], 0, 16)); ?>">
+                  <input type="datetime-local" name="date" required
+                      min="<?php echo htmlspecialchars($now->format('Y-m-d\TH:i')); ?>"
+                      value="<?php echo htmlspecialchars($prefillDateValue); ?>">
 
                 <label>Collections (can associate to multiple of yours) <span class="required-badge">R</span></label>
                 <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">

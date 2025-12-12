@@ -560,17 +560,45 @@ body {
 
 .collection-container .item-card .card-buttons {
   margin-top: auto;
-  padding: 0 14px 14px;
+  padding: 0 12px 14px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
 }
 
 .collection-container .item-buttons .explore-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  flex: 0 1 auto;
+  min-width: 0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.collection-container .item-buttons .explore-btn.small {
+  padding: 7px 11px;
+  font-size: 0.8rem;
+}
+
+.collection-container .item-buttons .explore-btn i {
+  font-size: 0.88rem;
+  flex-shrink: 0;
+}
+
+.collection-container .item-buttons .like-form {
+  display: inline-flex;
+  margin: 0;
+}
+
+.collection-container .item-buttons form {
+  margin: 0;
 }
 
 @media (max-width: 480px) {
@@ -579,7 +607,13 @@ body {
   }
 
   .collection-container .item-card .card-buttons {
-    padding: 0 12px 12px;
+    padding: 0 10px 12px;
+    gap: 6px;
+  }
+
+  .collection-container .item-buttons .explore-btn {
+    padding: 6px 10px;
+    font-size: 0.78rem;
   }
 }
 

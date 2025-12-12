@@ -35,7 +35,9 @@ if (!$user) {
   <title>Edit Profile — PHP</title>
   <link rel="stylesheet" href="../../CSS/general.css">
   <link rel="stylesheet" href="../../CSS/forms.css">
+  <link rel="stylesheet" href="../../CSS/christmas.css">
   <script src="../../JS/theme-toggle.js"></script>
+  <script src="../../JS/christmas-theme.js"></script>
 </head>
 
 <body>

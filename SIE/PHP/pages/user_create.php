@@ -16,7 +16,9 @@ require_once __DIR__ . '/../includes/flash.php';
         <title>Create Account • PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
+        <link rel="stylesheet" href="../../CSS/christmas.css">
         <script src="../../JS/theme-toggle.js"></script>
+        <script src="../../JS/christmas-theme.js"></script>
     </head>
 
 

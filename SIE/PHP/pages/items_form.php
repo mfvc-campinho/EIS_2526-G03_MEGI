@@ -83,7 +83,9 @@ $existingCollections = array_unique($existingCollections);
         <title><?php echo $editing ? 'Edit' : 'New'; ?> Item • PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
+        <link rel="stylesheet" href="../../CSS/christmas.css">
         <script src="../../JS/theme-toggle.js"></script>
+        <script src="../../JS/christmas-theme.js"></script>
     </head>
 
     <body>

@@ -460,7 +460,7 @@ if ($collection) {
                                     </div>
 
                                     <div class="card-buttons item-buttons">
-                                        <a class="explore-btn"
+                                        <a class="explore-btn small"
                                            href="item_page.php?id=<?php echo urlencode($itemId); ?>">
                                             Explore More
                                         </a>
@@ -471,13 +471,13 @@ if ($collection) {
                                                 <input type="hidden" name="id"
                                                        value="<?php echo htmlspecialchars($itemId); ?>">
                                                 <button type="submit"
-                                                        class="explore-btn ghost<?php echo $isLiked ? ' success' : ''; ?>">
+                                                        class="explore-btn ghost small<?php echo $isLiked ? ' success' : ''; ?>">
                                                     <i class="bi <?php echo $isLiked ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
 				<?php echo $likes; ?>
                                                 </button>
                                             </form>
                                         <?php endif; ?>            <?php if ($isOwner): ?>
-                                            <a class="explore-btn ghost"
+                                            <a class="explore-btn ghost small"
                                                href="items_form.php?id=<?php echo urlencode($itemId); ?>">
                                                 Edit
                                             </a>
@@ -487,7 +487,7 @@ if ($collection) {
                                                 <input type="hidden" name="id"
                                                        value="<?php echo htmlspecialchars($itemId); ?>">
                                                 <button type="submit"
-                                                        class="explore-btn danger"
+                                                        class="explore-btn danger small"
                                                         onclick="return confirm('Delete this item?');">
                                                     Delete
                                                 </button>
@@ -512,13 +512,14 @@ if ($collection) {
                         <div class="collection-events-list">
         <?php foreach ($eventsForCollection as $ev): ?>
             <?php
-            $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
-            $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
+            $entryFee = $ev['entry_fee'] ?? $ev['entryFee'] ?? 0;
+            $entryFeeNum = is_numeric($entryFee) ? (float) $entryFee : 0;
             $category = $ev['category'] ?? $ev['type'] ?? 'Event';
             $eventDate = substr($ev['date'] ?? '', 0, 16);
             $location = $ev['localization'] ?? $ev['location'] ?? '';
+            $eventId = $ev['id'] ?? $ev['event_id'] ?? '';
             ?>
-                                <article class="collection-event-card">
+                                <a href="event_page.php?status=<?php echo urlencode($eventId ? 'all' : 'upcoming'); ?>" class="collection-event-card" style="text-decoration: none; color: inherit; display: block;">
                                     <div class="event-card-header">
                                         <span class="event-type-badge"><?php echo htmlspecialchars($category); ?></span>
                                     </div>
@@ -537,10 +538,10 @@ if ($collection) {
                                         <?php endif; ?>
                                         <div class="event-info-item">
                                             <i class="bi bi-cash-coin"></i>
-                                            <span><?php echo $price !== null ? '€' . number_format($price, 2, '.', '') : 'Free'; ?></span>
+                                            <span><?php echo $entryFeeNum > 0 ? '€' . number_format($entryFeeNum, 2, '.', '') : 'Free'; ?></span>
                                         </div>
                                     </div>
-                                </article>
+                                </a>
         <?php endforeach; ?>
                         </div>
                                     <?php endif; ?>

@@ -70,8 +70,54 @@ $collectionsPage = array_slice($collections, $offset, $perPage);
 $startDisplay = $totalCollections ? $offset + 1 : 0;
 $endDisplay = $totalCollections ? min($offset + $perPage, $totalCollections) : 0;
 
-$upcomingEvents = array_filter($events, function ($e) {
-    return empty($e['date']) ? false : (strtotime($e['date']) >= strtotime('today'));
+$appTimezone = new DateTimeZone(date_default_timezone_get());
+$now = new DateTime('now', $appTimezone);
+$today = $now->format('Y-m-d');
+
+if (!function_exists('parse_event_datetime_home')) {
+    function parse_event_datetime_home($raw, DateTimeZone $tz) {
+        $result = ['date' => null, 'hasTime' => false];
+        if (!$raw) return $result;
+        $trim = trim((string)$raw);
+        if ($trim === '') return $result;
+        
+        $formats = [
+            ['Y-m-d H:i:s', true],
+            ['Y-m-d H:i', true],
+            ['Y-m-d\TH:i:s', true],
+            ['Y-m-d\TH:i', true],
+            [DateTime::ATOM, true],
+            ['Y-m-d', false]
+        ];
+        
+        foreach ($formats as [$format, $hasTime]) {
+            $dt = DateTime::createFromFormat($format, $trim, $tz);
+            if ($dt instanceof DateTime) {
+                return ['date' => $dt, 'hasTime' => $hasTime];
+            }
+        }
+        
+        try {
+            $dt = new DateTime($trim, $tz);
+            $hasTime = (bool)preg_match('/\d{1,2}:\d{2}/', $trim);
+            return ['date' => $dt, 'hasTime' => $hasTime];
+        } catch (Exception $e) {
+            return $result;
+        }
+    }
+}
+
+$upcomingEvents = array_filter($events, function ($e) use ($appTimezone, $now, $today) {
+    $parsed = parse_event_datetime_home($e['date'] ?? null, $appTimezone);
+    $eventDateObj = $parsed['date'];
+    $hasTime = $parsed['hasTime'];
+    if (!$eventDateObj) return false;
+    
+    if ($hasTime) {
+        return $eventDateObj > $now;
+    } else {
+        return $eventDateObj->format('Y-m-d') >= $today;
+    }
 });
 $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 ?>
@@ -299,22 +345,45 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                     <div class="events-grid">
                         <?php if ($upcomingEvents): ?>
                             <?php foreach ($upcomingEvents as $evt): ?>
+                                <?php
+                                $parsed = parse_event_datetime_home($evt['date'] ?? null, $appTimezone);
+                                $eventDateObj = $parsed['date'];
+                                $hasTime = $parsed['hasTime'];
+                                
+                                $monthNames = [
+                                    1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
+                                    5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
+                                    9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro'
+                                ];
+                                
+                                $dateDisplay = '';
+                                if ($eventDateObj) {
+                                    $day = (int)$eventDateObj->format('d');
+                                    $month = (int)$eventDateObj->format('m');
+                                    $year = $eventDateObj->format('Y');
+                                    $dateDisplay = "{$day} de {$monthNames[$month]}";
+                                    
+                                    if ($hasTime) {
+                                        $time = $eventDateObj->format('H:i');
+                                        $dateDisplay .= " às {$time}";
+                                    }
+                                }
+                                ?>
                                 <article class="event-card">
                                     <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
                                     <h3><?php echo htmlspecialchars($evt['name']); ?></h3>
-                                    <p class="muted"><?php echo htmlspecialchars($evt['summary']); ?></p>
                                     <ul class="event-meta">
                                         <li>
                                             <i class="bi bi-calendar-event"></i>
-                                            <?php echo htmlspecialchars(substr($evt['date'], 0, 16)); ?>
+                                            <?php echo htmlspecialchars($dateDisplay); ?>
                                         </li>
                                         <li>
-                                            <i class="bi bi-geo-alt"></i>
+                                            <i class="bi bi-geo-alt-fill"></i>
                                             <?php echo htmlspecialchars($evt['localization']); ?>
                                         </li>
                                     </ul>
                                     <a class="explore-btn small"
-                                       href="event_page.php?id=<?php echo urlencode($evt['id']); ?>">
+                                       href="event_page.php">
                                          See event
                                     </a>
                                 </article>

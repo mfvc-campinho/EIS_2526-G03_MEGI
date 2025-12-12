@@ -296,6 +296,28 @@ foreach ($eventsUsers as $entry) {
     .modal-info-content { flex: 1; }
     .modal-info-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 4px; }
     .modal-info-value { font-size: 1rem; font-weight: 600; color: #1f2937; }
+    /* Calendar Styles */
+    .calendar-toggle-btn { padding: 10px 18px; background: #3b82f6; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
+    .calendar-toggle-btn:hover { background: #2563eb; }
+    .calendar-toggle-btn.active { background: #1e40af; }
+    .calendar-view { max-width: 1200px; margin: 0 auto 40px; display: none; background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .calendar-view.show { display: block; }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .calendar-header h2 { margin: 0; font-size: 1.5rem; color: #1f2937; }
+    .calendar-nav { display: flex; gap: 8px; }
+    .calendar-nav button { padding: 8px 16px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .calendar-nav button:hover { background: #e5e7eb; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+    .calendar-day-header { background: #f9fafb; padding: 12px 8px; text-align: center; font-weight: 700; font-size: 0.85rem; color: #6b7280; text-transform: uppercase; }
+    .calendar-day { background: white; min-height: 100px; padding: 8px; position: relative; }
+    .calendar-day.empty { background: #fafafa; }
+    .calendar-day.today { background: #eff6ff; border: 2px solid #3b82f6; }
+    .calendar-day-number { font-weight: 700; color: #374151; margin-bottom: 6px; font-size: 0.9rem; }
+    .calendar-day.empty .calendar-day-number { color: #9ca3af; }
+    .calendar-event-item { background: #dbeafe; border-left: 3px solid #3b82f6; padding: 4px 6px; margin-bottom: 4px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: background 0.2s; }
+    .calendar-event-item:hover { background: #bfdbfe; }
+    .calendar-event-time { font-weight: 600; color: #1e40af; display: block; }
+    .calendar-event-name { color: #1f2937; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   </style>
 </head>
 
@@ -329,10 +351,28 @@ foreach ($eventsUsers as $entry) {
       <a class="<?php echo $status==='past'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'past','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Past <?php echo $pastCount; ?></a>
     </div>
 
-    <div style="text-align:center; margin-bottom: 12px;">
+    <div style="text-align:center; margin-bottom: 12px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
       <?php if ($isAuth): ?>
         <a class="explore-btn success" href="events_form.php">+ New Event</a>
       <?php endif; ?>
+      <button type="button" class="calendar-toggle-btn" id="calendar-toggle-btn">
+        <i class="bi bi-calendar3"></i>
+        <span id="calendar-toggle-text">Show Calendar</span>
+      </button>
+    </div>
+
+    <div class="calendar-view" id="calendar-view">
+      <div class="calendar-header">
+        <h2 id="calendar-month-year">December 2024</h2>
+        <div class="calendar-nav">
+          <button type="button" id="calendar-prev"><i class="bi bi-chevron-left"></i> Prev</button>
+          <button type="button" id="calendar-today">Today</button>
+          <button type="button" id="calendar-next">Next <i class="bi bi-chevron-right"></i></button>
+        </div>
+      </div>
+      <div class="calendar-grid" id="calendar-grid">
+        <!-- Calendar will be rendered by JavaScript -->
+      </div>
     </div>
 
     <form class="controls" method="GET">
@@ -836,6 +876,152 @@ foreach ($eventsUsers as $entry) {
         if (e.key === 'Escape' && modal.classList.contains('open')) {
           modal.classList.remove('open');
         }
+      });
+    })();
+
+    // Calendar functionality
+    (function() {
+      const calendarView = document.getElementById('calendar-view');
+      const calendarGrid = document.getElementById('calendar-grid');
+      const calendarMonthYear = document.getElementById('calendar-month-year');
+      const calendarToggleBtn = document.getElementById('calendar-toggle-btn');
+      const calendarToggleText = document.getElementById('calendar-toggle-text');
+      const calendarPrevBtn = document.getElementById('calendar-prev');
+      const calendarTodayBtn = document.getElementById('calendar-today');
+      const calendarNextBtn = document.getElementById('calendar-next');
+
+      const monthsPT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      const daysPT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+      let currentDate = new Date();
+      let allEvents = <?php echo json_encode(array_values($events)); ?>;
+
+      function parseEventDate(dateStr) {
+        if (!dateStr) return null;
+        const date = new Date(dateStr.replace(' ', 'T'));
+        return isNaN(date.getTime()) ? null : date;
+      }
+
+      function isFutureEvent(dateStr) {
+        const eventDate = parseEventDate(dateStr);
+        if (!eventDate) return false;
+        const now = new Date();
+        return eventDate >= now;
+      }
+
+      function renderCalendar(year, month) {
+        calendarGrid.innerHTML = '';
+        calendarMonthYear.textContent = `${monthsPT[month]} ${year}`;
+
+        // Day headers
+        daysPT.forEach(day => {
+          const header = document.createElement('div');
+          header.className = 'calendar-day-header';
+          header.textContent = day;
+          calendarGrid.appendChild(header);
+        });
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const firstDayOfWeek = firstDay.getDay();
+        const daysInMonth = lastDay.getDate();
+
+        const today = new Date();
+        const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+        // Empty cells for days before month starts
+        for (let i = 0; i < firstDayOfWeek; i++) {
+          const emptyDay = document.createElement('div');
+          emptyDay.className = 'calendar-day empty';
+          calendarGrid.appendChild(emptyDay);
+        }
+
+        // Days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dayCell = document.createElement('div');
+          dayCell.className = 'calendar-day';
+          
+          if (isCurrentMonth && day === today.getDate()) {
+            dayCell.classList.add('today');
+          }
+
+          const dayNumber = document.createElement('div');
+          dayNumber.className = 'calendar-day-number';
+          dayNumber.textContent = day;
+          dayCell.appendChild(dayNumber);
+
+          // Find events for this day
+          const dayDate = new Date(year, month, day);
+          const dayDateStr = dayDate.toISOString().split('T')[0];
+
+          const dayEvents = allEvents.filter(evt => {
+            if (!isFutureEvent(evt.date)) return false;
+            const evtDate = parseEventDate(evt.date);
+            if (!evtDate) return false;
+            const evtDateStr = evtDate.toISOString().split('T')[0];
+            return evtDateStr === dayDateStr;
+          });
+
+          dayEvents.forEach(evt => {
+            const evtDate = parseEventDate(evt.date);
+            const eventItem = document.createElement('div');
+            eventItem.className = 'calendar-event-item';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'calendar-event-time';
+            timeSpan.textContent = evtDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+            eventItem.appendChild(timeSpan);
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'calendar-event-name';
+            nameSpan.textContent = evt.name || 'Evento';
+            nameSpan.title = evt.name || 'Evento';
+            eventItem.appendChild(nameSpan);
+
+            eventItem.addEventListener('click', function() {
+              // Find the corresponding button in the grid and trigger click
+              const buttons = document.querySelectorAll('.js-view-event');
+              buttons.forEach(btn => {
+                if (btn.getAttribute('data-name') === evt.name) {
+                  btn.click();
+                }
+              });
+            });
+
+            dayCell.appendChild(eventItem);
+          });
+
+          calendarGrid.appendChild(dayCell);
+        }
+      }
+
+      calendarToggleBtn.addEventListener('click', function() {
+        const isVisible = calendarView.classList.contains('show');
+        if (isVisible) {
+          calendarView.classList.remove('show');
+          calendarToggleBtn.classList.remove('active');
+          calendarToggleText.textContent = 'Show Calendar';
+        } else {
+          calendarView.classList.add('show');
+          calendarToggleBtn.classList.add('active');
+          calendarToggleText.textContent = 'Hide Calendar';
+          renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        }
+      });
+
+      calendarPrevBtn.addEventListener('click', function() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+
+      calendarTodayBtn.addEventListener('click', function() {
+        currentDate = new Date();
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+
+      calendarNextBtn.addEventListener('click', function() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
       });
     })();
   </script>

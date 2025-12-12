@@ -38,7 +38,9 @@ $team = [
   <link rel="stylesheet" href="../../CSS/general.css">
   <link rel="stylesheet" href="team_page.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../../CSS/christmas.css">
   <script src="../../JS/theme-toggle.js"></script>
+  <script src="../../JS/christmas-theme.js"></script>
 </head>
 
 <body>

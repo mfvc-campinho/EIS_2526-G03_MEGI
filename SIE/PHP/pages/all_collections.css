@@ -71,313 +71,131 @@ body {
 }
 
 .filter-chip__select {
-  .product-card h3 a {
-    position: relative;
-    display: inline-block;
-    text-decoration: none;
-    background: linear-gradient(120deg, #0f172a, #1d4ed8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    background-size: 200% 100%;
-    background-position: 0 0;
-    transition: background-position 0.35s ease, transform 0.15s ease;
-  }
+  min-width: 120px;
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  color: #0f172a;
+}
 
-  .product-card__meta {
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-direction: row;
-    flex-direction: row;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    -ms-flex-align: center;
-    align-items: center;
-    margin-top: auto;
-    padding-top: 10px;
-    gap: 10px;
-    font-size: 0.95rem;
-    color: #0b3b70;
-    text-align: left;
-    min-height: 48px;
-  }
-
-  .product-card__owner,
-  .product-card__date {
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-pack: start;
-    justify-content: flex-start;
-    -ms-flex-align: center;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .product-card__owner {
-    color: #0b3b70;
-    font-weight: 600;
-    font-size: 0.85rem;
-  }
-
-  .product-card__date {
-    font-size: 0.85rem;
-    color: #4b5f82;
-  }
-
-  .product-card__meta i {
-    margin-right: 4px;
-    font-size: 0.95rem;
-    color: #1b6bca;
-  }
-
-
-  /* BOTÕES DE AÇÃO - REDESENHADOS */
-
-  .action-icon {
-    /* Tamanho reduzido e mais curto */
-    width: 56px;
-    height: 56px;
-    min-width: 56px;
-    min-height: 56px;
-
-    /* Cores - branco, contorno azul escuro */
-    background: #ffffff;
-    color: #1e3a8a;
-    border: 2.5px solid #1e3a8a;
-
-    /* Estilo elegante */
-    border-radius: 14px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    text-decoration: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.12);
-  }
-
-  .action-icon:hover {
-    background: #1e3a8a;
-    color: #ffffff;
-    box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
-    transform: translateY(-3px);
-  }
-
-  .action-icon:active {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 12px rgba(30, 58, 138, 0.15);
-  }
-
-  /* Like ativo - também azul escuro */
-  .action-icon.is-liked {
-    color: #15803d;
-    border-color: #16a34a;
-    background: #ecfdf3;
-  }
-
-  .action-icon.is-liked:hover {
-    background: #16a34a;
-    color: #ffffff;
-    box-shadow: 0 12px 24px rgba(22, 163, 74, 0.25);
-  }
-
-  /* Delete - também azul escuro */
-  .action-icon.is-danger {
-    color: #1e3a8a;
-    border-color: #1e3a8a;
-  }
-
-  .action-icon.is-danger:hover {
-    background: #1e3a8a;
-    color: #ffffff;
-    box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
-  }
-
-  /* Form wrapper - sem espaçamento */
-  .action-icon-form {
-    display: inline-flex;
-    margin: 0;
-    padding: 0;
-    border: none;
-    background: none;
-  }
-
-  /* Container dos botões */
-  .card-actions {
-    display: flex;
-    gap: 14px;
-    flex-wrap: nowrap;
-    margin-top: 14px;
-    margin-bottom: 4px;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .card-actions .card-like-form {
-    margin: 0;
-    display: inline-flex;
-  }
-
-  .card-actions .explore-btn {
-    white-space: nowrap;
-  }
-
-  .card-actions .explore-btn .like-count {
-    display: inline-block;
-    min-width: 1.6ch;
-    text-align: left;
-  }
-
-  .card-actions .explore-btn .like-count.is-zero {
-    visibility: hidden;
-  }
-
-  @media (max-width: 640px) {
-    .card-actions {
-      flex-wrap: wrap;
-    }
-
-    .card-actions .explore-btn {
-      white-space: normal;
-    }
-
-    .owner-actions {
-      min-height: 0;
-    }
-  }
-
-  /* ações extra do owner (agora integradas com os outros) */
-
-  .owner-actions,
-  .card-actions-owner {
-    display: none;
-  }
-
-  .owner-actions--placeholder {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  /* ===============================
-   Preview de itens (toggle)
+/* ===============================
+   Action icons (expand, like, edit, delete)
    =============================== */
 
-  .preview-toggle {
-    display: none;
-  }
+.action-icon {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  background: #ffffff;
+  color: #1e3a8a;
+  border: 2.5px solid #1e3a8a;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.12);
+}
 
-  .preview-items {
-    display: none;
-    padding: 0 18px 16px;
-    border-top: 1px solid #e5e7eb;
-    margin-top: 6px;
-  }
+.action-icon:hover {
+  background: #1e3a8a;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
+  transform: translateY(-3px);
+}
 
-  .preview-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-    color: #1f2937;
-    text-decoration: none;
-    font-size: 0.92rem;
-    transition: transform 0.15s ease, color 0.15s ease;
-  }
+.action-icon:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(30, 58, 138, 0.15);
+}
 
-  .preview-item:hover {
-    transform: translateX(2px);
-    color: #1d4ed8;
-  }
+.action-icon.is-liked {
+  color: #15803d;
+  border-color: #16a34a;
+  background: #ecfdf3;
+}
 
+.action-icon.is-liked:hover {
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(22, 163, 74, 0.25);
+}
 
-  .preview-item img {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
+.action-icon.is-danger {
+  color: #1e3a8a;
+  border-color: #1e3a8a;
+}
 
-  /* labels do toggle */
+.action-icon.is-danger:hover {
+  background: #1e3a8a;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
+}
 
-  .preview-hide {
-    /* começa escondido; é mostrado quando o checkbox está checked */
-  }
+.action-icon-form {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
 
-  .preview-toggle:not(:checked)+.product-card__body .preview-hide {
-    display: none;
-  }
+.card-actions {
+  gap: 14px;
+}
 
-  .preview-toggle:checked+.product-card__body .preview-show {
-    display: none;
-  }
-
-  .preview-toggle:checked+.product-card__body .preview-hide {
-    display: inline-flex;
-  }
-
-  .preview-toggle:checked~.preview-items {
-    display: block;
-  }
-
-  /* ===============================
+/* ===============================
    Responsivo
    =============================== */
 
-  @media (max-width: 900px) {
-    .page-shell {
-      padding-inline: 16px;
-    }
-
-    .collection-grid {
-      gap: 18px;
-    }
-
-    .product-card {
-      min-height: 420px;
-    }
+@media (max-width: 900px) {
+  .page-shell {
+    padding-inline: 16px;
   }
 
-  @media (max-width: 600px) {
-    .top-controls {
-      align-items: flex-start;
-    }
+  .collection-grid {
+    gap: 18px;
+  }
+}
 
-    .paginate {
-      width: 100%;
-      justify-content: space-between;
-    }
+@media (max-width: 600px) {
+  .top-controls {
+    align-items: flex-start;
   }
 
+  .paginate {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
 
-  /* ===============================
+
+/* ===============================
    🧭 All Collections – Hero intro - Styled by global collections-hero in general.css
    =============================== */
 
 
-  .collections-hero-underline {
-    width: 120px;
-    height: 3px;
-    border-radius: 999px;
-    background: #3b82f6;
-    margin: 10px auto 8px;
-  }
+.collections-hero-underline {
+  width: 120px;
+  height: 3px;
+  border-radius: 999px;
+  background: #3b82f6;
+  margin: 10px auto 8px;
+}
 
-  .collections-hero p {
-    margin: 4px auto 0;
-    font-size: 0.96rem;
-    color: #4b5563;
-    max-width: 620px;
-  }
+.collections-hero p {
+  margin: 4px auto 0;
+  font-size: 0.96rem;
+  color: #4b5563;
+  max-width: 620px;
+}
 
-  /* ===============================
+/* ===============================
    🔍 Filters + controls section
    =============================== */

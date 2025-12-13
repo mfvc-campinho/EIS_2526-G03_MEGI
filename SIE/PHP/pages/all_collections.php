@@ -179,36 +179,6 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
         <!-- ícones + tema -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="../../CSS/christmas.css">
-        <style>
-            .collection-card-link { cursor: pointer; position: relative; }
-            .collection-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
-            .collection-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
-            .product-card__meta--center {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 16px;
-                flex-wrap: wrap;
-                margin: 8px 0;
-                text-align: center;
-            }
-            .product-card__meta--center .product-card__owner,
-            .product-card__meta--center .product-card__date {
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                color: #475569;
-                font-weight: 600;
-            }
-            .product-card__owner a {
-                transition: color 0.2s ease, transform 0.2s ease;
-                display: inline-block;
-            }
-            .product-card__owner a:hover {
-                color: #2563eb !important;
-                transform: translateX(2px);
-            }
-        </style>
         <script src="././JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
 
@@ -327,16 +297,16 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                             $isOwner = $isAuth && !empty($col['ownerId']) && $col['ownerId'] === $currentUserId;
                             $collectionHref = 'specific_collection.php?id=' . urlencode($col['id']);
                             ?>
-                            <article class="product-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionHref); ?>">
-                                <a href="<?php echo htmlspecialchars($collectionHref); ?>" class="product-card__media">
+                            <article class="collection-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionHref); ?>">
+                                <a href="<?php echo htmlspecialchars($collectionHref); ?>" class="collection-card__media">
                                     <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($col['name']); ?>">
                                 </a>
                                 <input type="checkbox" id="<?php echo $previewId; ?>" class="preview-toggle">
-                                <div class="product-card__body">
+                                <div class="collection-card__body">
                                     <p class="pill"><?php echo htmlspecialchars($col['type'] ?? ''); ?></p>
                                     <h3><a href="<?php echo htmlspecialchars($collectionHref); ?>"><?php echo htmlspecialchars($col['name']); ?></a></h3>
-                                    <div class="product-card__meta product-card__meta--center">
-                                        <div class="product-card__owner">
+                                    <div class="collection-card__meta collection-card__meta--center">
+                                        <div class="collection-card__owner">
                                             <i class="bi bi-people"></i>
                                             <a href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>" style="color: inherit; text-decoration: none;">
                                                 <?php 
@@ -348,12 +318,12 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                                 ?>
                                             </a>
                                         </div>
-                                        <div class="product-card__date">
+                                        <div class="collection-card__date">
                                             <i class="bi bi-calendar3"></i>
                                             <?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?>
                                         </div>
                                     </div>
-                                    <div class="card-actions">
+                                    <div class="collection-card__actions card-actions">
                                         <!-- Expand/Collapse Preview -->
                                         <label class="action-icon" for="<?php echo $previewId; ?>" title="Expand">
                                             <i class="bi bi-plus-lg"></i>
@@ -530,115 +500,71 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                 })();
             </script>
         <?php endif; ?>
-        <script>
-            (function () {
-                var scrollKey = 'gc-scroll-all-collections';
-                var hasStorage = false;
-                try {
-                    sessionStorage.setItem('__gc_test', '1');
-                    sessionStorage.removeItem('__gc_test');
-                    hasStorage = true;
-                } catch (err) {
-                    hasStorage = false;
-                }
+                <script src="../../JS/gc-scroll-restore.js"></script>
+                <script>
+                    gcInitScrollRestore({
+                        key: 'gc-scroll-all-collections',
+                        formSelector: '#filters',
+                        reapplyFrames: 3,
+                        reinforceMs: 800,
+                        reinforceInterval: 80,
+                        stabilizeMs: 1200
+                    });
 
-                function saveScroll() {
-                    if (!hasStorage) {
-                        return;
-                    }
-                    var top = window.scrollY || document.documentElement.scrollTop || 0;
-                    sessionStorage.setItem(scrollKey, String(top));
-                }
+                    window.toggleMyCollections = function(form, enable) {
+                        if (!form) {
+                            return;
+                        }
+                        var input = form.querySelector('input[name="mine"]');
+                        if (input) {
+                            input.value = enable ? '1' : '0';
+                        }
+                        window.gcSubmitWithScroll(form);
+                    };
 
-                window.gcSubmitWithScroll = function (form) {
-                    saveScroll();
-                    form.submit();
-                };
-
-                window.gcRememberScroll = function (url) {
-                    saveScroll();
-                    window.location = url;
-                };
-
-                function restoreScroll() {
-                    if (!hasStorage) {
-                        return;
-                    }
-                    var stored = sessionStorage.getItem(scrollKey);
-                    if (stored !== null) {
-                        window.scrollTo(0, parseFloat(stored));
-                        sessionStorage.removeItem(scrollKey);
-                    }
-                }
-
-                restoreScroll();
-
-                window.addEventListener('pageshow', function (event) {
-                    if (event && event.persisted) {
-                        restoreScroll();
-                    }
-                });
-
-                var filtersForm = document.getElementById('filters');
-                if (filtersForm) {
-                    filtersForm.addEventListener('submit', saveScroll);
-                }
-
-                // Toggle My Collections filter
-                window.toggleMyCollections = function(form, enable) {
-                    var input = form.querySelector('input[name="mine"]');
-                    if (input) {
-                        input.value = enable ? '1' : '0';
-                    }
-                    saveScroll();
-                    form.submit();
-                };
-
-                // Prevent page scroll on like forms
-                document.querySelectorAll('.like-form').forEach(function(form) {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        var formData = new FormData(form);
-                        fetch('likes_action.php', {
-                            method: 'POST',
-                            body: formData,
-                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                        }).then(function(res) {
-                            if (!res.ok) throw new Error('failed');
-                            return res.json();
-                        }).then(function(payload) {
-                            if (!payload.ok) throw new Error(payload.error || 'failed');
-                            var button = form.querySelector('button');
-                            var icon = button.querySelector('i');
-                            var countEl = form.querySelector('.like-count');
-                            var current = countEl ? parseInt(countEl.textContent || '0', 10) : 0;
-                            var likedNow = payload.liked === true || (payload.liked === null ? !button.classList.contains('is-liked') : payload.liked);
-                            if (likedNow) {
-                                button.classList.add('is-liked');
-                                icon.classList.remove('bi-heart');
-                                icon.classList.add('bi-heart-fill');
-                                if (countEl) {
-                                    countEl.textContent = (current + 1).toString();
-                                    countEl.classList.toggle('is-zero', false);
+                    document.querySelectorAll('.like-form').forEach(function(form) {
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            var formData = new FormData(form);
+                            fetch('likes_action.php', {
+                                method: 'POST',
+                                body: formData,
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            }).then(function(res) {
+                                if (!res.ok) throw new Error('failed');
+                                return res.json();
+                            }).then(function(payload) {
+                                if (!payload.ok) throw new Error(payload.error || 'failed');
+                                var button = form.querySelector('button');
+                                var icon = button.querySelector('i');
+                                var countEl = form.querySelector('.like-count');
+                                var current = countEl ? parseInt(countEl.textContent || '0', 10) : 0;
+                                var likedNow = payload.liked === true || (payload.liked === null ? !button.classList.contains('is-liked') : payload.liked);
+                                if (likedNow) {
+                                    button.classList.add('is-liked');
+                                    icon.classList.remove('bi-heart');
+                                    icon.classList.add('bi-heart-fill');
+                                    if (countEl) {
+                                        countEl.textContent = (current + 1).toString();
+                                        countEl.classList.toggle('is-zero', false);
+                                    }
+                                } else {
+                                    button.classList.remove('is-liked');
+                                    icon.classList.remove('bi-heart-fill');
+                                    icon.classList.add('bi-heart');
+                                    if (countEl) {
+                                        var next = Math.max(0, current - 1);
+                                        countEl.textContent = next.toString();
+                                        countEl.classList.toggle('is-zero', next === 0);
+                                    }
                                 }
-                            } else {
-                                button.classList.remove('is-liked');
-                                icon.classList.remove('bi-heart-fill');
-                                icon.classList.add('bi-heart');
-                                if (countEl) {
-                                    var next = Math.max(0, current - 1);
-                                    countEl.textContent = next.toString();
-                                    countEl.classList.toggle('is-zero', next === 0);
-                                }
-                            }
-                        }).catch(function(err) {
-                            console.error(err);
-                            window.location = 'likes_action.php';
+                            }).catch(function(err) {
+                                console.error(err);
+                                window.location = 'likes_action.php';
+                            });
                         });
                     });
-                });
-            })();
-        </script>
+                </script>
         <script>
             (function () {
                 var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';

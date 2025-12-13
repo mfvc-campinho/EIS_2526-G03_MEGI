@@ -653,6 +653,46 @@ h1.page-title::after {
   cursor: default;
 }
 
+/* ===============================
+   🔹 Clickable card helpers
+=============================== */
+.collection-card-link {
+  cursor: pointer;
+  position: relative;
+}
+
+html:not(.dark-mode) .home-card,
+html:not(.dark-mode) .product-card,
+html:not(.dark-mode) .collection-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+html:not(.dark-mode) .home-card:hover,
+html:not(.dark-mode) .product-card:hover,
+html:not(.dark-mode) .collection-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.18);
+}
+
+.collection-card-link:focus,
+.collection-card-link:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 4px;
+}
+
+.pill--link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.pill--link:hover {
+  text-decoration: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.18);
+}
+
 
 /* ===============================
    🔹 NAVIGATION BAR (GLOBAL)
@@ -1703,18 +1743,6 @@ button {
   box-shadow: var(--shadow-elevated);
 }
 
-/* Specific adjustments for each card type */
-.collection-card {
-  justify-content: flex-start;
-  /* Align content to the top */
-}
-
-.collection-card:hover {
-  transform: none;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
-}
-
-
 .item-card {
   justify-content: space-between;
   border-radius: 16px;
@@ -1727,6 +1755,22 @@ button {
 .item-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* Unified grid layout for collection cards */
+.collection-grid,
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 340px));
+  gap: 28px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 24px;
+  justify-content: center;
+}
+
+.cards-grid--spaced {
+  margin-top: 18px;
 }
 
 /* ===============================
@@ -1892,6 +1936,311 @@ button {
   line-height: 1.5;
 }
 
+/* ===============================
+   🔹 Collection card component
+   Unified look shared by profile, home and listings
+=============================== */
+.collection-card {
+  --collection-card-border: #0b3b70;
+  --collection-card-shadow: 0 2px 8px rgba(11, 59, 112, 0.12), 0 4px 16px rgba(11, 59, 112, 0.08);
+  --collection-card-radius: 14px;
+  background: #ffffff;
+  border-radius: var(--collection-card-radius);
+  border: 2px solid var(--collection-card-border);
+  box-shadow: var(--collection-card-shadow);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.collection-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0b3b70 0%, #0d3f7a 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.collection-card:hover::before,
+.collection-card:focus-within::before {
+  opacity: 1;
+}
+
+.collection-card__media,
+.collection-card .product-card__media,
+.collection-card .card-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 190px;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+}
+
+.collection-card__media img,
+.collection-card .product-card__media img,
+.collection-card .card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.collection-card__media:hover img,
+.collection-card .product-card__media:hover img,
+.collection-card .card-image:hover img {
+  transform: scale(1.02);
+  filter: brightness(1.03);
+}
+
+.collection-card__body,
+.collection-card .product-card__body,
+.collection-card .card-info {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  background: #ffffff;
+}
+
+.collection-card__body h3,
+.collection-card .product-card__body h3,
+.collection-card .card-info h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0b3b70;
+  line-height: 1.4;
+}
+
+.collection-card__body h3 a,
+.collection-card .product-card__body h3 a,
+.collection-card .card-info h3 a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.collection-card__body h3 a:hover,
+.collection-card .product-card__body h3 a:hover,
+.collection-card .card-info h3 a:hover {
+  color: #0d3f7a;
+}
+
+.collection-card__body .muted,
+.collection-card .product-card__body .muted,
+.collection-card .card-info .muted {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #64748b;
+  margin: 0;
+}
+
+.collection-card .pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+  color: #0b3b70;
+  border: 1px solid rgba(11, 59, 112, 0.18);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+  box-shadow: 0 2px 6px rgba(11, 59, 112, 0.08);
+}
+
+.collection-card__facts,
+.collection-card .product-card__facts {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.collection-card__date,
+.collection-card .product-card__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #0b3b70;
+  font-size: 0.9rem;
+}
+
+.collection-card__meta,
+.collection-card .product-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-top: 2px solid #f1f5f9;
+  padding-top: 12px;
+  color: #475569;
+  font-size: 0.88rem;
+}
+
+.collection-card__meta--center {
+  justify-content: center;
+  text-align: center;
+}
+
+.collection-card__meta .collection-card__owner,
+.collection-card__meta .collection-card__date,
+.collection-card .product-card__meta .product-card__owner,
+.collection-card .product-card__meta .product-card__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.collection-card__owner a,
+.collection-card .product-card__owner a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.collection-card__owner a:hover,
+.collection-card .product-card__owner a:hover {
+  color: #2563eb;
+  transform: translateX(2px);
+}
+
+.collection-card__meta i,
+.collection-card .product-card__meta i {
+  color: #0b3b70;
+  font-size: 1rem;
+}
+
+.collection-card__metrics,
+.collection-card .product-card__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.collection-card__actions,
+.collection-card .card-actions,
+.collection-card .card-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.collection-card__actions .explore-btn {
+  white-space: nowrap;
+}
+
+.collection-card__actions .like-count.is-zero {
+  visibility: hidden;
+}
+
+.collection-card .preview-toggle {
+  display: none;
+}
+
+.collection-card .preview-show,
+.collection-card .preview-hide {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.collection-card .preview-hide {
+  display: none;
+}
+
+.collection-card .preview-items {
+  display: none;
+  padding: 0 18px 16px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 8px;
+}
+
+.collection-card .preview-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: #1f2937;
+  font-size: 0.92rem;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.collection-card .preview-item:hover {
+  color: #1d4ed8;
+  transform: translateX(2px);
+}
+
+.collection-card .preview-item img {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.collection-card .preview-toggle:not(:checked)+.collection-card__body .preview-hide,
+.collection-card .preview-toggle:not(:checked)+.product-card__body .preview-hide,
+.collection-card .preview-toggle:not(:checked)+.card-info .preview-hide {
+  display: none;
+}
+
+.collection-card .preview-toggle:checked+.collection-card__body .preview-show,
+.collection-card .preview-toggle:checked+.product-card__body .preview-show,
+.collection-card .preview-toggle:checked+.card-info .preview-show {
+  display: none;
+}
+
+.collection-card .preview-toggle:checked+.collection-card__body .preview-hide,
+.collection-card .preview-toggle:checked+.product-card__body .preview-hide,
+.collection-card .preview-toggle:checked+.card-info .preview-hide {
+  display: inline-flex;
+}
+
+.collection-card .preview-toggle:checked~.preview-items {
+  display: block;
+}
+
+@media (max-width: 640px) {
+
+  .collection-card__actions,
+  .collection-card .card-actions,
+  .collection-card .card-buttons {
+    flex-wrap: wrap;
+  }
+
+  .collection-grid,
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 8px;
+  }
+}
+
 .collection-metrics {
   display: flex;
   flex-wrap: wrap;
@@ -2038,7 +2387,6 @@ button {
 /* Make sure Edit / Delete (and other action buttons) are centered
    inside both collection and item cards. This targets the common
    card types used across the site to avoid layout regressions. */
-.collection-card .card-buttons,
 .item-card .card-buttons {
   display: flex;
   justify-content: center;
@@ -2049,7 +2397,6 @@ button {
 /* On very small screens keep buttons wrapping but centered */
 @media (max-width: 420px) {
 
-  .collection-card .card-buttons,
   .item-card .card-buttons {
     gap: 8px;
     padding: 0 8px;
@@ -3030,6 +3377,7 @@ html.dark-mode .product-card:hover,
 html.dark-mode .user-event-card:hover,
 html.dark-mode .event-card:hover,
 html.dark-mode .collection-card:hover {
+  transform: translateY(-4px);
   border-color: var(--border-hover);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
 }
@@ -3042,6 +3390,26 @@ html.dark-mode .collection-card h3 a {
 html.dark-mode .product-card h3 a:hover,
 html.dark-mode .collection-card h3 a:hover {
   color: #79c0ff;
+}
+
+html.dark-mode .collection-card::before {
+  opacity: 0.6;
+  background: linear-gradient(90deg, #5da9ff 0%, #8fc6ff 100%);
+}
+
+html.dark-mode .collection-card__meta,
+html.dark-mode .collection-card__date,
+html.dark-mode .collection-card__owner,
+html.dark-mode .collection-card__metrics,
+html.dark-mode .collection-card .product-card__meta,
+html.dark-mode .collection-card .product-card__date,
+html.dark-mode .collection-card .product-card__owner {
+  color: var(--text-secondary);
+  border-color: var(--border-default);
+}
+
+html.dark-mode .collection-card .preview-items {
+  border-color: var(--border-default);
 }
 
 /* Meta information */

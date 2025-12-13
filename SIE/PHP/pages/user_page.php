@@ -259,13 +259,6 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
         <script src="././JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
-        <style>
-            .collection-card-link { cursor: pointer; position: relative; }
-            .collection-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
-            .collection-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
-            .pill--link { display: inline-flex; align-items: center; gap: 4px; text-decoration: none; color: inherit; }
-            .pill--link:hover { text-decoration: none; box-shadow: 0 0 0 2px rgba(99,102,241,0.18); }
-        </style>
     </head>
 
 
@@ -446,11 +439,11 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 $likesTotal = $entry['likes'];
                                 $valueTotal = $entry['value'];
                                 ?>
-                                <article class="product-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionLink); ?>">
-                                    <a href="<?php echo htmlspecialchars($collectionLink); ?>" class="product-card__media">
+                                <article class="collection-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionLink); ?>">
+                                    <a href="<?php echo htmlspecialchars($collectionLink); ?>" class="collection-card__media">
                                         <img src="<?php echo htmlspecialchars($img ?: '../../images/default.jpg'); ?>" alt="<?php echo htmlspecialchars($col['name']); ?>">
                                     </a>
-                                    <div class="product-card__body">
+                                    <div class="collection-card__body">
                                         <?php if (!empty($typeFilterLink)): ?>
                                             <a class="pill pill--link" href="<?php echo htmlspecialchars($typeFilterLink); ?>">
                                                 <?php echo htmlspecialchars($col['type']); ?>
@@ -464,12 +457,12 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                             </a>
                                         </h3>
                                         <p class="muted"><?php echo htmlspecialchars($col['summary'] ?? ''); ?></p>
-                                        <div class="product-card__facts">
-                                            <div class="product-card__date">
+                                        <div class="collection-card__facts">
+                                            <div class="collection-card__date">
                                                 <i class="bi bi-calendar3"></i>
                                                 <span><?php echo htmlspecialchars(substr($col['createdAt'] ?? '', 0, 10)); ?></span>
                                             </div>
-                                            <div class="product-card__meta">
+                                            <div class="collection-card__meta">
                                                 <span>
                                                     <i class="bi bi-box-seam"></i>
                                                     <?php echo $itemsTotal; ?> items
@@ -706,69 +699,15 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
             .modal-body { padding: 24px; }
             .section-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
             .section-header .section-title { margin-bottom:0; }
-            .cards-grid--spaced { margin-top: 18px; }
             .empty-state-actions { margin: 12px 0; }
         </style>
 
+        <script src="../../JS/gc-scroll-restore.js"></script>
         <script>
-            (function() {
-                var scrollKey = 'gc-scroll-user';
-                var hasStorage = false;
-                try {
-                    sessionStorage.setItem('__gc_user_test', '1');
-                    sessionStorage.removeItem('__gc_user_test');
-                    hasStorage = true;
-                } catch (err) {
-                    hasStorage = false;
-                }
-
-                function saveScroll() {
-                    if (!hasStorage) {
-                        return;
-                    }
-                    var top = window.scrollY || document.documentElement.scrollTop || 0;
-                    sessionStorage.setItem(scrollKey, String(top));
-                }
-
-                window.gcSubmitWithScroll = function(form) {
-                    saveScroll();
-                    if (form && typeof form.submit === 'function') {
-                        form.submit();
-                    }
-                };
-
-                window.gcRememberScroll = function(url) {
-                    saveScroll();
-                    if (url) {
-                        window.location = url;
-                    }
-                };
-
-                function restoreScroll() {
-                    if (!hasStorage) {
-                        return;
-                    }
-                    var stored = sessionStorage.getItem(scrollKey);
-                    if (stored !== null) {
-                        window.scrollTo(0, parseFloat(stored));
-                        sessionStorage.removeItem(scrollKey);
-                    }
-                }
-
-                restoreScroll();
-
-                window.addEventListener('pageshow', function(event) {
-                    if (event && event.persisted) {
-                        restoreScroll();
-                    }
-                });
-
-                var filtersForm = document.getElementById('user-top-filters');
-                if (filtersForm) {
-                    filtersForm.addEventListener('submit', saveScroll);
-                }
-            })();
-
+            gcInitScrollRestore({
+                key: 'gc-scroll-user',
+                formSelector: '#user-top-filters'
+            });
             document.addEventListener('DOMContentLoaded', function() {
                 var cards = document.querySelectorAll('.collection-card-link');
                 cards.forEach(function(card) {

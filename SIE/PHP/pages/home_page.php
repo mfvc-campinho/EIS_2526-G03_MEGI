@@ -151,21 +151,6 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <link rel="stylesheet" href="../../CSS/christmas.css">
 
     <style>
-        .collection-card-link {
-            cursor: pointer;
-            position: relative;
-        }
-
-        .collection-card-link:focus {
-            outline: 2px solid #6366f1;
-            outline-offset: 4px;
-        }
-
-        .collection-card-link:focus-visible {
-            outline: 2px solid #6366f1;
-            outline-offset: 4px;
-        }
-
         /* Home events cards styled like events page */
         .upcoming-events .event-card {
             cursor: pointer;
@@ -910,68 +895,17 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     </button>
 
     <script src="../../JS/search-toggle.js"></script>
+    <script src="../../JS/gc-scroll-restore.js"></script>
     <script>
-        (function() {
-            var scrollKey = 'gc-scroll-home';
-            var hasStorage = false;
-            try {
-                sessionStorage.setItem('__gc_test', '1');
-                sessionStorage.removeItem('__gc_test');
-                hasStorage = true;
-            } catch (err) {
-                hasStorage = false;
-            }
-
-            if ('scrollRestoration' in history) {
-                history.scrollRestoration = 'manual';
-            }
-
-            function saveScroll() {
-                if (!hasStorage) {
-                    return;
-                }
-                var top = window.scrollY || document.documentElement.scrollTop || 0;
-                sessionStorage.setItem(scrollKey, String(top));
-            }
-
-            window.gcSubmitWithScroll = function(form) {
-                saveScroll();
-                form.submit();
-            };
-
-            window.gcRememberScroll = function(url) {
-                saveScroll();
-                window.location = url;
-            };
-
-            function restoreScroll() {
-                if (!hasStorage) {
-                    return;
-                }
-                var stored = sessionStorage.getItem(scrollKey);
-                if (stored !== null) {
-                    var y = parseFloat(stored);
-                    window.scrollTo(0, y);
-                    document.documentElement.scrollTop = y;
-                    document.body.scrollTop = y;
-                    sessionStorage.removeItem(scrollKey);
-                }
-            }
-
-            restoreScroll();
-            requestAnimationFrame(restoreScroll);
-
-            window.addEventListener('pageshow', function(event) {
-                if (event && event.persisted) {
-                    restoreScroll();
-                }
-            });
-
-            var filtersForm = document.getElementById('filters');
-            if (filtersForm) {
-                filtersForm.addEventListener('submit', saveScroll);
-            }
-        })();
+        gcInitScrollRestore({
+            key: 'gc-scroll-home',
+            formSelector: '#filters',
+            reapplyFrames: 3,
+            reinforceMs: 800,
+            reinforceInterval: 80,
+            stabilizeMs: 1200
+        });
+    </script>
 
         // Back to Top functionality
         (function() {

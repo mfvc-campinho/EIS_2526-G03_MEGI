@@ -712,6 +712,13 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
 
   <?php include __DIR__ . '/../includes/footer.php'; ?>
   <script src="../../JS/search-toggle.js"></script>
+  <script src="../../JS/gc-scroll-restore.js"></script>
+  <script>
+    gcInitScrollRestore({
+      key: 'gc-scroll-events',
+      formSelector: '#events-filters-form'
+    });
+  </script>
   <div class="modal-backdrop" id="event-modal">
     <div class="modal-card">
       <div class="modal-header">
@@ -769,64 +776,6 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
       </div>
       </div>
       <script>
-    (function() {
-      var scrollKey = 'gc-scroll-events';
-      var hasStorage = false;
-      try {
-        sessionStorage.setItem('__gc_events_test', '1');
-        sessionStorage.removeItem('__gc_events_test');
-        hasStorage = true;
-      } catch (err) {
-        hasStorage = false;
-      }
-
-      function saveScroll() {
-        if (!hasStorage) {
-          return;
-        }
-        var top = window.scrollY || document.documentElement.scrollTop || 0;
-        sessionStorage.setItem(scrollKey, String(top));
-      }
-
-      window.gcSubmitWithScroll = function(form) {
-        saveScroll();
-        if (form && typeof form.submit === 'function') {
-          form.submit();
-        }
-      };
-
-      window.gcRememberScroll = function(url) {
-        saveScroll();
-        if (url) {
-          window.location = url;
-        }
-      };
-
-      function restoreScroll() {
-        if (!hasStorage) {
-          return;
-        }
-        var stored = sessionStorage.getItem(scrollKey);
-        if (stored !== null) {
-          window.scrollTo(0, parseFloat(stored));
-          sessionStorage.removeItem(scrollKey);
-        }
-      }
-
-      restoreScroll();
-
-      window.addEventListener('pageshow', function(event) {
-        if (event && event.persisted) {
-          restoreScroll();
-        }
-      });
-
-      var filtersForm = document.getElementById('events-filters-form');
-      if (filtersForm) {
-        filtersForm.addEventListener('submit', saveScroll);
-      }
-    })();
-
     // Modal de detalhes do evento
     (function() {
       const modal = document.getElementById('event-modal');

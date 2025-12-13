@@ -5,25 +5,29 @@ $team = [
     'name' => 'Afonso Dias Fachada Ramos',
     'id' => 'up202108474',
     'photo' => '../../images/team/Afonso.jpeg',
-    'blurb' => "If I used this site, I'd collect Minecraft limited edition figures."
+    'blurb' => "If I used this site, I'd collect Minecraft limited edition figures.",
+    'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202108474'
   ],
   [
     'name' => 'Ana Isabel Dias Cunha Amorim',
     'id' => 'up202107329',
     'photo' => '../../images/team/Ana.jpg',
-    'blurb' => "If I used this site, I'd collect CS:GO Skins. I love them!."
+    'blurb' => "If I used this site, I'd collect airplane miniatures. I love them!",
+    'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202107329'
   ],
   [
     'name' => 'Filipa Marisa Duarte Mota',
     'id' => 'up202402072',
     'photo' => '../../images/team/Filipa.jpg',
-    'blurb' => "If I used this site, I'd collect photos of José Condessa."
+    'blurb' => "If I used this site, I'd collect photos of José Condessa.",
+    'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202402072'
   ],
   [
     'name' => 'Matheus Fernandes Vilhena Campinho',
     'id' => 'up202202004',
     'photo' => '../../images/team/Matheus.jpeg',
-    'blurb' => "If I used this site, I'd collect retro games and consoles."
+    'blurb' => "If I used this site, I'd collect retro games and consoles.",
+    'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202202004'
   ],
 ];
 ?>
@@ -111,16 +115,65 @@ $team = [
 
     <section class="Team">
       <?php foreach ($team as $member): ?>
-        <article class="member">
-          <img src="<?php echo htmlspecialchars($member['photo']); ?>" alt="<?php echo htmlspecialchars($member['name']); ?>">
-          <h2><?php echo htmlspecialchars($member['name']); ?></h2>
-          <div class="id"><?php echo htmlspecialchars($member['id']); ?></div>
-          <p class="desc"><?php echo htmlspecialchars($member['blurb']); ?></p>
+        <?php $profileUrl = htmlspecialchars($member['page']); ?>
+        <article class="member-card card home-card team-card-link"
+                 role="link"
+                 tabindex="0"
+                 data-member-link="<?php echo $profileUrl; ?>">
+          <a class="member-photo-link"
+             href="<?php echo $profileUrl; ?>"
+             target="_blank"
+             rel="noopener noreferrer"
+             aria-label="Visit the profile page for <?php echo htmlspecialchars($member['name']); ?> (opens in a new tab)">
+            <div class="card-image member-photo">
+              <img src="<?php echo htmlspecialchars($member['photo']); ?>" alt="<?php echo htmlspecialchars($member['name']); ?>">
+            </div>
+          </a>
+          <div class="card-info member-info">
+            <h3>
+              <a class="member-name-link"
+                 href="<?php echo $profileUrl; ?>"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 aria-label="Visit the profile page for <?php echo htmlspecialchars($member['name']); ?> (opens in a new tab)">
+                <?php echo htmlspecialchars($member['name']); ?>
+              </a>
+            </h3>
+            <p class="member-id"><?php echo htmlspecialchars($member['id']); ?></p>
+            <p class="member-desc"><?php echo htmlspecialchars($member['blurb']); ?></p>
+          </div>
         </article>
       <?php endforeach; ?>
     </section>
   </main>
   <?php include __DIR__ . '/../includes/footer.php'; ?>
+  <script>
+    (function () {
+      var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';
+      function enhanceMemberCard(card) {
+        var href = card.getAttribute('data-member-link');
+        if (!href) {
+          return;
+        }
+        card.addEventListener('click', function (event) {
+          if (event.target.closest(interactiveSelector)) {
+            return;
+          }
+          window.open(href, '_blank', 'noopener');
+        });
+        card.addEventListener('keydown', function (event) {
+          if (event.target !== card) {
+            return;
+          }
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            window.open(href, '_blank', 'noopener');
+          }
+        });
+      }
+      document.querySelectorAll('.team-card-link').forEach(enhanceMemberCard);
+    })();
+  </script>
 </body>
 
 </html>

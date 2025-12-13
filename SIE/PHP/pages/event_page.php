@@ -243,6 +243,8 @@ foreach ($eventsUsers as $entry) {
     .status-chip.upcoming { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
     .status-chip.past { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
     .pill { margin: 0; }
+    .event-meta-row { display:flex; align-items:center; gap:8px; font-size:0.9rem; color:#475569; }
+    .event-meta-row i { color:#94a3b8; font-size:1rem; }
     .avg-stars { display:flex; gap:4px; color:#f5b301; align-items:center; font-weight:600; }
     .avg-stars .count { color:#6b7280; font-size:0.85rem; margin-left:4px; }
     .event-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items:center; margin-top: 2px; }
@@ -276,18 +278,20 @@ foreach ($eventsUsers as $entry) {
     .modal-rating-form button { padding: 6px 14px; }
     .modal-rating-user { display: flex; align-items: center; gap: 6px; color: #475569; font-size: 0.85rem; }
     .modal-rating-user i { color: #f59e0b; }
+    .modal-rating-user .user-rating-stars { display: flex; gap: 4px; }
+    .modal-rating-user.pending .label { color: #f97316; font-style: italic; }
     /* Modal */
     .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:1000; backdrop-filter: blur(4px); }
     .modal-backdrop.open { display:flex; animation: fadeIn 0.2s ease; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .modal-card { background:#fff; border-radius:20px; padding:0; max-width:600px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; animation: slideUp 0.3s ease; overflow:hidden; }
+    .modal-card { background:#fff; border-radius:20px; padding:0; max-width:600px; width:90%; max-height:90vh; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; animation: slideUp 0.3s ease; overflow:hidden; display:flex; flex-direction:column; }
     @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .modal-header { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); padding: 32px 28px; color: white; position: relative; text-align: center; }
     .modal-close { position: absolute; top: 16px; right: 16px; border:none; background: rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-size:20px; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
     .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
     .modal-header h3 { margin:0 0 12px 0; font-size: 2.25rem; font-weight: 900 !important; color: white !important; line-height: 1.2; }
     .modal-type-badge { display: inline-block; background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
-    .modal-body { padding: 28px; }
+    .modal-body { padding: 28px; overflow-y: auto; }
     .modal-summary { font-size: 1.05rem; color: #374151; line-height: 1.6; margin: 0 0 24px 0; font-weight: 500; }
     .modal-description { color: #6b7280; line-height: 1.7; margin: 0 0 24px 0; }
     .modal-info-grid { display: grid; gap: 16px; }
@@ -488,7 +492,7 @@ foreach ($eventsUsers as $entry) {
           }
 
           $statusClass = $eventHasEnded ? 'past' : 'upcoming';
-          $statusLabel = $eventHasEnded ? 'Terminado' : 'Em breve';
+          $statusLabel = $eventHasEnded ? 'Ended' : 'Soon';
 
           $collectionDetails = [];
           foreach ($collectionsForEvent as $cid) {
@@ -500,7 +504,7 @@ foreach ($eventsUsers as $entry) {
               : null;
             $collectionDetails[] = [
               'id' => $cid,
-              'name' => $collection['name'] ?? 'Coleção',
+              'name' => $collection['name'] ?? 'Collection',
               'average' => $avgCollection,
               'count' => $stats['count'] ?? 0,
               'userRating' => $userRatingsForEvent[$cid] ?? null
@@ -526,10 +530,38 @@ foreach ($eventsUsers as $entry) {
           ?>
           <article class="event-card">
             <div class="event-card-top">
-              <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
+              <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Event'); ?></p>
               <span class="status-chip <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
             </div>
             <h3><?php echo htmlspecialchars($evt['name']); ?></h3>
+            <?php if ($eventDateDisplay): ?>
+              <div class="event-meta-row">
+                <i class="bi bi-calendar-event"></i>
+                <span>
+                  <?php echo htmlspecialchars($eventDateDisplay); ?>
+                  <?php if ($eventTimeDisplay): ?>
+                    · <span class="event-meta-time"><?php echo htmlspecialchars($eventTimeDisplay); ?></span>
+                  <?php endif; ?>
+                </span>
+              </div>
+            <?php endif; ?>
+            <?php if (!empty($evt['localization'])): ?>
+              <div class="event-meta-row">
+                <i class="bi bi-geo-alt"></i>
+                <?php $locText = trim($evt['localization']); ?>
+                <?php if ($locText !== ''): ?>
+                  <a class="event-location-link"
+                     href="https://www.google.com/maps/search/?api=1&query=<?php echo urlencode($locText); ?>"
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     aria-label="Open <?php echo htmlspecialchars($locText); ?> on Google Maps">
+                    <?php echo htmlspecialchars($locText); ?>
+                  </a>
+                <?php else: ?>
+                  <span><?php echo htmlspecialchars($locText); ?></span>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
             <div class="event-actions">
               <button type="button"
                       class="explore-btn small js-view-event"
@@ -555,7 +587,7 @@ foreach ($eventsUsers as $entry) {
                 </form>
               <?php endif; ?>
               <?php if ($eventRatingAverage): ?>
-                <div class="avg-stars" title="Rating médio">
+                <div class="avg-stars" title="Average rating">
                   <?php for ($i = 1; $i <= 5; $i++): ?>
                     <i class="bi <?php echo ($eventRatingAverage >= $i) ? 'bi-star-fill' : (($eventRatingAverage >= $i-0.5) ? 'bi-star-half' : 'bi-star'); ?>"></i>
                   <?php endfor; ?>
@@ -656,6 +688,60 @@ foreach ($eventsUsers as $entry) {
         }
       }
 
+      function normalizeRatingValue(value) {
+        if (typeof value === 'number' && !Number.isNaN(value)) {
+          return value;
+        }
+        const parsed = parseInt(value, 10);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+
+      function fillUserRatingRow(row, value, isSaved) {
+        if (!row) return;
+        const label = row.querySelector('.label');
+        const starsHolder = row.querySelector('.user-rating-stars');
+        if (!label || !starsHolder) return;
+        starsHolder.innerHTML = '';
+        const numericValue = normalizeRatingValue(value);
+        if (!numericValue) {
+          if (row.dataset.initiallyHidden === 'true') {
+            row.hidden = true;
+          } else {
+            row.hidden = false;
+          }
+          row.classList.remove('pending');
+          label.textContent = 'Your rating:';
+          return;
+        }
+        row.hidden = false;
+        appendStars(starsHolder, numericValue);
+        if (isSaved) {
+          row.classList.remove('pending');
+          label.textContent = 'Your rating:';
+        } else {
+          row.classList.add('pending');
+          label.textContent = 'Your rating (not saved yet):';
+        }
+      }
+
+      if (ratingsContainer) {
+        ratingsContainer.addEventListener('change', function(e) {
+          const select = e.target;
+          if (!select.matches('.modal-rating-form select')) return;
+          const card = select.closest('.modal-rating-card');
+          if (!card) return;
+          const userRow = card.querySelector('.modal-rating-user');
+          if (!userRow) return;
+          const numericValue = normalizeRatingValue(select.value);
+          if (numericValue) {
+            fillUserRatingRow(userRow, numericValue, false);
+          } else {
+            const saved = normalizeRatingValue(userRow.dataset.savedValue || '');
+            fillUserRatingRow(userRow, saved, true);
+          }
+        });
+      }
+
       function addMessage(text) {
         if (!ratingsContainer) return;
         const message = document.createElement('div');
@@ -669,7 +755,7 @@ foreach ($eventsUsers as $entry) {
         ratingsContainer.innerHTML = '';
 
         if (!payload) {
-          addMessage('Este evento ainda não tem dados de avaliação.');
+          addMessage('This event has no rating data yet.');
           return;
         }
 
@@ -684,7 +770,7 @@ foreach ($eventsUsers as $entry) {
           const overview = document.createElement('div');
           overview.className = 'modal-rating-overview';
           const left = document.createElement('span');
-          left.textContent = 'Rating médio do evento';
+          left.textContent = 'Average event rating';
           overview.appendChild(left);
           const right = document.createElement('span');
           right.className = 'rating-badge';
@@ -703,13 +789,13 @@ foreach ($eventsUsers as $entry) {
 
         const messages = [];
         if (!isPast) {
-          messages.push('Este evento ainda não aconteceu. As avaliações ficam disponíveis após a data.');
+          messages.push('This event has not happened yet. Ratings become available after the date.');
         }
         if (isPast && !hasRsvp) {
-          messages.push('Só participantes que fizeram RSVP podem avaliar as coleções.');
+          messages.push('Only participants who RSVP can rate the collections.');
         }
         if (collections.length === 0) {
-          messages.push('Este evento não tem coleções associadas para avaliação.');
+          messages.push('This event has no collections associated for rating.');
         }
         messages.forEach(addMessage);
 
@@ -729,7 +815,7 @@ foreach ($eventsUsers as $entry) {
 
           const name = document.createElement('span');
           name.className = 'collection-name';
-          name.textContent = item.name || 'Coleção';
+          name.textContent = item.name || 'Collection';
           header.appendChild(name);
 
           const badge = document.createElement('span');
@@ -745,7 +831,7 @@ foreach ($eventsUsers as $entry) {
             badgeCount.textContent = `(${item.count})`;
             badge.appendChild(badgeCount);
           } else {
-            badge.textContent = 'Sem avaliações';
+            badge.textContent = 'There are no ratings yet';
           }
           header.appendChild(badge);
           card.appendChild(header);
@@ -785,17 +871,17 @@ foreach ($eventsUsers as $entry) {
 
             const select = document.createElement('select');
             select.name = 'rating';
-            select.setAttribute('aria-label', `Classificação para ${item.name || 'a coleção'}`);
+            select.setAttribute('aria-label', `Rating for ${item.name || 'the collection'}`);
 
             const placeholder = document.createElement('option');
             placeholder.value = '';
-            placeholder.textContent = 'Selecionar...';
+            placeholder.textContent = 'Select...';
             select.appendChild(placeholder);
 
             for (let i = 1; i <= 5; i++) {
               const option = document.createElement('option');
               option.value = String(i);
-              option.textContent = `${i} estrelas`;
+              option.textContent = `${i} stars`;
               if (userHasRating && item.userRating === i) {
                 option.selected = true;
               }
@@ -807,19 +893,32 @@ foreach ($eventsUsers as $entry) {
             const button = document.createElement('button');
             button.type = 'submit';
             button.className = 'explore-btn small';
-            button.textContent = 'Guardar';
+            button.textContent = 'Save';
             form.appendChild(button);
 
             card.appendChild(form);
           }
 
-          if (userHasRating) {
+          if (canRate || userHasRating) {
             const userRow = document.createElement('div');
             userRow.className = 'modal-rating-user';
+            if (item.id) {
+              userRow.dataset.collectionId = item.id;
+            }
             const label = document.createElement('span');
-            label.textContent = 'A sua avaliação:';
+            label.className = 'label';
+            label.textContent = 'Your rating:';
             userRow.appendChild(label);
-            appendStars(userRow, item.userRating);
+            const starHolder = document.createElement('span');
+            starHolder.className = 'user-rating-stars';
+            userRow.appendChild(starHolder);
+            userRow.dataset.savedValue = userHasRating ? String(item.userRating) : '';
+            userRow.dataset.initiallyHidden = userHasRating ? 'false' : 'true';
+            if (userHasRating) {
+              fillUserRatingRow(userRow, item.userRating, true);
+            } else {
+              userRow.hidden = true;
+            }
             card.appendChild(userRow);
           }
 

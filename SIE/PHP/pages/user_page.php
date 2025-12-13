@@ -153,6 +153,13 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
         <script src="././JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
+        <style>
+            .collection-card-link { cursor: pointer; position: relative; }
+            .collection-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
+            .collection-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
+            .pill--link { display: inline-flex; align-items: center; gap: 4px; text-decoration: none; color: inherit; }
+            .pill--link:hover { text-decoration: none; box-shadow: 0 0 0 2px rgba(99,102,241,0.18); }
+        </style>
     </head>
 
 
@@ -274,15 +281,25 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 if ($img && !preg_match('#^https?://#', $img)) {
                                     $img = '../../' . ltrim($img, './');
                                 }
+                                $collectionLink = 'specific_collection.php?id=' . urlencode($col['id']);
+                                $typeFilterLink = !empty($col['type'])
+                                    ? 'all_collections.php?' . http_build_query(['type' => $col['type']])
+                                    : '';
                                 ?>
-                                <article class="product-card">
-                                    <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>" class="product-card__media">
+                                <article class="product-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionLink); ?>">
+                                    <a href="<?php echo htmlspecialchars($collectionLink); ?>" class="product-card__media">
                                         <img src="<?php echo htmlspecialchars($img ?: '../../images/default.jpg'); ?>" alt="<?php echo htmlspecialchars($col['name']); ?>">
                                     </a>
                                     <div class="product-card__body">
-                                        <p class="pill"><?php echo htmlspecialchars($col['type'] ?? ''); ?></p>
+                                        <?php if (!empty($typeFilterLink)): ?>
+                                            <a class="pill pill--link" href="<?php echo htmlspecialchars($typeFilterLink); ?>">
+                                                <?php echo htmlspecialchars($col['type']); ?>
+                                            </a>
+                                        <?php else: ?>
+                                            <p class="pill"><?php echo htmlspecialchars($col['type'] ?? ''); ?></p>
+                                        <?php endif; ?>
                                         <h3>
-                                            <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
+                                            <a href="<?php echo htmlspecialchars($collectionLink); ?>">
                                                 <?php echo htmlspecialchars($col['name']); ?>
                                             </a>
                                         </h3>
@@ -440,6 +457,29 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
             .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
             .modal-body { padding: 24px; }
         </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var cards = document.querySelectorAll('.collection-card-link');
+                cards.forEach(function(card) {
+                    var href = card.getAttribute('data-collection-link');
+                    if (!href) return;
+                    card.addEventListener('click', function(e) {
+                        if (e.target.closest('a, button')) {
+                            return;
+                        }
+                        window.location.href = href;
+                    });
+                    card.addEventListener('keydown', function(e) {
+                        if (e.target !== card) return;
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            window.location.href = href;
+                        }
+                    });
+                });
+            });
+        </script>
 
         <?php include __DIR__ . '/../includes/footer.php'; ?>
     </body>

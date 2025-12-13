@@ -34,7 +34,7 @@ foreach ($collectionItems as $link) {
 }
 
 // Collection types (same as in collections_form.php)
-$collectionTypes = [
+$baseCollectionTypes = [
     'Collectible Cards',
     'Coins',
     'Stamps',
@@ -44,6 +44,18 @@ $collectionTypes = [
     'Memorabilia',
     'Other'
 ];
+$extraTypes = [];
+foreach ($collections as $col) {
+    $typeValue = trim($col['type'] ?? '');
+    if ($typeValue === '') {
+        continue;
+    }
+    if (!in_array($typeValue, $baseCollectionTypes, true) && !in_array($typeValue, $extraTypes, true)) {
+        $extraTypes[] = $typeValue;
+    }
+}
+sort($extraTypes, SORT_NATURAL | SORT_FLAG_CASE);
+$collectionTypes = array_merge($baseCollectionTypes, $extraTypes);
 
 $isAuth = !empty($_SESSION['user']);
 $currentUserId = $_SESSION['user']['id'] ?? null;

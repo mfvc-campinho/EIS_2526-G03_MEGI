@@ -357,15 +357,15 @@ body {
 
 /* Like ativo - também azul escuro */
 .action-icon.is-liked {
-  color: #1e3a8a;
-  border-color: #1e3a8a;
-  background: #eff6ff;
+  color: #15803d;
+  border-color: #16a34a;
+  background: #ecfdf3;
 }
 
 .action-icon.is-liked:hover {
-  background: #1e3a8a;
+  background: #16a34a;
   color: #ffffff;
-  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
+  box-shadow: 0 12px 24px rgba(22, 163, 74, 0.25);
 }
 
 /* Delete - também azul escuro */

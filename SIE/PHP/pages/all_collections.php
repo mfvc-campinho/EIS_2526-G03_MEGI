@@ -60,6 +60,34 @@ $collectionTypes = array_merge($baseCollectionTypes, $extraTypes);
 $isAuth = !empty($_SESSION['user']);
 $currentUserId = $_SESSION['user']['id'] ?? null;
 $likedCollections = [];
+$collectionLikeCounts = [];
+
+// Fetch like counts + user likes for collections
+require __DIR__ . '/../config/db.php';
+if ($mysqli && !$mysqli->connect_error) {
+    $res = $mysqli->query("SELECT liked_collection_id, COUNT(*) as cnt FROM user_liked_collections GROUP BY liked_collection_id");
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $cid = $row['liked_collection_id'] ?? null;
+            if ($cid) {
+                $collectionLikeCounts[$cid] = (int)($row['cnt'] ?? 0);
+            }
+        }
+        $res->close();
+    }
+    if ($isAuth) {
+        $stmt = $mysqli->prepare("SELECT liked_collection_id FROM user_liked_collections WHERE user_id = ?");
+        $stmt->bind_param('s', $currentUserId);
+        $stmt->execute();
+        $res2 = $stmt->get_result();
+        while ($row = $res2->fetch_assoc()) {
+            $cid = $row['liked_collection_id'] ?? null;
+            if ($cid) $likedCollections[$cid] = true;
+        }
+        $stmt->close();
+    }
+    $mysqli->close();
+}
 // Controls
 $sort = $_GET['sort'] ?? 'newest';
 $perPage = max(1, (int) ($_GET['perPage'] ?? 10));
@@ -336,8 +364,10 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                             <form action="likes_action.php" method="POST" class="action-icon-form like-form">
                                                 <input type="hidden" name="type" value="collection">
                                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
+                                                <?php $likeCount = $collectionLikeCounts[$col['id']] ?? 0; ?>
                                                 <button type="submit" class="action-icon<?php echo isset($likedCollections[$col['id']]) ? ' is-liked' : ''; ?>" title="Like">
                                                     <i class="bi <?php echo isset($likedCollections[$col['id']]) ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
+                                                    <span class="like-count<?php echo $likeCount === 0 ? ' is-zero' : ''; ?>"><?php echo $likeCount; ?></span>
                                                 </button>
                                             </form>
                                         <?php else: ?>
@@ -563,19 +593,39 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                         var formData = new FormData(form);
                         fetch('likes_action.php', {
                             method: 'POST',
-                            body: formData
-                        }).then(function() {
+                            body: formData,
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        }).then(function(res) {
+                            if (!res.ok) throw new Error('failed');
+                            return res.json();
+                        }).then(function(payload) {
+                            if (!payload.ok) throw new Error(payload.error || 'failed');
                             var button = form.querySelector('button');
                             var icon = button.querySelector('i');
-                            if (button.classList.contains('is-liked')) {
-                                button.classList.remove('is-liked');
-                                icon.classList.remove('bi-heart-fill');
-                                icon.classList.add('bi-heart');
-                            } else {
+                            var countEl = form.querySelector('.like-count');
+                            var current = countEl ? parseInt(countEl.textContent || '0', 10) : 0;
+                            var likedNow = payload.liked === true || (payload.liked === null ? !button.classList.contains('is-liked') : payload.liked);
+                            if (likedNow) {
                                 button.classList.add('is-liked');
                                 icon.classList.remove('bi-heart');
                                 icon.classList.add('bi-heart-fill');
+                                if (countEl) {
+                                    countEl.textContent = (current + 1).toString();
+                                    countEl.classList.toggle('is-zero', false);
+                                }
+                            } else {
+                                button.classList.remove('is-liked');
+                                icon.classList.remove('bi-heart-fill');
+                                icon.classList.add('bi-heart');
+                                if (countEl) {
+                                    var next = Math.max(0, current - 1);
+                                    countEl.textContent = next.toString();
+                                    countEl.classList.toggle('is-zero', next === 0);
+                                }
                             }
+                        }).catch(function(err) {
+                            console.error(err);
+                            window.location = 'likes_action.php';
                         });
                     });
                 });

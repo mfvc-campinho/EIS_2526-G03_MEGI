@@ -319,7 +319,7 @@ foreach ($eventsUsers as $entry) {
     .calendar-toggle-btn { padding: 10px 18px; background: #3b82f6; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
     .calendar-toggle-btn:hover { background: #2563eb; }
     .calendar-toggle-btn.active { background: #1e40af; }
-    .calendar-view { max-width: 1200px; margin: 0 auto 40px; display: none; background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .calendar-view { max-width: 960px; margin: 0 auto 32px; display: none; background: white; border-radius: 16px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .calendar-view.show { display: block; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .calendar-header h2 { margin: 0; font-size: 1.5rem; color: #1f2937; }
@@ -328,7 +328,7 @@ foreach ($eventsUsers as $entry) {
     .calendar-nav button:hover { background: #e5e7eb; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
     .calendar-day-header { background: #f9fafb; padding: 12px 8px; text-align: center; font-weight: 700; font-size: 0.85rem; color: #6b7280; text-transform: uppercase; }
-    .calendar-day { background: white; min-height: 100px; padding: 8px; position: relative; }
+    .calendar-day { background: white; min-height: 86px; padding: 8px; position: relative; }
     .calendar-day.empty { background: #fafafa; }
     .calendar-day.today { background: #eff6ff; border: 2px solid #3b82f6; }
     .calendar-day-number { font-weight: 700; color: #374151; margin-bottom: 6px; font-size: 0.9rem; }
@@ -337,6 +337,10 @@ foreach ($eventsUsers as $entry) {
     .calendar-event-item:hover { background: #bfdbfe; }
     .calendar-event-time { font-weight: 600; color: #1e40af; display: block; }
     .calendar-event-name { color: #1f2937; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .calendar-event-item.past { background: #fdf2f8; border-left-color: #be185d; }
+    .calendar-event-item.past:hover { background: #fbcfe8; }
+    .calendar-event-item.past .calendar-event-time { color: #be185d; }
+    .calendar-event-item.past .calendar-event-name { color: #9d174d; }
   </style>
 </head>
 
@@ -1032,15 +1036,8 @@ foreach ($eventsUsers as $entry) {
 
       function parseEventDate(dateStr) {
         if (!dateStr) return null;
-        const date = new Date(dateStr.replace(' ', 'T'));
+        const date = new Date((dateStr || '').replace(' ', 'T'));
         return isNaN(date.getTime()) ? null : date;
-      }
-
-      function isFutureEvent(dateStr) {
-        const eventDate = parseEventDate(dateStr);
-        if (!eventDate) return false;
-        const now = new Date();
-        return eventDate >= now;
       }
 
       function renderCalendar(year, month) {
@@ -1061,6 +1058,7 @@ foreach ($eventsUsers as $entry) {
         const daysInMonth = lastDay.getDate();
 
         const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
         const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
 
         // Empty cells for days before month starts
@@ -1088,35 +1086,38 @@ foreach ($eventsUsers as $entry) {
           const dayDate = new Date(year, month, day);
           const dayDateStr = dayDate.toISOString().split('T')[0];
 
-          const dayEvents = allEvents.filter(evt => {
-            if (!isFutureEvent(evt.date)) return false;
+          const dayEvents = allEvents.reduce((list, evt) => {
             const evtDate = parseEventDate(evt.date);
-            if (!evtDate) return false;
+            if (!evtDate) return list;
             const evtDateStr = evtDate.toISOString().split('T')[0];
-            return evtDateStr === dayDateStr;
-          });
+            if (evtDateStr === dayDateStr) {
+              list.push({ data: evt, parsedDate: evtDate, dateStr: evtDateStr });
+            }
+            return list;
+          }, []);
 
-          dayEvents.forEach(evt => {
-            const evtDate = parseEventDate(evt.date);
+          dayEvents.forEach(({ data, parsedDate, dateStr }) => {
             const eventItem = document.createElement('div');
             eventItem.className = 'calendar-event-item';
+            const isUpcomingEvent = dateStr >= todayStr;
+            eventItem.classList.add(isUpcomingEvent ? 'upcoming' : 'past');
             
             const timeSpan = document.createElement('span');
             timeSpan.className = 'calendar-event-time';
-            timeSpan.textContent = evtDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+            timeSpan.textContent = parsedDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
             eventItem.appendChild(timeSpan);
 
             const nameSpan = document.createElement('span');
             nameSpan.className = 'calendar-event-name';
-            nameSpan.textContent = evt.name || 'Evento';
-            nameSpan.title = evt.name || 'Evento';
+            nameSpan.textContent = data.name || 'Evento';
+            nameSpan.title = data.name || 'Evento';
             eventItem.appendChild(nameSpan);
 
             eventItem.addEventListener('click', function() {
               // Find the corresponding button in the grid and trigger click
               const buttons = document.querySelectorAll('.js-view-event');
               buttons.forEach(btn => {
-                if (btn.getAttribute('data-name') === evt.name) {
+                if (btn.getAttribute('data-name') === data.name) {
                   btn.click();
                 }
               });

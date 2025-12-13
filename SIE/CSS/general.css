@@ -2826,6 +2826,18 @@ html.dark-mode .explore-btn.ghost:hover {
   border-color: var(--text-link);
 }
 
+/* ==================================================
+   Consistent rounded buttons across the site
+   ================================================== */
+.explore-btn,
+.explore-btn.ghost,
+.calendar-toggle-btn,
+.signin-btn,
+.pill-toggle a,
+.signin-actions .signin-btn {
+  border-radius: 14px !important;
+}
+
 html.dark-mode .explore-btn.success {
   background: var(--success-color);
   color: #ffffff;

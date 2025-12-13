@@ -50,63 +50,63 @@ $team = [
 <body>
   <?php include __DIR__ . '/../includes/nav.php'; ?>
   <main class="page-shell">
-      
-      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-        <ol class="breadcrumb-list">
-          <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
-          <li class="breadcrumb-item" aria-current="page">Team</li>
-        </ol>
-      </nav>
 
-          <!-- ===============================
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
+        <li class="breadcrumb-item" aria-current="page">Team</li>
+      </ol>
+    </nav>
+
+    <!-- ===============================
          Our Team – Hero + Summary
          =============================== -->
     <section class="collections-hero">
-        <h1>Our Team</h1>
-        <div class="collections-hero-underline"></div>
-        <p>Meet the people behind GoodCollections.</p>
+      <h1>Our Team</h1>
+      <div class="collections-hero-underline"></div>
+      <p>Meet the people behind GoodCollections.</p>
     </section>
 
     <section class="team-summary">
-        <article class="team-summary-card">
-            <div class="team-summary-icon">
-                <i class="bi bi-mortarboard-fill"></i>
-            </div>
+      <article class="team-summary-card">
+        <div class="team-summary-icon">
+          <i class="bi bi-mortarboard-fill"></i>
+        </div>
 
-            <h2 class="team-summary-title">
-                GoodCollections — Information System for Collection Management
-            </h2>
+        <h2 class="team-summary-title">
+          GoodCollections — Information System for Collection Management
+        </h2>
 
-            <div class="team-summary-grid">
-                <div class="team-summary-col">
-                    <span class="eyebrow">Team</span>
-                    <div class="team-pill">G03</div>
-                </div>
+        <div class="team-summary-grid">
+          <div class="team-summary-col">
+            <span class="eyebrow">Team</span>
+            <div class="team-pill">G03</div>
+          </div>
 
-                <div class="team-summary-col">
-                    <span class="eyebrow">Course</span>
-                    <p>Masters in Industrial<br>Engineering and Management<br>(MEGI)</p>
-                </div>
+          <div class="team-summary-col">
+            <span class="eyebrow">Course</span>
+            <p>Masters in Industrial<br>Engineering and Management<br>(MEGI)</p>
+          </div>
 
-                <div class="team-summary-col">
-                    <span class="eyebrow">University</span>
-                    <p>Faculty of Engineering of<br>University of Porto (FEUP)</p>
-                </div>
+          <div class="team-summary-col">
+            <span class="eyebrow">University</span>
+            <p>Faculty of Engineering of<br>University of Porto (FEUP)</p>
+          </div>
 
-                <div class="team-summary-col">
-                    <span class="eyebrow">Academic Year</span>
-                    <p>1S 2025/2026</p>
-                </div>
-            </div>
-        </article>
+          <div class="team-summary-col">
+            <span class="eyebrow">Academic Year</span>
+            <p>1S 2025/2026</p>
+          </div>
+        </div>
+      </article>
     </section>
 
     <!-- Título da secção de membros (antes dos cards com as fotos) -->
     <section class="team-members-header">
-        <h2>
-            <i class="bi bi-people-fill"></i>
-            <span>Team Members</span>
-        </h2>
+      <h2>
+        <i class="bi bi-people-fill"></i>
+        <span>Team Members</span>
+      </h2>
     </section>
 
     <section class="team-hero">
@@ -117,14 +117,14 @@ $team = [
       <?php foreach ($team as $member): ?>
         <?php $profileUrl = htmlspecialchars($member['page']); ?>
         <article class="member-card card home-card team-card-link"
-                 role="link"
-                 tabindex="0"
-                 data-member-link="<?php echo $profileUrl; ?>">
+          role="link"
+          tabindex="0"
+          data-member-link="<?php echo $profileUrl; ?>">
           <a class="member-photo-link"
-             href="<?php echo $profileUrl; ?>"
-             target="_blank"
-             rel="noopener noreferrer"
-             aria-label="Visit the profile page for <?php echo htmlspecialchars($member['name']); ?> (opens in a new tab)">
+            href="<?php echo $profileUrl; ?>"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Visit the profile page for <?php echo htmlspecialchars($member['name']); ?> (opens in a new tab)">
             <div class="card-image member-photo">
               <img src="<?php echo htmlspecialchars($member['photo']); ?>" alt="<?php echo htmlspecialchars($member['name']); ?>">
             </div>
@@ -132,10 +132,10 @@ $team = [
           <div class="card-info member-info">
             <h3>
               <a class="member-name-link"
-                 href="<?php echo $profileUrl; ?>"
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 aria-label="Visit the profile page for <?php echo htmlspecialchars($member['name']); ?> (opens in a new tab)">
+                href="<?php echo $profileUrl; ?>"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit the profile page for <?php echo htmlspecialchars($member['name']); ?> (opens in a new tab)">
                 <?php echo htmlspecialchars($member['name']); ?>
               </a>
             </h3>
@@ -145,23 +145,37 @@ $team = [
         </article>
       <?php endforeach; ?>
     </section>
+
+    <section class="repo-card-wrapper">
+      <a class="repo-card" href="https://github.com/mfvc-campinho/EIS_2526-G03_MEGI" target="_blank" rel="noopener noreferrer">
+        <div class="repo-card__icon">
+          <i class="bi bi-github"></i>
+        </div>
+        <div class="repo-card__body">
+          <h3>Project Repository</h3>
+          <p>View the complete source code and documentation on GitHub</p>
+          <span class="repo-card__link">github.com/EIS_2526-G03_MEGI</span>
+        </div>
+      </a>
+    </section>
   </main>
   <?php include __DIR__ . '/../includes/footer.php'; ?>
   <script>
-    (function () {
+    (function() {
       var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';
+
       function enhanceMemberCard(card) {
         var href = card.getAttribute('data-member-link');
         if (!href) {
           return;
         }
-        card.addEventListener('click', function (event) {
+        card.addEventListener('click', function(event) {
           if (event.target.closest(interactiveSelector)) {
             return;
           }
           window.open(href, '_blank', 'noopener');
         });
-        card.addEventListener('keydown', function (event) {
+        card.addEventListener('keydown', function(event) {
           if (event.target !== card) {
             return;
           }

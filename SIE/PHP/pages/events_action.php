@@ -6,7 +6,7 @@ require_once __DIR__ . '/../config/db.php';
 $action = $_POST['action'] ?? null;
 $currentUser = $_SESSION['user']['id'] ?? null;
 if (!$currentUser) {
-  flash_set('error', 'You need to be logged in.');
+  flash_set('error', 'Precisa de iniciar sessão.');
   header('Location: event_page.php');
   exit;
 }
@@ -14,7 +14,6 @@ if (!$currentUser) {
 $appTimezone = new DateTimeZone(date_default_timezone_get());
 $now = new DateTime('now', $appTimezone);
 $today = $now->format('Y-m-d');
-$tomorrowDate = (clone $now)->modify('+1 day')->format('Y-m-d');
 
 if (!function_exists('parse_event_datetime_helper')) {
   function parse_event_datetime_helper($raw, DateTimeZone $tz)
@@ -64,6 +63,17 @@ function redirect_error($msg)
   exit;
 }
 
+function normalize_cost_input($raw)
+{
+  $raw = trim((string)$raw);
+  if ($raw === '') return 0.0;
+  $normalized = str_replace(',', '.', $raw);
+  if (!is_numeric($normalized)) return null;
+  $cost = (float)$normalized;
+  if ($cost < 0) return null;
+  return round($cost, 2);
+}
+
 // Normalize posted collection ids
 $collectionIds = $_POST['collectionIds'] ?? [];
 $collectionIds = is_array($collectionIds) ? array_values(array_unique(array_filter($collectionIds))) : [];
@@ -97,7 +107,7 @@ function replace_event_links($mysqli, $eventId, $collectionIds)
 }
 
 if ($action === 'create') {
-  if (!$collectionIds) redirect_error('Choose at least one collection.');
+  if (!$collectionIds) redirect_error('Selecione pelo menos uma coleção.');
   foreach ($collectionIds as $cid) {
     if (!user_owns_collection($mysqli, $cid, $currentUser)) {
       $mysqli->close();
@@ -111,31 +121,40 @@ if ($action === 'create') {
   $description = trim($_POST['description'] ?? '');
   $type = trim($_POST['type'] ?? '');
   $localization = trim($_POST['localization'] ?? '');
+  $costInput = $_POST['cost'] ?? '';
   $rawDate = trim($_POST['date'] ?? '');
   if ($localization === '' || $rawDate === '') {
     $mysqli->close();
-    redirect_error('Provide event location and date.');
+    redirect_error('Indique a localização e a data do evento.');
+  }
+  $costValue = normalize_cost_input($costInput);
+  if ($costValue === null) {
+    $mysqli->close();
+    redirect_error('Custo do evento inválido.');
   }
   $parsedInput = parse_event_datetime_helper($rawDate, $appTimezone);
   $dateObj = $parsedInput['date'];
   $inputHasTime = $parsedInput['hasTime'];
   if (!$dateObj) {
     $mysqli->close();
-    redirect_error('Invalid event date/time.');
+    redirect_error('Data/hora do evento inválida.');
   }
-  $isBeforeAllowed = $dateObj->format('Y-m-d') < $tomorrowDate;
-  if ($isBeforeAllowed) {
+  $isPast = $inputHasTime
+    ? ($dateObj <= $now)
+    : ($dateObj->format('Y-m-d') < $today);
+  if ($isPast) {
     $mysqli->close();
-    redirect_error('Events must be scheduled at least one day in advance.');
+    redirect_error('Não pode marcar eventos para datas ou horas no passado.');
   }
   if (!$inputHasTime) {
     $dateObj->setTime(0, 0, 0);
   }
   $dateForSql = $dateObj->format('Y-m-d H:i:s');
+  $costForSql = (float)number_format($costValue, 2, '.', '');
   $primaryCol = $collectionIds[0];
 
-  $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,created_at,collection_id) VALUES (?,?,?,?,?,?,?,NOW(),?)');
-  $stmt->bind_param('ssssssss', $id, $name, $localization, $dateForSql, $type, $summary, $description, $primaryCol);
+  $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,cost,created_at,host_user_id,collection_id) VALUES (?,?,?,?,?,?,?,?,NOW(),?,?)');
+  $stmt->bind_param('sssssssdss', $id, $name, $localization, $dateForSql, $type, $summary, $description, $costForSql, $currentUser, $primaryCol);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -147,21 +166,21 @@ if ($action === 'create') {
 
 if ($action === 'update') {
   $id = $_POST['id'] ?? null;
-  if (!$id) redirect_error('ID missing.');
-  if (!$collectionIds) redirect_error('Choose at least one collection.');
+  if (!$id) redirect_error('ID em falta.');
+  if (!$collectionIds) redirect_error('Selecione pelo menos uma coleção.');
 
-  $currentEventStmt = $mysqli->prepare('SELECT e.event_date, e.collection_id, c.user_id AS owner_id FROM events e LEFT JOIN collections c ON c.collection_id = e.collection_id WHERE e.event_id = ? LIMIT 1');
+  $currentEventStmt = $mysqli->prepare('SELECT host_user_id, event_date FROM events WHERE event_id = ? LIMIT 1');
   $currentEventStmt->bind_param('s', $id);
   $currentEventStmt->execute();
   $currentEvent = $currentEventStmt->get_result()->fetch_assoc();
   $currentEventStmt->close();
   if (!$currentEvent) {
     $mysqli->close();
-    redirect_error('Event not found.');
+    redirect_error('Evento não encontrado.');
   }
-  if (($currentEvent['owner_id'] ?? null) !== $currentUser) {
+  if (($currentEvent['host_user_id'] ?? null) !== $currentUser) {
     $mysqli->close();
-    redirect_error('You do not have permission to edit this event.');
+    redirect_error('Não tem permissões para editar este evento.');
   }
   $parsedEventDate = parse_event_datetime_helper($currentEvent['event_date'] ?? null, $appTimezone);
   $eventDateObj = $parsedEventDate['date'];
@@ -172,7 +191,7 @@ if ($action === 'update') {
       : ($eventDateObj->format('Y-m-d') < $today);
     if ($eventHasEnded) {
       $mysqli->close();
-      redirect_error('Events that already happen cannot be altered.');
+      redirect_error('Eventos que já aconteceram não podem ser editados.');
     }
   }
 
@@ -189,31 +208,40 @@ if ($action === 'update') {
   $description = trim($_POST['description'] ?? '');
   $type = trim($_POST['type'] ?? '');
   $localization = trim($_POST['localization'] ?? '');
+  $costInput = $_POST['cost'] ?? '';
   $rawDate = trim($_POST['date'] ?? '');
   if ($localization === '' || $rawDate === '') {
     $mysqli->close();
-    redirect_error('Provide event location and date.');
+    redirect_error('Indique a localização e a data do evento.');
+  }
+  $costValue = normalize_cost_input($costInput);
+  if ($costValue === null) {
+    $mysqli->close();
+    redirect_error('Custo do evento inválido.');
   }
   $parsedInput = parse_event_datetime_helper($rawDate, $appTimezone);
   $dateObj = $parsedInput['date'];
   $inputHasTime = $parsedInput['hasTime'];
   if (!$dateObj) {
     $mysqli->close();
-    redirect_error('Invalid event date/time.');
+    redirect_error('Data/hora do evento inválida.');
   }
-  $isBeforeAllowed = $dateObj->format('Y-m-d') < $tomorrowDate;
-  if ($isBeforeAllowed) {
+  $isPast = $inputHasTime
+    ? ($dateObj <= $now)
+    : ($dateObj->format('Y-m-d') < $today);
+  if ($isPast) {
     $mysqli->close();
-    redirect_error('Events must be scheduled at least one day in advance.');
+    redirect_error('Não pode marcar eventos para datas ou horas no passado.');
   }
   if (!$inputHasTime) {
     $dateObj->setTime(0, 0, 0);
   }
   $dateForSql = $dateObj->format('Y-m-d H:i:s');
+  $costForSql = (float)number_format($costValue, 2, '.', '');
   $primaryCol = $collectionIds[0];
 
-  $stmt = $mysqli->prepare('UPDATE events SET name=?, localization=?, event_date=?, type=?, summary=?, description=?, collection_id=? WHERE event_id=?');
-  $stmt->bind_param('ssssssss', $name, $localization, $dateForSql, $type, $summary, $description, $primaryCol, $id);
+  $stmt = $mysqli->prepare('UPDATE events SET name=?, localization=?, event_date=?, type=?, summary=?, description=?, cost=?, collection_id=? WHERE event_id=?');
+  $stmt->bind_param('ssssssdss', $name, $localization, $dateForSql, $type, $summary, $description, $costForSql, $primaryCol, $id);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -228,28 +256,15 @@ if ($action === 'delete') {
   if (!$id) redirect_error('ID missing.');
 
   // ownership check via event host
-  $chk = $mysqli->prepare('SELECT e.event_date, c.user_id AS owner_id FROM events e LEFT JOIN collections c ON c.collection_id = e.collection_id WHERE e.event_id = ? LIMIT 1');
+  $chk = $mysqli->prepare('SELECT host_user_id FROM events WHERE event_id = ? LIMIT 1');
   $chk->bind_param('s', $id);
   $chk->execute();
   $res = $chk->get_result();
   $row = $res->fetch_assoc();
   $chk->close();
-  if (!$row || ($row['owner_id'] ?? null) !== $currentUser) {
+  if (!$row || ($row['host_user_id'] ?? null) !== $currentUser) {
     $mysqli->close();
     redirect_error('You do not have permission to delete this event.');
-  }
-
-  $parsedEventDate = parse_event_datetime_helper($row['event_date'] ?? null, $appTimezone);
-  $eventDateObj = $parsedEventDate['date'];
-  $hasTime = $parsedEventDate['hasTime'];
-  if ($eventDateObj) {
-    $eventHasEnded = $hasTime
-      ? ($eventDateObj <= $now)
-      : ($eventDateObj->format('Y-m-d') < $today);
-    if ($eventHasEnded) {
-      $mysqli->close();
-      redirect_error('Past events cannot be deleted.');
-    }
   }
 
   $stmt = $mysqli->prepare('DELETE FROM events WHERE event_id = ?');
@@ -264,7 +279,7 @@ if ($action === 'delete') {
 
 // Fetch helper
 $fetchEvent = function ($mysqli, $eventId) {
-  $stmt = $mysqli->prepare('SELECT event_id, collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
+  $stmt = $mysqli->prepare('SELECT event_id, host_user_id, collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
   $stmt->bind_param('s', $eventId);
   $stmt->execute();
   $res = $stmt->get_result();
@@ -275,7 +290,7 @@ $fetchEvent = function ($mysqli, $eventId) {
 
 if ($action === 'rsvp') {
   $id = $_POST['id'] ?? null;
-  if (!$id) redirect_error('ID missing.');
+  if (!$id) redirect_error('ID em falta.');
   $row = $fetchEvent($mysqli, $id);
   if (!$row) {
     $mysqli->close();
@@ -297,12 +312,12 @@ if ($action === 'rsvp') {
     $stmt->close();
     $mysqli->close();
     if ($ok) {
-      flash_set('success', 'RSVP removed.');
+      flash_set('success', 'RSVP removido.');
       $_SESSION['rsvp_removed'] = true;
       header('Location: event_page.php');
       exit;
     }
-    redirect_error('Failed to remove RSVP.');
+    redirect_error('Falha ao remover RSVP.');
   } else {
     // Add RSVP
     $stmt = $mysqli->prepare('INSERT INTO event_rsvps (event_id,user_id) VALUES (?,?)');
@@ -311,12 +326,12 @@ if ($action === 'rsvp') {
     $stmt->close();
     $mysqli->close();
     if ($ok) {
-      flash_set('success', 'RSVP registered.');
+      flash_set('success', 'RSVP registado.');
       $_SESSION['rsvp_removed'] = false;
       header('Location: event_page.php');
       exit;
     }
-    redirect_error('Failed to register RSVP.');
+    redirect_error('Falha ao registar RSVP.');
   }
 }
 
@@ -326,13 +341,13 @@ if ($action === 'rate') {
   $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : null;
   if (!$eventId || !$collectionId || !$rating || $rating < 1 || $rating > 5) {
     $mysqli->close();
-    redirect_error('Invalid rating data.');
+    redirect_error('Dados de avaliação inválidos.');
   }
 
   $row = $fetchEvent($mysqli, $eventId);
   if (!$row) {
     $mysqli->close();
-    redirect_error('Event not found.');
+    redirect_error('Evento não encontrado.');
   }
 
   // Apenas permitir avaliação após o evento
@@ -341,14 +356,14 @@ if ($action === 'rate') {
   $hasTime = $parsedEventDate['hasTime'];
   if (!$eventDateObj) {
     $mysqli->close();
-    redirect_error('Invalid event date.');
+    redirect_error('Data do evento inválida.');
   }
   $eventHasEnded = $hasTime
     ? ($eventDateObj <= $now)
     : ($eventDateObj->format('Y-m-d') < $today);
   if (!$eventHasEnded) {
     $mysqli->close();
-    redirect_error('You can only rate collections after the event has occurred.');
+    redirect_error('Só pode avaliar coleções após o evento ocorrer.');
   }
 
   // Verificar RSVP
@@ -359,7 +374,7 @@ if ($action === 'rate') {
   $chkRsvp->close();
   if (!$hasRsvp) {
     $mysqli->close();
-    redirect_error('Only participants can rate collections.');
+    redirect_error('Só participantes podem avaliar coleções.');
   }
 
   // Garantir que a coleção pertence ao evento
@@ -376,7 +391,7 @@ if ($action === 'rate') {
   }
   if (!$linked) {
     $mysqli->close();
-    redirect_error('Colection is not associated with this event.');
+    redirect_error('Coleção não está associada a este evento.');
   }
 
   $stmt = $mysqli->prepare('REPLACE INTO event_ratings (event_id,user_id,collection_id,rating) VALUES (?,?,?,?)');
@@ -384,10 +399,10 @@ if ($action === 'rate') {
   $ok = $stmt->execute();
   $stmt->close();
   $mysqli->close();
-  if ($ok) redirect_success('Rating registered.');
-  redirect_error('Failed to register rating.');
+  if ($ok) redirect_success('Avaliação registada.');
+  redirect_error('Falha ao registar avaliação.');
 }
 
 $mysqli->close();
-redirect_error('Invalid action.');
+redirect_error('Ação inválida.');
 

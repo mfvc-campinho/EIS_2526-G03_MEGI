@@ -172,6 +172,14 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                 color: #475569;
                 font-weight: 600;
             }
+            .product-card__owner a {
+                transition: color 0.2s ease, transform 0.2s ease;
+                display: inline-block;
+            }
+            .product-card__owner a:hover {
+                color: #2563eb !important;
+                transform: translateX(2px);
+            }
         </style>
         <script src="././JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>

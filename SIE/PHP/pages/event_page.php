@@ -511,6 +511,11 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
               $eventDateDisplay = str_replace('T', ' ', substr($fallbackRaw, 0, 16));
             }
           }
+          $rawCost = $evt['cost'] ?? null;
+          $costValue = ($rawCost === '' || $rawCost === null) ? null : (float)$rawCost;
+          $costLabel = ($costValue !== null && $costValue > 0)
+            ? '€' . number_format($costValue, 2, ',', '.')
+            : 'Entrada gratuita';
           $canEditEvent = $isOwner && !$eventHasEnded;
           $keyBase = $currentUserId ? (strval($eventId) . '|' . strval($currentUserId)) : null;
           $hasRsvp = $keyBase ? !empty($eventRsvpMap[$keyBase]) : false;
@@ -575,6 +580,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
                    data-datetime="<?php echo htmlspecialchars($eventTimeDisplay ? ($eventDateDisplay . ' · ' . $eventTimeDisplay) : $eventDateDisplay); ?>"
                    data-location="<?php echo htmlspecialchars($evt['localization']); ?>"
                    data-type="<?php echo htmlspecialchars($evt['type']); ?>"
+                   data-cost="<?php echo htmlspecialchars($costLabel); ?>"
                    data-rating="<?php echo $modalDataJson; ?>">
             <div class="event-card-top">
               <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Event'); ?></p>
@@ -609,6 +615,10 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
                 <?php endif; ?>
               </div>
             <?php endif; ?>
+            <div class="event-meta-row">
+              <i class="bi bi-cash-coin"></i>
+              <span><?php echo htmlspecialchars($costLabel); ?></span>
+            </div>
             <div class="event-actions">
               <?php if ($isOwner): ?>
                 <?php if ($canEditEvent): ?>
@@ -692,6 +702,15 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
               <div class="modal-info-value">
                 <a id="modal-location" class="modal-location-link" href="#" target="_blank" rel="noopener noreferrer"></a>
               </div>
+            </div>
+          </div>
+          <div class="modal-info-item">
+            <div class="modal-info-icon">
+              <i class="bi bi-cash-coin"></i>
+            </div>
+            <div class="modal-info-content">
+              <div class="modal-info-label">Cost</div>
+              <div class="modal-info-value" id="modal-cost"></div>
             </div>
           </div>
         </div>
@@ -978,6 +997,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
           const combined = card.getAttribute('data-datetime') || '';
           const location = card.getAttribute('data-location') || '';
           const type = card.getAttribute('data-type') || '';
+          const cost = card.getAttribute('data-cost') || '';
           const ratingRaw = card.getAttribute('data-rating') || '';
 
           document.getElementById('modal-title').textContent = name;
@@ -1020,6 +1040,11 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
               locationLink.removeAttribute('rel');
               locationLink.classList.add('disabled');
             }
+          }
+
+          const costEl = document.getElementById('modal-cost');
+          if (costEl) {
+            costEl.textContent = cost || 'Entrada gratuita';
           }
 
           let payload = null;

@@ -297,8 +297,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                         </h3>
                                         <div class="product-card__meta">
                                             <div class="product-card__owner">
-                                                <i class="bi bi-people"></i>
-                                                <a href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>" style="color: inherit; text-decoration: none;">
+                                                <a class="owner-link" href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>">
                                                     <?php 
                                                         $ownerId = $col['ownerId'] ?? null;
                                                         $ownerName = $ownerId && isset($usersById[$ownerId]) 
@@ -311,8 +310,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
                                             <?php if (!empty($col['createdAt'])): ?>
                                                 <div class="product-card__date">
-                                                    <i class="bi bi-calendar3"></i>
-                                                    <?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?>
+                                                    <span class="meta-date"><?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?></span>
                                                 </div>
                                             <?php endif; ?>
                                         </div>
@@ -379,20 +377,20 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 $parsed = parse_event_datetime_home($evt['date'] ?? null, $appTimezone);
                                 $eventDateObj = $parsed['date'];
                                 $hasTime = $parsed['hasTime'];
-                                
+
                                 $monthNames = [
                                     1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
                                     5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
                                     9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro'
                                 ];
-                                
+
                                 $dateDisplay = '';
                                 if ($eventDateObj) {
                                     $day = (int)$eventDateObj->format('d');
                                     $month = (int)$eventDateObj->format('m');
                                     $year = $eventDateObj->format('Y');
                                     $dateDisplay = "{$day} de {$monthNames[$month]}";
-                                    
+
                                     if ($hasTime) {
                                         $time = $eventDateObj->format('H:i');
                                         $dateDisplay .= " às {$time}";
@@ -408,31 +406,31 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 }
                                 $modalPrimaryDate = $eventDateDisplay ?: $dateDisplay;
                                 $modalCombinedDisplay = $eventTimeDisplay ? ($modalPrimaryDate . ' · ' . $eventTimeDisplay) : $modalPrimaryDate;
+                                $rawCost = $evt['cost'] ?? null;
+                                $costValue = ($rawCost === '' || $rawCost === null) ? null : (float)$rawCost;
+                                $costLabel = ($costValue !== null && $costValue > 0)
+                                    ? '€' . number_format($costValue, 2, ',', '.')
+                                    : 'Entrada gratuita';
                                 ?>
-                                <article class="event-card js-event-card"
-                                         role="button"
-                                         tabindex="0"
-                                         data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
-                                         data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
-                                         data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
-                                         data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
-                                         data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
-                                         data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
-                                         data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
-                                         data-type="<?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>">
+                                <a class="event-card js-event-card"
+                                   href="#"
+                                   data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
+                                   data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
+                                   data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
+                                   data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
+                                   data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
+                                   data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
+                                   data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
+                                   data-type="<?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>"
+                                   data-cost="<?php echo htmlspecialchars($costLabel); ?>">
                                     <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
                                     <h3><?php echo htmlspecialchars($evt['name']); ?></h3>
                                     <ul class="event-meta">
-                                        <li>
-                                            <i class="bi bi-calendar-event"></i>
-                                            <?php echo htmlspecialchars($dateDisplay); ?>
-                                        </li>
-                                        <li>
-                                            <i class="bi bi-geo-alt-fill"></i>
-                                            <?php echo htmlspecialchars($evt['localization']); ?>
-                                        </li>
+                                        <li><?php echo htmlspecialchars($dateDisplay); ?></li>
+                                        <li><?php echo htmlspecialchars($evt['localization']); ?></li>
+                                        <li><?php echo htmlspecialchars($costLabel); ?></li>
                                     </ul>
-                                </article>
+                                </a>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <p class="muted">No upcoming events scheduled</p>
@@ -444,55 +442,6 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                     </div>
                 </div>
             </section>
-            <!-- ===============================
-     GoodCollections Statistics
-     =============================== -->
-            <section class="stats-section">
-                <h2 class="stats-title">GoodCollections Statistics</h2>
-
-                <div class="stats-grid">
-                    <article class="stat-card">
-                        <div class="stat-icon">
-                            <i class="bi bi-people-fill"></i>
-                        </div>
-                        <div class="stat-body">
-                            <div class="stat-value"><?php echo $statsUsers; ?></div>
-                            <div class="stat-label">Registered users</div>
-                        </div>
-                    </article>
-
-                    <article class="stat-card">
-                        <div class="stat-icon">
-                            <i class="bi bi-calendar-event-fill"></i>
-                        </div>
-                        <div class="stat-body">
-                            <div class="stat-value"><?php echo $statsEvents; ?></div>
-                            <div class="stat-label">Total events</div>
-                        </div>
-                    </article>
-
-                    <article class="stat-card">
-                        <div class="stat-icon">
-                            <i class="bi bi-collection"></i>
-                        </div>
-                        <div class="stat-body">
-                            <div class="stat-value"><?php echo $statsCollections; ?></div>
-                            <div class="stat-label">Collections</div>
-                        </div>
-                    </article>
-
-                    <article class="stat-card">
-                        <div class="stat-icon">
-                            <i class="bi bi-box-seam"></i>
-                        </div>
-                        <div class="stat-body">
-                            <div class="stat-value"><?php echo $statsItems; ?></div>
-                            <div class="stat-label">Items</div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-
             <!-- ===============================
                  Everything You Need...
                  =============================== -->
@@ -618,6 +567,15 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 <div class="modal-info-value">
                                     <a id="modal-location" class="modal-location-link" href="#" rel="noopener noreferrer"></a>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="modal-info-item">
+                            <div class="modal-info-icon">
+                                <i class="bi bi-cash-coin"></i>
+                            </div>
+                            <div class="modal-info-content">
+                                <div class="modal-info-label">Cost</div>
+                                <div class="modal-info-value" id="modal-cost"></div>
                             </div>
                         </div>
                     </div>
@@ -746,6 +704,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 var timeRow = document.getElementById('modal-time-row');
                 var timeEl = document.getElementById('modal-time');
                 var locationLink = document.getElementById('modal-location');
+                var costEl = document.getElementById('modal-cost');
 
                 function setText(target, value) {
                     if (!target) {
@@ -789,6 +748,9 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                             locationLink.classList.add('disabled');
                         }
                     }
+                    if (costEl) {
+                        setText(costEl, payload.cost || 'Entrada gratuita');
+                    }
                     modal.classList.add('open');
                 }
 
@@ -809,15 +771,13 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                             time: card.getAttribute('data-time') || '',
                             datetime: card.getAttribute('data-datetime') || '',
                             location: card.getAttribute('data-location') || '',
-                            type: card.getAttribute('data-type') || ''
+                            type: card.getAttribute('data-type') || '',
+                            cost: card.getAttribute('data-cost') || ''
                         });
                     }
 
                     card.addEventListener('click', function (event) {
-                        var interactive = event.target.closest('a, button, input, textarea, select, form');
-                        if (interactive && card.contains(interactive)) {
-                            return;
-                        }
+                        event.preventDefault();
                         launchModal();
                     });
 

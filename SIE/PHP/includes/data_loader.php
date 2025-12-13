@@ -23,6 +23,14 @@ function fetch_all($mysqli, $sql, $types = null, $params = [])
   return $rows;
 }
 
+function column_exists($mysqli, $table, $column)
+{
+  $t = $mysqli->real_escape_string($table);
+  $c = $mysqli->real_escape_string($column);
+  $res = $mysqli->query("SHOW COLUMNS FROM `{$t}` LIKE '{$c}'");
+  return $res && $res->num_rows > 0;
+}
+
 // Resolve an image path preferring uploads/; if not found, return the stored value (no default fallback).
 function resolve_image_path($rawPath, $folder, $default = '')
 {
@@ -106,9 +114,7 @@ function load_app_data($mysqli)
   }, $usersRows);
 
   // 3) Items
-  // CORREÇÃO AQUI: Removido "collection_id" da query SQL, pois a coluna não existe mais.
-  $itemsRows = fetch_all($mysqli, "SELECT item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image FROM items");
-
+  $itemsRows = fetch_all($mysqli, "SELECT item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image,collection_id FROM items");
   $items = array_map(function ($r) {
     $img = resolve_image_path($r['image'] ?? '', 'items');
     return [
@@ -121,16 +127,20 @@ function load_app_data($mysqli)
       'createdAt' => $r['created_at'] ?? null,
       'updatedAt' => $r['updated_at'] ?? null,
       'image' => $img,
-      // Como a relação agora é M:N via tabela externa, definimos isto como null para não quebrar o frontend
-      'collectionId' => null,
-      'collection_id' => null
+      'collectionId' => $r['collection_id'] ?? null,
+      // legacy alias
+      'collection_id' => $r['collection_id'] ?? null
     ];
   }, $itemsRows);
 
   // 4) Events
-  $eventsRows = fetch_all($mysqli, "SELECT e.event_id,e.name,e.localization,e.event_date,e.type,e.summary,e.description,e.created_at,e.updated_at,e.collection_id,c.user_id AS owner_id FROM events e LEFT JOIN collections c ON c.collection_id = e.collection_id");
+  $eventsSelectCost = column_exists($mysqli, 'events', 'cost');
+  $eventsQuery = $eventsSelectCost
+    ? "SELECT event_id,name,localization,event_date,type,summary,description,cost,created_at,updated_at,host_user_id,collection_id FROM events"
+    : "SELECT event_id,name,localization,event_date,type,summary,description,created_at,updated_at,host_user_id,collection_id FROM events";
+  $eventsRows = fetch_all($mysqli, $eventsQuery);
   $events = array_map(function ($r) {
-    $host = $r['owner_id'] ?? null;
+    $host = $r['host_user_id'] ?? null;
     return [
       'id' => $r['event_id'] ?? null,
       'name' => $r['name'] ?? null,
@@ -139,12 +149,13 @@ function load_app_data($mysqli)
       'type' => $r['type'] ?? null,
       'summary' => $r['summary'] ?? null,
       'description' => $r['description'] ?? null,
+      'cost' => $r['cost'] ?? null,
       'createdAt' => $r['created_at'] ?? null,
       'updatedAt' => $r['updated_at'] ?? null,
+      'hostUserId' => $host,
       'collectionId' => $r['collection_id'] ?? null,
       // legacy aliases
-      'host_user_id' => $host,
-      'hostUserId' => $host
+      'host_user_id' => $host
     ];
   }, $eventsRows);
 

@@ -82,6 +82,14 @@ if ($id) {
     }
 
     $hostId = $event['hostUserId'] ?? $event['host_user_id'] ?? null;
+    if (!$hostId && !empty($event['collectionId'])) {
+        foreach ($collections as $col) {
+            if (($col['id'] ?? null) === $event['collectionId']) {
+                $hostId = $col['ownerId'] ?? null;
+                break;
+            }
+        }
+    }
     if ($hostId !== $currentUserId) {
         flash_set('error', 'You do not have permission to edit this event.');
         header('Location: event_page.php');
@@ -114,6 +122,8 @@ if ($rawEventDate !== '') {
         $prefillDateValue = str_replace(' ', 'T', substr($rawEventDate, 0, 16));
     }
 }
+
+$minScheduleDate = (clone $now)->modify('+1 day')->setTime(0, 0)->format('Y-m-d\TH:i');
 ?>
 
 
@@ -186,7 +196,7 @@ $currentType = $event['type'] ?? null;
 
                 <label>Date <span class="required-badge">R</span></label>
                   <input type="datetime-local" name="date" required
-                      min="<?php echo htmlspecialchars($now->format('Y-m-d\TH:i')); ?>"
+                      min="<?php echo htmlspecialchars($minScheduleDate); ?>"
                       value="<?php echo htmlspecialchars($prefillDateValue); ?>">
 
                 <label>Collections (can associate to multiple of yours) <span class="required-badge">R</span></label>

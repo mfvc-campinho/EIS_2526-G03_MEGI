@@ -452,6 +452,9 @@ foreach ($eventsUsers as $entry) {
           <?php
           $eventId = $evt['id'];
           $hostId = $evt['hostUserId'] ?? $evt['host_user_id'] ?? null;
+          if (!$hostId && !empty($evt['collectionId'])) {
+            $hostId = $collectionMap[$evt['collectionId']]['ownerId'] ?? null;
+          }
           $isOwner = $isAuth && $hostId && $hostId === $currentUserId;
           $parsedDate = parse_event_datetime($evt['date'] ?? null, $appTimezone);
           $eventDateObj = $parsedDate['date'];

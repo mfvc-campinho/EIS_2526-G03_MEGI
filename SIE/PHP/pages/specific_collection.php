@@ -262,6 +262,11 @@ if ($collection) {
         <link rel="stylesheet" href="../../CSS/christmas.css">
         <script src="././JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
+        <style>
+            .item-card-link { cursor: pointer; position: relative; }
+            .item-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
+            .item-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
+        </style>
     </head>
 
     <body>
@@ -434,7 +439,7 @@ if ($collection) {
                 $thumb = '../../' . ltrim($thumb, './');
             }
             ?>
-                                <article class="card item-card">
+                                <article class="card item-card item-card-link" role="link" tabindex="0" data-item-link="<?php echo $itemId ? 'item_page.php?id=' . urlencode($itemId) : ''; ?>">
                                     <div class="item-image-wrapper">
                                 <?php if ($thumb): ?>
                                             <a href="item_page.php?id=<?php echo urlencode($itemId); ?>">
@@ -623,6 +628,31 @@ if ($collection) {
                                 button.innerHTML = '<i class="bi bi-heart-fill"></i> ' + (currentCount + 1);
                             }
                         });
+                    });
+                });
+
+                var itemCards = document.querySelectorAll('.item-card-link');
+                itemCards.forEach(function(card) {
+                    var targetUrl = card.getAttribute('data-item-link');
+                    if (!targetUrl) {
+                        return;
+                    }
+
+                    card.addEventListener('click', function(e) {
+                        if (e.target.closest('a, button, form, input, textarea, select')) {
+                            return;
+                        }
+                        window.location.href = targetUrl;
+                    });
+
+                    card.addEventListener('keydown', function(e) {
+                        if (e.target !== card) {
+                            return;
+                        }
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            window.location.href = targetUrl;
+                        }
                     });
                 });
             })();

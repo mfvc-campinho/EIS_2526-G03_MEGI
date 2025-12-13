@@ -128,9 +128,9 @@ function load_app_data($mysqli)
   }, $itemsRows);
 
   // 4) Events
-  $eventsRows = fetch_all($mysqli, "SELECT event_id,name,localization,event_date,type,summary,description,created_at,updated_at,collection_id FROM events");
+  $eventsRows = fetch_all($mysqli, "SELECT e.event_id,e.name,e.localization,e.event_date,e.type,e.summary,e.description,e.created_at,e.updated_at,e.collection_id,c.user_id AS owner_id FROM events e LEFT JOIN collections c ON c.collection_id = e.collection_id");
   $events = array_map(function ($r) {
-    $host = $r['host_user_id'] ?? null;
+    $host = $r['owner_id'] ?? null;
     return [
       'id' => $r['event_id'] ?? null,
       'name' => $r['name'] ?? null,
@@ -143,7 +143,8 @@ function load_app_data($mysqli)
       'updatedAt' => $r['updated_at'] ?? null,
       'collectionId' => $r['collection_id'] ?? null,
       // legacy aliases
-      'host_user_id' => $host
+      'host_user_id' => $host,
+      'hostUserId' => $host
     ];
   }, $eventsRows);
 

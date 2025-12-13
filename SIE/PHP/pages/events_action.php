@@ -14,6 +14,7 @@ if (!$currentUser) {
 $appTimezone = new DateTimeZone(date_default_timezone_get());
 $now = new DateTime('now', $appTimezone);
 $today = $now->format('Y-m-d');
+$tomorrowDate = (clone $now)->modify('+1 day')->format('Y-m-d');
 
 if (!function_exists('parse_event_datetime_helper')) {
   function parse_event_datetime_helper($raw, DateTimeZone $tz)
@@ -122,12 +123,10 @@ if ($action === 'create') {
     $mysqli->close();
     redirect_error('Invalid event date/time.');
   }
-  $isPast = $inputHasTime
-    ? ($dateObj <= $now)
-    : ($dateObj->format('Y-m-d') < $today);
-  if ($isPast) {
+  $isBeforeAllowed = $dateObj->format('Y-m-d') < $tomorrowDate;
+  if ($isBeforeAllowed) {
     $mysqli->close();
-    redirect_error('Cannot schedule events in the past.');
+    redirect_error('Events must be scheduled at least one day in advance.');
   }
   if (!$inputHasTime) {
     $dateObj->setTime(0, 0, 0);
@@ -135,8 +134,8 @@ if ($action === 'create') {
   $dateForSql = $dateObj->format('Y-m-d H:i:s');
   $primaryCol = $collectionIds[0];
 
-  $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,created_at,host_user_id,collection_id) VALUES (?,?,?,?,?,?,?,NOW(),?,?)');
-  $stmt->bind_param('sssssssss', $id, $name, $localization, $dateForSql, $type, $summary, $description, $currentUser, $primaryCol);
+  $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,created_at,collection_id) VALUES (?,?,?,?,?,?,?,NOW(),?)');
+  $stmt->bind_param('ssssssss', $id, $name, $localization, $dateForSql, $type, $summary, $description, $primaryCol);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -151,7 +150,7 @@ if ($action === 'update') {
   if (!$id) redirect_error('ID missing.');
   if (!$collectionIds) redirect_error('Choose at least one collection.');
 
-  $currentEventStmt = $mysqli->prepare('SELECT host_user_id, event_date FROM events WHERE event_id = ? LIMIT 1');
+  $currentEventStmt = $mysqli->prepare('SELECT e.event_date, e.collection_id, c.user_id AS owner_id FROM events e LEFT JOIN collections c ON c.collection_id = e.collection_id WHERE e.event_id = ? LIMIT 1');
   $currentEventStmt->bind_param('s', $id);
   $currentEventStmt->execute();
   $currentEvent = $currentEventStmt->get_result()->fetch_assoc();
@@ -160,7 +159,7 @@ if ($action === 'update') {
     $mysqli->close();
     redirect_error('Event not found.');
   }
-  if (($currentEvent['host_user_id'] ?? null) !== $currentUser) {
+  if (($currentEvent['owner_id'] ?? null) !== $currentUser) {
     $mysqli->close();
     redirect_error('You do not have permission to edit this event.');
   }
@@ -202,12 +201,10 @@ if ($action === 'update') {
     $mysqli->close();
     redirect_error('Invalid event date/time.');
   }
-  $isPast = $inputHasTime
-    ? ($dateObj <= $now)
-    : ($dateObj->format('Y-m-d') < $today);
-  if ($isPast) {
+  $isBeforeAllowed = $dateObj->format('Y-m-d') < $tomorrowDate;
+  if ($isBeforeAllowed) {
     $mysqli->close();
-    redirect_error('Cannot schedule events in the past.');
+    redirect_error('Events must be scheduled at least one day in advance.');
   }
   if (!$inputHasTime) {
     $dateObj->setTime(0, 0, 0);
@@ -231,13 +228,13 @@ if ($action === 'delete') {
   if (!$id) redirect_error('ID missing.');
 
   // ownership check via event host
-  $chk = $mysqli->prepare('SELECT host_user_id FROM events WHERE event_id = ? LIMIT 1');
+  $chk = $mysqli->prepare('SELECT c.user_id AS owner_id FROM events e LEFT JOIN collections c ON c.collection_id = e.collection_id WHERE e.event_id = ? LIMIT 1');
   $chk->bind_param('s', $id);
   $chk->execute();
   $res = $chk->get_result();
   $row = $res->fetch_assoc();
   $chk->close();
-  if (!$row || ($row['host_user_id'] ?? null) !== $currentUser) {
+  if (!$row || ($row['owner_id'] ?? null) !== $currentUser) {
     $mysqli->close();
     redirect_error('You do not have permission to delete this event.');
   }
@@ -254,7 +251,7 @@ if ($action === 'delete') {
 
 // Fetch helper
 $fetchEvent = function ($mysqli, $eventId) {
-  $stmt = $mysqli->prepare('SELECT event_id, host_user_id, collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
+  $stmt = $mysqli->prepare('SELECT event_id, collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
   $stmt->bind_param('s', $eventId);
   $stmt->execute();
   $res = $stmt->get_result();

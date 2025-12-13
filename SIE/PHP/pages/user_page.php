@@ -133,7 +133,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>User Profile — PHP</title>
+        <title>User Profile • GoodCollections</title>
 
         <!-- Fonte -->
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -496,4 +496,3 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
         <?php include __DIR__ . '/../includes/footer.php'; ?>
     </body>
 </html>
-

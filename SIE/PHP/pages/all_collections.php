@@ -137,7 +137,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Collections - GoodCollections</title>
+        <title>Collections • GoodCollections</title>
 
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 

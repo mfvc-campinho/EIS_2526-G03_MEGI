@@ -9,6 +9,7 @@ main {
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
+  flex: 1 0 auto;
 }
 
 
@@ -313,6 +314,27 @@ body {
   margin: 0;
   padding: 0;
   color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#content,
+.page-container {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Ensure any standalone main (with or without wrappers) expands to push footer down */
+body > main,
+#content > main,
+.page-container > main,
+main.page,
+main.page-shell,
+main.page-main {
+  flex: 1 0 auto;
 }
 
 /* Ensure all form controls inherit the site's font stack so modals and other
@@ -709,8 +731,8 @@ footer {
   text-align: center;
   min-height: 110px;
   z-index: 100;
-  margin-top: 80px;
-  /* natural spacing from the main content */
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 /* Links extra no footer (Team / Guidelines / Privacy) */

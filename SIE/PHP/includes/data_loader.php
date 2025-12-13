@@ -114,7 +114,7 @@ function load_app_data($mysqli)
   }, $usersRows);
 
   // 3) Items
-  $itemsRows = fetch_all($mysqli, "SELECT item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image,collection_id FROM items");
+  $itemsRows = fetch_all($mysqli, "SELECT item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image FROM items");
   $items = array_map(function ($r) {
     $img = resolve_image_path($r['image'] ?? '', 'items');
     return [
@@ -127,17 +127,29 @@ function load_app_data($mysqli)
       'createdAt' => $r['created_at'] ?? null,
       'updatedAt' => $r['updated_at'] ?? null,
       'image' => $img,
-      'collectionId' => $r['collection_id'] ?? null,
-      // legacy alias
-      'collection_id' => $r['collection_id'] ?? null
     ];
   }, $itemsRows);
 
   // 4) Events
   $eventsSelectCost = column_exists($mysqli, 'events', 'cost');
-  $eventsQuery = $eventsSelectCost
-    ? "SELECT event_id,name,localization,event_date,type,summary,description,cost,created_at,updated_at,host_user_id,collection_id FROM events"
-    : "SELECT event_id,name,localization,event_date,type,summary,description,created_at,updated_at,host_user_id,collection_id FROM events";
+  $eventsSelectHost = column_exists($mysqli, 'events', 'host_user_id');
+
+  $eventFields = [
+    'event_id',
+    'name',
+    'localization',
+    'event_date',
+    'type',
+    'summary',
+    'description',
+    'created_at',
+    'updated_at',
+    'collection_id'
+  ];
+  if ($eventsSelectCost) $eventFields[] = 'cost';
+  if ($eventsSelectHost) $eventFields[] = 'host_user_id';
+
+  $eventsQuery = 'SELECT ' . implode(',', $eventFields) . ' FROM events';
   $eventsRows = fetch_all($mysqli, $eventsQuery);
   $events = array_map(function ($r) {
     $host = $r['host_user_id'] ?? null;

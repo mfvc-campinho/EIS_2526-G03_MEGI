@@ -75,12 +75,13 @@ $now = new DateTime('now', $appTimezone);
 $today = $now->format('Y-m-d');
 
 if (!function_exists('parse_event_datetime_home')) {
-    function parse_event_datetime_home($raw, DateTimeZone $tz) {
+    function parse_event_datetime_home($raw, DateTimeZone $tz)
+    {
         $result = ['date' => null, 'hasTime' => false];
         if (!$raw) return $result;
         $trim = trim((string)$raw);
         if ($trim === '') return $result;
-        
+
         $formats = [
             ['Y-m-d H:i:s', true],
             ['Y-m-d H:i', true],
@@ -89,14 +90,14 @@ if (!function_exists('parse_event_datetime_home')) {
             [DateTime::ATOM, true],
             ['Y-m-d', false]
         ];
-        
+
         foreach ($formats as [$format, $hasTime]) {
             $dt = DateTime::createFromFormat($format, $trim, $tz);
             if ($dt instanceof DateTime) {
                 return ['date' => $dt, 'hasTime' => $hasTime];
             }
         }
-        
+
         try {
             $dt = new DateTime($trim, $tz);
             $hasTime = (bool)preg_match('/\d{1,2}:\d{2}/', $trim);
@@ -112,7 +113,7 @@ $upcomingEvents = array_filter($events, function ($e) use ($appTimezone, $now, $
     $eventDateObj = $parsed['date'];
     $hasTime = $parsed['hasTime'];
     if (!$eventDateObj) return false;
-    
+
     if ($hasTime) {
         return $eventDateObj > $now;
     } else {
@@ -125,692 +126,888 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>HomePage • GoodCollections (PHP)</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home • GoodCollections</title>
 
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <!-- Estilos globais -->
-        <link rel="stylesheet" href="../../CSS/general.css">
+    <!-- Estilos globais -->
+    <link rel="stylesheet" href="../../CSS/general.css">
 
-        <!-- Estilos específicos da home -->
-        <link rel="stylesheet" href="home_page.css">
+    <!-- Estilos específicos da home -->
+    <link rel="stylesheet" href="home_page.css">
 
-        <!-- Eventos + likes -->
-        <link rel="stylesheet" href="../../CSS/events.css">
-        <link rel="stylesheet" href="../../CSS/likes.css">
+    <!-- Eventos + likes -->
+    <link rel="stylesheet" href="../../CSS/events.css">
+    <link rel="stylesheet" href="../../CSS/likes.css">
 
-        <!-- Ícones -->
-        <link rel="stylesheet"
+    <!-- Ícones -->
+    <link rel="stylesheet"
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        
-        <!-- Christmas Theme -->
-        <link rel="stylesheet" href="../../CSS/christmas.css">
 
-        <style>
-            .collection-card-link { cursor: pointer; position: relative; }
-            .collection-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
-            .collection-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
+    <!-- Christmas Theme -->
+    <link rel="stylesheet" href="../../CSS/christmas.css">
 
-            .upcoming-events .event-card { cursor: pointer; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-            .upcoming-events .event-card:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
-            .upcoming-events .event-card:active { transform: translateY(1px); }
+    <style>
+        .collection-card-link {
+            cursor: pointer;
+            position: relative;
+        }
 
-            /* Shared modal styling reused from Events page */
-            .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-            .modal-backdrop.open { display: flex; animation: fadeIn 0.2s ease; }
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-            .modal-card { background: #fff; border-radius: 20px; padding: 0; max-width: 600px; width: 90%; max-height: 90vh; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); position: relative; animation: slideUp 0.3s ease; overflow: hidden; display: flex; flex-direction: column; }
-            @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-            .modal-header { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); padding: 32px 28px; color: white; position: relative; text-align: center; }
-            .modal-close { position: absolute; top: 16px; right: 16px; border: none; background: rgba(255, 255, 255, 0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-            .modal-close:hover { background: rgba(255, 255, 255, 0.3); transform: rotate(90deg); }
-            .modal-header h3 { margin: 0 0 12px 0; font-size: 2.25rem; font-weight: 900 !important; color: white !important; line-height: 1.2; }
-            .modal-type-badge { display: inline-block; background: rgba(255, 255, 255, 0.25); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
-            .modal-body { padding: 28px; overflow-y: auto; }
-            .modal-summary { font-size: 1.05rem; color: #374151; line-height: 1.6; margin: 0 0 24px 0; font-weight: 500; }
-            .modal-description { color: #6b7280; line-height: 1.7; margin: 0 0 24px 0; }
-            .modal-info-grid { display: grid; gap: 16px; }
-            .modal-info-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb; }
-            .modal-info-icon { width: 40px; height: 40px; min-width: 40px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
-            .modal-info-content { flex: 1; }
-            .modal-info-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 4px; }
-            .modal-info-value { font-size: 1rem; font-weight: 600; color: #1f2937; }
-            .modal-location-link { color: inherit; text-decoration: none; font-weight: 600; }
-            .modal-location-link:hover { text-decoration: none; }
-            .modal-location-link.disabled { color: #9ca3af; pointer-events: none; text-decoration: none; }
-        </style>
+        .collection-card-link:focus {
+            outline: 2px solid #6366f1;
+            outline-offset: 4px;
+        }
 
-        <script src="../../JS/theme-toggle.js"></script>
-        <script src="../../JS/christmas-theme.js"></script>
-    </head>
+        .collection-card-link:focus-visible {
+            outline: 2px solid #6366f1;
+            outline-offset: 4px;
+        }
 
-    <body>
-        <div id="content" class="page-container">
-            <?php include __DIR__ . '/../includes/nav.php'; ?>
+        .upcoming-events .event-card {
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-            <main class="page-main">
-                <?php flash_render(); ?>
-                <section class="collections-hero">
-                    <h1>Top Collections</h1>
-                    <div class="collections-hero-underline"></div>
-                    <p>
-                        Explore the most popular and recently added collections curated by our community.
-                    </p>
-                </section>
+        .upcoming-events .event-card:focus {
+            outline: 2px solid #6366f1;
+            outline-offset: 4px;
+        }
 
-                <!-- Statistics Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="bi bi-people-fill stat-icon"></i>
-                        <div class="stat-value"><?php echo $statsUsers; ?></div>
-                        <div class="stat-label">Users</div>
+        .upcoming-events .event-card:active {
+            transform: translateY(1px);
+        }
+
+        /* Shared modal styling reused from Events page */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            padding: 32px 28px;
+            color: white;
+            position: relative;
+            text-align: center;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-header h3 {
+            margin: 0 0 12px 0;
+            font-size: 2.25rem;
+            font-weight: 900 !important;
+            color: white !important;
+            line-height: 1.2;
+        }
+
+        .modal-type-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        .modal-body {
+            padding: 28px;
+            overflow-y: auto;
+        }
+
+        .modal-summary {
+            font-size: 1.05rem;
+            color: #374151;
+            line-height: 1.6;
+            margin: 0 0 24px 0;
+            font-weight: 500;
+        }
+
+        .modal-description {
+            color: #6b7280;
+            line-height: 1.7;
+            margin: 0 0 24px 0;
+        }
+
+        .modal-info-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .modal-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .modal-info-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .modal-info-content {
+            flex: 1;
+        }
+
+        .modal-info-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .modal-info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .modal-location-link {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .modal-location-link:hover {
+            text-decoration: none;
+        }
+
+        .modal-location-link.disabled {
+            color: #9ca3af;
+            pointer-events: none;
+            text-decoration: none;
+        }
+    </style>
+
+    <script src="../../JS/theme-toggle.js"></script>
+    <script src="../../JS/christmas-theme.js"></script>
+</head>
+
+<body>
+    <div id="content" class="page-container">
+        <?php include __DIR__ . '/../includes/nav.php'; ?>
+
+        <main class="page-main">
+            <?php flash_render(); ?>
+            <section class="collections-hero">
+                <h1>Top Collections</h1>
+                <div class="collections-hero-underline"></div>
+                <p>
+                    Explore the most popular and recently added collections curated by our community.
+                </p>
+            </section>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="bi bi-people-fill stat-icon"></i>
+                    <div class="stat-value"><?php echo $statsUsers; ?></div>
+                    <div class="stat-label">Users</div>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-collection-fill stat-icon"></i>
+                    <div class="stat-value"><?php echo $statsCollections; ?></div>
+                    <div class="stat-label">Collections</div>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-box-fill stat-icon"></i>
+                    <div class="stat-value"><?php echo $statsItems; ?></div>
+                    <div class="stat-label">Items</div>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-calendar-event-fill stat-icon"></i>
+                    <div class="stat-value"><?php echo $statsEvents; ?></div>
+                    <div class="stat-label">Events</div>
+                </div>
+            </div>
+
+            <section class="ranking-section" id="ranking-section">
+                <div class="top-controls">
+                    <div class="left">
+                        <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
+                            <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
+                                <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
+                                <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
+                                <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
+                            </select>
+                            <label>Show
+                                <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
+                                    <?php foreach ([5, 10, 20] as $opt): ?>
+                                        <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                collections per page
+                            </label>
+                            <input type="hidden" name="page" value="1">
+                        </form>
                     </div>
-                    <div class="stat-card">
-                        <i class="bi bi-collection-fill stat-icon"></i>
-                        <div class="stat-value"><?php echo $statsCollections; ?></div>
-                        <div class="stat-label">Collections</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="bi bi-box-fill stat-icon"></i>
-                        <div class="stat-value"><?php echo $statsItems; ?></div>
-                        <div class="stat-label">Items</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="bi bi-calendar-event-fill stat-icon"></i>
-                        <div class="stat-value"><?php echo $statsEvents; ?></div>
-                        <div class="stat-label">Events</div>
+                    <div class="paginate">
+                        <?php if ($isAuthenticated): ?>
+                            <a class="explore-btn success" href="collections_form.php">+ Add Collection</a>
+                        <?php endif; ?>
+                        <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
+                        <span>Showing <?php echo $startDisplay; ?>-<?php echo $endDisplay; ?> of <?php echo $totalCollections; ?></span>
+                        <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
                     </div>
                 </div>
 
-                <section class="ranking-section" id="ranking-section">
-                    <div class="top-controls">
-                        <div class="left">
-                            <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                                <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
-                                <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
-                                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
-                                    <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
-                                    <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
-                                </select>
-                                <label>Show
-                                    <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
-                                        <?php foreach ([5, 10, 20] as $opt): ?>
-                                            <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    collections per page
-                                </label>
-                                <input type="hidden" name="page" value="1">
-                            </form>
-                        </div>
-                        <div class="paginate">
-                            <?php if ($isAuthenticated): ?>
-                                <a class="explore-btn success" href="collections_form.php">+ Add Collection</a>
-                            <?php endif; ?>
-                            <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
-                            <span>Showing <?php echo $startDisplay; ?>-<?php echo $endDisplay; ?> of <?php echo $totalCollections; ?></span>
-                            <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
-                        </div>
-                    </div>
+                <div class="collection-container" data-limit="5">
+                    <?php if ($collectionsPage): ?>
+                        <?php foreach ($collectionsPage as $col): ?>
+                            <?php
+                            $img = $col['coverImage'] ?? '';
+                            if ($img && !preg_match('#^https?://#', $img)) {
+                                $img = '../../' . ltrim($img, './');
+                            }
+                            $previewItems = array_slice($itemsByCollection[$col['id']] ?? [], 0, 2);
+                            $previewId = 'preview-' . htmlspecialchars($col['id']);
+                            $collectionHref = 'specific_collection.php?id=' . urlencode($col['id']);
+                            ?>
 
-                    <div class="collection-container" data-limit="5">
-                        <?php if ($collectionsPage): ?>
-                            <?php foreach ($collectionsPage as $col): ?>
-                                <?php
-                                $img = $col['coverImage'] ?? '';
-                                if ($img && !preg_match('#^https?://#', $img)) {
-                                    $img = '../../' . ltrim($img, './');
-                                }
-                                $previewItems = array_slice($itemsByCollection[$col['id']] ?? [], 0, 2);
-                                $previewId = 'preview-' . htmlspecialchars($col['id']);
-                                $collectionHref = 'specific_collection.php?id=' . urlencode($col['id']);
-                                ?>
+                            <article class="card collection-card home-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionHref); ?>">
+                                <input type="checkbox" id="<?php echo $previewId; ?>" class="preview-toggle">
 
-                                <article class="card collection-card home-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionHref); ?>">
-                                    <input type="checkbox" id="<?php echo $previewId; ?>" class="preview-toggle">
+                                <div class="card-image">
+                                    <?php if (!empty($img)): ?>
+                                        <a href="<?php echo htmlspecialchars($collectionHref); ?>">
+                                            <img src="<?php echo htmlspecialchars($img); ?>"
+                                                alt="<?php echo htmlspecialchars($col['name']); ?>">
+                                        </a>
+                                    <?php else: ?>
+                                        <div class="card-image-placeholder">
+                                            No cover image
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
 
-                                    <div class="card-image">
-                                        <?php if (!empty($img)): ?>
-                                            <a href="<?php echo htmlspecialchars($collectionHref); ?>">
-                                                <img src="<?php echo htmlspecialchars($img); ?>"
-                                                     alt="<?php echo htmlspecialchars($col['name']); ?>">
+                                <div class="card-info">
+                                    <p class="pill">
+                                        <?php echo htmlspecialchars($col['type'] ?? ''); ?>
+                                    </p>
+
+                                    <h3 class="card-title">
+                                        <a href="<?php echo htmlspecialchars($collectionHref); ?>">
+                                            <?php echo htmlspecialchars($col['name']); ?>
+                                        </a>
+                                    </h3>
+                                    <div class="product-card__meta">
+                                        <div class="product-card__owner">
+                                            <a class="owner-link" href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>">
+                                                <?php
+                                                $ownerId = $col['ownerId'] ?? null;
+                                                $ownerName = $ownerId && isset($usersById[$ownerId])
+                                                    ? ($usersById[$ownerId]['user_name'] ?? $usersById[$ownerId]['username'] ?? 'Unknown')
+                                                    : 'Unknown';
+                                                echo htmlspecialchars($ownerName);
+                                                ?>
                                             </a>
-                                        <?php else: ?>
-                                            <div class="card-image-placeholder">
-                                                No cover image
+                                        </div>
+
+                                        <?php if (!empty($col['createdAt'])): ?>
+                                            <div class="product-card__date">
+                                                <span class="meta-date"><?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?></span>
                                             </div>
                                         <?php endif; ?>
                                     </div>
 
-                                    <div class="card-info">
-                                        <p class="pill">
-                                            <?php echo htmlspecialchars($col['type'] ?? ''); ?>
-                                        </p>
-
-                                        <h3 class="card-title">
-                                            <a href="<?php echo htmlspecialchars($collectionHref); ?>">
-                                                <?php echo htmlspecialchars($col['name']); ?>
-                                            </a>
-                                        </h3>
-                                        <div class="product-card__meta">
-                                            <div class="product-card__owner">
-                                                <a class="owner-link" href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>">
-                                                    <?php 
-                                                        $ownerId = $col['ownerId'] ?? null;
-                                                        $ownerName = $ownerId && isset($usersById[$ownerId]) 
-                                                            ? ($usersById[$ownerId]['user_name'] ?? $usersById[$ownerId]['username'] ?? 'Unknown')
-                                                            : 'Unknown';
-                                                        echo htmlspecialchars($ownerName);
-                                                    ?>
-                                                </a>
-                                            </div>
-
-                                            <?php if (!empty($col['createdAt'])): ?>
-                                                <div class="product-card__date">
-                                                    <span class="meta-date"><?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?></span>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-
-                                        <div class="card-buttons">
-                                            <label class="explore-btn ghost preview-show"
-                                                   for="<?php echo $previewId; ?>">
-                                                Show Preview
-                                            </label>
-                                            <label class="explore-btn ghost preview-hide"
-                                                   for="<?php echo $previewId; ?>">
-                                                Hide Preview
-                                            </label>
-                                        </div>
-
-                                        <div class="preview-items">
-                                            <?php if ($previewItems): ?>
-                                                <?php foreach ($previewItems as $it): ?>
-                                                    <?php
-                                                    $thumb = $it['image'] ?? '';
-                                                    if ($thumb && !preg_match('#^https?://#', $thumb)) {
-                                                        $thumb = '../../' . ltrim($thumb, './');
-                                                    }
-                                                    ?>
-                                                    <a class="preview-item"
-                                                       href="item_page.php?id=<?php echo urlencode($it['id']); ?>">
-                                                           <?php if ($thumb): ?>
-                                                            <img src="<?php echo htmlspecialchars($thumb); ?>"
-                                                                 alt="<?php echo htmlspecialchars($it['name'] ?? 'Item'); ?>">
-                                                             <?php endif; ?>
-                                                        <span><?php echo htmlspecialchars($it['name'] ?? 'Item'); ?></span>
-                                                    </a>
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
-                                                <p class="muted small">No items yet.</p>
-                                            <?php endif; ?>
-                                        </div>
+                                    <div class="card-buttons">
+                                        <label class="explore-btn ghost preview-show"
+                                            for="<?php echo $previewId; ?>">
+                                            Show Preview
+                                        </label>
+                                        <label class="explore-btn ghost preview-hide"
+                                            for="<?php echo $previewId; ?>">
+                                            Hide Preview
+                                        </label>
                                     </div>
-                                </article>
 
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="muted">No collections yet.</p>
-                        <?php endif; ?>
-                    </div>
-                </section>
-            </main>
+                                    <div class="preview-items">
+                                        <?php if ($previewItems): ?>
+                                            <?php foreach ($previewItems as $it): ?>
+                                                <?php
+                                                $thumb = $it['image'] ?? '';
+                                                if ($thumb && !preg_match('#^https?://#', $thumb)) {
+                                                    $thumb = '../../' . ltrim($thumb, './');
+                                                }
+                                                ?>
+                                                <a class="preview-item"
+                                                    href="item_page.php?id=<?php echo urlencode($it['id']); ?>">
+                                                    <?php if ($thumb): ?>
+                                                        <img src="<?php echo htmlspecialchars($thumb); ?>"
+                                                            alt="<?php echo htmlspecialchars($it['name'] ?? 'Item'); ?>">
+                                                    <?php endif; ?>
+                                                    <span><?php echo htmlspecialchars($it['name'] ?? 'Item'); ?></span>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <p class="muted small">No items yet.</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </article>
 
-            <!-- BLOCOS DE EVENTOS (mantive exatamente a tua lógica) -->
-            <section class="upcoming-events inner-block">
-                <div class="upcoming-inner">
-                    <h2 class="upcoming-title">
-                        <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i>
-                        Upcoming Events
-                    </h2>
-                    <p class="upcoming-sub">
-                        Don't miss the next exhibitions, fairs and meetups curated by our community.
-                    </p>
-
-                    <div class="events-grid">
-                        <?php if ($upcomingEvents): ?>
-                            <?php foreach ($upcomingEvents as $evt): ?>
-                                <?php
-                                $parsed = parse_event_datetime_home($evt['date'] ?? null, $appTimezone);
-                                $eventDateObj = $parsed['date'];
-                                $hasTime = $parsed['hasTime'];
-
-                                $monthNames = [
-                                    1 => 'Janeiro', 2 => 'Fevereiro', 3 => 'Março', 4 => 'Abril',
-                                    5 => 'Maio', 6 => 'Junho', 7 => 'Julho', 8 => 'Agosto',
-                                    9 => 'Setembro', 10 => 'Outubro', 11 => 'Novembro', 12 => 'Dezembro'
-                                ];
-
-                                $dateDisplay = '';
-                                if ($eventDateObj) {
-                                    $day = (int)$eventDateObj->format('d');
-                                    $month = (int)$eventDateObj->format('m');
-                                    $year = $eventDateObj->format('Y');
-                                    $dateDisplay = "{$day} de {$monthNames[$month]}";
-
-                                    if ($hasTime) {
-                                        $time = $eventDateObj->format('H:i');
-                                        $dateDisplay .= " às {$time}";
-                                    }
-                                }
-                                $eventDateDisplay = '';
-                                $eventTimeDisplay = '';
-                                if ($eventDateObj) {
-                                    $eventDateDisplay = $eventDateObj->format('d/m/Y');
-                                    if ($hasTime) {
-                                        $eventTimeDisplay = $eventDateObj->format('H:i');
-                                    }
-                                }
-                                $modalPrimaryDate = $eventDateDisplay ?: $dateDisplay;
-                                $modalCombinedDisplay = $eventTimeDisplay ? ($modalPrimaryDate . ' · ' . $eventTimeDisplay) : $modalPrimaryDate;
-                                $rawCost = $evt['cost'] ?? null;
-                                $costValue = ($rawCost === '' || $rawCost === null) ? null : (float)$rawCost;
-                                $costLabel = ($costValue !== null && $costValue > 0)
-                                    ? '€' . number_format($costValue, 2, ',', '.')
-                                    : 'Entrada gratuita';
-                                ?>
-                                <a class="event-card js-event-card"
-                                   href="#"
-                                   data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
-                                   data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
-                                   data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
-                                   data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
-                                   data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
-                                   data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
-                                   data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
-                                   data-type="<?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>"
-                                   data-cost="<?php echo htmlspecialchars($costLabel); ?>">
-                                    <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
-                                    <h3><?php echo htmlspecialchars($evt['name']); ?></h3>
-                                    <ul class="event-meta">
-                                        <li><?php echo htmlspecialchars($dateDisplay); ?></li>
-                                        <li><?php echo htmlspecialchars($evt['localization']); ?></li>
-                                        <li><?php echo htmlspecialchars($costLabel); ?></li>
-                                    </ul>
-                                </a>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="muted">No upcoming events scheduled</p>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="events-actions">
-                        <a href="event_page.php" class="explore-btn ghost">View Events</a>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="muted">No collections yet.</p>
+                    <?php endif; ?>
                 </div>
             </section>
-            <!-- ===============================
-                 Everything You Need...
-                 =============================== -->
-            <section class="features-section">
-                <h2 class="features-title">
-                    Everything You Need to <span>Manage Your Collections</span>
+        </main>
+
+        <!-- BLOCOS DE EVENTOS (mantive exatamente a tua lógica) -->
+        <section class="upcoming-events inner-block">
+            <div class="upcoming-inner">
+                <h2 class="upcoming-title">
+                    <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i>
+                    Upcoming Events
                 </h2>
-                <p class="features-subtitle">
-                    From automotive miniatures to rare stamps, GoodCollections gives you the tools
-                    to catalog, organize, and showcase every item with precision.
+                <p class="upcoming-sub">
+                    Don't miss the next exhibitions, fairs and meetups curated by our community.
                 </p>
 
-                <div class="features-grid">
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-grid-3x3-gap-fill"></i>
-                        </div>
-                        <h3>Multiple Collections</h3>
-                        <p>
-                            Create unlimited collections for different item types. Keep coin separate
-                            from trading cards, all in one place.
-                        </p>
-                    </article>
+                <div class="events-grid">
+                    <?php if ($upcomingEvents): ?>
+                        <?php foreach ($upcomingEvents as $evt): ?>
+                            <?php
+                            $parsed = parse_event_datetime_home($evt['date'] ?? null, $appTimezone);
+                            $eventDateObj = $parsed['date'];
+                            $hasTime = $parsed['hasTime'];
 
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-card-checklist"></i>
-                        </div>
-                        <h3>Detailed Item Tracking</h3>
-                        <p>
-                            Record every detail — name, importance rating, acquisition date, weight and price.
-                            Never forget what you paid or when you got it.
-                        </p>
-                    </article>
+                            $monthNames = [
+                                1 => 'Janeiro',
+                                2 => 'Fevereiro',
+                                3 => 'Março',
+                                4 => 'Abril',
+                                5 => 'Maio',
+                                6 => 'Junho',
+                                7 => 'Julho',
+                                8 => 'Agosto',
+                                9 => 'Setembro',
+                                10 => 'Outubro',
+                                11 => 'Novembro',
+                                12 => 'Dezembro'
+                            ];
 
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-calendar2-week"></i>
-                        </div>
-                        <h3>Event Management</h3>
-                        <p>
-                            Track exhibitions and collector events. Add descriptions, dates, and rate your
-                            experience after attending each event.
-                        </p>
-                    </article>
+                            $dateDisplay = '';
+                            if ($eventDateObj) {
+                                $day = (int)$eventDateObj->format('d');
+                                $month = (int)$eventDateObj->format('m');
+                                $year = $eventDateObj->format('Y');
+                                $dateDisplay = "{$day} de {$monthNames[$month]}";
 
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-pencil-square"></i>
-                        </div>
-                        <h3>Easy Editing</h3>
-                        <p>
-                            Update collection details, add or remove items, and modify information anytime.
-                            Your catalog evolves with your collection.
-                        </p>
-                    </article>
-
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-compass"></i>
-                        </div>
-                        <h3>Intuitive Interface</h3>
-                        <p>
-                            Clean, modern design that's easy to navigate. View your top collections at a
-                            glance on the homepage.
-                        </p>
-                    </article>
-
-                    <article class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-person-badge-fill"></i>
-                        </div>
-                        <h3>Personal Profile</h3>
-                        <p>
-                            Your collector profile keeps track of your personal information and preferences
-                            in one central location.
-                        </p>
-                    </article>
+                                if ($hasTime) {
+                                    $time = $eventDateObj->format('H:i');
+                                    $dateDisplay .= " às {$time}";
+                                }
+                            }
+                            $eventDateDisplay = '';
+                            $eventTimeDisplay = '';
+                            if ($eventDateObj) {
+                                $eventDateDisplay = $eventDateObj->format('d/m/Y');
+                                if ($hasTime) {
+                                    $eventTimeDisplay = $eventDateObj->format('H:i');
+                                }
+                            }
+                            $modalPrimaryDate = $eventDateDisplay ?: $dateDisplay;
+                            $modalCombinedDisplay = $eventTimeDisplay ? ($modalPrimaryDate . ' · ' . $eventTimeDisplay) : $modalPrimaryDate;
+                            $rawCost = $evt['cost'] ?? null;
+                            $costValue = ($rawCost === '' || $rawCost === null) ? null : (float)$rawCost;
+                            $costLabel = ($costValue !== null && $costValue > 0)
+                                ? '€' . number_format($costValue, 2, ',', '.')
+                                : 'Entrada gratuita';
+                            ?>
+                            <a class="event-card js-event-card"
+                                href="#"
+                                data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
+                                data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
+                                data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
+                                data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
+                                data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
+                                data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
+                                data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
+                                data-type="<?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>"
+                                data-cost="<?php echo htmlspecialchars($costLabel); ?>">
+                                <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
+                                <h3><?php echo htmlspecialchars($evt['name']); ?></h3>
+                                <ul class="event-meta">
+                                    <li><?php echo htmlspecialchars($dateDisplay); ?></li>
+                                    <li><?php echo htmlspecialchars($evt['localization']); ?></li>
+                                    <li><?php echo htmlspecialchars($costLabel); ?></li>
+                                </ul>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="muted">No upcoming events scheduled</p>
+                    <?php endif; ?>
                 </div>
-            </section>
 
-
-            <?php include __DIR__ . '/../includes/footer.php'; ?>
-        </div>
-
-        <div class="modal-backdrop" id="event-modal">
-            <div class="modal-card">
-                <div class="modal-header">
-                    <button type="button" class="modal-close" aria-label="Close event details">
-                        <i class="bi bi-x"></i>
-                    </button>
-                    <h3 id="modal-title"></h3>
-                    <span class="modal-type-badge" id="modal-type"></span>
+                <div class="events-actions">
+                    <a href="event_page.php" class="explore-btn ghost">View Events</a>
                 </div>
-                <div class="modal-body">
-                    <p class="modal-summary" id="modal-summary"></p>
-                    <p class="modal-description" id="modal-description"></p>
-                    <div class="modal-info-grid">
-                        <div class="modal-info-item">
-                            <div class="modal-info-icon">
-                                <i class="bi bi-calendar-event"></i>
-                            </div>
-                            <div class="modal-info-content">
-                                <div class="modal-info-label">Date</div>
-                                <div class="modal-info-value" id="modal-date"></div>
+            </div>
+        </section>
+        <!-- ===============================
+                 Everything You Need...
+                 =============================== -->
+        <section class="features-section">
+            <h2 class="features-title">
+                Everything You Need to <span>Manage Your Collections</span>
+            </h2>
+            <p class="features-subtitle">
+                From automotive miniatures to rare stamps, GoodCollections gives you the tools
+                to catalog, organize, and showcase every item with precision.
+            </p>
+
+            <div class="features-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </div>
+                    <h3>Multiple Collections</h3>
+                    <p>
+                        Create unlimited collections for different item types. Keep coin separate
+                        from trading cards, all in one place.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-card-checklist"></i>
+                    </div>
+                    <h3>Detailed Item Tracking</h3>
+                    <p>
+                        Record every detail — name, importance rating, acquisition date, weight and price.
+                        Never forget what you paid or when you got it.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-calendar2-week"></i>
+                    </div>
+                    <h3>Event Management</h3>
+                    <p>
+                        Track exhibitions and collector events. Add descriptions, dates, and rate your
+                        experience after attending each event.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <h3>Easy Editing</h3>
+                    <p>
+                        Update collection details, add or remove items, and modify information anytime.
+                        Your catalog evolves with your collection.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-compass"></i>
+                    </div>
+                    <h3>Intuitive Interface</h3>
+                    <p>
+                        Clean, modern design that's easy to navigate. View your top collections at a
+                        glance on the homepage.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+                    <h3>Personal Profile</h3>
+                    <p>
+                        Your collector profile keeps track of your personal information and preferences
+                        in one central location.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+
+        <?php include __DIR__ . '/../includes/footer.php'; ?>
+    </div>
+
+    <div class="modal-backdrop" id="event-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <button type="button" class="modal-close" aria-label="Close event details">
+                    <i class="bi bi-x"></i>
+                </button>
+                <h3 id="modal-title"></h3>
+                <span class="modal-type-badge" id="modal-type"></span>
+            </div>
+            <div class="modal-body">
+                <p class="modal-summary" id="modal-summary"></p>
+                <p class="modal-description" id="modal-description"></p>
+                <div class="modal-info-grid">
+                    <div class="modal-info-item">
+                        <div class="modal-info-icon">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <div class="modal-info-content">
+                            <div class="modal-info-label">Date</div>
+                            <div class="modal-info-value" id="modal-date"></div>
+                        </div>
+                    </div>
+                    <div class="modal-info-item" id="modal-time-row" hidden>
+                        <div class="modal-info-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div class="modal-info-content">
+                            <div class="modal-info-label">Time</div>
+                            <div class="modal-info-value" id="modal-time"></div>
+                        </div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div class="modal-info-content">
+                            <div class="modal-info-label">Place</div>
+                            <div class="modal-info-value">
+                                <a id="modal-location" class="modal-location-link" href="#" rel="noopener noreferrer"></a>
                             </div>
                         </div>
-                        <div class="modal-info-item" id="modal-time-row" hidden>
-                            <div class="modal-info-icon">
-                                <i class="bi bi-clock-history"></i>
-                            </div>
-                            <div class="modal-info-content">
-                                <div class="modal-info-label">Time</div>
-                                <div class="modal-info-value" id="modal-time"></div>
-                            </div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-icon">
+                            <i class="bi bi-cash-coin"></i>
                         </div>
-                        <div class="modal-info-item">
-                            <div class="modal-info-icon">
-                                <i class="bi bi-geo-alt-fill"></i>
-                            </div>
-                            <div class="modal-info-content">
-                                <div class="modal-info-label">Place</div>
-                                <div class="modal-info-value">
-                                    <a id="modal-location" class="modal-location-link" href="#" rel="noopener noreferrer"></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-info-item">
-                            <div class="modal-info-icon">
-                                <i class="bi bi-cash-coin"></i>
-                            </div>
-                            <div class="modal-info-content">
-                                <div class="modal-info-label">Cost</div>
-                                <div class="modal-info-value" id="modal-cost"></div>
-                            </div>
+                        <div class="modal-info-content">
+                            <div class="modal-info-label">Cost</div>
+                            <div class="modal-info-value" id="modal-cost"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Back to Top Button -->
-        <button id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
-            <i class="bi bi-arrow-up"></i>
-        </button>
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
+        <i class="bi bi-arrow-up"></i>
+    </button>
 
-        <script src="../../JS/search-toggle.js"></script>
-        <script>
-            (function () {
-                var scrollKey = 'gc-scroll-home';
-                var hasStorage = false;
-                try {
-                    sessionStorage.setItem('__gc_test', '1');
-                    sessionStorage.removeItem('__gc_test');
-                    hasStorage = true;
-                } catch (err) {
-                    hasStorage = false;
+    <script src="../../JS/search-toggle.js"></script>
+    <script>
+        (function() {
+            var scrollKey = 'gc-scroll-home';
+            var hasStorage = false;
+            try {
+                sessionStorage.setItem('__gc_test', '1');
+                sessionStorage.removeItem('__gc_test');
+                hasStorage = true;
+            } catch (err) {
+                hasStorage = false;
+            }
+
+            function saveScroll() {
+                if (!hasStorage) {
+                    return;
                 }
+                var top = window.scrollY || document.documentElement.scrollTop || 0;
+                sessionStorage.setItem(scrollKey, String(top));
+            }
 
-                function saveScroll() {
-                    if (!hasStorage) {
-                        return;
-                    }
-                    var top = window.scrollY || document.documentElement.scrollTop || 0;
-                    sessionStorage.setItem(scrollKey, String(top));
+            window.gcSubmitWithScroll = function(form) {
+                saveScroll();
+                form.submit();
+            };
+
+            window.gcRememberScroll = function(url) {
+                saveScroll();
+                window.location = url;
+            };
+
+            window.addEventListener('pageshow', function() {
+                if (!hasStorage) {
+                    return;
                 }
+                var stored = sessionStorage.getItem(scrollKey);
+                if (stored !== null) {
+                    window.scrollTo(0, parseFloat(stored));
+                    sessionStorage.removeItem(scrollKey);
+                }
+            });
 
-                window.gcSubmitWithScroll = function (form) {
-                    saveScroll();
-                    form.submit();
-                };
+            var filtersForm = document.getElementById('filters');
+            if (filtersForm) {
+                filtersForm.addEventListener('submit', saveScroll);
+            }
+        })();
 
-                window.gcRememberScroll = function (url) {
-                    saveScroll();
-                    window.location = url;
-                };
+        // Back to Top functionality
+        (function() {
+            var backToTopBtn = document.getElementById('backToTop');
+            if (!backToTopBtn) return;
 
-                window.addEventListener('pageshow', function () {
-                    if (!hasStorage) {
-                        return;
-                    }
-                    var stored = sessionStorage.getItem(scrollKey);
-                    if (stored !== null) {
-                        window.scrollTo(0, parseFloat(stored));
-                        sessionStorage.removeItem(scrollKey);
-                    }
+            function toggleBackToTop() {
+                var scrollTop = window.scrollY || document.documentElement.scrollTop;
+                if (scrollTop > 300) {
+                    backToTopBtn.classList.add('show');
+                } else {
+                    backToTopBtn.classList.remove('show');
+                }
+            }
+
+            backToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
                 });
+            });
 
-                var filtersForm = document.getElementById('filters');
-                if (filtersForm) {
-                    filtersForm.addEventListener('submit', saveScroll);
+            window.addEventListener('scroll', toggleBackToTop);
+            toggleBackToTop(); // Check initial state
+        })();
+    </script>
+    <script>
+        (function() {
+            var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';
+
+            function enhanceCard(card) {
+                var href = card.getAttribute('data-collection-link');
+                if (!href) {
+                    return;
                 }
-            })();
-
-            // Back to Top functionality
-            (function () {
-                var backToTopBtn = document.getElementById('backToTop');
-                if (!backToTopBtn) return;
-
-                function toggleBackToTop() {
-                    var scrollTop = window.scrollY || document.documentElement.scrollTop;
-                    if (scrollTop > 300) {
-                        backToTopBtn.classList.add('show');
-                    } else {
-                        backToTopBtn.classList.remove('show');
-                    }
-                }
-
-                backToTopBtn.addEventListener('click', function () {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                });
-
-                window.addEventListener('scroll', toggleBackToTop);
-                toggleBackToTop(); // Check initial state
-            })();
-        </script>
-        <script>
-            (function () {
-                var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';
-                function enhanceCard(card) {
-                    var href = card.getAttribute('data-collection-link');
-                    if (!href) {
+                card.addEventListener('click', function(event) {
+                    if (event.target.closest(interactiveSelector)) {
                         return;
                     }
-                    card.addEventListener('click', function (event) {
-                        if (event.target.closest(interactiveSelector)) {
-                            return;
-                        }
+                    window.location.href = href;
+                });
+                card.addEventListener('keydown', function(event) {
+                    if (event.target !== card) {
+                        return;
+                    }
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
                         window.location.href = href;
-                    });
-                    card.addEventListener('keydown', function (event) {
-                        if (event.target !== card) {
-                            return;
-                        }
-                        if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            window.location.href = href;
-                        }
-                    });
+                    }
+                });
+            }
+            document.querySelectorAll('.collection-card-link').forEach(enhanceCard);
+        })();
+    </script>
+    <script>
+        (function() {
+            var modal = document.getElementById('event-modal');
+            if (!modal) {
+                return;
+            }
+
+            var closeButton = modal.querySelector('.modal-close');
+            var titleEl = document.getElementById('modal-title');
+            var typeEl = document.getElementById('modal-type');
+            var summaryEl = document.getElementById('modal-summary');
+            var descriptionEl = document.getElementById('modal-description');
+            var dateEl = document.getElementById('modal-date');
+            var timeRow = document.getElementById('modal-time-row');
+            var timeEl = document.getElementById('modal-time');
+            var locationLink = document.getElementById('modal-location');
+            var costEl = document.getElementById('modal-cost');
+
+            function setText(target, value) {
+                if (!target) {
+                    return;
                 }
-                document.querySelectorAll('.collection-card-link').forEach(enhanceCard);
-            })();
-        </script>
-        <script>
-            (function () {
-                var modal = document.getElementById('event-modal');
-                if (!modal) {
+                target.textContent = value || '';
+            }
+
+            function openModal(payload) {
+                setText(titleEl, payload.name);
+                setText(typeEl, payload.type);
+                setText(summaryEl, payload.summary);
+                setText(descriptionEl, payload.description);
+                if (dateEl) {
+                    setText(dateEl, payload.date || payload.datetime || '');
+                }
+                if (timeRow && timeEl) {
+                    if (payload.time) {
+                        timeRow.hidden = false;
+                        setText(timeEl, payload.time);
+                    } else {
+                        timeRow.hidden = true;
+                        setText(timeEl, '');
+                    }
+                }
+                if (locationLink) {
+                    var cleanLocation = (payload.location || '').trim();
+                    if (cleanLocation) {
+                        locationLink.textContent = cleanLocation;
+                        locationLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(cleanLocation);
+                        locationLink.classList.remove('disabled');
+                        locationLink.setAttribute('target', '_blank');
+                        locationLink.setAttribute('rel', 'noopener noreferrer');
+                        locationLink.setAttribute('aria-label', 'Open ' + cleanLocation + ' on Google Maps');
+                    } else {
+                        locationLink.textContent = 'Location unavailable';
+                        locationLink.removeAttribute('href');
+                        locationLink.removeAttribute('target');
+                        locationLink.removeAttribute('rel');
+                        locationLink.removeAttribute('aria-label');
+                        locationLink.classList.add('disabled');
+                    }
+                }
+                if (costEl) {
+                    setText(costEl, payload.cost || 'Entrada gratuita');
+                }
+                modal.classList.add('open');
+            }
+
+            function closeModal() {
+                modal.classList.remove('open');
+            }
+
+            function bindEventCard(card) {
+                if (!card) {
                     return;
                 }
 
-                var closeButton = modal.querySelector('.modal-close');
-                var titleEl = document.getElementById('modal-title');
-                var typeEl = document.getElementById('modal-type');
-                var summaryEl = document.getElementById('modal-summary');
-                var descriptionEl = document.getElementById('modal-description');
-                var dateEl = document.getElementById('modal-date');
-                var timeRow = document.getElementById('modal-time-row');
-                var timeEl = document.getElementById('modal-time');
-                var locationLink = document.getElementById('modal-location');
-                var costEl = document.getElementById('modal-cost');
+                function launchModal() {
+                    openModal({
+                        name: card.getAttribute('data-name') || '',
+                        summary: card.getAttribute('data-summary') || '',
+                        description: card.getAttribute('data-description') || '',
+                        date: card.getAttribute('data-date') || '',
+                        time: card.getAttribute('data-time') || '',
+                        datetime: card.getAttribute('data-datetime') || '',
+                        location: card.getAttribute('data-location') || '',
+                        type: card.getAttribute('data-type') || '',
+                        cost: card.getAttribute('data-cost') || ''
+                    });
+                }
 
-                function setText(target, value) {
-                    if (!target) {
+                card.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    launchModal();
+                });
+
+                card.addEventListener('keydown', function(event) {
+                    if (event.target !== card) {
                         return;
                     }
-                    target.textContent = value || '';
-                }
-
-                function openModal(payload) {
-                    setText(titleEl, payload.name);
-                    setText(typeEl, payload.type);
-                    setText(summaryEl, payload.summary);
-                    setText(descriptionEl, payload.description);
-                    if (dateEl) {
-                        setText(dateEl, payload.date || payload.datetime || '');
-                    }
-                    if (timeRow && timeEl) {
-                        if (payload.time) {
-                            timeRow.hidden = false;
-                            setText(timeEl, payload.time);
-                        } else {
-                            timeRow.hidden = true;
-                            setText(timeEl, '');
-                        }
-                    }
-                    if (locationLink) {
-                        var cleanLocation = (payload.location || '').trim();
-                        if (cleanLocation) {
-                            locationLink.textContent = cleanLocation;
-                            locationLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(cleanLocation);
-                            locationLink.classList.remove('disabled');
-                            locationLink.setAttribute('target', '_blank');
-                            locationLink.setAttribute('rel', 'noopener noreferrer');
-                            locationLink.setAttribute('aria-label', 'Open ' + cleanLocation + ' on Google Maps');
-                        } else {
-                            locationLink.textContent = 'Location unavailable';
-                            locationLink.removeAttribute('href');
-                            locationLink.removeAttribute('target');
-                            locationLink.removeAttribute('rel');
-                            locationLink.removeAttribute('aria-label');
-                            locationLink.classList.add('disabled');
-                        }
-                    }
-                    if (costEl) {
-                        setText(costEl, payload.cost || 'Entrada gratuita');
-                    }
-                    modal.classList.add('open');
-                }
-
-                function closeModal() {
-                    modal.classList.remove('open');
-                }
-
-                function bindEventCard(card) {
-                    if (!card) {
-                        return;
-                    }
-                    function launchModal() {
-                        openModal({
-                            name: card.getAttribute('data-name') || '',
-                            summary: card.getAttribute('data-summary') || '',
-                            description: card.getAttribute('data-description') || '',
-                            date: card.getAttribute('data-date') || '',
-                            time: card.getAttribute('data-time') || '',
-                            datetime: card.getAttribute('data-datetime') || '',
-                            location: card.getAttribute('data-location') || '',
-                            type: card.getAttribute('data-type') || '',
-                            cost: card.getAttribute('data-cost') || ''
-                        });
-                    }
-
-                    card.addEventListener('click', function (event) {
+                    if (event.key === 'Enter' || event.key === ' ') {
                         event.preventDefault();
                         launchModal();
-                    });
-
-                    card.addEventListener('keydown', function (event) {
-                        if (event.target !== card) {
-                            return;
-                        }
-                        if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            launchModal();
-                        }
-                    });
-                }
-
-                document.querySelectorAll('.js-event-card').forEach(bindEventCard);
-
-                if (closeButton) {
-                    closeButton.addEventListener('click', closeModal);
-                }
-
-                modal.addEventListener('click', function (event) {
-                    if (event.target === modal) {
-                        closeModal();
                     }
                 });
+            }
 
-                document.addEventListener('keydown', function (event) {
-                    if (event.key === 'Escape' && modal.classList.contains('open')) {
-                        closeModal();
-                    }
-                });
-            })();
-        </script>
-    </body>
+            document.querySelectorAll('.js-event-card').forEach(bindEventCard);
+
+            if (closeButton) {
+                closeButton.addEventListener('click', closeModal);
+            }
+
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.classList.contains('open')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+</body>
 
 </html>

@@ -9,6 +9,21 @@ body {
   font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
+/* Keep the profile page aligned with the rest of the site width and spacing */
+main.page-shell {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  main.page-shell {
+    padding: 18px 16px 64px;
+  }
+}
+
 /* Flash messages */
 .flash {
   padding: 12px 14px;

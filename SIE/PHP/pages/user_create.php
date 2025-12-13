@@ -13,7 +13,7 @@ require_once __DIR__ . '/../includes/flash.php';
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Create Account • PHP</title>
+        <title>Create Account • GoodCollections</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
         <link rel="stylesheet" href="../../CSS/christmas.css">

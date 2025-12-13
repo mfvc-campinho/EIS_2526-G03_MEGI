@@ -149,6 +149,12 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
         <!-- Christmas Theme -->
         <link rel="stylesheet" href="../../CSS/christmas.css">
 
+        <style>
+            .collection-card-link { cursor: pointer; position: relative; }
+            .collection-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
+            .collection-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
+        </style>
+
         <script src="../../JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
     </head>
@@ -232,14 +238,15 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 }
                                 $previewItems = array_slice($itemsByCollection[$col['id']] ?? [], 0, 2);
                                 $previewId = 'preview-' . htmlspecialchars($col['id']);
+                                $collectionHref = 'specific_collection.php?id=' . urlencode($col['id']);
                                 ?>
 
-                                <article class="card collection-card home-card">
+                                <article class="card collection-card home-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionHref); ?>">
                                     <input type="checkbox" id="<?php echo $previewId; ?>" class="preview-toggle">
 
                                     <div class="card-image">
                                         <?php if (!empty($img)): ?>
-                                            <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
+                                            <a href="<?php echo htmlspecialchars($collectionHref); ?>">
                                                 <img src="<?php echo htmlspecialchars($img); ?>"
                                                      alt="<?php echo htmlspecialchars($col['name']); ?>">
                                             </a>
@@ -256,7 +263,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                         </p>
 
                                         <h3 class="card-title">
-                                            <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
+                                            <a href="<?php echo htmlspecialchars($collectionHref); ?>">
                                                 <?php echo htmlspecialchars($col['name']); ?>
                                             </a>
                                         </h3>
@@ -292,8 +299,8 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                                 Hide Preview
                                             </label>
 
-                                            <a class="explore-btn"
-                                               href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
+                                                          <a class="explore-btn"
+                                                              href="<?php echo htmlspecialchars($collectionHref); ?>">
                                                 Explore More
                                             </a>
                                         </div>
@@ -608,6 +615,33 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
                 window.addEventListener('scroll', toggleBackToTop);
                 toggleBackToTop(); // Check initial state
+            })();
+        </script>
+        <script>
+            (function () {
+                var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';
+                function enhanceCard(card) {
+                    var href = card.getAttribute('data-collection-link');
+                    if (!href) {
+                        return;
+                    }
+                    card.addEventListener('click', function (event) {
+                        if (event.target.closest(interactiveSelector)) {
+                            return;
+                        }
+                        window.location.href = href;
+                    });
+                    card.addEventListener('keydown', function (event) {
+                        if (event.target !== card) {
+                            return;
+                        }
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            window.location.href = href;
+                        }
+                    });
+                }
+                document.querySelectorAll('.collection-card-link').forEach(enhanceCard);
             })();
         </script>
     </body>

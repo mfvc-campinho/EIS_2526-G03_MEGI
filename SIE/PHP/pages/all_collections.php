@@ -151,6 +151,11 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
         <!-- ícones + tema -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="../../CSS/christmas.css">
+        <style>
+            .collection-card-link { cursor: pointer; position: relative; }
+            .collection-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
+            .collection-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
+        </style>
         <script src="././JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
 
@@ -267,15 +272,16 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                             $previewItems = array_slice($itemsByCollection[$col['id']] ?? [], 0, 2);
                             $previewId = 'preview-' . htmlspecialchars($col['id']);
                             $isOwner = $isAuth && !empty($col['ownerId']) && $col['ownerId'] === $currentUserId;
+                            $collectionHref = 'specific_collection.php?id=' . urlencode($col['id']);
                             ?>
-                            <article class="product-card">
-                                <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>" class="product-card__media">
+                            <article class="product-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionHref); ?>">
+                                <a href="<?php echo htmlspecialchars($collectionHref); ?>" class="product-card__media">
                                     <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($col['name']); ?>">
                                 </a>
                                 <input type="checkbox" id="<?php echo $previewId; ?>" class="preview-toggle">
                                 <div class="product-card__body">
                                     <p class="pill"><?php echo htmlspecialchars($col['type'] ?? ''); ?></p>
-                                    <h3><a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name']); ?></a></h3>
+                                    <h3><a href="<?php echo htmlspecialchars($collectionHref); ?>"><?php echo htmlspecialchars($col['name']); ?></a></h3>
                                     <div class="product-card__meta">
                                         <div class="product-card__owner">
                                             <i class="bi bi-people"></i>
@@ -301,7 +307,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                         </label>
 
                                         <!-- Explore More -->
-                                        <a class="action-icon" href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>" title="Explore">
+                                        <a class="action-icon" href="<?php echo htmlspecialchars($collectionHref); ?>" title="Explore">
                                             <i class="bi bi-search"></i>
                                         </a>
 
@@ -553,6 +559,33 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                         });
                     });
                 });
+            })();
+        </script>
+        <script>
+            (function () {
+                var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';
+                function enhanceCard(card) {
+                    var href = card.getAttribute('data-collection-link');
+                    if (!href) {
+                        return;
+                    }
+                    card.addEventListener('click', function (event) {
+                        if (event.target.closest(interactiveSelector)) {
+                            return;
+                        }
+                        window.location.href = href;
+                    });
+                    card.addEventListener('keydown', function (event) {
+                        if (event.target !== card) {
+                            return;
+                        }
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            window.location.href = href;
+                        }
+                    });
+                }
+                document.querySelectorAll('.collection-card-link').forEach(enhanceCard);
             })();
         </script>
     </body>

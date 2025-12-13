@@ -370,6 +370,16 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                         $dateDisplay .= " às {$time}";
                                     }
                                 }
+                                $eventDateDisplay = '';
+                                $eventTimeDisplay = '';
+                                if ($eventDateObj) {
+                                    $eventDateDisplay = $eventDateObj->format('d/m/Y');
+                                    if ($hasTime) {
+                                        $eventTimeDisplay = $eventDateObj->format('H:i');
+                                    }
+                                }
+                                $modalPrimaryDate = $eventDateDisplay ?: $dateDisplay;
+                                $modalCombinedDisplay = $eventTimeDisplay ? ($modalPrimaryDate . ' · ' . $eventTimeDisplay) : $modalPrimaryDate;
                                 ?>
                                 <article class="event-card">
                                     <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
@@ -384,10 +394,18 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                             <?php echo htmlspecialchars($evt['localization']); ?>
                                         </li>
                                     </ul>
-                                    <a class="explore-btn small"
-                                       href="event_page.php">
-                                         See event
-                                    </a>
+                                    <button type="button"
+                                            class="explore-btn small js-view-event"
+                                            data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
+                                            data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
+                                            data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
+                                            data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
+                                            data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
+                                            data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
+                                            data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
+                                            data-type="<?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>">
+                                        See event
+                                    </button>
                                 </article>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -534,6 +552,53 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             <?php include __DIR__ . '/../includes/footer.php'; ?>
         </div>
 
+        <div class="modal-backdrop" id="event-modal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <button type="button" class="modal-close" aria-label="Close event details">
+                        <i class="bi bi-x"></i>
+                    </button>
+                    <h3 id="modal-title"></h3>
+                    <span class="modal-type-badge" id="modal-type"></span>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-summary" id="modal-summary"></p>
+                    <p class="modal-description" id="modal-description"></p>
+                    <div class="modal-info-grid">
+                        <div class="modal-info-item">
+                            <div class="modal-info-icon">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                            <div class="modal-info-content">
+                                <div class="modal-info-label">Date</div>
+                                <div class="modal-info-value" id="modal-date"></div>
+                            </div>
+                        </div>
+                        <div class="modal-info-item" id="modal-time-row" hidden>
+                            <div class="modal-info-icon">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div class="modal-info-content">
+                                <div class="modal-info-label">Time</div>
+                                <div class="modal-info-value" id="modal-time"></div>
+                            </div>
+                        </div>
+                        <div class="modal-info-item">
+                            <div class="modal-info-icon">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div class="modal-info-content">
+                                <div class="modal-info-label">Place</div>
+                                <div class="modal-info-value">
+                                    <a id="modal-location" class="modal-location-link" href="#" rel="noopener noreferrer"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Back to Top Button -->
         <button id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
             <i class="bi bi-arrow-up"></i>
@@ -637,6 +702,104 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                     });
                 }
                 document.querySelectorAll('.collection-card-link').forEach(enhanceCard);
+            })();
+        </script>
+        <script>
+            (function () {
+                var modal = document.getElementById('event-modal');
+                if (!modal) {
+                    return;
+                }
+
+                var closeButton = modal.querySelector('.modal-close');
+                var titleEl = document.getElementById('modal-title');
+                var typeEl = document.getElementById('modal-type');
+                var summaryEl = document.getElementById('modal-summary');
+                var descriptionEl = document.getElementById('modal-description');
+                var dateEl = document.getElementById('modal-date');
+                var timeRow = document.getElementById('modal-time-row');
+                var timeEl = document.getElementById('modal-time');
+                var locationLink = document.getElementById('modal-location');
+
+                function setText(target, value) {
+                    if (!target) {
+                        return;
+                    }
+                    target.textContent = value || '';
+                }
+
+                function openModal(payload) {
+                    setText(titleEl, payload.name);
+                    setText(typeEl, payload.type);
+                    setText(summaryEl, payload.summary);
+                    setText(descriptionEl, payload.description);
+                    if (dateEl) {
+                        setText(dateEl, payload.date || payload.datetime || '');
+                    }
+                    if (timeRow && timeEl) {
+                        if (payload.time) {
+                            timeRow.hidden = false;
+                            setText(timeEl, payload.time);
+                        } else {
+                            timeRow.hidden = true;
+                            setText(timeEl, '');
+                        }
+                    }
+                    if (locationLink) {
+                        var cleanLocation = (payload.location || '').trim();
+                        if (cleanLocation) {
+                            locationLink.textContent = cleanLocation;
+                            locationLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(cleanLocation);
+                            locationLink.classList.remove('disabled');
+                            locationLink.setAttribute('target', '_blank');
+                            locationLink.setAttribute('rel', 'noopener noreferrer');
+                            locationLink.setAttribute('aria-label', 'Open ' + cleanLocation + ' on Google Maps');
+                        } else {
+                            locationLink.textContent = 'Location unavailable';
+                            locationLink.removeAttribute('href');
+                            locationLink.removeAttribute('target');
+                            locationLink.removeAttribute('rel');
+                            locationLink.removeAttribute('aria-label');
+                            locationLink.classList.add('disabled');
+                        }
+                    }
+                    modal.classList.add('open');
+                }
+
+                function closeModal() {
+                    modal.classList.remove('open');
+                }
+
+                document.querySelectorAll('.js-view-event').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        openModal({
+                            name: btn.getAttribute('data-name') || '',
+                            summary: btn.getAttribute('data-summary') || '',
+                            description: btn.getAttribute('data-description') || '',
+                            date: btn.getAttribute('data-date') || '',
+                            time: btn.getAttribute('data-time') || '',
+                            datetime: btn.getAttribute('data-datetime') || '',
+                            location: btn.getAttribute('data-location') || '',
+                            type: btn.getAttribute('data-type') || ''
+                        });
+                    });
+                });
+
+                if (closeButton) {
+                    closeButton.addEventListener('click', closeModal);
+                }
+
+                modal.addEventListener('click', function (event) {
+                    if (event.target === modal) {
+                        closeModal();
+                    }
+                });
+
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape' && modal.classList.contains('open')) {
+                        closeModal();
+                    }
+                });
             })();
         </script>
     </body>

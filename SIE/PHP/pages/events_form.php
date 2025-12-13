@@ -123,7 +123,27 @@ if ($rawEventDate !== '') {
     }
 }
 
-$minScheduleDate = (clone $now)->modify('+1 day')->setTime(0, 0)->format('Y-m-d\TH:i');
+$prefillDatePart = '';
+if ($prefillDateValue !== '') {
+    $prefillDatePart = substr($prefillDateValue, 0, 10);
+}
+
+if (!$editing && $prefillDatePart === '') {
+    $requestedDay = $_GET['date'] ?? '';
+    if ($requestedDay !== '') {
+        $requestedDayObj = DateTime::createFromFormat('Y-m-d', $requestedDay, $appTimezone);
+        if ($requestedDayObj instanceof DateTime) {
+            $prefillDatePart = $requestedDayObj->format('Y-m-d');
+        }
+    }
+}
+
+$minScheduleDate = (clone $now)->modify('+1 day')->setTime(0, 0);
+$minScheduleDateAttr = $minScheduleDate->format('Y-m-d\TH:i');
+$dateOnlyPrefill = '';
+if ($prefillDateValue === '' && $prefillDatePart !== '') {
+    $dateOnlyPrefill = $prefillDatePart;
+}
 ?>
 
 
@@ -153,6 +173,20 @@ $currentType = $event['type'] ?? null;
         <link rel="stylesheet" href="../../CSS/christmas.css">
         <script src="../../JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
+        <style>
+            .datetime-field { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #d1d5db; font-weight: 600; }
+            .datetime-field.prefill-date-only::-webkit-datetime-edit-hour-field,
+            .datetime-field.prefill-date-only::-webkit-datetime-edit-minute-field,
+            .datetime-field.prefill-date-only::-webkit-datetime-edit-ampm-field {
+                color: transparent;
+            }
+            .datetime-field.prefill-date-only:focus::-webkit-datetime-edit-hour-field,
+            .datetime-field.prefill-date-only:focus::-webkit-datetime-edit-minute-field,
+            .datetime-field.prefill-date-only:focus::-webkit-datetime-edit-ampm-field {
+                color: inherit;
+            }
+            /* Firefox fallback simply keeps default rendering */
+        </style>
     </head>
 
     <body>
@@ -191,13 +225,19 @@ $currentType = $event['type'] ?? null;
                     <?php endforeach; ?>
                 </select>
 
-                <label>Location <span class="required-badge">R</span></label>
-                <input type="text" name="localization" required value="<?php echo htmlspecialchars($event['localization']); ?>">
+                  <label>Location <span class="required-badge">R</span></label>
+                  <input type="text" name="localization" required value="<?php echo htmlspecialchars($event['localization']); ?>">
 
-                <label>Date <span class="required-badge">R</span></label>
-                  <input type="datetime-local" name="date" required
-                      min="<?php echo htmlspecialchars($minScheduleDate); ?>"
-                      value="<?php echo htmlspecialchars($prefillDateValue); ?>">
+                  <label>Date <span class="required-badge">R</span></label>
+                  <input type="datetime-local"
+                      id="event-date-input"
+                      name="date"
+                      required
+                      min="<?php echo htmlspecialchars($minScheduleDateAttr); ?>"
+                      value="<?php echo htmlspecialchars($prefillDateValue); ?>"
+                      data-prefill-date="<?php echo htmlspecialchars($dateOnlyPrefill); ?>"
+                      class="datetime-field <?php echo $dateOnlyPrefill ? 'prefill-date-only' : ''; ?>">
+                  <p class="muted" style="margin-top:6px;">We picked the day you chose, do not forget to pick the hour!</p>
 
                 <label>Collections (can associate to multiple of yours) <span class="required-badge">R</span></label>
                 <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">
@@ -217,6 +257,43 @@ $currentType = $event['type'] ?? null;
                 </div>
             </form>
         </main>
+        <script>
+            (function() {
+                const datetimeInput = document.getElementById('event-date-input');
+                if (!datetimeInput) return;
+                const prefillDate = datetimeInput.dataset.prefillDate || '';
+                let awaitingTimeSelection = false;
+
+                if (prefillDate && !datetimeInput.value) {
+                    datetimeInput.value = `${prefillDate}T00:00`;
+                    datetimeInput.classList.add('prefill-date-only');
+                    awaitingTimeSelection = true;
+                }
+
+                function handleManualChange() {
+                    awaitingTimeSelection = false;
+                    datetimeInput.classList.remove('prefill-date-only');
+                }
+
+                datetimeInput.addEventListener('change', handleManualChange);
+                datetimeInput.addEventListener('input', handleManualChange);
+
+                const parentForm = datetimeInput.form;
+                if (!parentForm) return;
+                parentForm.addEventListener('submit', function(evt) {
+                    if (!awaitingTimeSelection) return;
+                    evt.preventDefault();
+                    const storedValue = `${prefillDate}T00:00`;
+                    datetimeInput.value = '';
+                    datetimeInput.classList.remove('prefill-date-only');
+                    datetimeInput.reportValidity();
+                    setTimeout(function() {
+                        datetimeInput.value = storedValue;
+                        datetimeInput.classList.add('prefill-date-only');
+                    }, 0);
+                });
+            })();
+        </script>
     </body>
 
 </html>

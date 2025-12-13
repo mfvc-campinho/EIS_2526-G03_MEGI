@@ -43,6 +43,44 @@ if ($id) {
         exit;
     }
 }
+
+function extract_internal_path($url)
+{
+    if (!$url) return '';
+    $url = trim($url);
+    if ($url === '') return '';
+
+    if (preg_match('#^https?://#i', $url)) {
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        $parsed = parse_url($url);
+        if (!$parsed) return '';
+        $refererHost = $parsed['host'] ?? '';
+        if ($host && $refererHost && strcasecmp($host, $refererHost) !== 0) {
+            return '';
+        }
+        $path = $parsed['path'] ?? '/';
+        $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+        return $path . $query;
+    }
+
+    if ($url[0] === '/') {
+        return $url;
+    }
+
+    if (preg_match('#^[A-Za-z0-9_./?=&-]+$#', $url)) {
+        return $url;
+    }
+
+    return '';
+}
+
+$returnTo = extract_internal_path($_GET['return_to'] ?? '');
+if (!$returnTo) {
+    $returnTo = extract_internal_path($_SERVER['HTTP_REFERER'] ?? '');
+}
+if (!$returnTo || stripos($returnTo, 'collections_form.php') !== false) {
+    $returnTo = 'all_collections.php';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,6 +108,7 @@ if ($id) {
 
             <form class="form-card" action="collections_action.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="<?php echo $editing ? 'update' : 'create'; ?>">
+                <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($returnTo); ?>">
                 <?php if ($editing): ?>
                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($collection['id']); ?>">
                 <?php endif; ?>
@@ -105,7 +144,7 @@ if ($id) {
 
                 <div class="actions">
                     <button type="submit" class="explore-btn"><?php echo $editing ? 'Save' : 'Create'; ?></button>
-                    <a class="explore-btn ghost" href="all_collections.php">Cancel</a>
+                    <a class="explore-btn ghost" href="<?php echo htmlspecialchars($returnTo); ?>">Cancel</a>
                 </div>
             </form>
         </main>

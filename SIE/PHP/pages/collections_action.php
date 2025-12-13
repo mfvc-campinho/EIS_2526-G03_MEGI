@@ -11,17 +11,62 @@ if (!$currentUser) {
   exit;
 }
 
+function sanitize_internal_url($candidate)
+{
+  if (!$candidate) return '';
+  $candidate = trim($candidate);
+  if ($candidate === '') return '';
+
+  if (preg_match('#^https?://#i', $candidate)) {
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    $parsed = parse_url($candidate);
+    if (!$parsed) return '';
+    $refererHost = $parsed['host'] ?? '';
+    if ($host && $refererHost && strcasecmp($host, $refererHost) !== 0) {
+      return '';
+    }
+    $path = $parsed['path'] ?? '/';
+    $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+    return $path . $query;
+  }
+
+  if ($candidate[0] === '/') {
+    return $candidate;
+  }
+
+  if (preg_match('#^[A-Za-z0-9_./?=&-]+$#', $candidate)) {
+    return $candidate;
+  }
+
+  return '';
+}
+
+function resolve_return_url($fallback = 'all_collections.php')
+{
+  $fromPost = sanitize_internal_url($_POST['return_to'] ?? '');
+  if ($fromPost && stripos($fromPost, 'collections_form.php') === false) {
+    return $fromPost;
+  }
+
+  $fromReferer = sanitize_internal_url($_SERVER['HTTP_REFERER'] ?? '');
+  if ($fromReferer && stripos($fromReferer, 'collections_form.php') === false) {
+    return $fromReferer;
+  }
+
+  return $fallback;
+}
+
 function redirect_success($msg)
 {
   flash_set('success', $msg);
-  header('Location: all_collections.php');
+  header('Location: ' . resolve_return_url());
   exit;
 }
 
 function redirect_error($msg)
 {
   flash_set('error', $msg);
-  header('Location: all_collections.php');
+  header('Location: ' . resolve_return_url());
   exit;
 }
 
@@ -108,9 +153,9 @@ if ($action === 'delete') {
   $res = $chk->get_result();
   $row = $res->fetch_assoc();
   $chk->close();
-  if (!$row || ($row['user_id'] ?? null) !== $currentUser) {
-    $mysqli->close();
-    redirect_error('You do not have permission to delete this collection.');
+    if (!$row || ($row['user_id'] ?? null) !== $currentUser) {
+      $mysqli->close();
+      redirect_error('You do not have permission to delete this collection.');
   }
 
   $stmt = $mysqli->prepare('DELETE FROM collections WHERE collection_id = ?');
@@ -118,8 +163,13 @@ if ($action === 'delete') {
   $ok = $stmt->execute();
   $stmt->close();
   $mysqli->close();
-  if ($ok) redirect_success('Collection deleted.');
-  redirect_error('Failed to delete collection.');
+    if ($ok) {
+      flash_set('success', 'Coleção apagada.');
+    } else {
+      flash_set('error', 'Failed to delete collection.');
+    }
+    header('Location: all_collections.php');
+    exit;
 }
 
 $mysqli->close();

@@ -228,7 +228,7 @@ if ($action === 'delete') {
   if (!$id) redirect_error('ID missing.');
 
   // ownership check via event host
-  $chk = $mysqli->prepare('SELECT c.user_id AS owner_id FROM events e LEFT JOIN collections c ON c.collection_id = e.collection_id WHERE e.event_id = ? LIMIT 1');
+  $chk = $mysqli->prepare('SELECT e.event_date, c.user_id AS owner_id FROM events e LEFT JOIN collections c ON c.collection_id = e.collection_id WHERE e.event_id = ? LIMIT 1');
   $chk->bind_param('s', $id);
   $chk->execute();
   $res = $chk->get_result();
@@ -237,6 +237,19 @@ if ($action === 'delete') {
   if (!$row || ($row['owner_id'] ?? null) !== $currentUser) {
     $mysqli->close();
     redirect_error('You do not have permission to delete this event.');
+  }
+
+  $parsedEventDate = parse_event_datetime_helper($row['event_date'] ?? null, $appTimezone);
+  $eventDateObj = $parsedEventDate['date'];
+  $hasTime = $parsedEventDate['hasTime'];
+  if ($eventDateObj) {
+    $eventHasEnded = $hasTime
+      ? ($eventDateObj <= $now)
+      : ($eventDateObj->format('Y-m-d') < $today);
+    if ($eventHasEnded) {
+      $mysqli->close();
+      redirect_error('Past events cannot be deleted.');
+    }
   }
 
   $stmt = $mysqli->prepare('DELETE FROM events WHERE event_id = ?');

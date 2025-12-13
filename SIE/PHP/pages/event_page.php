@@ -57,6 +57,7 @@ $perPage = max(1, (int)($_GET['perPage'] ?? 10));
 $page = max(1, (int)($_GET['page'] ?? 1));
 $now = new DateTime('now', $appTimezone);
 $today = $now->format('Y-m-d');
+$createAllowedFromDate = (clone $now)->modify('+1 day')->format('Y-m-d');
 
 // Build filter options
 $types = [];
@@ -186,6 +187,13 @@ foreach ($eventsUsers as $entry) {
     $eventRsvpMap["{$eid}|{$uid}"] = true;
   }
 }
+
+$eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMap) {
+  $eid = $evt['id'] ?? null;
+  $key = ($eid && $currentUserId) ? "{$eid}|{$currentUserId}" : null;
+  $evt['hasUserRsvp'] = $key ? !empty($eventRsvpMap[$key]) : false;
+  return $evt;
+}, $events);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -209,9 +217,14 @@ foreach ($eventsUsers as $entry) {
       font-size: 0.96rem;
       color: #4b5563;
     }
-    .pill-toggle { display: flex; justify-content: center; gap: 14px; margin: 26px auto 18px; max-width: 400px; background: #eef0ff; padding: 10px; border-radius: 24px; box-shadow: inset 0 0 0 1px rgba(99,102,241,.12); }
+    .pill-toggle { display: flex; justify-content: center; gap: 14px; margin: 18px auto 0; max-width: 420px; background: #eef0ff; padding: 10px; border-radius: 24px; box-shadow: inset 0 0 0 1px rgba(99,102,241,.12); }
     .pill-toggle a { flex: 1; text-align: center; padding: 10px 12px; border-radius: 18px; font-weight: 600; color: #6b6e82; text-decoration: none; }
     .pill-toggle a.active { background: #fff; box-shadow: 0 8px 16px rgba(99,102,241,.15); color: #2f2f3f; }
+    .event-options-panel { max-width: 1100px; margin: 0 auto 12px; background: #ffffff; border-radius: 18px; padding: 22px 28px; box-shadow: 0 10px 25px rgba(15,23,42,0.08); border: 1px solid #e5e7eb; }
+    .event-options-head { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 12px; }
+    .event-options-head h3 { margin: 0; font-size: 1.2rem; color: #0f172a; }
+    .event-options-head p { margin: 6px 0 0; color: #4b5563; font-size: 0.92rem; }
+    .event-options-head .explore-btn { align-self: center; }
     .month-bar { display: flex; justify-content: center; margin: 28px auto 24px; }
     .month-chip { padding: 14px 28px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 1.1rem; font-weight: 600; color: #374151; letter-spacing: 0.5px; }
     .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; align-items: center; margin: 18px auto 10px; max-width: 1100px; }
@@ -316,27 +329,37 @@ foreach ($eventsUsers as $entry) {
       text-decoration: none;
     }
     /* Calendar Styles */
-    .calendar-toggle-btn { padding: 10px 18px; background: #3b82f6; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
+    .calendar-toggle-btn { padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
     .calendar-toggle-btn:hover { background: #2563eb; }
     .calendar-toggle-btn.active { background: #1e40af; }
-    .calendar-view { max-width: 960px; margin: 0 auto 32px; display: none; background: white; border-radius: 16px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .calendar-view { max-width: 820px; margin: 0 auto 28px; display: none; background: white; border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .calendar-view.show { display: block; }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .calendar-header h2 { margin: 0; font-size: 1.5rem; color: #1f2937; }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .calendar-header h2 { margin: 0; font-size: 1.35rem; color: #1f2937; }
     .calendar-nav { display: flex; gap: 8px; }
-    .calendar-nav button { padding: 8px 16px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .calendar-nav button { padding: 6px 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
     .calendar-nav button:hover { background: #e5e7eb; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
-    .calendar-day-header { background: #f9fafb; padding: 12px 8px; text-align: center; font-weight: 700; font-size: 0.85rem; color: #6b7280; text-transform: uppercase; }
-    .calendar-day { background: white; min-height: 86px; padding: 8px; position: relative; }
+    .calendar-day-header { background: #f9fafb; padding: 10px 6px; text-align: center; font-weight: 700; font-size: 0.78rem; color: #6b7280; text-transform: uppercase; }
+    .calendar-day { background: white; min-height: 70px; padding: 6px; position: relative; }
     .calendar-day.empty { background: #fafafa; }
     .calendar-day.today { background: #eff6ff; border: 2px solid #3b82f6; }
-    .calendar-day-number { font-weight: 700; color: #374151; margin-bottom: 6px; font-size: 0.9rem; }
+    .calendar-day-number { font-weight: 700; color: #374151; margin-bottom: 4px; font-size: 0.82rem; }
     .calendar-day.empty .calendar-day-number { color: #9ca3af; }
+    .calendar-day.can-create { padding-top: 10px; }
+    .calendar-add-btn { position: absolute; top: 50%; left: 50%; width: 34px; height: 34px; border-radius: 999px; border: 1px solid rgba(4,120,87,0.25); background: #f0fdf4; color: var(--success-btn-text); display: flex; align-items: center; justify-content: center; font-size: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.15s ease, transform 0.15s ease; box-shadow: 0 4px 12px rgba(4,120,87,0.18); transform: translate(-50%, -50%) scale(0.9); z-index: 3; }
+    .calendar-add-btn:hover { transform: translate(-50%, -50%) scale(1.05); }
+    .calendar-day.can-create:hover .calendar-add-btn,
+    .calendar-day.can-create:focus-within .calendar-add-btn { opacity: 1; pointer-events: auto; }
+    .calendar-add-btn i { pointer-events: none; }
     .calendar-event-item { background: #dbeafe; border-left: 3px solid #3b82f6; padding: 4px 6px; margin-bottom: 4px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: background 0.2s; }
     .calendar-event-item:hover { background: #bfdbfe; }
     .calendar-event-time { font-weight: 600; color: #1e40af; display: block; }
     .calendar-event-name { color: #1f2937; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .calendar-event-item.rsvp { background: #dcfce7; border-left-color: #15803d; }
+    .calendar-event-item.rsvp:hover { background: #bbf7d0; }
+    .calendar-event-item.rsvp .calendar-event-time { color: #166534; }
+    .calendar-event-item.rsvp .calendar-event-name { color: #14532d; }
     .calendar-event-item.past { background: #fdf2f8; border-left-color: #be185d; }
     .calendar-event-item.past:hover { background: #fbcfe8; }
     .calendar-event-item.past .calendar-event-time { color: #be185d; }
@@ -365,26 +388,19 @@ foreach ($eventsUsers as $entry) {
       </div>
     </section>
 
-    <div class="month-bar">
-      <div class="month-chip"><?php echo htmlspecialchars($monthLabel); ?></div>
-    </div>
+    
 
-    <div class="pill-toggle">
-      <a class="<?php echo $status==='upcoming'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'upcoming','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Upcoming <?php echo $upcomingCount; ?></a>
-      <a class="<?php echo $status==='past'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'past','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Past <?php echo $pastCount; ?></a>
-    </div>
-
-    <div style="text-align:center; margin-bottom: 12px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+    <div style="text-align:center; margin-bottom: 12px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; align-items: center;">
       <?php if ($isAuth): ?>
         <a class="explore-btn success" href="events_form.php">+ New Event</a>
       <?php endif; ?>
-      <button type="button" class="calendar-toggle-btn" id="calendar-toggle-btn">
+      <button type="button" class="calendar-toggle-btn active" id="calendar-toggle-btn" aria-expanded="true" aria-controls="calendar-view">
         <i class="bi bi-calendar3"></i>
-        <span id="calendar-toggle-text">Show Calendar</span>
+        <span id="calendar-toggle-text">Hide Calendar</span>
       </button>
     </div>
 
-    <div class="calendar-view" id="calendar-view">
+    <div class="calendar-view show" id="calendar-view">
       <div class="calendar-header">
         <h2 id="calendar-month-year">December 2024</h2>
         <div class="calendar-nav">
@@ -397,6 +413,19 @@ foreach ($eventsUsers as $entry) {
         <!-- Calendar will be rendered by JavaScript -->
       </div>
     </div>
+
+    <section class="event-options-panel">
+      <div class="event-options-head">
+        <div>
+          <h3>Event options</h3>
+          <p>Switch between upcoming or past events before applying the filters below.</p>
+        </div>
+      </div>
+      <div class="pill-toggle">
+        <a class="<?php echo $status==='upcoming'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'upcoming','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Upcoming <?php echo $upcomingCount; ?></a>
+        <a class="<?php echo $status==='past'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'past','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Past <?php echo $pastCount; ?></a>
+      </div>
+    </section>
 
     <form class="controls" method="GET">
       <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
@@ -586,12 +615,13 @@ foreach ($eventsUsers as $entry) {
               <?php if ($isOwner): ?>
                 <?php if ($canEditEvent): ?>
                   <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($evt['id']); ?>">Edit</a>
+                  <form action="events_action.php" method="POST" style="display:inline;">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
+                    <button type="submit" class="explore-btn ghost danger small" onclick="return confirm('Delete this event?');">Delete</button>
+                  </form>
+                
                 <?php endif; ?>
-                <form action="events_action.php" method="POST" style="display:inline;">
-                  <input type="hidden" name="action" value="delete">
-                  <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
-                  <button type="submit" class="explore-btn ghost danger small" onclick="return confirm('Delete this event?');">Delete</button>
-                </form>
               <?php endif; ?>
               <?php if ($eventRatingAverage): ?>
                 <div class="avg-stars" title="Average rating">
@@ -1035,7 +1065,10 @@ foreach ($eventsUsers as $entry) {
       const daysPT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
       let currentDate = new Date();
-      let allEvents = <?php echo json_encode(array_values($events)); ?>;
+      let allEvents = <?php echo json_encode(array_values($eventsForCalendar)); ?>;
+      const canCreateEvents = <?php echo $isAuth ? 'true' : 'false'; ?>;
+      const createAllowedFromDate = '<?php echo $createAllowedFromDate; ?>';
+      const eventsFormUrl = <?php echo json_encode('events_form.php'); ?>;
 
       function parseEventDate(dateStr) {
         if (!dateStr) return null;
@@ -1099,11 +1132,35 @@ foreach ($eventsUsers as $entry) {
             return list;
           }, []);
 
+          if (canCreateEvents && dayDateStr >= createAllowedFromDate) {
+            dayCell.classList.add('can-create');
+            const addBtn = document.createElement('button');
+            addBtn.type = 'button';
+            addBtn.className = 'calendar-add-btn';
+            const labelDate = dayDate.toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            addBtn.setAttribute('aria-label', `Criar evento em ${labelDate}`);
+            addBtn.innerHTML = '<i class="bi bi-plus-lg"></i>';
+            addBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const params = new URLSearchParams({ date: dayDateStr });
+              window.location.href = `${eventsFormUrl}?${params.toString()}`;
+            });
+            dayCell.appendChild(addBtn);
+          }
+
           dayEvents.forEach(({ data, parsedDate, dateStr }) => {
             const eventItem = document.createElement('div');
             eventItem.className = 'calendar-event-item';
             const isUpcomingEvent = dateStr >= todayStr;
-            eventItem.classList.add(isUpcomingEvent ? 'upcoming' : 'past');
+            const hasUserRsvp = !!data.hasUserRsvp;
+            if (isUpcomingEvent) {
+              eventItem.classList.add('upcoming');
+              if (hasUserRsvp) {
+                eventItem.classList.add('rsvp');
+              }
+            } else {
+              eventItem.classList.add('past');
+            }
             
             const timeSpan = document.createElement('span');
             timeSpan.className = 'calendar-event-time';
@@ -1133,16 +1190,24 @@ foreach ($eventsUsers as $entry) {
         }
       }
 
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      calendarView.classList.add('show');
+      calendarToggleBtn.classList.add('active');
+      calendarToggleText.textContent = 'Hide Calendar';
+      calendarToggleBtn.setAttribute('aria-expanded', 'true');
+
       calendarToggleBtn.addEventListener('click', function() {
         const isVisible = calendarView.classList.contains('show');
         if (isVisible) {
           calendarView.classList.remove('show');
           calendarToggleBtn.classList.remove('active');
           calendarToggleText.textContent = 'Show Calendar';
+          calendarToggleBtn.setAttribute('aria-expanded', 'false');
         } else {
           calendarView.classList.add('show');
           calendarToggleBtn.classList.add('active');
           calendarToggleText.textContent = 'Hide Calendar';
+          calendarToggleBtn.setAttribute('aria-expanded', 'true');
           renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
         }
       });

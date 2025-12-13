@@ -155,6 +155,23 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
             .collection-card-link { cursor: pointer; position: relative; }
             .collection-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
             .collection-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
+            .product-card__meta--center {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 16px;
+                flex-wrap: wrap;
+                margin: 8px 0;
+                text-align: center;
+            }
+            .product-card__meta--center .product-card__owner,
+            .product-card__meta--center .product-card__date {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                color: #475569;
+                font-weight: 600;
+            }
         </style>
         <script src="././JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
@@ -282,7 +299,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                 <div class="product-card__body">
                                     <p class="pill"><?php echo htmlspecialchars($col['type'] ?? ''); ?></p>
                                     <h3><a href="<?php echo htmlspecialchars($collectionHref); ?>"><?php echo htmlspecialchars($col['name']); ?></a></h3>
-                                    <div class="product-card__meta">
+                                    <div class="product-card__meta product-card__meta--center">
                                         <div class="product-card__owner">
                                             <i class="bi bi-people"></i>
                                             <a href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>" style="color: inherit; text-decoration: none;">
@@ -297,7 +314,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                         </div>
                                         <div class="product-card__date">
                                             <i class="bi bi-calendar3"></i>
-                                            <?php echo htmlspecialchars(substr($col['createdAt'], 0, 7)); ?>
+                                            <?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?>
                                         </div>
                                     </div>
                                     <div class="card-actions">

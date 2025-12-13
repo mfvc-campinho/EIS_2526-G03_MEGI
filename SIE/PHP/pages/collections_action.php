@@ -32,11 +32,11 @@ function handle_upload($field, $folder, $keep = '')
   }
   $file = $_FILES[$field];
   if ($file['error'] !== UPLOAD_ERR_OK) {
-    redirect_error('Falha no upload da imagem.');
+    redirect_error('Image upload failed.');
   }
   $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
   if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-    redirect_error('Formato de imagem inválido.');
+    redirect_error('Invalid image format.');
   }
   $dir = dirname(__DIR__, 2) . '/uploads/' . $folder;
   if (!is_dir($dir)) {
@@ -62,13 +62,13 @@ if ($action === 'create') {
   $ok = $stmt->execute();
   $stmt->close();
   $mysqli->close();
-  if ($ok) redirect_success('Coleção criada.');
+  if ($ok) redirect_success('Collection created.');
     redirect_error('Failed to create collection.');
 }
 
 if ($action === 'update') {
   $id = $_POST['id'] ?? null;
-  if (!$id) redirect_error('ID em falta.');
+  if (!$id) redirect_error('ID missing.');
 
   // ownership check + current cover
   $chk = $mysqli->prepare('SELECT user_id, cover_image FROM collections WHERE collection_id = ? LIMIT 1');
@@ -93,13 +93,13 @@ if ($action === 'update') {
   $ok = $stmt->execute();
   $stmt->close();
   $mysqli->close();
-  if ($ok) redirect_success('Coleção atualizada.');
-  redirect_error('Falha ao atualizar coleção.');
+  if ($ok) redirect_success('Collection updated.');
+  redirect_error('Failed to update collection.');
 }
 
 if ($action === 'delete') {
   $id = $_POST['id'] ?? null;
-  if (!$id) redirect_error('ID em falta.');
+  if (!$id) redirect_error('ID missing.');
 
   // ownership check
   $chk = $mysqli->prepare('SELECT user_id FROM collections WHERE collection_id = ? LIMIT 1');
@@ -110,7 +110,7 @@ if ($action === 'delete') {
   $chk->close();
   if (!$row || ($row['user_id'] ?? null) !== $currentUser) {
     $mysqli->close();
-    redirect_error('Sem permissão para apagar esta coleção.');
+    redirect_error('You do not have permission to delete this collection.');
   }
 
   $stmt = $mysqli->prepare('DELETE FROM collections WHERE collection_id = ?');
@@ -118,10 +118,10 @@ if ($action === 'delete') {
   $ok = $stmt->execute();
   $stmt->close();
   $mysqli->close();
-  if ($ok) redirect_success('Coleção apagada.');
+  if ($ok) redirect_success('Collection deleted.');
   redirect_error('Failed to delete collection.');
 }
 
 $mysqli->close();
-redirect_error('Ação inválida.');
+redirect_error('Invalid action.');
 

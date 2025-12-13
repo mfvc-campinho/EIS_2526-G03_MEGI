@@ -478,10 +478,7 @@ if ($collection) {
                                 </div>
 
                                 <div class="card-buttons item-buttons">
-                                    <a class="explore-btn small"
-                                        href="item_page.php?id=<?php echo urlencode($itemId); ?>">
-                                        Explore More
-                                    </a>
+                                    
 
                                     <?php if ($isAuthenticated): ?>
                                         <form action="likes_action.php" method="POST" class="like-form" style="display:inline;">

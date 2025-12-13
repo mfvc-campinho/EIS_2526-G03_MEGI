@@ -128,7 +128,7 @@ function load_app_data($mysqli)
   }, $itemsRows);
 
   // 4) Events
-  $eventsRows = fetch_all($mysqli, "SELECT event_id,name,localization,event_date,type,summary,description,created_at,updated_at,host_user_id,collection_id FROM events");
+  $eventsRows = fetch_all($mysqli, "SELECT event_id,name,localization,event_date,type,summary,description,created_at,updated_at,collection_id FROM events");
   $events = array_map(function ($r) {
     $host = $r['host_user_id'] ?? null;
     return [
@@ -141,7 +141,6 @@ function load_app_data($mysqli)
       'description' => $r['description'] ?? null,
       'createdAt' => $r['created_at'] ?? null,
       'updatedAt' => $r['updated_at'] ?? null,
-      'hostUserId' => $host,
       'collectionId' => $r['collection_id'] ?? null,
       // legacy aliases
       'host_user_id' => $host

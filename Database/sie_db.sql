@@ -99,6 +99,7 @@ INSERT INTO `collection_items` (`collection_id`, `item_id`) VALUES
 
 -- ========================================================
 -- 5. TABELA EVENTS
+-- (Coluna host_user_id REMOVIDA)
 -- ========================================================
 DROP TABLE IF EXISTS `events`;
 CREATE TABLE `events` (
@@ -111,22 +112,19 @@ CREATE TABLE `events` (
   `description` text DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `host_user_id` varchar(100) DEFAULT NULL,
   `collection_id` varchar(100) NOT NULL, 
   PRIMARY KEY (`event_id`),
-  KEY `idx_events_host` (`host_user_id`),
   KEY `idx_events_collection` (`collection_id`),
-  CONSTRAINT `fk_events_collection` FOREIGN KEY (`collection_id`) REFERENCES `collections` (`collection_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_events_host` FOREIGN KEY (`host_user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `fk_events_collection` FOREIGN KEY (`collection_id`) REFERENCES `collections` (`collection_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `events` (`event_id`, `name`, `localization`, `event_date`, `type`, `summary`, `description`, `created_at`, `updated_at`, `host_user_id`, `collection_id`) VALUES
-('escudos-event-1', 'Lisbon Numismatic Fair', 'Lisbon', '2025-12-12', 'fair', 'Annual showcase for Iberian coins, rare notes, and appraisal sessions.', 'Dealers and historians gather to trade Escudo-era coins, host restoration demos, and discuss preservation techniques for metallic currencies.', '2025-09-01 00:00:00', '2025-11-13 00:00:00', NULL, 'escudos'),
-('escudos-event-2', 'Coin Acquisition Meetup', 'Porto', '2025-05-10', 'meetup', 'Small-group meetup focused on sourcing missing Escudo variants.', 'Collectors swap duplicates, share leads for reputable sellers, and review authentication tips for mid-century Portuguese currency.', '2025-02-15 00:00:00', '2025-04-15 00:00:00', NULL, 'escudos'),
-('jerseys-event-1', 'Autograph Session 2025', 'Porto Stadium', '2025-06-01', 'signing', 'Pitch-side autograph session with national league legends.', 'Participants bring authenticated jerseys for signatures, while equipment managers talk about fabric care for long-term display.', '2025-02-28 00:00:00', '2025-04-30 00:00:00', NULL, 'jerseys'),
-('jerseys-event-2', 'Collectors’ Expo 2025', 'Lisbon', '2025-09-12', 'expo', 'Large expo covering game-worn memorabilia and restoration services.', 'Workshops detail how to certify match-used kits, remove stains without damaging signatures, and insure valuable memorabilia.', '2025-05-05 00:00:00', '2025-07-18 00:00:00', NULL, 'jerseys'),
-('pokemon-event-1', 'Pokémon Expo 2025', 'Tokyo', '2025-03-10', 'expo', 'Global expo highlighting competitive decks and newly graded grails.', 'Includes PSA grading booths, artist signings, and a showcase of legendary cards from the Kanto through Paldea releases.', '2024-12-01 00:00:00', '2025-02-01 00:00:00', NULL, 'pokemon'),
-('pokemon-event-2', 'Trading Card Convention', 'London', '2025-05-01', 'convention', 'European convention dedicated to rare pulls, auctions, and live trades.', 'Vendors curate showcase cases for first editions, while panels cover long-term storage, pricing data, and authenticity checks.', '2025-01-20 00:00:00', '2025-03-15 00:00:00', NULL, 'pokemon');
+INSERT INTO `events` (`event_id`, `name`, `localization`, `event_date`, `type`, `summary`, `description`, `created_at`, `updated_at`, `collection_id`) VALUES
+('escudos-event-1', 'Lisbon Numismatic Fair', 'Lisbon', '2025-12-12', 'fair', 'Annual showcase for Iberian coins, rare notes, and appraisal sessions.', 'Dealers and historians gather to trade Escudo-era coins, host restoration demos, and discuss preservation techniques for metallic currencies.', '2025-09-01 00:00:00', '2025-11-13 00:00:00', 'escudos'),
+('escudos-event-2', 'Coin Acquisition Meetup', 'Porto', '2025-05-10', 'meetup', 'Small-group meetup focused on sourcing missing Escudo variants.', 'Collectors swap duplicates, share leads for reputable sellers, and review authentication tips for mid-century Portuguese currency.', '2025-02-15 00:00:00', '2025-04-15 00:00:00', 'escudos'),
+('jerseys-event-1', 'Autograph Session 2025', 'Porto Stadium', '2025-06-01', 'signing', 'Pitch-side autograph session with national league legends.', 'Participants bring authenticated jerseys for signatures, while equipment managers talk about fabric care for long-term display.', '2025-02-28 00:00:00', '2025-04-30 00:00:00', 'jerseys'),
+('jerseys-event-2', 'Collectors’ Expo 2025', 'Lisbon', '2025-09-12', 'expo', 'Large expo covering game-worn memorabilia and restoration services.', 'Workshops detail how to certify match-used kits, remove stains without damaging signatures, and insure valuable memorabilia.', '2025-05-05 00:00:00', '2025-07-18 00:00:00', 'jerseys'),
+('pokemon-event-1', 'Pokémon Expo 2025', 'Tokyo', '2025-03-10', 'expo', 'Global expo highlighting competitive decks and newly graded grails.', 'Includes PSA grading booths, artist signings, and a showcase of legendary cards from the Kanto through Paldea releases.', '2024-12-01 00:00:00', '2025-02-01 00:00:00', 'pokemon'),
+('pokemon-event-2', 'Trading Card Convention', 'London', '2025-05-01', 'convention', 'European convention dedicated to rare pulls, auctions, and live trades.', 'Vendors curate showcase cases for first editions, while panels cover long-term storage, pricing data, and authenticity checks.', '2025-01-20 00:00:00', '2025-03-15 00:00:00', 'pokemon');
 
 -- ========================================================
 -- 6. TABELA COLLECTION_EVENTS

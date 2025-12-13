@@ -83,7 +83,7 @@ if ($id) {
 
     $hostId = $event['hostUserId'] ?? $event['host_user_id'] ?? null;
     if ($hostId !== $currentUserId) {
-        flash_set('error', 'Não tem permissões para editar este evento.');
+        flash_set('error', 'You do not have permission to edit this event.');
         header('Location: event_page.php');
         exit;
     }
@@ -96,7 +96,7 @@ if ($id) {
             ? ($eventDateObj <= $now)
             : ($eventDateObj->format('Y-m-d') < $today);
         if ($eventHasEnded) {
-            flash_set('error', 'Eventos que já aconteceram não podem ser editados.');
+            flash_set('error', 'Events that have already happened cannot be edited.');
             header('Location: event_page.php');
             exit;
         }

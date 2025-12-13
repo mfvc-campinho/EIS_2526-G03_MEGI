@@ -6,7 +6,7 @@ require_once __DIR__ . '/../config/db.php';
 $action = $_POST['action'] ?? null;
 $currentUser = $_SESSION['user']['id'] ?? null;
 if (!$currentUser) {
-  flash_set('error', 'Precisa de iniciar sessão.');
+  flash_set('error', 'You need to be logged in.');
   header('Location: event_page.php');
   exit;
 }
@@ -96,7 +96,7 @@ function replace_event_links($mysqli, $eventId, $collectionIds)
 }
 
 if ($action === 'create') {
-  if (!$collectionIds) redirect_error('Selecione pelo menos uma coleção.');
+  if (!$collectionIds) redirect_error('Choose at least one collection.');
   foreach ($collectionIds as $cid) {
     if (!user_owns_collection($mysqli, $cid, $currentUser)) {
       $mysqli->close();
@@ -113,21 +113,21 @@ if ($action === 'create') {
   $rawDate = trim($_POST['date'] ?? '');
   if ($localization === '' || $rawDate === '') {
     $mysqli->close();
-    redirect_error('Indique a localização e a data do evento.');
+    redirect_error('Provide event location and date.');
   }
   $parsedInput = parse_event_datetime_helper($rawDate, $appTimezone);
   $dateObj = $parsedInput['date'];
   $inputHasTime = $parsedInput['hasTime'];
   if (!$dateObj) {
     $mysqli->close();
-    redirect_error('Data/hora do evento inválida.');
+    redirect_error('Invalid event date/time.');
   }
   $isPast = $inputHasTime
     ? ($dateObj <= $now)
     : ($dateObj->format('Y-m-d') < $today);
   if ($isPast) {
     $mysqli->close();
-    redirect_error('Não pode marcar eventos para datas ou horas no passado.');
+    redirect_error('Cannot schedule events in the past.');
   }
   if (!$inputHasTime) {
     $dateObj->setTime(0, 0, 0);
@@ -148,8 +148,8 @@ if ($action === 'create') {
 
 if ($action === 'update') {
   $id = $_POST['id'] ?? null;
-  if (!$id) redirect_error('ID em falta.');
-  if (!$collectionIds) redirect_error('Selecione pelo menos uma coleção.');
+  if (!$id) redirect_error('ID missing.');
+  if (!$collectionIds) redirect_error('Choose at least one collection.');
 
   $currentEventStmt = $mysqli->prepare('SELECT host_user_id, event_date FROM events WHERE event_id = ? LIMIT 1');
   $currentEventStmt->bind_param('s', $id);
@@ -158,11 +158,11 @@ if ($action === 'update') {
   $currentEventStmt->close();
   if (!$currentEvent) {
     $mysqli->close();
-    redirect_error('Evento não encontrado.');
+    redirect_error('Event not found.');
   }
   if (($currentEvent['host_user_id'] ?? null) !== $currentUser) {
     $mysqli->close();
-    redirect_error('Não tem permissões para editar este evento.');
+    redirect_error('You do not have permission to edit this event.');
   }
   $parsedEventDate = parse_event_datetime_helper($currentEvent['event_date'] ?? null, $appTimezone);
   $eventDateObj = $parsedEventDate['date'];
@@ -173,7 +173,7 @@ if ($action === 'update') {
       : ($eventDateObj->format('Y-m-d') < $today);
     if ($eventHasEnded) {
       $mysqli->close();
-      redirect_error('Eventos que já aconteceram não podem ser editados.');
+      redirect_error('Events that already happen cannot be altered.');
     }
   }
 
@@ -193,7 +193,7 @@ if ($action === 'update') {
   $rawDate = trim($_POST['date'] ?? '');
   if ($localization === '' || $rawDate === '') {
     $mysqli->close();
-    redirect_error('Indique a localização e a data do evento.');
+    redirect_error('Provide event location and date.');
   }
   $parsedInput = parse_event_datetime_helper($rawDate, $appTimezone);
   $dateObj = $parsedInput['date'];

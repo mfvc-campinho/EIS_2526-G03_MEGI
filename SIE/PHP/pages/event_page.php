@@ -296,6 +296,21 @@ foreach ($eventsUsers as $entry) {
     .modal-info-content { flex: 1; }
     .modal-info-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 4px; }
     .modal-info-value { font-size: 1rem; font-weight: 600; color: #1f2937; }
+    .modal-location-link,
+    .event-location-link {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .modal-location-link:hover,
+    .event-location-link:hover {
+      text-decoration: none;
+    }
+    .modal-location-link.disabled {
+      color: #9ca3af;
+      pointer-events: none;
+      text-decoration: none;
+    }
     /* Calendar Styles */
     .calendar-toggle-btn { padding: 10px 18px; background: #3b82f6; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
     .calendar-toggle-btn:hover { background: #2563eb; }
@@ -552,18 +567,18 @@ foreach ($eventsUsers as $entry) {
                   <input type="hidden" name="action" value="rsvp">
                   <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
                   <button type="submit" class="explore-btn small<?php echo $hasRsvp ? ' success' : ''; ?>">
-                    <i class="bi bi-check2-circle"></i> <?php echo $hasRsvp ? 'RSVP Feito' : 'RSVP'; ?>
+                    <i class="bi bi-check2-circle"></i> <?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?>
                   </button>
                 </form>
               <?php endif; ?>
               <?php if ($isAuth && $eventHasEnded && !$hasRsvp): ?>
-                <span class="badge-muted">Não assististe a este evento.</span>
+                <span class="badge-muted">You did not attend this event.</span>
               <?php endif; ?>
             </div>
           </article>
         <?php endforeach; ?>
       <?php else: ?>
-        <p class="muted" style="grid-column:1/-1;">Sem eventos disponíveis.</p>
+        <p class="muted" style="grid-column:1/-1;">No available events.</p>
       <?php endif; ?>
     </div>
   </main>
@@ -607,7 +622,9 @@ foreach ($eventsUsers as $entry) {
             </div>
             <div class="modal-info-content">
               <div class="modal-info-label">Place</div>
-              <div class="modal-info-value" id="modal-location"></div>
+              <div class="modal-info-value">
+                <a id="modal-location" class="modal-location-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+              </div>
             </div>
           </div>
         </div>
@@ -848,7 +865,25 @@ foreach ($eventsUsers as $entry) {
               }
             }
           }
-          document.getElementById('modal-location').textContent = location;
+          const locationLink = document.getElementById('modal-location');
+          if (locationLink) {
+            const cleanLocation = (location || '').trim();
+            const hasLocation = cleanLocation.length > 0;
+            locationLink.textContent = hasLocation ? cleanLocation : 'Location unavailable';
+            if (hasLocation) {
+              locationLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(cleanLocation);
+              locationLink.classList.remove('disabled');
+              locationLink.setAttribute('aria-label', 'Open ' + cleanLocation + ' on Google Maps');
+              locationLink.setAttribute('target', '_blank');
+              locationLink.setAttribute('rel', 'noopener noreferrer');
+            } else {
+              locationLink.removeAttribute('href');
+              locationLink.removeAttribute('aria-label');
+              locationLink.removeAttribute('target');
+              locationLink.removeAttribute('rel');
+              locationLink.classList.add('disabled');
+            }
+          }
 
           let payload = null;
           if (ratingRaw) {

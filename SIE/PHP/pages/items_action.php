@@ -87,7 +87,7 @@ if ($action === 'create') {
 
   $mysqli->close();
   if ($ok) {
-    redirect_success('Item criado com sucesso.');
+    redirect_success('Item created successfully.');
   }
   redirect_error('Failed to create item.');
 }
@@ -96,11 +96,11 @@ if ($action === 'update') {
   $id = $_POST['id'] ?? null;
   if (!$id) {
     $mysqli->close();
-    redirect_error('ID em falta.');
+    redirect_error('ID missing.');
   }
   if (!$collectionIds) {
     $mysqli->close();
-    redirect_error('Selecione pelo menos uma coleção.');
+    redirect_error('Choose at least one collection.');
   }
 
   // buscar item atual (para verificar owner e imagem)
@@ -113,7 +113,7 @@ if ($action === 'update') {
 
   if (!$existing) {
     $mysqli->close();
-    redirect_error('Item não encontrado.');
+    redirect_error('Item not found.');
   }
 
   // todas as coleções selecionadas têm de ser do utilizador
@@ -153,7 +153,7 @@ if ($action === 'update') {
 
   $mysqli->close();
   if ($ok) {
-    redirect_success('Item atualizado.');
+    redirect_success('Item updated.');
   }
   redirect_error('Failed to update item.');
 }
@@ -162,7 +162,7 @@ if ($action === 'delete') {
   $id = $_POST['id'] ?? null;
   if (!$id) {
     $mysqli->close();
-    redirect_error('ID em falta.');
+    redirect_error('ID missing.');
   }
 
   // verificar se o utilizador é dono de pelo menos uma coleção onde o item está
@@ -204,14 +204,14 @@ if ($action === 'delete') {
 
   $mysqli->close();
   if ($ok) {
-    redirect_success('Item apagado.');
+    redirect_success('Item deleted.');
   }
   redirect_error('Failed to delete item.');
 }
 
 // se chegou aqui, ação inválida
 $mysqli->close();
-redirect_error('Ação inválida.');
+redirect_error('Invalid action.');
 
 // -----------------------------------------------------------------
 // helpers adicionais

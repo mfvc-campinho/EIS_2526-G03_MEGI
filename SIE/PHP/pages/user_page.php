@@ -45,6 +45,79 @@ foreach ($collectionItems as $link) {
     $itemsByCollection[$cid][] = $link['itemId'];
 }
 
+// Calcula as métricas de cada coleção para suportar o top 3 filtrável.
+$itemsById = [];
+foreach ($items as $item) {
+    $iid = $item['id'] ?? $item['item_id'] ?? null;
+    if ($iid) {
+        $itemsById[$iid] = $item;
+    }
+}
+
+$topSortOptions = ['likes', 'value', 'oldest', 'items'];
+$topSort = $_GET['topSort'] ?? 'likes';
+if (!in_array($topSort, $topSortOptions, true)) {
+    $topSort = 'likes';
+}
+
+$collectionLikeCounts = [];
+if ($ownedCollections) {
+    require __DIR__ . '/../config/db.php';
+    if ($mysqli instanceof mysqli && !$mysqli->connect_error) {
+        $likesResult = $mysqli->query('SELECT liked_collection_id, COUNT(*) AS cnt FROM user_liked_collections GROUP BY liked_collection_id');
+        if ($likesResult instanceof mysqli_result) {
+            while ($row = $likesResult->fetch_assoc()) {
+                $cid = $row['liked_collection_id'] ?? null;
+                if ($cid) {
+                    $collectionLikeCounts[$cid] = (int)($row['cnt'] ?? 0);
+                }
+            }
+            $likesResult->close();
+        }
+        $mysqli->close();
+    }
+}
+
+$topCollections = [];
+foreach ($ownedCollections as $col) {
+    $cid = $col['id'] ?? null;
+    if (!$cid) continue;
+    $itemIds = $itemsByCollection[$cid] ?? [];
+    $itemsTotal = 0;
+    $valueTotal = 0.0;
+    foreach ($itemIds as $iid) {
+        if (!isset($itemsById[$iid])) continue;
+        $itemsTotal++;
+        $valueTotal += (float)($itemsById[$iid]['price'] ?? 0);
+    }
+    $topCollections[] = [
+        'data' => $col,
+        'likes' => $collectionLikeCounts[$cid] ?? 0,
+        'items' => $itemsTotal,
+        'value' => $valueTotal,
+        'createdAt' => $col['createdAt'] ?? '',
+        'name' => $col['name'] ?? ''
+    ];
+}
+
+usort($topCollections, function ($a, $b) use ($topSort) {
+    if ($topSort === 'value') {
+        return ($b['value'] <=> $a['value']) ?: ($b['likes'] <=> $a['likes']) ?: strcasecmp($a['name'], $b['name']);
+    }
+    if ($topSort === 'items') {
+        return ($b['items'] <=> $a['items']) ?: ($b['likes'] <=> $a['likes']) ?: strcasecmp($a['name'], $b['name']);
+    }
+    if ($topSort === 'oldest') {
+        $aDate = $a['createdAt'] ? strtotime($a['createdAt']) : PHP_INT_MAX;
+        $bDate = $b['createdAt'] ? strtotime($b['createdAt']) : PHP_INT_MAX;
+        return ($aDate <=> $bDate) ?: ($b['likes'] <=> $a['likes']) ?: strcasecmp($a['name'], $b['name']);
+    }
+    // likes (default)
+    return ($b['likes'] <=> $a['likes']) ?: ($b['value'] <=> $a['value']) ?: strcasecmp($a['name'], $b['name']);
+});
+
+$topCollections = array_slice($topCollections, 0, 3);
+
 
 // Map events per owned collection
 $eventsByCollection = [];
@@ -79,6 +152,39 @@ foreach ($eventsUsers as $eu) {
 
 // array final de eventos do utilizador (based on RSVP, not collection ownership)
 $today = date('Y-m-d');
+
+if (!function_exists('format_user_event_date')) {
+    function format_user_event_date($raw)
+    {
+        if (!$raw) return '';
+        $trimmed = trim((string)$raw);
+        if ($trimmed === '') return '';
+
+        $formats = [
+            'Y-m-d H:i:s',
+            'Y-m-d\TH:i:s',
+            'Y-m-d H:i',
+            'Y-m-d\TH:i',
+            'Y-m-d'
+        ];
+
+        foreach ($formats as $format) {
+            $dt = DateTime::createFromFormat($format, $trimmed);
+            if ($dt instanceof DateTime) {
+                return $format === 'Y-m-d'
+                    ? $dt->format('d/m/Y')
+                    : $dt->format('d/m/Y H:i');
+            }
+        }
+
+        $timestamp = strtotime($trimmed);
+        if ($timestamp !== false) {
+            return date('d/m/Y H:i', $timestamp);
+        }
+
+        return $trimmed;
+    }
+}
 $upcomingEvents = [];
 $pastEvents = [];
 
@@ -300,16 +406,34 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                         </div>
                     </section>
 
-                    <?php if ($ownedCollections): ?>
+                    <?php if (!empty($topCollections)): ?>
                         <div class="section-header">
-                            <h3 class="section-title">Your Collections</h3>
+                            <h3 class="section-title">Your Top 3 Collections</h3>
                             <?php if ($isOwnerProfile): ?>
                                 <a class="explore-btn success" href="collections_form.php">Add Collection</a>
                             <?php endif; ?>
                         </div>
+                        <div class="user-top-collections-controls">
+                            <form id="user-top-filters" class="filters-form" method="GET">
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($profileUserId); ?>">
+                                <div class="filter-chip">
+                                    <label class="filter-chip__label" for="top-sort-select">
+                                        <i class="bi bi-funnel"></i>
+                                        <span>Top por</span>
+                                    </label>
+                                    <select id="top-sort-select" name="topSort" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+                                        <option value="likes" <?php echo $topSort==='likes'?'selected':''; ?>>Mais gostos</option>
+                                        <option value="value" <?php echo $topSort==='value'?'selected':''; ?>>Maior valor</option>
+                                        <option value="oldest" <?php echo $topSort==='oldest'?'selected':''; ?>>Mais antigas</option>
+                                        <option value="items" <?php echo $topSort==='items'?'selected':''; ?>>Mais items</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
                         <div class="cards-grid cards-grid--spaced">
-                            <?php foreach ($ownedCollections as $col): ?>
+                            <?php foreach ($topCollections as $entry): ?>
                                 <?php
+                                $col = $entry['data'];
                                 $img = $col['coverImage'] ?? '';
                                 if ($img && !preg_match('#^https?://#', $img)) {
                                     $img = '../../' . ltrim($img, './');
@@ -318,6 +442,9 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 $typeFilterLink = !empty($col['type'])
                                     ? 'all_collections.php?' . http_build_query(['type' => $col['type']])
                                     : '';
+                                $itemsTotal = $entry['items'];
+                                $likesTotal = $entry['likes'];
+                                $valueTotal = $entry['value'];
                                 ?>
                                 <article class="product-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionLink); ?>">
                                     <a href="<?php echo htmlspecialchars($collectionLink); ?>" class="product-card__media">
@@ -337,15 +464,25 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                             </a>
                                         </h3>
                                         <p class="muted"><?php echo htmlspecialchars($col['summary'] ?? ''); ?></p>
-                                        <div class="product-card__meta">
-                                            <span>
+                                        <div class="product-card__facts">
+                                            <div class="product-card__date">
                                                 <i class="bi bi-calendar3"></i>
-                                                <?php echo htmlspecialchars(substr($col['createdAt'] ?? '', 0, 10)); ?>
-                                            </span>
-                                            <span>
-                                                <i class="bi bi-box-seam"></i>
-                                                <?php echo count($itemsByCollection[$col['id']] ?? []); ?> items
-                                            </span>
+                                                <span><?php echo htmlspecialchars(substr($col['createdAt'] ?? '', 0, 10)); ?></span>
+                                            </div>
+                                            <div class="product-card__meta">
+                                                <span>
+                                                    <i class="bi bi-box-seam"></i>
+                                                    <?php echo $itemsTotal; ?> items
+                                                </span>
+                                                <span>
+                                                    <i class="bi bi-heart-fill"></i>
+                                                    <?php echo $likesTotal; ?> likes
+                                                </span>
+                                                <span>
+                                                    <i class="bi bi-currency-euro"></i>
+                                                    <?php echo $valueTotal > 0 ? number_format($valueTotal, 2, ',', '.') : '0,00'; ?>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </article>
@@ -380,8 +517,24 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                             <?php
                                 $eventId = $evt['id'] ?? $evt['event_id'] ?? '';
                                 $costValue = $evt['cost'] ?? null;
-                                $costLabel = ($costValue === '' || $costValue === null) ? 'Entrada gratuita' : '€' . number_format((float)$costValue, 2, ',', '.');
-                                $eventDate = $evt['date'] ?? '';
+                                $costLabel = ($costValue === '' || $costValue === null) ? 'Free entrance' : '€' . number_format((float)$costValue, 2, ',', '.');
+                                $eventDateRaw = $evt['date'] ?? '';
+                                // Formata a data do evento garantindo que a hora aparece sempre que exista no valor original.
+                                $eventDateDisplay = '';
+                                if ($eventDateRaw !== '') {
+                                    $normalizedRaw = str_replace('T', ' ', $eventDateRaw);
+                                    $rawHasTime = preg_match('/\d{2}:\d{2}/', $normalizedRaw) === 1;
+                                    $dt = DateTime::createFromFormat('Y-m-d H:i:s', $normalizedRaw)
+                                        ?: DateTime::createFromFormat('Y-m-d H:i', $normalizedRaw)
+                                        ?: DateTime::createFromFormat('Y-m-d', $normalizedRaw);
+                                    if ($dt instanceof DateTime) {
+                                        $eventDateDisplay = $dt->format($rawHasTime ? 'd/m/Y H:i' : 'd/m/Y');
+                                    } else {
+                                        $eventDateDisplay = $rawHasTime
+                                            ? substr($normalizedRaw, 0, 16)
+                                            : substr($normalizedRaw, 0, 10);
+                                    }
+                                }
                             ?>
                             <a class="user-event-card user-event-card--link" href="event_page.php?id=<?php echo urlencode($eventId); ?>">
                                 <div class="user-event-card__top">
@@ -390,10 +543,10 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 </div>
                                 <h3><?php echo htmlspecialchars($evt['name'] ?? 'Evento sem nome'); ?></h3>
                                 <ul class="user-event-meta">
-                                    <?php if (!empty($eventDate)): ?>
+                                    <?php if (!empty($eventDateDisplay)): ?>
                                         <li>
                                             <i class="bi bi-calendar-event"></i>
-                                            <?php echo htmlspecialchars($eventDate); ?>
+                                            <?php echo htmlspecialchars($eventDateDisplay); ?>
                                         </li>
                                     <?php endif; ?>
                                     <?php if (!empty($evt['localization'])): ?>
@@ -435,8 +588,24 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                             <?php
                                 $eventId = $evt['id'] ?? $evt['event_id'] ?? '';
                                 $costValue = $evt['cost'] ?? null;
-                                $costLabel = ($costValue === '' || $costValue === null) ? 'Entrada gratuita' : '€' . number_format((float)$costValue, 2, ',', '.');
-                                $eventDate = $evt['date'] ?? '';
+                                $costLabel = ($costValue === '' || $costValue === null) ? ' Free entrance' : '€' . number_format((float)$costValue, 2, ',', '.');
+                                $eventDateRaw = $evt['date'] ?? '';
+                                // Formata a data do evento garantindo que a hora aparece sempre que exista no valor original.
+                                $eventDateDisplay = '';
+                                if ($eventDateRaw !== '') {
+                                    $normalizedRaw = str_replace('T', ' ', $eventDateRaw);
+                                    $rawHasTime = preg_match('/\d{2}:\d{2}/', $normalizedRaw) === 1;
+                                    $dt = DateTime::createFromFormat('Y-m-d H:i:s', $normalizedRaw)
+                                        ?: DateTime::createFromFormat('Y-m-d H:i', $normalizedRaw)
+                                        ?: DateTime::createFromFormat('Y-m-d', $normalizedRaw);
+                                    if ($dt instanceof DateTime) {
+                                        $eventDateDisplay = $dt->format($rawHasTime ? 'd/m/Y H:i' : 'd/m/Y');
+                                    } else {
+                                        $eventDateDisplay = $rawHasTime
+                                            ? substr($normalizedRaw, 0, 16)
+                                            : substr($normalizedRaw, 0, 10);
+                                    }
+                                }
                             ?>
                             <a class="user-event-card user-event-card--link" href="event_page.php?id=<?php echo urlencode($eventId); ?>">
                                 <div class="user-event-card__top">
@@ -445,10 +614,10 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 </div>
                                 <h3><?php echo htmlspecialchars($evt['name'] ?? 'Evento sem nome'); ?></h3>
                                 <ul class="user-event-meta">
-                                    <?php if (!empty($eventDate)): ?>
+                                    <?php if (!empty($eventDateDisplay)): ?>
                                         <li>
                                             <i class="bi bi-calendar-event"></i>
-                                            <?php echo htmlspecialchars($eventDate); ?>
+                                            <?php echo htmlspecialchars($eventDateDisplay); ?>
                                         </li>
                                     <?php endif; ?>
                                     <?php if (!empty($evt['localization'])): ?>
@@ -542,6 +711,64 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
         </style>
 
         <script>
+            (function() {
+                var scrollKey = 'gc-scroll-user';
+                var hasStorage = false;
+                try {
+                    sessionStorage.setItem('__gc_user_test', '1');
+                    sessionStorage.removeItem('__gc_user_test');
+                    hasStorage = true;
+                } catch (err) {
+                    hasStorage = false;
+                }
+
+                function saveScroll() {
+                    if (!hasStorage) {
+                        return;
+                    }
+                    var top = window.scrollY || document.documentElement.scrollTop || 0;
+                    sessionStorage.setItem(scrollKey, String(top));
+                }
+
+                window.gcSubmitWithScroll = function(form) {
+                    saveScroll();
+                    if (form && typeof form.submit === 'function') {
+                        form.submit();
+                    }
+                };
+
+                window.gcRememberScroll = function(url) {
+                    saveScroll();
+                    if (url) {
+                        window.location = url;
+                    }
+                };
+
+                function restoreScroll() {
+                    if (!hasStorage) {
+                        return;
+                    }
+                    var stored = sessionStorage.getItem(scrollKey);
+                    if (stored !== null) {
+                        window.scrollTo(0, parseFloat(stored));
+                        sessionStorage.removeItem(scrollKey);
+                    }
+                }
+
+                restoreScroll();
+
+                window.addEventListener('pageshow', function(event) {
+                    if (event && event.persisted) {
+                        restoreScroll();
+                    }
+                });
+
+                var filtersForm = document.getElementById('user-top-filters');
+                if (filtersForm) {
+                    filtersForm.addEventListener('submit', saveScroll);
+                }
+            })();
+
             document.addEventListener('DOMContentLoaded', function() {
                 var cards = document.querySelectorAll('.collection-card-link');
                 cards.forEach(function(card) {

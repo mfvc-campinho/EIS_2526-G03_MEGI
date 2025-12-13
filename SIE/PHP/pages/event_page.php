@@ -7,8 +7,8 @@ $data = load_app_data($mysqli);
 $mysqli->close();
 $events = $data['events'] ?? [];
 $eventsUsers = $data['eventsUsers'] ?? [];
-$collectionEvents = $data['collectionEvents'] ?? [];
 $collections = $data['collections'] ?? [];
+$collectionEvents = $data['collectionEvents'] ?? [];
 
 $appTimezone = new DateTimeZone(date_default_timezone_get());
 
@@ -227,13 +227,9 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
     .event-options-head .explore-btn { align-self: center; }
     .month-bar { display: flex; justify-content: center; margin: 28px auto 24px; }
     .month-chip { padding: 14px 28px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 1.1rem; font-weight: 600; color: #374151; letter-spacing: 0.5px; }
-    .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; align-items: center; margin: 18px auto 10px; max-width: 1100px; }
-    .controls label { display: block; color: #6b7280; font-weight: 600; margin-bottom: 6px; }
-    .controls select { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid #d0d5dd; background: #fff; font-weight: 600; }
-    .actions-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 16px 0; max-width: 1100px; margin: 0 auto; color: #555; }
-    .paginate { display: flex; align-items: center; gap: 10px; }
-    .paginate button { border: none; background: #e9ecf2; padding: 10px 12px; border-radius: 12px; cursor: pointer; }
-    .paginate button:disabled { opacity: .35; cursor: default; }
+    .events-filters { max-width: 1100px; margin: 22px auto 12px; }
+    .events-filters .left { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .events-filters__note { margin: 0; font-size: 0.85rem; color: #6b7280; }
     .events-grid { max-width: 1200px; margin: 0 auto 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
     .event-card { 
       background: #fff; 
@@ -460,51 +456,71 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
       </div>
     </section>
 
-    <form class="controls" method="GET">
-      <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
-      <div>
-        <label for="type">Type</label>
-        <select id="type" name="type" onchange="this.form.submit()">
-          <option value="all">All Types</option>
-          <?php foreach ($types as $t): ?>
-            <option value="<?php echo htmlspecialchars($t); ?>" <?php echo $typeFilter===$t?'selected':''; ?>><?php echo htmlspecialchars($t); ?></option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-      <div>
-        <label for="loc">Location</label>
-        <select id="loc" name="loc" onchange="this.form.submit()">
-          <option value="all">All Locations</option>
-          <?php foreach ($locations as $loc): ?>
-            <option value="<?php echo htmlspecialchars($loc); ?>" <?php echo $locFilter===$loc?'selected':''; ?>><?php echo htmlspecialchars($loc); ?></option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-      <div>
-        <label for="sort">Sort by</label>
-        <select id="sort" name="sort" onchange="this.form.submit()">
-          <option value="date_old" <?php echo $sort==='date_old'?'selected':''; ?>>Date · Oldest first</option>
-          <option value="date_new" <?php echo $sort==='date_new'?'selected':''; ?>>Date · Newest first</option>
-          <option value="name" <?php echo $sort==='name'?'selected':''; ?>>Name A-Z</option>
-        </select>
-      </div>
-      <div>
-        <label for="perPage">View per page</label>
-        <select id="perPage" name="perPage" onchange="this.form.submit()">
-          <?php foreach ([5,10,20] as $opt): ?>
-            <option value="<?php echo $opt; ?>" <?php echo $perPage==$opt?'selected':''; ?>><?php echo $opt; ?></option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-      <input type="hidden" name="page" value="1">
-    </form>
+    <div class="top-controls events-filters">
+      <div class="left">
+        <form id="events-filters-form" class="filters-form" method="GET">
+          <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
 
-    <div class="actions-row">
-      <span>Filter using the tabs above. Logged-in collectors can propose new events.</span>
+          <div class="filter-chip">
+            <label class="filter-chip__label" for="events-type-select">
+              <i class="bi bi-tags"></i>
+              <span>Type</span>
+            </label>
+            <select id="events-type-select" name="type" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+              <option value="all">All Types</option>
+              <?php foreach ($types as $t): ?>
+                <option value="<?php echo htmlspecialchars($t); ?>" <?php echo $typeFilter===$t?'selected':''; ?>><?php echo htmlspecialchars($t); ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="filter-chip">
+            <label class="filter-chip__label" for="events-loc-select">
+              <i class="bi bi-geo-alt"></i>
+              <span>Location</span>
+            </label>
+            <select id="events-loc-select" name="loc" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+              <option value="all">All Locations</option>
+              <?php foreach ($locations as $loc): ?>
+                <option value="<?php echo htmlspecialchars($loc); ?>" <?php echo $locFilter===$loc?'selected':''; ?>><?php echo htmlspecialchars($loc); ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div class="filter-chip">
+            <label class="filter-chip__label" for="events-sort-select">
+              <i class="bi bi-funnel"></i>
+              <span>Sort by</span>
+            </label>
+            <select id="events-sort-select" name="sort" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+              <option value="date_old" <?php echo $sort==='date_old'?'selected':''; ?>>Date · Nearest</option>
+              <option value="date_new" <?php echo $sort==='date_new'?'selected':''; ?>>Date · Farthest</option>
+              <option value="name" <?php echo $sort==='name'?'selected':''; ?>>Name A-Z</option>
+            </select>
+          </div>
+
+          <div class="filter-chip filter-chip--compact">
+            <label class="filter-chip__label" for="events-per-page-select">
+              <i class="bi bi-eye"></i>
+              <span>Show</span>
+            </label>
+            <select id="events-per-page-select" name="perPage" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+              <?php foreach ([5,10,20] as $opt): ?>
+                <option value="<?php echo $opt; ?>" <?php echo $perPage==$opt?'selected':''; ?>><?php echo $opt; ?></option>
+              <?php endforeach; ?>
+            </select>
+            <span class="filter-chip__hint">per page</span>
+          </div>
+
+          <input type="hidden" name="page" value="1">
+        </form>
+        <p class="events-filters__note">Filter using the tabs above. Logged-in collectors can propose new events.</p>
+      </div>
+
       <div class="paginate">
-        <button <?php echo $page<=1?'disabled':''; ?> onclick="window.location='?<?php echo http_build_query(['status'=>$status,'type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage,'page'=>max(1,$page-1)]); ?>'"><i class="bi bi-chevron-left"></i></button>
+        <button <?php echo $page<=1?'disabled':''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['status'=>$status,'type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage,'page'=>max(1,$page-1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
         <span>Showing <?php echo $total?($offset+1):0; ?>-<?php echo min($offset+$perPage, $total); ?> of <?php echo $total; ?></span>
-        <button <?php echo $page>=$pages?'disabled':''; ?> onclick="window.location='?<?php echo http_build_query(['status'=>$status,'type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage,'page'=>min($pages,$page+1)]); ?>'"><i class="bi bi-chevron-right"></i></button>
+        <button <?php echo $page>=$pages?'disabled':''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['status'=>$status,'type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage,'page'=>min($pages,$page+1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
       </div>
     </div>
 
@@ -546,7 +562,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
           $costValue = ($rawCost === '' || $rawCost === null) ? null : (float)$rawCost;
           $costLabel = ($costValue !== null && $costValue > 0)
             ? '€' . number_format($costValue, 2, ',', '.')
-            : 'Entrada gratuita';
+            : 'Free entrance';
           $canEditEvent = $isOwner && !$eventHasEnded;
           $keyBase = $currentUserId ? (strval($eventId) . '|' . strval($currentUserId)) : null;
           $hasRsvp = $keyBase ? !empty($eventRsvpMap[$keyBase]) : false;
@@ -602,7 +618,8 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
           ];
           $modalDataJson = htmlspecialchars(json_encode($modalData), ENT_QUOTES, 'UTF-8');
           ?>
-          <article class="event-card js-event-card"
+          <?php // Atribui um id único ao cartão para conseguirmos regressar ao mesmo ponto após ações como RSVP. ?>
+          <article id="event-card-<?php echo htmlspecialchars($eventId); ?>" class="event-card js-event-card"
                    data-name="<?php echo htmlspecialchars($evt['name']); ?>"
                    data-summary="<?php echo htmlspecialchars($evt['summary']); ?>"
                    data-description="<?php echo htmlspecialchars($evt['description']); ?>"
@@ -674,6 +691,8 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
                 <form action="events_action.php" method="POST" style="display:inline;">
                   <input type="hidden" name="action" value="rsvp">
                   <input type="hidden" name="id" value="<?php echo htmlspecialchars($evt['id']); ?>">
+                  <?php // Envia a âncora de retorno para que o servidor saiba para onde voltar após o POST. ?>
+                  <input type="hidden" name="return_target" value="#event-card-<?php echo htmlspecialchars($eventId); ?>">
                   <button type="submit" class="explore-btn small<?php echo $hasRsvp ? ' success' : ''; ?>">
                     <i class="bi bi-check2-circle"></i> <?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?>
                   </button>
@@ -747,10 +766,67 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
         </div>
         <div class="modal-ratings" id="modal-ratings"></div>
       </div>
-    </div>
-  </div>
-  </script>
-  <script>
+      </div>
+      </div>
+      <script>
+    (function() {
+      var scrollKey = 'gc-scroll-events';
+      var hasStorage = false;
+      try {
+        sessionStorage.setItem('__gc_events_test', '1');
+        sessionStorage.removeItem('__gc_events_test');
+        hasStorage = true;
+      } catch (err) {
+        hasStorage = false;
+      }
+
+      function saveScroll() {
+        if (!hasStorage) {
+          return;
+        }
+        var top = window.scrollY || document.documentElement.scrollTop || 0;
+        sessionStorage.setItem(scrollKey, String(top));
+      }
+
+      window.gcSubmitWithScroll = function(form) {
+        saveScroll();
+        if (form && typeof form.submit === 'function') {
+          form.submit();
+        }
+      };
+
+      window.gcRememberScroll = function(url) {
+        saveScroll();
+        if (url) {
+          window.location = url;
+        }
+      };
+
+      function restoreScroll() {
+        if (!hasStorage) {
+          return;
+        }
+        var stored = sessionStorage.getItem(scrollKey);
+        if (stored !== null) {
+          window.scrollTo(0, parseFloat(stored));
+          sessionStorage.removeItem(scrollKey);
+        }
+      }
+
+      restoreScroll();
+
+      window.addEventListener('pageshow', function(event) {
+        if (event && event.persisted) {
+          restoreScroll();
+        }
+      });
+
+      var filtersForm = document.getElementById('events-filters-form');
+      if (filtersForm) {
+        filtersForm.addEventListener('submit', saveScroll);
+      }
+    })();
+
     // Modal de detalhes do evento
     (function() {
       const modal = document.getElementById('event-modal');
@@ -1075,7 +1151,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
 
           const costEl = document.getElementById('modal-cost');
           if (costEl) {
-            costEl.textContent = cost || 'Entrada gratuita';
+            costEl.textContent = cost || 'Free entrance';
           }
 
           let payload = null;

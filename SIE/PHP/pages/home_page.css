@@ -64,68 +64,6 @@
   margin-top: 8px;
 }
 
-.top-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin: 12px 0 24px;
-  flex-wrap: wrap;
-}
-
-.top-controls .left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  color: #555;
-  font-weight: 500;
-}
-
-.top-controls label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-}
-
-.top-controls select {
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid #d0d5dd;
-  background: #ffffff;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.paginate {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #666;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.paginate button {
-  border: none;
-  background: #e9ecf2;
-  padding: 10px 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.paginate button i {
-  font-size: 1rem;
-}
-
-.paginate button:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
 
 /* Usamos o flex que já vem do general.css, só afinamos espaçamentos */
 .collection-container {

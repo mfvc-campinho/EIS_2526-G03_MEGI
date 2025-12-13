@@ -51,3 +51,6 @@
     init();
   }
 })();
+
+
+/* Atualizar o calendário automaticamente*/

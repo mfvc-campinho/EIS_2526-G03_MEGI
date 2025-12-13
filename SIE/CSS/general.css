@@ -376,6 +376,285 @@ h1.page-title::after {
 
 
 /* ===============================
+   🎛️ Filter & Sort Controls (global)
+   =============================== */
+.top-controls,
+.filters-bar,
+.filters-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin: 16px 0 28px;
+  flex-wrap: wrap;
+}
+
+.top-controls .left,
+.filters-bar .left,
+.filters-row .left {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.filters-form,
+.filters-bar form,
+.filters-row form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ranking-section .filters-form,
+.user-top-collections-controls .filters-form {
+  gap: 10px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #d9e3f5;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
+}
+
+.filter-chip--compact {
+  gap: 8px;
+}
+
+.filter-chip__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #1d2b4d;
+  white-space: nowrap;
+}
+
+.filter-chip__label i {
+  color: #2563eb;
+  font-size: 0.95rem;
+}
+
+.filter-chip__select {
+  border: none;
+  background-color: transparent;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #0f172a;
+  padding: 4px 18px 4px 0;
+  cursor: pointer;
+  min-width: 90px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='%232563eb'%3E%3Cpath d='M1.5 5.5l6.5 6 6.5-6-1-1L8 9.5 2.5 4.5l-1 1z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 12px;
+  line-height: 1.2;
+}
+
+.filter-chip__select:focus {
+  outline: none;
+}
+
+.filter-chip__select:hover {
+  color: #1d4ed8;
+}
+
+.filter-chip__hint {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.filter-chip__hint.muted {
+  opacity: 0.7;
+}
+
+.ranking-section .filter-chip,
+.user-top-collections-controls .filter-chip,
+.ranking-section .filter-chip--compact,
+.user-top-collections-controls .filter-chip--compact,
+.ranking-section .filter-chip__label,
+.user-top-collections-controls .filter-chip__label,
+.ranking-section .filter-chip__label i,
+.user-top-collections-controls .filter-chip__label i,
+.ranking-section .filter-chip__select,
+.user-top-collections-controls .filter-chip__select,
+.ranking-section .filter-chip__hint,
+.user-top-collections-controls .filter-chip__hint {
+  all: unset;
+}
+
+.ranking-section .filter-chip,
+.user-top-collections-controls .filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #d9e3f5;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
+}
+
+.ranking-section .filter-chip--compact,
+.user-top-collections-controls .filter-chip--compact {
+  gap: 8px;
+}
+
+.ranking-section .filter-chip__label,
+.user-top-collections-controls .filter-chip__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #1d2b4d;
+  white-space: nowrap;
+}
+
+.ranking-section .filter-chip__label i,
+.user-top-collections-controls .filter-chip__label i {
+  color: #2563eb;
+  font-size: 0.95rem;
+}
+
+.ranking-section .filter-chip__select,
+.user-top-collections-controls .filter-chip__select {
+  border: none;
+  background-color: transparent;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #0f172a;
+  padding: 4px 18px 4px 0;
+  cursor: pointer;
+  min-width: 100px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='%232563eb'%3E%3Cpath d='M1.5 5.5l6.5 6 6.5-6-1-1L8 9.5 2.5 4.5l-1 1z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 12px;
+  line-height: 1.2;
+}
+
+.ranking-section .filter-chip__select:focus,
+.user-top-collections-controls .filter-chip__select:focus {
+  outline: none;
+}
+
+.ranking-section .filter-chip__select:hover,
+.user-top-collections-controls .filter-chip__select:hover {
+  color: #1d4ed8;
+}
+
+.ranking-section .filter-chip__hint,
+.user-top-collections-controls .filter-chip__hint {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.filter-toggle {
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  color: #1d3a78;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f8fbff 0%, #eef2ff 100%);
+  transition: all 0.2s ease;
+  padding: 8px 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-toggle span {
+  white-space: nowrap;
+}
+
+.filter-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 30px rgba(37, 99, 235, 0.18);
+}
+
+.filter-toggle.is-active {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0b3b70 100%);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 18px 36px rgba(11, 59, 112, 0.32);
+}
+
+.filter-toggle.is-active:hover {
+  transform: translateY(-2px);
+}
+
+.filter-toggle i {
+  font-size: 1rem;
+  color: inherit;
+}
+
+.filter-toggle__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d3a78;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.filter-toggle.is-active .filter-toggle__badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.paginate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666666;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.paginate button {
+  border: none;
+  background: #e9ecf2;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginate button i {
+  font-size: 1rem;
+}
+
+.paginate button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+
+/* ===============================
    🔹 NAVIGATION BAR (GLOBAL)
 =============================== */
 
@@ -444,9 +723,9 @@ body {
 }
 
 /* Ensure any standalone main (with or without wrappers) expands to push footer down */
-body > main,
-#content > main,
-.page-container > main,
+body>main,
+#content>main,
+.page-container>main,
 main.page,
 main.page-shell,
 main.page-main {

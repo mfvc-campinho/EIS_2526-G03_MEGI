@@ -379,6 +379,14 @@ main img {
   margin-right: auto;
 }
 
+.user-top-collections-controls {
+  margin: 6px 0 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
 /* ===============================
    🎴 CARD DE COLEÇÃO — REDESIGN
    =============================== */
@@ -504,8 +512,29 @@ main img {
   text-transform: uppercase;
 }
 
-.product-card__meta {
+.product-card__facts {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-card__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #0b3b70;
+  font-size: 0.9rem;
+  margin-top: 0;
+}
+
+.product-card__facts .product-card__date {
+  padding-bottom: 6px;
+}
+
+.product-card__meta {
+  margin-top: 0;
   padding-top: 14px;
   border-top: 2px solid #f1f5f9;
   display: flex;
@@ -933,6 +962,7 @@ a:active img {
   .signin-hero h1 {
     font-size: 1.9rem;
   }
+
   .signin-actions {
     grid-template-columns: 1fr;
   }

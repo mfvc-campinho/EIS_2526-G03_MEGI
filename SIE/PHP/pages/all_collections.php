@@ -560,7 +560,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                     window.location = url;
                 };
 
-                window.addEventListener('pageshow', function () {
+                function restoreScroll() {
                     if (!hasStorage) {
                         return;
                     }
@@ -568,6 +568,14 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                     if (stored !== null) {
                         window.scrollTo(0, parseFloat(stored));
                         sessionStorage.removeItem(scrollKey);
+                    }
+                }
+
+                restoreScroll();
+
+                window.addEventListener('pageshow', function (event) {
+                    if (event && event.persisted) {
+                        restoreScroll();
                     }
                 });
 

@@ -513,21 +513,32 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             <section class="ranking-section" id="ranking-section">
                 <div class="top-controls">
                     <div class="left">
-                        <form id="filters" method="GET" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                            <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
-                            <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
-                                <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
-                                <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
-                                <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
-                            </select>
-                            <label>Show
-                                <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
+                        <form id="filters" class="filters-form" method="GET">
+                            <div class="filter-chip">
+                                <label class="filter-chip__label" for="sort-select">
+                                    <i class="bi bi-funnel"></i>
+                                    <span>Sort by</span>
+                                </label>
+                                <select name="sort" id="sort-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+                                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
+                                    <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
+                                    <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-chip filter-chip--compact">
+                                <label class="filter-chip__label" for="per-page-select">
+                                    <i class="bi bi-collection"></i>
+                                    <span>Show</span>
+                                </label>
+                                <select name="perPage" id="per-page-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
                                     <?php foreach ([5, 10, 20] as $opt): ?>
                                         <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                collections per page
-                            </label>
+                                <span class="filter-chip__hint">per page</span>
+                            </div>
+
                             <input type="hidden" name="page" value="1">
                         </form>
                     </div>
@@ -704,7 +715,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                             $costValue = ($rawCost === '' || $rawCost === null) ? null : (float)$rawCost;
                             $costLabel = ($costValue !== null && $costValue > 0)
                                 ? '€' . number_format($costValue, 2, ',', '.')
-                                : 'Entrada gratuita';
+                                : 'Free entrance';
                             ?>
                             <a class="event-card js-event-card"
                                href="#"
@@ -911,6 +922,10 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 hasStorage = false;
             }
 
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+
             function saveScroll() {
                 if (!hasStorage) {
                     return;
@@ -929,14 +944,26 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 window.location = url;
             };
 
-            window.addEventListener('pageshow', function() {
+            function restoreScroll() {
                 if (!hasStorage) {
                     return;
                 }
                 var stored = sessionStorage.getItem(scrollKey);
                 if (stored !== null) {
-                    window.scrollTo(0, parseFloat(stored));
+                    var y = parseFloat(stored);
+                    window.scrollTo(0, y);
+                    document.documentElement.scrollTop = y;
+                    document.body.scrollTop = y;
                     sessionStorage.removeItem(scrollKey);
+                }
+            }
+
+            restoreScroll();
+            requestAnimationFrame(restoreScroll);
+
+            window.addEventListener('pageshow', function(event) {
+                if (event && event.persisted) {
+                    restoreScroll();
                 }
             });
 
@@ -1060,7 +1087,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                     }
                 }
                 if (costEl) {
-                    setText(costEl, payload.cost || 'Entrada gratuita');
+                    setText(costEl, payload.cost || 'Free entrance');
                 }
                 modal.classList.add('open');
             }

@@ -46,6 +46,20 @@ function replace_item_links($mysqli, $itemId, array $collectionIds) {
   $ins->close();
 }
 
+// helper: confirmar se o user tem acesso ao item através de alguma coleção sua
+function user_has_item_access($mysqli, $itemId, $userId) {
+  $stmt = $mysqli->prepare('SELECT 1 FROM collection_items ci INNER JOIN collections c ON c.collection_id = ci.collection_id WHERE ci.item_id = ? AND c.user_id = ? LIMIT 1');
+  if ($stmt === false) {
+    return false;
+  }
+  $stmt->bind_param('ss', $itemId, $userId);
+  $stmt->execute();
+  $res = $stmt->get_result();
+  $has = $res && $res->num_rows > 0;
+  $stmt->close();
+  return $has;
+}
+
 // normalizar collectionIds vindos do formulário
 $collectionIds = $_POST['collectionIds'] ?? [];
 $collectionIds = is_array($collectionIds) ? array_values(array_unique(array_filter($collectionIds))) : [];
@@ -64,7 +78,6 @@ if ($action === 'create') {
     }
   }
 
-  $primaryCol  = $collectionIds[0];
   $id          = uniqid('item-');
   $name        = $_POST['name']            ?? '';
   $importance  = $_POST['importance']      ?? '';
@@ -75,10 +88,10 @@ if ($action === 'create') {
 
   // INSERT no items
   $stmt = $mysqli->prepare(
-    'INSERT INTO items (item_id,name,importance,weight,price,acquisition_date,created_at,collection_id,image) 
-     VALUES (?,?,?,?,?,?,NOW(),?,?)'
+     'INSERT INTO items (item_id,name,importance,weight,price,acquisition_date,created_at,updated_at,image) 
+      VALUES (?,?,?,?,?,?,NOW(),NOW(),?)'
   );
-  $stmt->bind_param('ssssssss', $id, $name, $importance, $weight, $price, $acq, $primaryCol, $image);
+    $stmt->bind_param('sssssss', $id, $name, $importance, $weight, $price, $acq, $image);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -87,7 +100,7 @@ if ($action === 'create') {
 
   $mysqli->close();
   if ($ok) {
-    redirect_success('Item created successfully.');
+    redirect_success('Item created successfully.', 'item_page.php?id=' . urlencode($id));
   }
   redirect_error('Failed to create item.');
 }
@@ -104,7 +117,7 @@ if ($action === 'update') {
   }
 
   // buscar item atual (para verificar owner e imagem)
-  $chkItem = $mysqli->prepare('SELECT collection_id,image FROM items WHERE item_id = ? LIMIT 1');
+  $chkItem = $mysqli->prepare('SELECT image FROM items WHERE item_id = ? LIMIT 1');
   $chkItem->bind_param('s', $id);
   $chkItem->execute();
   $resItem  = $chkItem->get_result();
@@ -114,6 +127,11 @@ if ($action === 'update') {
   if (!$existing) {
     $mysqli->close();
     redirect_error('Item not found.');
+  }
+
+  if (!user_has_item_access($mysqli, $id, $currentUser)) {
+    $mysqli->close();
+    redirect_error('You do not have permission to update this item.');
   }
 
   // todas as coleções selecionadas têm de ser do utilizador
@@ -130,7 +148,6 @@ if ($action === 'update') {
   $price      = $_POST['price']           ?? '';
   $acq        = $_POST['acquisitionDate'] ?? null;
   $image      = handle_upload('imageFile', 'items', $existing['image'] ?? '');
-  $primaryCol = $collectionIds[0];
 
   // UPDATE do item
   $stmt = $mysqli->prepare(
@@ -140,11 +157,11 @@ if ($action === 'update') {
             weight = ?, 
             price = ?, 
             acquisition_date = ?, 
-            collection_id = ?, 
-            image = ? 
+            image = ?, 
+            updated_at = NOW() 
       WHERE item_id = ?'
   );
-  $stmt->bind_param('ssssssss', $name, $importance, $weight, $price, $acq, $primaryCol, $image, $id);
+  $stmt->bind_param('sssssss', $name, $importance, $weight, $price, $acq, $image, $id);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -153,7 +170,7 @@ if ($action === 'update') {
 
   $mysqli->close();
   if ($ok) {
-    redirect_success('Item updated.');
+    redirect_success('Item updated.', 'item_page.php?id=' . urlencode($id));
   }
   redirect_error('Failed to update item.');
 }
@@ -165,32 +182,11 @@ if ($action === 'delete') {
     redirect_error('ID missing.');
   }
 
-  // verificar se o utilizador é dono de pelo menos uma coleção onde o item está
-  $owns = false;
+  $returnTo = sanitize_redirect_target($_POST['return_to'] ?? '');
 
-  // tentar pelas collectionIds enviadas (se vierem)
-  if ($collectionIds) {
-    foreach ($collectionIds as $cid) {
-      if (user_owns_collection($mysqli, $cid, $currentUser)) {
-        $owns = true;
-        break;
-      }
-    }
-  }
-
-  // caso não venham collectionIds, ver na BD qual a coleção "primária"
-  if (!$owns) {
-    $chk = $mysqli->prepare('SELECT collection_id FROM items WHERE item_id = ? LIMIT 1');
-    $chk->bind_param('s', $id);
-    $chk->execute();
-    $res = $chk->get_result();
-    $row = $res->fetch_assoc();
-    $chk->close();
-
-    if (!$row || !user_owns_collection($mysqli, $row['collection_id'], $currentUser)) {
-      $mysqli->close();
-      redirect_error('You do not have permission to delete this item.');
-    }
+  if (!user_has_item_access($mysqli, $id, $currentUser)) {
+    $mysqli->close();
+    redirect_error('You do not have permission to delete this item.');
   }
 
   // apagar o item
@@ -204,7 +200,7 @@ if ($action === 'delete') {
 
   $mysqli->close();
   if ($ok) {
-    redirect_success('Item deleted.');
+    redirect_success('Item deleted.', $returnTo);
   }
   redirect_error('Failed to delete item.');
 }
@@ -217,9 +213,39 @@ redirect_error('Invalid action.');
 // helpers adicionais
 // -----------------------------------------------------------------
 
-function redirect_success($msg) {
+function sanitize_redirect_target($value) {
+  $value = trim((string) $value);
+  if ($value === '') {
+    return 'home_page.php';
+  }
+
+  if (preg_match('#^https?://#i', $value)) {
+    $parsed = parse_url($value);
+    if (!$parsed) {
+      return 'home_page.php';
+    }
+    $currentHost = $_SERVER['HTTP_HOST'] ?? '';
+    if (!empty($parsed['host']) && $currentHost && strcasecmp($parsed['host'], $currentHost) !== 0) {
+      return 'home_page.php';
+    }
+    $path = $parsed['path'] ?? '';
+    if ($path === '' || strpos($path, '..') !== false) {
+      return 'home_page.php';
+    }
+    $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+    $value = $path . $query;
+  }
+
+  if ($value === '' || strpos($value, '..') !== false) {
+    return 'home_page.php';
+  }
+
+  return $value;
+}
+
+function redirect_success($msg, $location = 'home_page.php') {
   flash_set('success', $msg);
-  header('Location: home_page.php');
+  header('Location: ' . $location);
   exit;
 }
 

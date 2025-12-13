@@ -245,6 +245,8 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
       flex-direction: column; 
       gap: 10px;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      position: relative;
     }
     .event-card:hover {
       border-color: #94a3b8;
@@ -564,7 +566,16 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
           ];
           $modalDataJson = htmlspecialchars(json_encode($modalData), ENT_QUOTES, 'UTF-8');
           ?>
-          <article class="event-card">
+          <article class="event-card js-event-card"
+                   data-name="<?php echo htmlspecialchars($evt['name']); ?>"
+                   data-summary="<?php echo htmlspecialchars($evt['summary']); ?>"
+                   data-description="<?php echo htmlspecialchars($evt['description']); ?>"
+                   data-date="<?php echo htmlspecialchars($eventDateDisplay); ?>"
+                   data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
+                   data-datetime="<?php echo htmlspecialchars($eventTimeDisplay ? ($eventDateDisplay . ' · ' . $eventTimeDisplay) : $eventDateDisplay); ?>"
+                   data-location="<?php echo htmlspecialchars($evt['localization']); ?>"
+                   data-type="<?php echo htmlspecialchars($evt['type']); ?>"
+                   data-rating="<?php echo $modalDataJson; ?>">
             <div class="event-card-top">
               <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Event'); ?></p>
               <span class="status-chip <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
@@ -599,19 +610,6 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
               </div>
             <?php endif; ?>
             <div class="event-actions">
-              <button type="button"
-                      class="explore-btn small js-view-event"
-                      data-name="<?php echo htmlspecialchars($evt['name']); ?>"
-                      data-summary="<?php echo htmlspecialchars($evt['summary']); ?>"
-                      data-description="<?php echo htmlspecialchars($evt['description']); ?>"
-                      data-date="<?php echo htmlspecialchars($eventDateDisplay); ?>"
-                      data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
-                      data-datetime="<?php echo htmlspecialchars($eventTimeDisplay ? ($eventDateDisplay . ' · ' . $eventTimeDisplay) : $eventDateDisplay); ?>"
-                      data-location="<?php echo htmlspecialchars($evt['localization']); ?>"
-                      data-type="<?php echo htmlspecialchars($evt['type']); ?>"
-                      data-rating="<?php echo $modalDataJson; ?>">
-                View Details
-              </button>
               <?php if ($isOwner): ?>
                 <?php if ($canEditEvent): ?>
                   <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($evt['id']); ?>">Edit</a>
@@ -965,19 +963,22 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
         ratingsContainer.appendChild(statsWrapper);
       }
 
-      const buttons = document.querySelectorAll('.js-view-event');
+      const eventCards = document.querySelectorAll('.js-event-card');
 
-      buttons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          const name = btn.getAttribute('data-name') || '';
-          const summary = btn.getAttribute('data-summary') || '';
-          const description = btn.getAttribute('data-description') || '';
-          const date = btn.getAttribute('data-date') || '';
-          const time = btn.getAttribute('data-time') || '';
-          const combined = btn.getAttribute('data-datetime') || '';
-          const location = btn.getAttribute('data-location') || '';
-          const type = btn.getAttribute('data-type') || '';
-          const ratingRaw = btn.getAttribute('data-rating') || '';
+      eventCards.forEach(function(card) {
+        card.addEventListener('click', function(e) {
+          const interactive = e.target.closest('a, button, form, select, input, textarea');
+          if (interactive && card.contains(interactive)) return;
+
+          const name = card.getAttribute('data-name') || '';
+          const summary = card.getAttribute('data-summary') || '';
+          const description = card.getAttribute('data-description') || '';
+          const date = card.getAttribute('data-date') || '';
+          const time = card.getAttribute('data-time') || '';
+          const combined = card.getAttribute('data-datetime') || '';
+          const location = card.getAttribute('data-location') || '';
+          const type = card.getAttribute('data-type') || '';
+          const ratingRaw = card.getAttribute('data-rating') || '';
 
           document.getElementById('modal-title').textContent = name;
           document.getElementById('modal-type').textContent = type;

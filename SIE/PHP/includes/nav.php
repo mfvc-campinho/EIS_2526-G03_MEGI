@@ -1,6 +1,13 @@
 <?php
 if (!isset($_SESSION))
     session_start();
+
+if (!function_exists('flash_render')) {
+    $flashPath = __DIR__ . '/flash.php';
+    if (file_exists($flashPath)) {
+        require_once $flashPath;
+    }
+}
 $isAuth = !empty($_SESSION['user']);
 $displayName = $isAuth ? ($_SESSION['user']['name'] ?? $_SESSION['user']['user_name'] ?? $_SESSION['user']['id'] ?? 'Profile') : 'Log In';
 $current = basename(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH));
@@ -76,6 +83,12 @@ function nav_active($basename) {
         </div>
     </nav>
 </header>
+
+<?php
+if (function_exists('flash_render')) {
+    flash_render();
+}
+?>
 
 <!-- Alert dot script (checks upcoming RSVPs via PHP endpoint) -->
 <script src="../../JS/events-alert.js"></script>

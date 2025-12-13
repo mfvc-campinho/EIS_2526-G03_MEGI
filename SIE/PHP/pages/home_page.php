@@ -154,6 +154,10 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             .collection-card-link:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
             .collection-card-link:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; }
 
+            .upcoming-events .event-card { cursor: pointer; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+            .upcoming-events .event-card:focus { outline: 2px solid #6366f1; outline-offset: 4px; }
+            .upcoming-events .event-card:active { transform: translateY(1px); }
+
             /* Shared modal styling reused from Events page */
             .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
             .modal-backdrop.open { display: flex; animation: fadeIn 0.2s ease; }
@@ -405,7 +409,17 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 $modalPrimaryDate = $eventDateDisplay ?: $dateDisplay;
                                 $modalCombinedDisplay = $eventTimeDisplay ? ($modalPrimaryDate . ' · ' . $eventTimeDisplay) : $modalPrimaryDate;
                                 ?>
-                                <article class="event-card">
+                                <article class="event-card js-event-card"
+                                         role="button"
+                                         tabindex="0"
+                                         data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
+                                         data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
+                                         data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
+                                         data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
+                                         data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
+                                         data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
+                                         data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
+                                         data-type="<?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>">
                                     <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
                                     <h3><?php echo htmlspecialchars($evt['name']); ?></h3>
                                     <ul class="event-meta">
@@ -418,18 +432,6 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                             <?php echo htmlspecialchars($evt['localization']); ?>
                                         </li>
                                     </ul>
-                                    <button type="button"
-                                            class="explore-btn small js-view-event"
-                                            data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
-                                            data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
-                                            data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
-                                            data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
-                                            data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
-                                            data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
-                                            data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
-                                            data-type="<?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>">
-                                        See event
-                                    </button>
                                 </article>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -794,20 +796,43 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                     modal.classList.remove('open');
                 }
 
-                document.querySelectorAll('.js-view-event').forEach(function (btn) {
-                    btn.addEventListener('click', function () {
+                function bindEventCard(card) {
+                    if (!card) {
+                        return;
+                    }
+                    function launchModal() {
                         openModal({
-                            name: btn.getAttribute('data-name') || '',
-                            summary: btn.getAttribute('data-summary') || '',
-                            description: btn.getAttribute('data-description') || '',
-                            date: btn.getAttribute('data-date') || '',
-                            time: btn.getAttribute('data-time') || '',
-                            datetime: btn.getAttribute('data-datetime') || '',
-                            location: btn.getAttribute('data-location') || '',
-                            type: btn.getAttribute('data-type') || ''
+                            name: card.getAttribute('data-name') || '',
+                            summary: card.getAttribute('data-summary') || '',
+                            description: card.getAttribute('data-description') || '',
+                            date: card.getAttribute('data-date') || '',
+                            time: card.getAttribute('data-time') || '',
+                            datetime: card.getAttribute('data-datetime') || '',
+                            location: card.getAttribute('data-location') || '',
+                            type: card.getAttribute('data-type') || ''
                         });
+                    }
+
+                    card.addEventListener('click', function (event) {
+                        var interactive = event.target.closest('a, button, input, textarea, select, form');
+                        if (interactive && card.contains(interactive)) {
+                            return;
+                        }
+                        launchModal();
                     });
-                });
+
+                    card.addEventListener('keydown', function (event) {
+                        if (event.target !== card) {
+                            return;
+                        }
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            launchModal();
+                        }
+                    });
+                }
+
+                document.querySelectorAll('.js-event-card').forEach(bindEventCard);
 
                 if (closeButton) {
                     closeButton.addEventListener('click', closeModal);

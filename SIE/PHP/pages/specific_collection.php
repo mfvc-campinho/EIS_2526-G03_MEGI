@@ -487,10 +487,11 @@ if ($collection) {
                                                 Edit
                                             </a>
 
-                                            <form action="items_action.php" method="POST" style="display:inline;">
+                                              <form action="items_action.php" method="POST" style="display:inline;" data-preserve-scroll="true">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id"
                                                        value="<?php echo htmlspecialchars($itemId); ?>">
+                                                <input type="hidden" name="return_to" value="specific_collection.php?id=<?php echo urlencode($collectionId); ?>">
                                                 <button type="submit"
                                                         class="explore-btn danger small"
                                                         onclick="return confirm('Delete this item?');">
@@ -601,6 +602,10 @@ if ($collection) {
                 if (filtersForm) {
                     filtersForm.addEventListener('submit', saveScroll);
                 }
+
+                document.querySelectorAll('form[data-preserve-scroll]').forEach(function(form) {
+                    form.addEventListener('submit', saveScroll);
+                });
 
                 // Prevent page scroll on like forms
                 document.querySelectorAll('.like-form').forEach(function(form) {

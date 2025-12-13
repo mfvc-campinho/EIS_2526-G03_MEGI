@@ -105,7 +105,7 @@ CREATE TABLE `events` (
   `event_id` varchar(100) NOT NULL,
   `name` varchar(255) NOT NULL,
   `localization` varchar(255) DEFAULT NULL,
-  `event_date` date DEFAULT NULL,
+  `event_date` datetime DEFAULT NULL,
   `type` varchar(100) DEFAULT NULL,
   `summary` text DEFAULT NULL,
   `description` text DEFAULT NULL,

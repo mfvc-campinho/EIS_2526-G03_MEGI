@@ -379,6 +379,21 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
         <main class="page-main">
             <?php flash_render(); ?>
+
+            <section class="welcome-hero">
+                <div class="welcome-card">
+                    <div class="welcome-text">
+                        <h1 class="welcome-title"><span class="welcome-title__icon"><i class="bi bi-stars"></i></span>Welcome to GoodCollections</h1>
+                        <p>Manage all your collections effortlessly — from books and vinyl records to coins, stamps, and miniatures.</p>
+                        <div class="welcome-pills">
+                            <span class="pill pill--outline"><strong>Manage</strong> Multiple Collections</span>
+                            <span class="pill pill--outline"><strong>Track</strong> Items &amp; Events</span>
+                            <span class="pill pill--outline"><strong>Focus</strong> Collectors Experience</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="collections-hero">
                 <h1>Top Collections</h1>
                 <div class="collections-hero-underline"></div>

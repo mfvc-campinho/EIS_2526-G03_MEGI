@@ -306,11 +306,6 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                             <i class="bi bi-plus-lg"></i>
                                         </label>
 
-                                        <!-- Explore More -->
-                                        <a class="action-icon" href="<?php echo htmlspecialchars($collectionHref); ?>" title="Explore">
-                                            <i class="bi bi-search"></i>
-                                        </a>
-
                                         <!-- Like -->
                                         <?php if ($isAuth): ?>
                                             <form action="likes_action.php" method="POST" class="action-icon-form like-form">

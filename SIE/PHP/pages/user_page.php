@@ -256,7 +256,6 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                             <div class="profile-actions">
                                 <?php if ($isOwnerProfile): ?>
                                     <a class="explore-btn ghost" href="users_form.php">Edit Profile</a>
-                                    <a class="explore-btn success" href="collections_form.php">Add Collection</a>
                                     <button id="christmas-toggle" class="explore-btn" style="background: linear-gradient(135deg, #c41e3a, #165b33); border-color: #d4af37; color: white;">
                                         🎄 <span class="btn-text">Natal</span>
                                     </button>
@@ -273,8 +272,13 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                     </section>
 
                     <?php if ($ownedCollections): ?>
-                        <h3 class="section-title">Your Collections</h3>
-                        <div class="cards-grid">
+                        <div class="section-header">
+                            <h3 class="section-title">Your Collections</h3>
+                            <?php if ($isOwnerProfile): ?>
+                                <a class="explore-btn success" href="collections_form.php">Add Collection</a>
+                            <?php endif; ?>
+                        </div>
+                        <div class="cards-grid cards-grid--spaced">
                             <?php foreach ($ownedCollections as $col): ?>
                                 <?php
                                 $img = $col['coverImage'] ?? '';
@@ -321,9 +325,13 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                     <?php else: ?>
                         <h3 class="section-title">Your Collections</h3>
                         <p class="muted">
-                            You don't have any collections yet. Click
-                            <strong>Add Collection</strong> to create your first one.
+                            You don't have any collections yet.
                         </p>
+                        <?php if ($isOwnerProfile): ?>
+                            <div class="empty-state-actions">
+                                <a class="explore-btn success" href="collections_form.php">Add Collection</a>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
 
                     <?php
@@ -456,6 +464,10 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
             .modal-close { position: absolute; top: 12px; right: 12px; border:none; background: rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-size:20px; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
             .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
             .modal-body { padding: 24px; }
+            .section-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+            .section-header .section-title { margin-bottom:0; }
+            .cards-grid--spaced { margin-top: 18px; }
+            .empty-state-actions { margin: 12px 0; }
         </style>
 
         <script>

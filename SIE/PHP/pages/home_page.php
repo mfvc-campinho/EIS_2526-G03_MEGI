@@ -298,11 +298,6 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                                    for="<?php echo $previewId; ?>">
                                                 Hide Preview
                                             </label>
-
-                                                          <a class="explore-btn"
-                                                              href="<?php echo htmlspecialchars($collectionHref); ?>">
-                                                Explore More
-                                            </a>
                                         </div>
 
                                         <div class="preview-items">

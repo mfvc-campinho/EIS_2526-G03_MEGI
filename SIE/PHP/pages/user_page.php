@@ -376,24 +376,45 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
                         <?php if (!empty($upcomingEvents)): ?>
                             <div class="user-events-grid">
-                                <?php foreach ($upcomingEvents as $evt): ?>
-                                    <article class="user-event-card">
-                                        <p class="pill pill--event">
-                                            <?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>
-                                        </p>
-
-                                        <h3><?php echo htmlspecialchars($evt['name'] ?? 'Evento sem nome'); ?></h3>
-
-                                        <ul class="user-event-meta">
-                                            <?php if (!empty($evt['date'])): ?>
-                                                <li>
-                                                    <i class="bi bi-calendar-event"></i>
-                                                    <?php echo htmlspecialchars($evt['date']); ?>
-                                                </li>
-                                            <?php endif; ?>
-                                        </ul>
-                                    </article>
-                                <?php endforeach; ?>
+                        <?php foreach ($upcomingEvents as $evt): ?>
+                            <?php
+                                $eventId = $evt['id'] ?? $evt['event_id'] ?? '';
+                                $costValue = $evt['cost'] ?? null;
+                                $costLabel = ($costValue === '' || $costValue === null) ? 'Entrada gratuita' : '€' . number_format((float)$costValue, 2, ',', '.');
+                                $eventDate = $evt['date'] ?? '';
+                            ?>
+                            <a class="user-event-card user-event-card--link" href="event_page.php?id=<?php echo urlencode($eventId); ?>">
+                                <div class="user-event-card__top">
+                                    <span class="pill pill--event"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></span>
+                                    <span class="user-event-badge soon">SOON</span>
+                                </div>
+                                <h3><?php echo htmlspecialchars($evt['name'] ?? 'Evento sem nome'); ?></h3>
+                                <ul class="user-event-meta">
+                                    <?php if (!empty($eventDate)): ?>
+                                        <li>
+                                            <i class="bi bi-calendar-event"></i>
+                                            <?php echo htmlspecialchars($eventDate); ?>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if (!empty($evt['localization'])): ?>
+                                        <li>
+                                            <i class="bi bi-geo-alt"></i>
+                                            <?php echo htmlspecialchars($evt['localization']); ?>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($costLabel): ?>
+                                        <li>
+                                            <i class="bi bi-cash-coin"></i>
+                                            <?php echo htmlspecialchars($costLabel); ?>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                                <div class="user-event-cta">
+                                    <i class="bi bi-check2-circle"></i>
+                                    <span>RSVP</span>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
                             </div>
                         <?php else: ?>
                             <p class="muted">
@@ -410,24 +431,45 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
                         <?php if (!empty($pastEvents)): ?>
                             <div class="user-events-grid">
-                                <?php foreach ($pastEvents as $evt): ?>
-                                    <article class="user-event-card">
-                                        <p class="pill pill--event">
-                                            <?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>
-                                        </p>
-
-                                        <h3><?php echo htmlspecialchars($evt['name'] ?? 'Evento sem nome'); ?></h3>
-
-                                        <ul class="user-event-meta">
-                                            <?php if (!empty($evt['date'])): ?>
-                                                <li>
-                                                    <i class="bi bi-calendar-event"></i>
-                                                    <?php echo htmlspecialchars($evt['date']); ?>
-                                                </li>
-                                            <?php endif; ?>
-                                        </ul>
-                                    </article>
-                                <?php endforeach; ?>
+                        <?php foreach ($pastEvents as $evt): ?>
+                            <?php
+                                $eventId = $evt['id'] ?? $evt['event_id'] ?? '';
+                                $costValue = $evt['cost'] ?? null;
+                                $costLabel = ($costValue === '' || $costValue === null) ? 'Entrada gratuita' : '€' . number_format((float)$costValue, 2, ',', '.');
+                                $eventDate = $evt['date'] ?? '';
+                            ?>
+                            <a class="user-event-card user-event-card--link" href="event_page.php?id=<?php echo urlencode($eventId); ?>">
+                                <div class="user-event-card__top">
+                                    <span class="pill pill--event"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></span>
+                                    <span class="user-event-badge past">PAST</span>
+                                </div>
+                                <h3><?php echo htmlspecialchars($evt['name'] ?? 'Evento sem nome'); ?></h3>
+                                <ul class="user-event-meta">
+                                    <?php if (!empty($eventDate)): ?>
+                                        <li>
+                                            <i class="bi bi-calendar-event"></i>
+                                            <?php echo htmlspecialchars($eventDate); ?>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if (!empty($evt['localization'])): ?>
+                                        <li>
+                                            <i class="bi bi-geo-alt"></i>
+                                            <?php echo htmlspecialchars($evt['localization']); ?>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($costLabel): ?>
+                                        <li>
+                                            <i class="bi bi-cash-coin"></i>
+                                            <?php echo htmlspecialchars($costLabel); ?>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                                <div class="user-event-cta past">
+                                    <i class="bi bi-eye"></i>
+                                    <span>View</span>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
                             </div>
                         <?php else: ?>
                             <p class="muted">

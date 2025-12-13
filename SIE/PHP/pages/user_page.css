@@ -607,6 +607,73 @@ main img {
   transition: color 0.2s ease;
 }
 
+.user-event-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.user-event-badge {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  background: #ecfdf3;
+}
+
+.user-event-badge.past {
+  border-color: #fecdd3;
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.user-event-meta {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 14px;
+  display: grid;
+  gap: 10px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.user-event-meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-event-meta i {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.user-event-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #1e3a8a;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.user-event-cta.past {
+  color: #111827;
+}
+
+.user-event-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
+}
+
 .user-event-card:hover h3 {
   color: #0d3f7a;
 }

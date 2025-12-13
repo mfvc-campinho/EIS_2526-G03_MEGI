@@ -166,10 +166,24 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             outline-offset: 4px;
         }
 
+        /* Home events cards styled like events page */
         .upcoming-events .event-card {
             cursor: pointer;
             position: relative;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: block;
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 18px 18px 16px;
+            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.18s ease, box-shadow 0.2s ease;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .upcoming-events .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
         }
 
         .upcoming-events .event-card:focus {
@@ -178,7 +192,77 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
         }
 
         .upcoming-events .event-card:active {
-            transform: translateY(1px);
+            transform: translateY(0);
+        }
+
+        .home-event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .home-event-type {
+            font-size: 0.95rem;
+            color: #475569;
+            text-transform: lowercase;
+        }
+
+        .home-event-badge {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #ecfdf3;
+            color: #166534;
+            font-weight: 700;
+            border: 1px solid #bbf7d0;
+            font-size: 0.9rem;
+        }
+
+        .home-event-title {
+            margin: 0 0 12px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.3;
+        }
+
+        .home-event-meta {
+            display: grid;
+            gap: 10px;
+            margin: 0 0 16px;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        .home-event-meta .meta-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.98rem;
+            color: #1f2937;
+        }
+
+        .home-event-meta .meta-row i {
+            font-size: 1.1rem;
+            color: #475569;
+        }
+
+        .home-event-rsvp {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            color: #1e3a8a;
+            font-weight: 700;
+            background: #ffffff;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+        }
+
+        .home-event-rsvp:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
         }
 
         /* Shared modal styling reused from Events page */
@@ -623,23 +707,39 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 : 'Entrada gratuita';
                             ?>
                             <a class="event-card js-event-card"
-                                href="#"
-                                data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
-                                data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
-                                data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
-                                data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
-                                data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
-                                data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
-                                data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
-                                data-type="<?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?>"
-                                data-cost="<?php echo htmlspecialchars($costLabel); ?>">
-                                <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></p>
-                                <h3><?php echo htmlspecialchars($evt['name']); ?></h3>
-                                <ul class="event-meta">
-                                    <li><?php echo htmlspecialchars($dateDisplay); ?></li>
-                                    <li><?php echo htmlspecialchars($evt['localization']); ?></li>
-                                    <li><?php echo htmlspecialchars($costLabel); ?></li>
-                                </ul>
+                               href="#"
+                               data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
+                               data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
+                               data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
+                               data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
+                               data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
+                               data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
+                               data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
+                               data-type="<?php echo htmlspecialchars($evt['type'] ?? 'event'); ?>"
+                               data-cost="<?php echo htmlspecialchars($costLabel); ?>">
+                                <div class="home-event-header">
+                                    <span class="home-event-type"><?php echo htmlspecialchars($evt['type'] ?? 'event'); ?></span>
+                                    <span class="home-event-badge">SOON</span>
+                                </div>
+                                <h3 class="home-event-title"><?php echo htmlspecialchars($evt['name']); ?></h3>
+                                <div class="home-event-meta">
+                                    <div class="meta-row">
+                                        <i class="bi bi-calendar-event"></i>
+                                        <span><?php echo htmlspecialchars($eventDateDisplay ?: $modalCombinedDisplay); ?></span>
+                                    </div>
+                                    <div class="meta-row">
+                                        <i class="bi bi-geo-alt"></i>
+                                        <span><?php echo htmlspecialchars($evt['localization']); ?></span>
+                                    </div>
+                                    <div class="meta-row">
+                                        <i class="bi bi-cash-coin"></i>
+                                        <span><?php echo htmlspecialchars($costLabel); ?></span>
+                                    </div>
+                                </div>
+                                <div class="home-event-rsvp">
+                                    <i class="bi bi-check2-circle"></i>
+                                    <span>RSVP</span>
+                                </div>
                             </a>
                         <?php endforeach; ?>
                     <?php else: ?>

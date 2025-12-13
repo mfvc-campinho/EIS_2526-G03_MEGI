@@ -331,9 +331,40 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
       text-decoration: none;
     }
     /* Calendar Styles */
-    .calendar-toggle-btn { padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
-    .calendar-toggle-btn:hover { background: #2563eb; }
-    .calendar-toggle-btn.active { background: #1e40af; }
+    .calendar-toggle-btn {
+      padding: 12px 18px;
+      background: #f8fafc;
+      color: #0f172a;
+      border: 1px solid #d8dee6;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow:
+        0 6px 16px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      transition: all 0.2s ease;
+    }
+    .calendar-toggle-btn i {
+      color: #2563eb;
+    }
+    .calendar-toggle-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 22px rgba(15, 23, 42, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    .calendar-toggle-btn.active {
+      background: linear-gradient(120deg, #3b82f6, #2563eb);
+      color: #ffffff;
+      border-color: #2b5fd9;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+    }
+    .calendar-toggle-btn.active i {
+      color: #ffffff;
+    }
     .calendar-view { max-width: 820px; margin: 0 auto 28px; display: none; background: white; border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .calendar-view.show { display: block; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
@@ -424,8 +455,8 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
         </div>
       </div>
       <div class="pill-toggle">
-        <a class="<?php echo $status==='upcoming'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'upcoming','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Upcoming <?php echo $upcomingCount; ?></a>
-        <a class="<?php echo $status==='past'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'past','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Past <?php echo $pastCount; ?></a>
+        <a class="<?php echo $status==='upcoming'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'upcoming','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Upcoming (<?php echo $upcomingCount; ?>)</a>
+        <a class="<?php echo $status==='past'?'active':''; ?>" href="?<?php echo http_build_query(['status'=>'past','type'=>$typeFilter,'loc'=>$locFilter,'sort'=>$sort,'perPage'=>$perPage]); ?>">Past (<?php echo $pastCount; ?>)</a>
       </div>
     </section>
 

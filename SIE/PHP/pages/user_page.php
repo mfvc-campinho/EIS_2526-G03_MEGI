@@ -166,6 +166,35 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
     <body>
         <?php include __DIR__ . '/../includes/nav.php'; ?>
 
+        <?php if (!$isAuthenticated): ?>
+            <main class="page-shell signin-shell">
+                <?php flash_render(); ?>
+                <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+                    <ol class="breadcrumb-list">
+                        <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
+                        <li class="breadcrumb-item" aria-current="page">User Profile</li>
+                    </ol>
+                </nav>
+
+                <section class="signin-hero">
+                    <h1>Sign In To Your Profile</h1>
+                    <div class="signin-underline"></div>
+                    <p>To see your profile and manage collections, please sign in or create an account.</p>
+
+                    <div class="signin-actions">
+                        <a class="signin-btn signin-btn--primary" href="user_create.php">Log In</a>
+                        <a class="signin-btn signin-btn--accent" href="user_create.php">Create Account</a>
+                        <a class="signin-btn" href="home_page.php">Browse As Guest</a>
+                    </div>
+                </section>
+            </main>
+            <?php include __DIR__ . '/../includes/footer.php'; ?>
+        </body>
+
+        </html>
+        <?php exit; ?>
+        <?php endif; ?>
+
         <main class="page-shell">
             <?php flash_render(); ?>
 

@@ -203,6 +203,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Events • GoodCollections</title>
   <link rel="stylesheet" href="../../CSS/general.css">
+  <link rel="stylesheet" href="../../CSS/navbar.css">
   <link rel="stylesheet" href="../../CSS/events.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../../CSS/christmas.css">

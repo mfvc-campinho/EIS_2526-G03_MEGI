@@ -245,6 +245,8 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
         <!-- Estilos globais -->
         <link rel="stylesheet" href="../../CSS/general.css">
+        <!-- Navbar dedicated styles -->
+        <link rel="stylesheet" href="../../CSS/navbar.css">
 
         <!-- Estilos específicos da página de perfil -->
         <link rel="stylesheet" href="../../CSS/user_page.css">

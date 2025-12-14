@@ -204,6 +204,8 @@ $exportUrl = 'all_collections.php?' . http_build_query($exportParams);
 
         <!-- estilos globais -->
         <link rel="stylesheet" href="../../CSS/general.css">
+        <!-- navbar styles -->
+        <link rel="stylesheet" href="../../CSS/navbar.css">
         <link rel="stylesheet" href="././CSS/likes.css">
 
         <!-- estilos específicos desta página -->

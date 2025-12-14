@@ -174,6 +174,8 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
     <!-- Estilos globais -->
     <link rel="stylesheet" href="../../CSS/general.css">
+    <!-- Navbar dedicated styles -->
+    <link rel="stylesheet" href="../../CSS/navbar.css">
 
     <!-- Estilos específicos da home -->
     <link rel="stylesheet" href="../../CSS/home_page.css?v=14">

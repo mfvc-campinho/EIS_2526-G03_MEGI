@@ -103,6 +103,7 @@ if (!$returnTo || stripos($returnTo, 'collections_form.php') !== false) {
         <title><?php echo $editing ? 'Edit' : 'New'; ?> Collection • GoodCollections</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="../../CSS/christmas.css">
         <script src="../../JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
@@ -151,7 +152,18 @@ if (!$returnTo || stripos($returnTo, 'collections_form.php') !== false) {
                 <label>Cover image (upload)</label>
                 <input type="file" name="coverImageFile" accept="image/*">
                 <?php if (!empty($collection['coverImage'])): ?>
-                    <p class="muted" style="margin-top:4px;">Current image: <?php echo htmlspecialchars($collection['coverImage']); ?> (leave empty to keep)</p>
+                    <?php
+                        $coverImageUrl = $collection['coverImage'];
+                        if ($coverImageUrl && !preg_match('#^https?://#', $coverImageUrl)) {
+                            $coverImageUrl = '../../' . ltrim($coverImageUrl, './');
+                        }
+                    ?>
+                    <div class="muted" style="margin-top:8px; display:flex; align-items:flex-start; gap:10px;">
+                        <div style="flex:0 0 auto; width:120px; height:120px; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; background:#f8fafc; display:flex; align-items:center; justify-content:center;">
+                            <img src="<?php echo htmlspecialchars($coverImageUrl); ?>" alt="Current cover image" style="max-width:100%; max-height:100%; object-fit:cover;">
+                        </div>
+                        <p style="margin:0; line-height:1.5;">Current image (leave empty to keep).</p>
+                    </div>
                 <?php endif; ?>
 
                 <div class="actions">
@@ -163,4 +175,3 @@ if (!$returnTo || stripos($returnTo, 'collections_form.php') !== false) {
     </body>
 
 </html>
-

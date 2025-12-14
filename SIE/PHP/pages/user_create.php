@@ -16,6 +16,7 @@ require_once __DIR__ . '/../includes/flash.php';
         <title>Create Account • GoodCollections</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="../../CSS/christmas.css">
         <script src="../../JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>

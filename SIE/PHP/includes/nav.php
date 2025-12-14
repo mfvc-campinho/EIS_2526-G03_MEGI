@@ -70,12 +70,6 @@ function nav_active($basename) {
                 </div>
             </div>
 
-            <!-- Search Collections -->
-            <form action="all_collections.php" method="GET" class="search-wrapper">
-                <i class="bi bi-search search-icon"></i>
-                <input type="search" name="search" class="search-bar" placeholder="Search collections..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
-            </form>
-
             <!-- Dark Mode Toggle -->
             <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
                 <i class="bi bi-moon-fill"></i>
@@ -92,4 +86,3 @@ if (function_exists('flash_render')) {
 
 <!-- Alert dot script (checks upcoming RSVPs via PHP endpoint) -->
 <script src="../../JS/events-alert.js"></script>
-

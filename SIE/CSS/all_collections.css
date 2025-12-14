@@ -18,6 +18,19 @@ body {
    =============================== */
 
 /* filter chip layout lives in general.css */
+.top-controls {
+  justify-content: center;
+}
+
+.top-controls .left {
+  justify-content: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.top-controls .filters-form {
+  justify-content: center;
+}
 
 /* ===============================
    Action icons (expand, like, edit, delete)

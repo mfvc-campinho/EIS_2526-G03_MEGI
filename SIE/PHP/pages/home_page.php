@@ -23,6 +23,37 @@ $collectionItems = $data['collectionItems'] ?? [];
 $items = $data['items'] ?? [];
 $isAuthenticated = !empty($_SESSION['user']);
 $currentUserId = $isAuthenticated ? ($_SESSION['user']['id'] ?? null) : null;
+$likedCollections = [];
+$collectionLikeCounts = [];
+
+// Fetch like counts + user likes for collections
+require __DIR__ . '/../config/db.php';
+if ($mysqli && !$mysqli->connect_error) {
+    $res = $mysqli->query("SELECT liked_collection_id, COUNT(*) as cnt FROM user_liked_collections GROUP BY liked_collection_id");
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $cid = $row['liked_collection_id'] ?? null;
+            if ($cid) {
+                $collectionLikeCounts[$cid] = (int)($row['cnt'] ?? 0);
+            }
+        }
+        $res->close();
+    }
+    if ($isAuthenticated && $currentUserId) {
+        $stmt = $mysqli->prepare("SELECT liked_collection_id FROM user_liked_collections WHERE user_id = ?");
+        if ($stmt) {
+            $stmt->bind_param('s', $currentUserId);
+            $stmt->execute();
+            $res2 = $stmt->get_result();
+            while ($row = $res2->fetch_assoc()) {
+                $cid = $row['liked_collection_id'] ?? null;
+                if ($cid) $likedCollections[$cid] = true;
+            }
+            $stmt->close();
+        }
+    }
+    $mysqli->close();
+}
 
 $eventRsvpMap = [];
 foreach ($eventsUsers as $entry) {
@@ -338,6 +369,42 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                         <?php endif; ?>
                                     </div>
 
+                                    <?php $isOwner = $isAuthenticated && (($col['ownerId'] ?? null) === $currentUserId); ?>
+                                    <div class="collection-card__actions card-actions">
+                                        <label class="action-icon" for="<?php echo $previewId; ?>" title="Expand">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </label>
+
+                                        <?php if ($isAuthenticated): ?>
+                                            <form action="likes_action.php" method="POST" class="action-icon-form like-form">
+                                                <input type="hidden" name="type" value="collection">
+                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
+                                                <?php $likeCount = $collectionLikeCounts[$col['id']] ?? 0; ?>
+                                                <button type="submit" class="action-icon<?php echo isset($likedCollections[$col['id']]) ? ' is-liked' : ''; ?>" title="Like">
+                                                    <i class="bi <?php echo isset($likedCollections[$col['id']]) ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
+                                                    <span class="like-count<?php echo $likeCount === 0 ? ' is-zero' : ''; ?>"><?php echo $likeCount; ?></span>
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <button type="button" class="action-icon" data-action="login-popup" data-login-url="auth.php" title="Like">
+                                                <i class="bi bi-heart"></i>
+                                            </button>
+                                        <?php endif; ?>
+
+                                        <?php if ($isOwner): ?>
+                                            <a class="action-icon" href="collections_form.php?id=<?php echo urlencode($col['id']); ?>&from=home_page" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form action="collections_action.php" method="POST" class="action-icon-form">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
+                                                <button type="submit" class="action-icon is-danger" title="Delete" onclick="return confirm('Delete this collection?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+
                                     <div class="card-buttons">
                                         <label class="explore-btn ghost preview-show"
                                             for="<?php echo $previewId; ?>">
@@ -485,7 +552,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                     <form action="events_action.php" method="POST" class="home-event-rsvp<?php echo $hasRsvp ? ' is-active' : ''; ?>">
                                         <input type="hidden" name="action" value="rsvp">
                                         <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
-                                        <input type="hidden" name="return_url" value="event_page.php">
+                                        <input type="hidden" name="return_url" value="home_page.php">
                                         <button type="submit" class="home-event-rsvp__button">
                                             <i class="bi bi-check2-circle"></i>
                                             <span><?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?></span>

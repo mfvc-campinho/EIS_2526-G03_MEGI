@@ -206,12 +206,14 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
 
                 <div class="top-controls">
                     <div class="left">
-            <form action="all_collections.php" method="GET" class="search-wrapper">
-                <i class="bi bi-search search-icon"></i>
-                <input type="search" name="search" class="search-bar" placeholder="Search collections..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
-            </form>
-
                         <form id="filters" class="filters-form" method="GET">
+                            <div class="filter-chip filter-chip--search">
+                                <label class="filter-chip__label" for="search-input">
+                                    <i class="bi bi-search"></i>
+                                    <span>Search</span>
+                                </label>
+                                <input id="search-input" type="search" name="search" class="filter-chip__input" placeholder="Search collections..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                            </div>
                             <div class="filter-chip filter-chip--select">
                                 <label class="filter-chip__label" for="sort-select">
                                     <i class="bi bi-funnel"></i>

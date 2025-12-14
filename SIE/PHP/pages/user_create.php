@@ -43,7 +43,7 @@ require_once __DIR__ . '/../includes/flash.php';
                     <a href="home_page.php" class="text-link">Back</a>
                 </header>
 
-                <form class="form-card" action="users_action.php" method="POST" enctype="multipart/form-data">
+                <form class="form-card" action="users_action.php" method="POST" enctype="multipart/form-data" id="user-create-form">
                     <input type="hidden" name="action" value="create">
 
                     <label>Name <span class="required-badge">R</span></label>
@@ -56,16 +56,71 @@ require_once __DIR__ . '/../includes/flash.php';
                     <input type="file" name="photoFile" accept="image/*">
 
                     <label>Date of birth<span class="required-badge">R</span></label>
-                    <input type="date" name="dob">
+                    <input type="date" name="dob" id="dob" required>
 
                     <label>Password <span class="required-badge">R</span></label>
-                    <input type="password" name="password" required>
+                    <input type="password" name="password" id="password" required>
+
+                    <label>Confirm Password <span class="required-badge">R</span></label>
+                    <input type="password" name="password_confirm" id="password_confirm" required>
 
                     <div class="actions">
                         <button type="submit" class="explore-btn">Create Account</button>
                         <a class="explore-btn ghost" href="home_page.php">Cancel</a>
                     </div>
                 </form>
+                                <script>
+                                    (function(){
+                                        var form = document.getElementById('user-create-form');
+                                        var dob = document.getElementById('dob');
+                                        var pass = document.getElementById('password');
+                                        var pass2 = document.getElementById('password_confirm');
+                                        if (dob) {
+                                            var today = new Date();
+                                            var minAge = 14;
+                                            var maxAge = 90;
+                                            function toISO(d){
+                                                var y = d.getFullYear();
+                                                var m = String(d.getMonth()+1).padStart(2,'0');
+                                                var day = String(d.getDate()).padStart(2,'0');
+                                                return y+'-'+m+'-'+day;
+                                            }
+                                            var maxDate = new Date(today.getFullYear()-minAge, today.getMonth(), today.getDate());
+                                            var minDate = new Date(today.getFullYear()-maxAge, today.getMonth(), today.getDate());
+                                            dob.setAttribute('max', toISO(maxDate));
+                                            dob.setAttribute('min', toISO(minDate));
+                                        }
+                                        if (form) {
+                                            form.addEventListener('submit', function(e){
+                                                // Passwords must match
+                                                if (pass && pass2 && pass.value !== pass2.value) {
+                                                    e.preventDefault();
+                                                    alert('Passwords do not match. Please re-enter.');
+                                                    pass2.focus();
+                                                    return;
+                                                }
+                                                // Validate age range 14-90
+                                                if (dob && dob.value) {
+                                                    try {
+                                                        var d = new Date(dob.value);
+                                                        var today = new Date();
+                                                        var age = today.getFullYear() - d.getFullYear();
+                                                        var m = today.getMonth() - d.getMonth();
+                                                        if (m < 0 || (m === 0 && today.getDate() < d.getDate())) {
+                                                            age--;
+                                                        }
+                                                        if (age < 14 || age > 90) {
+                                                            e.preventDefault();
+                                                            alert('Age must be between 14 and 90 years.');
+                                                            dob.focus();
+                                                            return;
+                                                        }
+                                                    } catch(err) {}
+                                                }
+                                            });
+                                        }
+                                    })();
+                                </script>
             </div>
         </main>
     </body>

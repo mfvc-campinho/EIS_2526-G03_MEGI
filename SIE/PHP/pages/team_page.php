@@ -12,7 +12,7 @@ $team = [
     'name' => 'Ana Isabel Dias Cunha Amorim',
     'id' => 'up202107329',
     'photo' => '../../images/team/Ana.jpg',
-    'blurb' => "If I used this site, I'd collect airplane miniatures. I love them!",
+    'blurb' => "If I used this site, I'd collect CS:GO Skins. I love them!",
     'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202107329'
   ],
   [

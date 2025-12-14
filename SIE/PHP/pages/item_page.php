@@ -85,7 +85,13 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
       </section>
     <?php else: ?>
       <section id="item-details" class="item-details-card">
-        <img id="item-image-display" src="<?php echo htmlspecialchars($img); ?>" alt="Item image">
+        <?php if (!empty($item['image'])): ?>
+          <img id="item-image-display" src="<?php echo htmlspecialchars($img); ?>" alt="Item image">
+        <?php else: ?>
+          <div class="card-image-placeholder">
+            No image available
+          </div>
+        <?php endif; ?>
         <div class="item-details-text">
           <h1 id="item-name-display"><?php echo htmlspecialchars($item['name'] ?? ''); ?></h1>
           <p><strong>Importance:</strong> <span id="item-importance-display"><?php echo htmlspecialchars($item['importance'] ?? '-'); ?></span></p>

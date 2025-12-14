@@ -495,6 +495,9 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                             <?php endif; ?>
 
                                             <?php if ($isOwnerProfile): ?>
+                                                <a class="action-icon" href="events_form.php?collectionId=<?php echo urlencode($col['id']); ?>" title="Add Event">
+                                                    <i class="bi bi-calendar-plus"></i>
+                                                </a>
                                                 <a class="action-icon" href="collections_form.php?id=<?php echo urlencode($col['id']); ?>&from=user_page" title="Edit">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>

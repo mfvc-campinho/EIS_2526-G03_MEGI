@@ -91,22 +91,31 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
           <p><strong>Weight:</strong> <span id="item-weight-display"><?php echo htmlspecialchars($item['weight'] ?? '-'); ?></span> g</p>
           <p><strong>Price:</strong> €<span id="item-price-display"><?php echo htmlspecialchars($item['price'] ?? '-'); ?></span></p>
           <p><strong>Acquisition Date:</strong> <span id="item-date-display"><?php echo htmlspecialchars($item['acquisitionDate'] ?? '-'); ?></span></p>
-          <?php if ($isOwner): ?>
-            <div class="collection-card__actions card-actions card-buttons item-page-actions">
-              <a class="action-icon" href="items_form.php?id=<?php echo urlencode($item['id']); ?>" title="Edit item">
-                <i class="bi bi-pencil"></i>
-              </a>
-              <form action="items_action.php" method="POST" class="action-icon-form">
-                <input type="hidden" name="action" value="delete">
-                <input type="hidden" name="id" value="<?php echo htmlspecialchars($item['id']); ?>">
-                <button type="submit" class="action-icon is-danger" title="Delete item" onclick="return confirm('Delete item?');">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </form>
-            </div>
+          <?php if ($col): ?>
+            <p><strong>Collection:</strong> <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name'] ?? ''); ?></a></p>
           <?php endif; ?>
         </div>
       </section>
+
+      <div id="buttons-bar" style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <a href="javascript:history.back()" class="explore-btn ghost">
+          <i class="bi bi-arrow-left"></i>
+          Back
+        </a>
+        <?php if ($isOwner): ?>
+          <a class="explore-btn" href="items_form.php?id=<?php echo urlencode($item['id']); ?>" title="Edit item">
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+          <form action="items_action.php" method="POST" class="action-icon-form" style="margin:0;">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="<?php echo htmlspecialchars($item['id']); ?>">
+            <input type="hidden" name="return_to" value="specific_collection.php?id=<?php echo urlencode($col['id'] ?? ''); ?>">
+            <button type="submit" class="explore-btn danger" title="Delete item" onclick="return confirm('Delete item?');">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </form>
+        <?php endif; ?>
+      </div>
 
       <section class="item-relations">
         <h2 class="sr-only">Item relations</h2>
@@ -120,10 +129,10 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
           </div>
           <div class="related-list">
             <?php if ($col): ?>
-              <a class="related-chip" href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
+              <div class="related-chip">
                 <i class="bi bi-box"></i>
-                <span><?php echo htmlspecialchars($col['name'] ?? ''); ?></span>
-              </a>
+                <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name'] ?? ''); ?></a>
+              </div>
             <?php else: ?>
               <p class="muted">No related collections.</p>
             <?php endif; ?>
@@ -133,7 +142,13 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
     <?php endif; ?>
   </main>
 
+  <!-- Back to Top Button -->
+  <button id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
+    <i class="bi bi-arrow-up"></i>
+  </button>
+
   <?php include __DIR__ . '/../includes/footer.php'; ?>
+  <script src="../../JS/back-to-top.js"></script>
 </body>
 
 </html>

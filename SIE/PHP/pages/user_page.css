@@ -2,3 +2,7 @@
 .user-event-card--link {
   text-decoration: none;
 }
+
+.user-top-collections-controls {
+  margin-top: 16px;
+}

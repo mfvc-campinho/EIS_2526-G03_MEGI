@@ -176,7 +176,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <link rel="stylesheet" href="../../CSS/general.css">
 
     <!-- Estilos específicos da home -->
-    <link rel="stylesheet" href="../../CSS/home_page.css?v=7">
+    <link rel="stylesheet" href="../../CSS/home_page.css?v=9">
 
     <!-- Eventos + likes -->
     <link rel="stylesheet" href="../../CSS/events.css">
@@ -661,7 +661,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <div class="modal-backdrop" id="event-modal">
         <div class="modal-card">
             <div class="modal-header">
-                <button type="button" class="modal-close" aria-label="Close event details">
+                <button type="button" class="modal-close" aria-label="Close event details" onclick="document.getElementById('event-modal')?.classList.remove('open')">
                     <i class="bi bi-x"></i>
                 </button>
                 <h3 id="modal-title"></h3>

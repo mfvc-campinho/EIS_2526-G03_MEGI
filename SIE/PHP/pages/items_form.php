@@ -156,25 +156,15 @@ $existingCollections = array_unique($existingCollections);
                     <span class="required-badge">R</span>
                 </label>
 
-                <fieldset class="checkbox-group" style="background: linear-gradient(135deg, #f8fafb 0%, #ffffff 100%); padding: 18px; border-radius: 14px; border: 2px solid #f0f4f8;">
+                <div class="checkbox-grid" style="background: linear-gradient(135deg, #f8fafb 0%, #ffffff 100%); padding: 12px; border-radius: 14px; border: 2px solid #f0f4f8;">
                     <?php foreach ($ownedCollections as $col): ?>
-                        <?php
-                        $checked = in_array($col['id'], $existingCollections, true) || (!$editing && ($item['collectionId'] ?? '') === $col['id']);
-                        ?>
-                        <div class="checkbox-item">
-                            <input
-                                type="checkbox"
-                                name="collectionIds[]"
-                                value="<?php echo htmlspecialchars($col['id']); ?>"
-                                id="collection-<?php echo htmlspecialchars($col['id']); ?>"
-                                <?php echo $checked ? 'checked' : ''; ?>
-                                >
-                            <label for="collection-<?php echo htmlspecialchars($col['id']); ?>" style="margin: 0; font-weight: 600;">
-                                <?php echo htmlspecialchars($col['name']); ?>
-                            </label>
-                        </div>
+                        <?php $checked = in_array($col['id'], $existingCollections, true) || (!$editing && ($item['collectionId'] ?? '') === $col['id']); ?>
+                        <label class="checkbox-pill">
+                            <input type="checkbox" name="collectionIds[]" value="<?php echo htmlspecialchars($col['id']); ?>" <?php echo $checked ? 'checked' : ''; ?>>
+                            <span><?php echo htmlspecialchars($col['name']); ?></span>
+                        </label>
                     <?php endforeach; ?>
-                </fieldset>
+                </div>
 
                 <p class="form-help" style="margin-top: 10px;">
                     Only collections that belong to you are shown.

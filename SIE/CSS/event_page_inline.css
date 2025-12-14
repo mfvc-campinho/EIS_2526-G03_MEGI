@@ -620,7 +620,8 @@ body {
   color: #0f172a;
   border: 1px solid #d8dee6;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;

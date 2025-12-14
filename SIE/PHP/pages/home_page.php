@@ -438,6 +438,8 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             <div class="upcoming-inner">
                 <div class="section-header">
                     <h2 class="upcoming-title">Upcoming Events</h2>
+                    <div class="upcoming-underline"></div>
+                    <p class="upcoming-sub">Discover upcoming community exhibitions and fairs</p>
                 </div>
 
                 <div class="events-grid" id="eventsList">

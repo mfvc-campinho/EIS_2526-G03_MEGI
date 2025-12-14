@@ -375,11 +375,12 @@
 /* Upcoming Events layout: denser and cohesive */
 .upcoming-inner .section-header {
   display: flex;
-  margin: 0; 
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 16px;
-  font-size: 2.2rem;
+  gap: 8px;
+  margin: 0;
 }
 
 .upcoming-inner .section-header h2,
@@ -550,10 +551,7 @@
     padding: 28px 24px;
   }
   .upcoming-inner .section-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
+    gap: 8px;
   }
 }
 

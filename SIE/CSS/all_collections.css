@@ -17,19 +17,47 @@ body {
    Top controls (filtros + paginação)
    =============================== */
 
-/* filter chip layout lives in general.css */
+/* Horizontal alignment for filters + pagination */
+/* Two-row controls layout */
 .top-controls {
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
 }
 
-.top-controls .left {
-  justify-content: center;
-  width: 100%;
+.top-controls .controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .top-controls .filters-form {
-  justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.top-controls .controls-row--secondary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.top-controls .controls-row--secondary .paginate {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* Ensure CSV sits at the far right within the paginate group */
+.top-controls .controls-row--secondary .paginate .paginate__csv {
+  order: 3;
 }
 
 /* ===============================
@@ -69,8 +97,11 @@ body {
 }
 
 @media (max-width: 600px) {
-  .top-controls {
-    align-items: flex-start;
+  .top-controls .controls-row,
+  .top-controls .controls-row--secondary {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
 
   .collection-grid {
@@ -78,7 +109,7 @@ body {
     gap: 16px;
   }
 
-  .paginate {
+  .top-controls .controls-row--secondary .paginate {
     width: 100%;
     justify-content: space-between;
   }

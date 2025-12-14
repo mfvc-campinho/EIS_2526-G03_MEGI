@@ -324,6 +324,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 <?php
                                 $avatar = $profileUser['user_photo'] ?? '';
                                 if ($avatar && !preg_match('#^https?://#', $avatar)) {
+                                    // From /PHP/pages to /SIE/uploads requires two levels up
                                     $avatar = '../../' . ltrim($avatar, './');
                                 }
                                 ?>
@@ -660,6 +661,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 $followerName = $follower['user_name'] ?? $follower['username'] ?? 'Unknown';
                                 $followerPhoto = $follower['user_photo'] ?? '';
                                 if ($followerPhoto && !preg_match('#^https?://#', $followerPhoto)) {
+                                    // From /PHP/pages to /SIE/uploads requires two levels up
                                     $followerPhoto = '../../' . ltrim($followerPhoto, './');
                                 }
                                 ?>

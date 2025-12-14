@@ -174,7 +174,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
         <link rel="stylesheet" href="././CSS/likes.css">
 
         <!-- estilos específicos desta página -->
-        <link rel="stylesheet" href="../../CSS/all_collections.css">
+        <link rel="stylesheet" href="../../CSS/all_collections.css?v=4">
 
         <!-- ícones + tema -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

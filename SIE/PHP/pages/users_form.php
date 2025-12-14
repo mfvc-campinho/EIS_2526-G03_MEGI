@@ -62,7 +62,19 @@ if (!$user) {
       <label>Photo (upload)</label>
       <input type="file" name="photoFile" accept="image/*">
       <?php if (!empty($user['user_photo'])): ?>
-        <p class="muted" style="margin-top:4px;">Current photo: <?php echo htmlspecialchars($user['user_photo']); ?> (leave empty to keep)</p>
+        <?php
+          $avatarPreview = $user['user_photo'];
+          if ($avatarPreview && !preg_match('#^https?://#', $avatarPreview)) {
+            // Go two levels up from /PHP/pages to reach /SIE/uploads
+            $avatarPreview = '../../' . ltrim($avatarPreview, './');
+          }
+        ?>
+        <div class="muted" style="margin-top:8px; display:flex; align-items:flex-start; gap:10px;">
+          <div style="flex:0 0 auto; width:96px; height:96px; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; background:#f8fafc; display:flex; align-items:center; justify-content:center;">
+            <img src="<?php echo htmlspecialchars($avatarPreview); ?>" alt="Current photo" style="max-width:100%; max-height:100%; object-fit:cover;">
+          </div>
+          <p style="margin:0; line-height:1.5;">Current photo (leave empty to keep).</p>
+        </div>
       <?php endif; ?>
 
       <label>Date of birth</label>
@@ -80,5 +92,3 @@ if (!$user) {
 </body>
 
 </html>
-
-

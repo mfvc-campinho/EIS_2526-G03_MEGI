@@ -180,7 +180,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <link rel="stylesheet" href="../../CSS/general.css">
 
     <!-- Estilos específicos da home -->
-    <link rel="stylesheet" href="../../CSS/home_page.css">
+    <link rel="stylesheet" href="../../CSS/home_page.css?v=4">
 
     <!-- Eventos + likes -->
     <link rel="stylesheet" href="../../CSS/events.css">
@@ -460,7 +460,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                     Don't miss the next exhibitions, fairs and meetups curated by our community.
                 </p>
 
-                <div class="events-grid">
+                <div class="events-grid" id="eventsList">
                     <?php if ($upcomingEvents): ?>
                         <?php foreach ($upcomingEvents as $evt): ?>
                             <?php

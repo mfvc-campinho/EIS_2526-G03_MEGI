@@ -340,7 +340,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
       </div>
     </div>
 
-    <div class="events-grid">
+    <div class="events-grid" id="eventsList">
       <?php if ($eventsPage): ?>
         <?php foreach ($eventsPage as $evt): ?>
           <?php

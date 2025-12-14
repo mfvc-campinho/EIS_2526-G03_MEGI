@@ -44,6 +44,36 @@
   letter-spacing: 0.5px;
 }
 
+/* Event modal (shared with events page) */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 0;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 768px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -58,6 +88,19 @@
     font-size: 1.5rem;
   }
 }
+
+@media (max-width: 768px) {
+  .page-main {
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-main {
+    padding-inline: 12px;
+  }
+}
+
 
 /* Secção das Top Collections */
 .ranking-section {
@@ -143,6 +186,43 @@
 
 .home-card .preview-item span {
   font-size: 0.9rem;
+}
+
+/* Responsivo para grids de coleções */
+@media (max-width: 900px) {
+  .collection-grid {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .collection-grid {
+    gap: 16px;
+  }
+}
+
+/* Extra safety for muito pequenos */
+@media (max-width: 480px) {
+  .page-main {
+    padding-inline: 12px;
+  }
+}
+
+/* Top controls wrapping on small screens */
+@media (max-width: 900px) {
+  .ranking-section .top-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .ranking-section .top-controls .left {
+    width: 100%;
+    justify-content: center;
+  }
+  .ranking-section .top-controls .paginate {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 /* Card da home: remove o min-height 420px dos cards globais */
@@ -247,7 +327,8 @@
   }
 }
 
-Home – Statistics strip
+/* ===============================
+   Home – Statistics strip
    =============================== */
 
 .stats-section {

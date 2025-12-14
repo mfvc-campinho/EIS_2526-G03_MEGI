@@ -121,7 +121,15 @@ if ($action === 'update') {
   $email = trim($_POST['email'] ?? '');
   $dob = $_POST['dob'] ?? null;
   $password = $_POST['password'] ?? '';
-  $photoPath = handle_upload('photoFile', 'users', $existing['user_photo'] ?? '');
+  $oldPhoto = $existing['user_photo'] ?? '';
+  $photoPath = handle_upload('photoFile', 'users', $oldPhoto);
+  // If a new photo was uploaded, remove the previous file (only local paths).
+  if ($photoPath && $oldPhoto && $photoPath !== $oldPhoto && !preg_match('#^https?://#i', $oldPhoto)) {
+    $oldFile = __DIR__ . '/../' . ltrim($oldPhoto, '/');
+    if (is_file($oldFile)) {
+      @unlink($oldFile);
+    }
+  }
 
   if ($name === '' || $email === '') {
     $mysqli->close();
@@ -141,8 +149,10 @@ if ($action === 'update') {
   $stmt->close();
 
   $_SESSION['user']['user_name'] = $name;
+  $_SESSION['user']['name'] = $name;
   $_SESSION['user']['email'] = $email;
   $_SESSION['user']['user_photo'] = $photoPath;
+  $_SESSION['user']['photo'] = $photoPath;
 
   $mysqli->close();
   if ($ok) {

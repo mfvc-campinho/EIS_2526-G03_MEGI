@@ -55,7 +55,7 @@ require_once __DIR__ . '/../includes/flash.php';
                     <label>Photo (upload)</label>
                     <input type="file" name="photoFile" accept="image/*">
 
-                    <label>Date of birth</label>
+                    <label>Date of birth<span class="required-badge">R</span></label>
                     <input type="date" name="dob">
 
                     <label>Password <span class="required-badge">R</span></label>

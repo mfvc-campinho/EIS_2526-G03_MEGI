@@ -429,13 +429,15 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
         <!-- BLOCOS DE EVENTOS (mantive exatamente a tua lógica) -->
         <section class="upcoming-events inner-block">
             <div class="upcoming-inner">
-                <h2 class="upcoming-title">
-                    <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i>
-                    Upcoming Events
-                </h2>
-                <p class="upcoming-sub">
-                    Don't miss the next exhibitions, fairs and meetups curated by our community.
-                </p>
+                <div class="section-header">
+                    <h2 class="upcoming-title">
+                        <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i>
+                        Upcoming Events
+                    </h2>
+                    <p class="upcoming-sub">
+                        Don't miss the next exhibitions, fairs and meetups curated by our community.
+                    </p>
+                </div>
 
                 <div class="events-grid" id="eventsList">
                     <?php if ($upcomingEvents): ?>
@@ -571,7 +573,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 </div>
 
                 <div class="events-actions">
-                    <a href="event_page.php" class="explore-btn ghost">View Events</a>
+                    <a href="event_page.php" class="explore-btn ghost view-events-cta">View Events</a>
                 </div>
             </div>
         </section>

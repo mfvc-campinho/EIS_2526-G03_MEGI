@@ -1,3 +1,21 @@
+/**
+ * gc-scroll-restore.js - Scroll position restoration utility for GoodCollections
+ *
+ * This script provides automatic scroll position saving and restoration across page navigations,
+ * form submissions, and browser history events. It uses sessionStorage to persist scroll positions
+ * and integrates with navigation helpers to maintain user context during page transitions.
+ *
+ * Key features:
+ * - Saves scroll position before navigation or form submission
+ * - Restores scroll position on page load and history navigation
+ * - Handles dynamic content changes with reinforcement and stabilization mechanisms
+ * - Integrates with gc-nav.js for seamless navigation experience
+ *
+ * Connected files:
+ * - Included in nav.php (global navigation include)
+ * - Used in pages like home_page.php, all_collections.php, etc. via gcInitScrollRestore()
+ */
+
 (function (global) {
   'use strict';
 

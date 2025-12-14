@@ -483,8 +483,8 @@
   gap: 8px;
   margin: 18px auto 0;
   padding: 10px 16px;
-  background: #0b3b70;
-  color: #ffffff;
+  background: #0b3b70; /* enforce visible background */
+  color: #ffffff;      /* enforce visible text */
   border: 1px solid #0b3b70;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(11, 59, 112, 0.18);
@@ -496,6 +496,15 @@
   border-color: #0d3f7a;
   transform: translateY(-2px);
   box-shadow: 0 10px 26px rgba(11, 59, 112, 0.28);
+}
+
+/* Override ghost style if applied */
+.events-actions .view-events-cta,
+.view-events-cta.explore-btn.ghost {
+  background: #0b3b70 !important;
+  color: #ffffff !important;
+  border-color: #0b3b70 !important;
+  opacity: 1 !important;
 }
 
 @media (max-width: 768px) {

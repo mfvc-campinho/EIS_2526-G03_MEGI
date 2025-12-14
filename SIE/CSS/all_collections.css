@@ -105,6 +105,7 @@ body {
   .page-shell {
     padding-inline: 12px;
   }
+
   .page-shell .collection-grid {
     gap: 12px;
   }
@@ -129,6 +130,11 @@ body {
   font-size: 0.96rem;
   color: #4b5563;
   max-width: 620px;
+}
+
+/* Override pointer-events for expand icon to allow clicking */
+.collection-card__actions .action-icon i {
+  pointer-events: auto;
 }
 
 /* ===============================

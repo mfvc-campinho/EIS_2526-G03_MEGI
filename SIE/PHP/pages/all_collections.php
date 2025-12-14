@@ -299,23 +299,23 @@ $exportUrl = 'all_collections.php?' . http_build_query($exportParams);
                                 <input type="hidden" name="mine" value="<?php echo $myCollections ? '1' : '0'; ?>">
                             <?php endif; ?>
 
+                            <div class="filter-chip filter-chip--compact filter-chip--select">
+                                <label class="filter-chip__label" for="per-page-select">
+                                    <i class="bi bi-collection"></i>
+                                    <span>Show</span>
+                                </label>
+                                <select name="perPage" id="per-page-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+                                    <?php foreach ([5, 10, 20] as $opt): ?>
+                                        <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <span class="filter-chip__hint">per page</span>
+                            </div>
+
                             <input type="hidden" name="page" value="1">
                         </form>
                     </div>
                     <div class="controls-row controls-row--secondary">
-                        <div class="filter-chip filter-chip--compact filter-chip--select">
-                            <label class="filter-chip__label" for="per-page-select">
-                                <i class="bi bi-collection"></i>
-                                <span>Show</span>
-                            </label>
-                            <select name="perPage" id="per-page-select" class="filter-chip__select" onchange="gcSubmitWithScroll(document.getElementById('filters'))">
-                                <?php foreach ([5, 10, 20] as $opt): ?>
-                                    <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <span class="filter-chip__hint">per page</span>
-                        </div>
-
                         <div class="paginate">
                             <span>Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $perPage, $total); ?> of <?php echo $total; ?></span>
                             <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(array_merge($_GET, ['page' => max(1, $page - 1)])); ?>')"><i class="bi bi-chevron-left"></i></button>

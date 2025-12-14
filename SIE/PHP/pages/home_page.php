@@ -829,11 +829,6 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                             <span><?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?></span>
                                         </button>
                                     </form>
-                                <?php else: ?>
-                                    <a class="home-event-rsvp home-event-rsvp--login" href="<?php echo $isAuthenticated ? 'event_page.php' : 'auth.php'; ?>">
-                                        <i class="bi <?php echo $isAuthenticated ? 'bi-box-arrow-up-right' : 'bi-lock'; ?>"></i>
-                                        <span><?php echo $isAuthenticated ? 'View event details' : 'Sign in to RSVP'; ?></span>
-                                    </a>
                                 <?php endif; ?>
                             </article>
                         <?php endforeach; ?>
@@ -1195,4 +1190,3 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 </body>
 
 </html>
-

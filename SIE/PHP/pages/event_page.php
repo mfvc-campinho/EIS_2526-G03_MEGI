@@ -424,13 +424,13 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
       <?php if ($isAuth): ?>
         <a class="explore-btn success" href="events_form.php"><i class="bi bi-calendar-plus"></i> New Event</a>
       <?php endif; ?>
-      <button type="button" class="calendar-toggle-btn active" id="calendar-toggle-btn" aria-expanded="true" aria-controls="calendar-view">
+      <button type="button" class="calendar-toggle-btn" id="calendar-toggle-btn" aria-expanded="false" aria-controls="calendar-view">
         <i class="bi bi-calendar3"></i>
-        <span id="calendar-toggle-text">Hide Calendar</span>
+        <span id="calendar-toggle-text">Show Calendar</span>
       </button>
     </div>
 
-    <div class="calendar-view show" id="calendar-view">
+    <div class="calendar-view" id="calendar-view">
       <div class="calendar-header">
         <h2 id="calendar-month-year">December 2024</h2>
         <div class="calendar-nav">
@@ -1277,10 +1277,10 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
       }
 
       renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
-      calendarView.classList.add('show');
-      calendarToggleBtn.classList.add('active');
-      calendarToggleText.textContent = 'Hide Calendar';
-      calendarToggleBtn.setAttribute('aria-expanded', 'true');
+      // calendarView.classList.add('show'); // Hidden by default
+      // calendarToggleBtn.classList.add('active'); // Not active by default
+      calendarToggleText.textContent = 'Show Calendar';
+      calendarToggleBtn.setAttribute('aria-expanded', 'false');
 
       calendarToggleBtn.addEventListener('click', function() {
         const isVisible = calendarView.classList.contains('show');

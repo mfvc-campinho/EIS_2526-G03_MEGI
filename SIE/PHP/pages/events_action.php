@@ -146,6 +146,24 @@ function replace_event_links($mysqli, $eventId, $collectionIds)
   }
 }
 
+function fetch_event_collections($mysqli, $eventId)
+{
+  $stmt = $mysqli->prepare('SELECT collection_id FROM collection_events WHERE event_id = ?');
+  if (!$stmt) return [];
+  $stmt->bind_param('s', $eventId);
+  $stmt->execute();
+  $res = $stmt->get_result();
+  $collections = [];
+  while ($row = $res->fetch_assoc()) {
+    $cid = $row['collection_id'] ?? null;
+    if ($cid && !in_array($cid, $collections, true)) {
+      $collections[] = $cid;
+    }
+  }
+  $stmt->close();
+  return $collections;
+}
+
 if ($action === 'create') {
   if (!$collectionIds) redirect_error('Select at least one collection.');
   foreach ($collectionIds as $cid) {
@@ -191,10 +209,8 @@ if ($action === 'create') {
   }
   $dateForSql = $dateObj->format('Y-m-d H:i:s');
   $costForSql = (float)number_format($costValue, 2, '.', '');
-  $primaryCol = $collectionIds[0];
-
-  $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,cost,created_at,collection_id) VALUES (?,?,?,?,?,?,?,?,NOW(),?)');
-  $stmt->bind_param('sssssssds', $id, $name, $localization, $dateForSql, $type, $summary, $description, $costForSql, $primaryCol);
+  $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,cost,created_at) VALUES (?,?,?,?,?,?,?,?,NOW())');
+  $stmt->bind_param('sssssssd', $id, $name, $localization, $dateForSql, $type, $summary, $description, $costForSql);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -209,7 +225,7 @@ if ($action === 'update') {
   if (!$id) redirect_error('ID missing.');
   if (!$collectionIds) redirect_error('Select at least one collection.');
 
-  $currentEventStmt = $mysqli->prepare('SELECT collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
+  $currentEventStmt = $mysqli->prepare('SELECT event_date FROM events WHERE event_id = ? LIMIT 1');
   $currentEventStmt->bind_param('s', $id);
   $currentEventStmt->execute();
   $currentEvent = $currentEventStmt->get_result()->fetch_assoc();
@@ -218,8 +234,15 @@ if ($action === 'update') {
     $mysqli->close();
     redirect_error('Event not found.');
   }
-  $currentCollectionId = $currentEvent['collection_id'] ?? null;
-  if (!$currentCollectionId || !user_owns_collection($mysqli, $currentCollectionId, $currentUser)) {
+  $linkedCollections = fetch_event_collections($mysqli, $id);
+  $ownsEvent = false;
+  foreach ($linkedCollections as $cid) {
+    if (user_owns_collection($mysqli, $cid, $currentUser)) {
+      $ownsEvent = true;
+      break;
+    }
+  }
+  if (!$ownsEvent) {
     $mysqli->close();
     redirect_error('You do not have permission to edit this event.');
   }
@@ -279,10 +302,9 @@ if ($action === 'update') {
   }
   $dateForSql = $dateObj->format('Y-m-d H:i:s');
   $costForSql = (float)number_format($costValue, 2, '.', '');
-  $primaryCol = $collectionIds[0];
 
-  $stmt = $mysqli->prepare('UPDATE events SET name=?, localization=?, event_date=?, type=?, summary=?, description=?, cost=?, collection_id=? WHERE event_id=?');
-  $stmt->bind_param('ssssssdss', $name, $localization, $dateForSql, $type, $summary, $description, $costForSql, $primaryCol, $id);
+  $stmt = $mysqli->prepare('UPDATE events SET name=?, localization=?, event_date=?, type=?, summary=?, description=?, cost=? WHERE event_id=?');
+  $stmt->bind_param('ssssssds', $name, $localization, $dateForSql, $type, $summary, $description, $costForSql, $id);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -296,15 +318,26 @@ if ($action === 'delete') {
   $id = $_POST['id'] ?? null;
   if (!$id) redirect_error('ID missing.');
 
-  // ownership check via event host
-  $chk = $mysqli->prepare('SELECT collection_id FROM events WHERE event_id = ? LIMIT 1');
-  $chk->bind_param('s', $id);
-  $chk->execute();
-  $res = $chk->get_result();
-  $row = $res->fetch_assoc();
-  $chk->close();
-  $eventCollection = $row['collection_id'] ?? null;
-  if (!$row || !$eventCollection || !user_owns_collection($mysqli, $eventCollection, $currentUser)) {
+  $existsStmt = $mysqli->prepare('SELECT event_id FROM events WHERE event_id = ? LIMIT 1');
+  $existsStmt->bind_param('s', $id);
+  $existsStmt->execute();
+  $existsRes = $existsStmt->get_result();
+  $existsRow = $existsRes->fetch_assoc();
+  $existsStmt->close();
+  if (!$existsRow) {
+    $mysqli->close();
+    redirect_error('Event not found.');
+  }
+
+  $linkedCollections = fetch_event_collections($mysqli, $id);
+  $ownsEvent = false;
+  foreach ($linkedCollections as $cid) {
+    if (user_owns_collection($mysqli, $cid, $currentUser)) {
+      $ownsEvent = true;
+      break;
+    }
+  }
+  if (!$ownsEvent) {
     $mysqli->close();
     redirect_error('You do not have permission to delete this event.');
   }
@@ -321,7 +354,7 @@ if ($action === 'delete') {
 
 // Fetch helper
 $fetchEvent = function ($mysqli, $eventId) {
-  $stmt = $mysqli->prepare('SELECT event_id, collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
+  $stmt = $mysqli->prepare('SELECT event_id, event_date FROM events WHERE event_id = ? LIMIT 1');
   $stmt->bind_param('s', $eventId);
   $stmt->execute();
   $res = $stmt->get_result();
@@ -470,9 +503,6 @@ if ($action === 'rate') {
     $linked = true;
   }
   $linkStmt->close();
-  if (!$linked && !empty($row['collection_id']) && $row['collection_id'] === $collectionId) {
-    $linked = true;
-  }
   if (!$linked) {
     $mysqli->close();
     redirect_error('Collection is not associated with this event.');

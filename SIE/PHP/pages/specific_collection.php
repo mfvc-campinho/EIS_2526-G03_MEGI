@@ -91,24 +91,26 @@ if (!$itemsForCollection && $collectionId) {
 }
 
 // -----------------------------
-//   Eventos da coleção (apenas futuros)
+//   Eventos da coleção (todos os associados)
 // -----------------------------
 $eventsForCollection = [];
-$today = date('Y-m-d');
 
 foreach ($collectionEvents as $link) {
     $cid = $link['collectionId'] ?? $link['collection_id'] ?? null;
     $eid = $link['eventId'] ?? $link['event_id'] ?? null;
 
     if ($cid === $collectionId && $eid && isset($eventsById[$eid])) {
-        $event = $eventsById[$eid];
-        $eventDate = substr($event['date'] ?? '', 0, 10);
-        
-        // Apenas eventos futuros (data >= hoje)
-        if ($eventDate >= $today) {
-            $eventsForCollection[] = $event;
-        }
+        $eventsForCollection[] = $eventsById[$eid];
     }
+}
+
+// Ordenar eventos por data (mais próximos primeiro)
+if (!empty($eventsForCollection)) {
+    usort($eventsForCollection, function($a, $b) {
+        $da = strtotime($a['date'] ?? $a['event_date'] ?? '') ?: 0;
+        $db = strtotime($b['date'] ?? $b['event_date'] ?? '') ?: 0;
+        return $da <=> $db;
+    });
 }
 
 // =========================

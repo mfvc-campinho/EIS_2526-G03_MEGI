@@ -208,8 +208,192 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
   <link rel="stylesheet" href="../../CSS/christmas.css">
   <script src="../../JS/theme-toggle.js"></script>
   <script src="../../JS/christmas-theme.js"></script>
-  <link rel="stylesheet" href="../../CSS/event_page_inline.css">
-
+  <style>
+    body { background: #f5f6f8; }
+    /* Subtitle spacing */
+    .collections-hero p {
+      margin: 4px auto 0;
+      max-width: 620px;
+      font-size: 0.96rem;
+      color: #4b5563;
+    }
+    .pill-toggle { display: flex; justify-content: center; gap: 14px; margin: 18px auto 0; max-width: 420px; background: #eef0ff; padding: 10px; border-radius: 24px; box-shadow: inset 0 0 0 1px rgba(99,102,241,.12); }
+    .pill-toggle a { flex: 1; text-align: center; padding: 10px 12px; border-radius: 18px; font-weight: 600; color: #6b6e82; text-decoration: none; }
+    .pill-toggle a.active { background: #fff; box-shadow: 0 8px 16px rgba(99,102,241,.15); color: #2f2f3f; }
+    .event-options-panel { max-width: 1100px; margin: 0 auto 12px; background: #ffffff; border-radius: 18px; padding: 22px 28px; box-shadow: 0 10px 25px rgba(15,23,42,0.08); border: 1px solid #e5e7eb; }
+    .event-options-head { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 12px; }
+    .event-options-head h3 { margin: 0; font-size: 1.2rem; color: #0f172a; }
+    .event-options-head p { margin: 6px 0 0; color: #4b5563; font-size: 0.92rem; }
+    .event-options-head .explore-btn { align-self: center; }
+    .month-bar { display: flex; justify-content: center; margin: 28px auto 24px; }
+    .month-chip { padding: 14px 28px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 1.1rem; font-weight: 600; color: #374151; letter-spacing: 0.5px; }
+    .events-filters { max-width: 1100px; margin: 22px auto 12px; }
+    .events-filters .left { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .events-filters__note { margin: 0; font-size: 0.85rem; color: #6b7280; }
+    .events-grid { max-width: 1200px; margin: 0 auto 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .event-card { 
+      background: #fff; 
+      border-radius: 12px; 
+      padding: 16px; 
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05); 
+      border: 1px solid #e5e7eb;
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .event-card:hover {
+      border-color: #94a3b8;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    }
+    .event-card-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .event-card h3 { margin: 0; font-size: 1.08rem; color: #0f172a; letter-spacing: -0.01em; }
+    .status-chip { padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .status-chip.upcoming { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .status-chip.past { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .pill { margin: 0; }
+    .event-meta-row { display:flex; align-items:center; gap:8px; font-size:0.9rem; color:#475569; }
+    .event-meta-row i { color:#94a3b8; font-size:1rem; }
+    .avg-stars { display:flex; gap:4px; color:#f5b301; align-items:center; font-weight:600; }
+    .avg-stars .count { color:#6b7280; font-size:0.85rem; margin-left:4px; }
+    .event-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items:center; margin-top: 2px; }
+    .event-actions .explore-btn { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; }
+    .event-actions .explore-btn.small { padding: 6px 12px; font-size: 0.8rem; }
+    .event-actions .explore-btn.ghost { padding: 6px 10px; }
+    .badge-muted { color: #6b7280; font-weight: 600; font-size: 0.8rem; }
+    .hero-subtle { font-size: 0.95rem; margin-top: -4px; }
+    .clear-btn { background: #fff0f0; color: #c53030; border: 1px solid #f5c2c0; border-radius: 12px; padding: 10px 16px; font-weight: 600; cursor: pointer; }
+    .stars { display:flex; gap:4px; }
+    .star-btn { border:none; background:transparent; cursor:pointer; padding:4px; color:#f5b301; font-size:18px; }
+    .star-btn i { pointer-events:none; }
+    .star-btn.active i { color:#f59e0b; }
+    .user-stars { display:flex; gap:4px; color:#f5b301; align-items:center; font-weight:600; }
+    .user-stars .label { color:#374151; font-size:0.9rem; margin-right:6px; }
+    .collection-chip { background: #dee3ff; color: #1e1b4b; padding: 6px 14px; border-radius: 999px; font-weight: 600; font-size: 0.85rem; }
+    .modal-ratings { margin-top: 28px; display: flex; flex-direction: column; gap: 16px; }
+    .modal-rating-overview { background: #eef2ff; color: #1e1b4b; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; }
+    .modal-rating-overview .count { color: #4338ca; font-size: 0.85rem; font-weight: 500; }
+    .modal-rating-overview .avg-value { margin-left: 6px; font-weight: 700; color: #1d4ed8; }
+    .modal-rating-stats { display: flex; flex-direction: column; gap: 14px; }
+    .modal-rating-card { background: #f8fafc; border: 1px solid #dbeafe; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .modal-rating-card-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .modal-rating-card-header .collection-name { font-weight: 700; color: #1e293b; font-size: 0.95rem; }
+    .modal-rating-card-header .rating-badge { color: #1d4ed8; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 4px; }
+    .modal-rating-card-header .rating-badge .avg-value { margin-left: 6px; font-weight: 600; color: #1e3a8a; }
+    .modal-rating-card-header .rating-badge .count { color: #475569; font-size: 0.8rem; font-weight: 500; }
+    .modal-rating-message { background: #f1f5f9; color: #334155; padding: 10px 14px; border-radius: 10px; font-size: 0.9rem; }
+    .modal-rating-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .modal-rating-form select { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
+    .modal-rating-form button { padding: 6px 14px; }
+    .modal-rating-user { display: flex; align-items: center; gap: 6px; color: #475569; font-size: 0.85rem; }
+    .modal-rating-user i { color: #f59e0b; }
+    .modal-rating-user .user-rating-stars { display: flex; gap: 4px; }
+    .modal-rating-user.pending .label { color: #f97316; font-style: italic; }
+    /* Modal */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:1000; backdrop-filter: blur(4px); }
+    .modal-backdrop.open { display:flex; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-card { background:#fff; border-radius:20px; padding:0; max-width:600px; width:90%; max-height:90vh; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; animation: slideUp 0.3s ease; overflow:hidden; display:flex; flex-direction:column; }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); padding: 32px 28px; color: white; position: relative; text-align: center; }
+    .modal-close { position: absolute; top: 16px; right: 16px; border:none; background: rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-size:20px; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+    .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+    .modal-header h3 { margin:0 0 12px 0; font-size: 2.25rem; font-weight: 900 !important; color: white !important; line-height: 1.2; }
+    .modal-type-badge { display: inline-block; background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px; }
+    .modal-body { padding: 28px; overflow-y: auto; }
+    .modal-summary { font-size: 1.05rem; color: #374151; line-height: 1.6; margin: 0 0 24px 0; font-weight: 500; }
+    .modal-description { color: #6b7280; line-height: 1.7; margin: 0 0 24px 0; }
+    .modal-info-grid { display: grid; gap: 16px; }
+    .modal-info-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb; }
+    .modal-info-icon { width: 40px; height: 40px; min-width: 40px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; }
+    .modal-info-content { flex: 1; }
+    .modal-info-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 4px; }
+    .modal-info-value { font-size: 1rem; font-weight: 600; color: #1f2937; }
+    .modal-location-link,
+    .event-location-link {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .modal-location-link:hover,
+    .event-location-link:hover {
+      text-decoration: none;
+    }
+    .modal-location-link.disabled {
+      color: #9ca3af;
+      pointer-events: none;
+      text-decoration: none;
+    }
+    /* Calendar Styles */
+    .calendar-toggle-btn {
+      padding: 12px 18px;
+      background: #f8fafc;
+      color: #0f172a;
+      border: 1px solid #d8dee6;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow:
+        0 6px 16px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      transition: all 0.2s ease;
+    }
+    .calendar-toggle-btn i {
+      color: #2563eb;
+    }
+    .calendar-toggle-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 22px rgba(15, 23, 42, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    .calendar-toggle-btn.active {
+      background: linear-gradient(120deg, #3b82f6, #2563eb);
+      color: #ffffff;
+      border-color: #2b5fd9;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+    }
+    .calendar-toggle-btn.active i {
+      color: #ffffff;
+    }
+    .calendar-view { max-width: 820px; margin: 0 auto 28px; display: none; background: white; border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .calendar-view.show { display: block; }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .calendar-header h2 { margin: 0; font-size: 1.35rem; color: #1f2937; }
+    .calendar-nav { display: flex; gap: 8px; }
+    .calendar-nav button { padding: 6px 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .calendar-nav button:hover { background: #e5e7eb; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+    .calendar-day-header { background: #f9fafb; padding: 10px 6px; text-align: center; font-weight: 700; font-size: 0.78rem; color: #6b7280; text-transform: uppercase; }
+    .calendar-day { background: white; min-height: 70px; padding: 6px; position: relative; }
+    .calendar-day.empty { background: #fafafa; }
+    .calendar-day.today { background: #eff6ff; border: 2px solid #3b82f6; }
+    .calendar-day-number { font-weight: 700; color: #374151; margin-bottom: 4px; font-size: 0.82rem; }
+    .calendar-day.empty .calendar-day-number { color: #9ca3af; }
+    .calendar-day.can-create { padding-top: 10px; }
+    .calendar-add-btn { position: absolute; top: 50%; left: 50%; width: 34px; height: 34px; border-radius: 999px; border: 1px solid rgba(4,120,87,0.25); background: #f0fdf4; color: var(--success-btn-text); display: flex; align-items: center; justify-content: center; font-size: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.15s ease, transform 0.15s ease; box-shadow: 0 4px 12px rgba(4,120,87,0.18); transform: translate(-50%, -50%) scale(0.9); z-index: 3; }
+    .calendar-add-btn:hover { transform: translate(-50%, -50%) scale(1.05); }
+    .calendar-day.can-create:hover .calendar-add-btn,
+    .calendar-day.can-create:focus-within .calendar-add-btn { opacity: 1; pointer-events: auto; }
+    .calendar-add-btn i { pointer-events: none; }
+    .calendar-event-item { background: #dbeafe; border-left: 3px solid #3b82f6; padding: 4px 6px; margin-bottom: 4px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: background 0.2s; }
+    .calendar-event-item:hover { background: #bfdbfe; }
+    .calendar-event-time { font-weight: 600; color: #1e40af; display: block; }
+    .calendar-event-name { color: #1f2937; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .calendar-event-item.rsvp { background: #dcfce7; border-left-color: #15803d; }
+    .calendar-event-item.rsvp:hover { background: #bbf7d0; }
+    .calendar-event-item.rsvp .calendar-event-time { color: #166534; }
+    .calendar-event-item.rsvp .calendar-event-name { color: #14532d; }
+    .calendar-event-item.past { background: #fdf2f8; border-left-color: #be185d; }
+    .calendar-event-item.past:hover { background: #fbcfe8; }
+    .calendar-event-item.past .calendar-event-time { color: #be185d; }
+    .calendar-event-item.past .calendar-event-name { color: #9d174d; }
+  </style>
 </head>
 
 <body>
@@ -340,7 +524,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
       </div>
     </div>
 
-    <div class="events-grid" id="eventsList">
+    <div class="events-grid">
       <?php if ($eventsPage): ?>
         <?php foreach ($eventsPage as $evt): ?>
           <?php
@@ -434,12 +618,12 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
           ];
           $modalDataJson = htmlspecialchars(json_encode($modalData), ENT_QUOTES, 'UTF-8');
           ?>
-          <?php // Atribui um id ·nico ao cartão para conseguirmos regressar ao mesmo ponto após ações como RSVP. ?>
+          <?php // Atribui um id único ao cartão para conseguirmos regressar ao mesmo ponto após ações como RSVP. ?>
           <article id="event-card-<?php echo htmlspecialchars($eventId); ?>" class="event-card js-event-card"
                    data-name="<?php echo htmlspecialchars($evt['name']); ?>"
                    data-summary="<?php echo htmlspecialchars($evt['summary']); ?>"
                    data-description="<?php echo htmlspecialchars($evt['description']); ?>"
-                   data-date="<?php echo htmlspecialchars($evt['date'] ?? $eventDateDisplay); ?>"
+                   data-date="<?php echo htmlspecialchars($eventDateDisplay); ?>"
                    data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
                    data-datetime="<?php echo htmlspecialchars($eventTimeDisplay ? ($eventDateDisplay . ' · ' . $eventTimeDisplay) : $eventDateDisplay); ?>"
                    data-location="<?php echo htmlspecialchars($evt['localization']); ?>"
@@ -526,11 +710,19 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
     </div>
   </main>
 
-  <!-- Event detail modal -->
+  <?php include __DIR__ . '/../includes/footer.php'; ?>
+  <script src="../../JS/search-toggle.js"></script>
+  <script src="../../JS/gc-scroll-restore.js"></script>
+  <script>
+    gcInitScrollRestore({
+      key: 'gc-scroll-events',
+      formSelector: '#events-filters-form'
+    });
+  </script>
   <div class="modal-backdrop" id="event-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <button type="button" class="modal-close" aria-label="Close event details" onclick="document.getElementById('event-modal')?.classList.remove('open')">
+        <button class="modal-close" aria-label="Close" onclick="document.getElementById('event-modal').classList.remove('open')">
           <i class="bi bi-x"></i>
         </button>
         <h3 id="modal-title"></h3>
@@ -565,7 +757,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
             <div class="modal-info-content">
               <div class="modal-info-label">Place</div>
               <div class="modal-info-value">
-                <a id="modal-location" class="modal-location-link" href="#" rel="noopener noreferrer"></a>
+                <a id="modal-location" class="modal-location-link" href="#" target="_blank" rel="noopener noreferrer"></a>
               </div>
             </div>
           </div>
@@ -579,28 +771,548 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
             </div>
           </div>
         </div>
-        <div id="modal-rsvp-container" style="display:none;">
-          <!-- RSVP removed to match event page -->
-        </div>
-        <div id="modal-ratings" class="modal-ratings"></div>
+        <div class="modal-ratings" id="modal-ratings"></div>
       </div>
-    </div>
-  </div>
+      </div>
+      </div>
+      <script>
+    // Modal de detalhes do evento
+    (function() {
+      const modal = document.getElementById('event-modal');
+      if (!modal) return;
 
-  <?php include __DIR__ . '/../includes/footer.php'; ?>
-  <script src="../../JS/search-toggle.js"></script>
-  <script src="../../JS/gc-scroll-restore.js"></script>
-  <script>
-    window.eventPageData = {
-      events: <?php echo json_encode(array_values($eventsForCalendar)); ?>,
-      canCreateEvents: <?php echo $isAuth ? 'true' : 'false'; ?>,
-      createAllowedFromDate: <?php echo json_encode($createAllowedFromDate); ?>,
-      eventsFormUrl: 'events_form.php'
-    };
+      const ratingsContainer = document.getElementById('modal-ratings');
+
+      function appendStars(container, value) {
+        if (typeof value !== 'number' || Number.isNaN(value)) return;
+        for (let i = 1; i <= 5; i++) {
+          const icon = document.createElement('i');
+          if (value >= i) {
+            icon.className = 'bi bi-star-fill';
+          } else if (value >= i - 0.5) {
+            icon.className = 'bi bi-star-half';
+          } else {
+            icon.className = 'bi bi-star';
+          }
+          container.appendChild(icon);
+        }
+      }
+
+      function normalizeRatingValue(value) {
+        if (typeof value === 'number' && !Number.isNaN(value)) {
+          return value;
+        }
+        const parsed = parseInt(value, 10);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+
+      function fillUserRatingRow(row, value, isSaved) {
+        if (!row) return;
+        const label = row.querySelector('.label');
+        const starsHolder = row.querySelector('.user-rating-stars');
+        if (!label || !starsHolder) return;
+        starsHolder.innerHTML = '';
+        const numericValue = normalizeRatingValue(value);
+        if (!numericValue) {
+          if (row.dataset.initiallyHidden === 'true') {
+            row.hidden = true;
+          } else {
+            row.hidden = false;
+          }
+          row.classList.remove('pending');
+          label.textContent = 'Your rating:';
+          return;
+        }
+        row.hidden = false;
+        appendStars(starsHolder, numericValue);
+        if (isSaved) {
+          row.classList.remove('pending');
+          label.textContent = 'Your rating:';
+        } else {
+          row.classList.add('pending');
+          label.textContent = 'Your rating (not saved yet):';
+        }
+      }
+
+      if (ratingsContainer) {
+        ratingsContainer.addEventListener('change', function(e) {
+          const select = e.target;
+          if (!select.matches('.modal-rating-form select')) return;
+          const card = select.closest('.modal-rating-card');
+          if (!card) return;
+          const userRow = card.querySelector('.modal-rating-user');
+          if (!userRow) return;
+          const numericValue = normalizeRatingValue(select.value);
+          if (numericValue) {
+            fillUserRatingRow(userRow, numericValue, false);
+          } else {
+            const saved = normalizeRatingValue(userRow.dataset.savedValue || '');
+            fillUserRatingRow(userRow, saved, true);
+          }
+        });
+      }
+
+      function addMessage(text) {
+        if (!ratingsContainer) return;
+        const message = document.createElement('div');
+        message.className = 'modal-rating-message';
+        message.textContent = text;
+        ratingsContainer.appendChild(message);
+      }
+
+      function renderRatings(payload) {
+        if (!ratingsContainer) return;
+        ratingsContainer.innerHTML = '';
+
+        if (!payload) {
+          addMessage('This event has no rating data yet.');
+          return;
+        }
+
+        const eventAverage = typeof payload.eventAverage === 'number' ? payload.eventAverage : null;
+        const eventAverageCount = typeof payload.eventAverageCount === 'number' ? payload.eventAverageCount : 0;
+        const collections = Array.isArray(payload.collections) ? payload.collections : [];
+        const isPast = !!payload.isPast;
+        const hasRsvp = !!payload.hasRsvp;
+        const canRate = !!payload.canRate;
+
+        if (eventAverage) {
+          const overview = document.createElement('div');
+          overview.className = 'modal-rating-overview';
+          const left = document.createElement('span');
+          left.textContent = 'Average event rating';
+          overview.appendChild(left);
+          const right = document.createElement('span');
+          right.className = 'rating-badge';
+          appendStars(right, eventAverage);
+          const avgValue = document.createElement('span');
+          avgValue.className = 'avg-value';
+          avgValue.textContent = `${eventAverage.toFixed(1)}/5`;
+          right.appendChild(avgValue);
+          const count = document.createElement('span');
+          count.className = 'count';
+          count.textContent = `(${eventAverageCount})`;
+          right.appendChild(count);
+          overview.appendChild(right);
+          ratingsContainer.appendChild(overview);
+        }
+
+        const messages = [];
+        if (!isPast) {
+          messages.push('This event has not happened yet. Ratings become available after the date.');
+        }
+        if (isPast && !hasRsvp) {
+          messages.push('Only participants who RSVP can rate the collections.');
+        }
+        if (collections.length === 0) {
+          messages.push('This event has no collections associated for rating.');
+        }
+        messages.forEach(addMessage);
+
+        if (collections.length === 0) {
+          return;
+        }
+
+        const statsWrapper = document.createElement('div');
+        statsWrapper.className = 'modal-rating-stats';
+
+        collections.forEach(function(item) {
+          const card = document.createElement('div');
+          card.className = 'modal-rating-card';
+
+          const header = document.createElement('div');
+          header.className = 'modal-rating-card-header';
+
+          const nameLink = document.createElement('a');
+          nameLink.className = 'collection-name';
+          nameLink.textContent = item.name || 'Collection';
+          if (item.id) {
+            nameLink.href = `specific_collection.php?id=${encodeURIComponent(item.id)}`;
+          }
+          header.appendChild(nameLink);
+
+          const badge = document.createElement('span');
+          badge.className = 'rating-badge';
+          if (typeof item.average === 'number' && !Number.isNaN(item.average) && (item.count || 0) > 0) {
+            appendStars(badge, item.average);
+            const avgValue = document.createElement('span');
+            avgValue.className = 'avg-value';
+            avgValue.textContent = `${item.average.toFixed(1)}/5`;
+            badge.appendChild(avgValue);
+            const badgeCount = document.createElement('span');
+            badgeCount.className = 'count';
+            badgeCount.textContent = `(${item.count})`;
+            badge.appendChild(badgeCount);
+          } else {
+            badge.textContent = 'There are no ratings yet';
+          }
+          header.appendChild(badge);
+          card.appendChild(header);
+
+          const userHasRating = typeof item.userRating === 'number' && !Number.isNaN(item.userRating);
+
+          if (canRate) {
+            const form = document.createElement('form');
+            form.className = 'modal-rating-form';
+            form.method = 'POST';
+            form.action = 'events_action.php';
+
+            const actionField = document.createElement('input');
+            actionField.type = 'hidden';
+            actionField.name = 'action';
+            actionField.value = 'rate';
+            form.appendChild(actionField);
+
+            const eventField = document.createElement('input');
+            eventField.type = 'hidden';
+            eventField.name = 'id';
+            eventField.value = payload.eventId || '';
+            form.appendChild(eventField);
+
+            const collectionField = document.createElement('input');
+            collectionField.type = 'hidden';
+            collectionField.name = 'collection_id';
+            collectionField.value = item.id || '';
+            form.appendChild(collectionField);
+
+            const label = document.createElement('label');
+            label.textContent = 'Avaliar:';
+            label.style.fontWeight = '600';
+            label.style.fontSize = '0.9rem';
+            label.style.color = '#374151';
+            form.appendChild(label);
+
+            const select = document.createElement('select');
+            select.name = 'rating';
+            select.setAttribute('aria-label', `Rating for ${item.name || 'the collection'}`);
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Select...';
+            select.appendChild(placeholder);
+
+            for (let i = 1; i <= 5; i++) {
+              const option = document.createElement('option');
+              option.value = String(i);
+              option.textContent = `${i} stars`;
+              if (userHasRating && item.userRating === i) {
+                option.selected = true;
+              }
+              select.appendChild(option);
+            }
+
+            form.appendChild(select);
+
+            const button = document.createElement('button');
+            button.type = 'submit';
+            button.className = 'explore-btn small';
+            button.textContent = 'Save';
+            form.appendChild(button);
+
+            card.appendChild(form);
+          }
+
+          if (canRate || userHasRating) {
+            const userRow = document.createElement('div');
+            userRow.className = 'modal-rating-user';
+            if (item.id) {
+              userRow.dataset.collectionId = item.id;
+            }
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = 'Your rating:';
+            userRow.appendChild(label);
+            const starHolder = document.createElement('span');
+            starHolder.className = 'user-rating-stars';
+            userRow.appendChild(starHolder);
+            userRow.dataset.savedValue = userHasRating ? String(item.userRating) : '';
+            userRow.dataset.initiallyHidden = userHasRating ? 'false' : 'true';
+            if (userHasRating) {
+              fillUserRatingRow(userRow, item.userRating, true);
+            } else {
+              userRow.hidden = true;
+            }
+            card.appendChild(userRow);
+          }
+
+          statsWrapper.appendChild(card);
+        });
+
+        ratingsContainer.appendChild(statsWrapper);
+      }
+
+      const eventCards = document.querySelectorAll('.js-event-card');
+
+      eventCards.forEach(function(card) {
+        card.addEventListener('click', function(e) {
+          const interactive = e.target.closest('a, button, form, select, input, textarea');
+          if (interactive && card.contains(interactive)) return;
+
+          const name = card.getAttribute('data-name') || '';
+          const summary = card.getAttribute('data-summary') || '';
+          const description = card.getAttribute('data-description') || '';
+          const date = card.getAttribute('data-date') || '';
+          const time = card.getAttribute('data-time') || '';
+          const combined = card.getAttribute('data-datetime') || '';
+          const location = card.getAttribute('data-location') || '';
+          const type = card.getAttribute('data-type') || '';
+          const cost = card.getAttribute('data-cost') || '';
+          const ratingRaw = card.getAttribute('data-rating') || '';
+
+          document.getElementById('modal-title').textContent = name;
+          document.getElementById('modal-type').textContent = type;
+          document.getElementById('modal-summary').textContent = summary;
+          document.getElementById('modal-description').textContent = description;
+          const modalDate = document.getElementById('modal-date');
+          if (modalDate) {
+            modalDate.textContent = date || combined;
+          }
+          const modalTimeRow = document.getElementById('modal-time-row');
+          const modalTime = document.getElementById('modal-time');
+          if (modalTimeRow && modalTime) {
+            if (time) {
+              modalTimeRow.hidden = false;
+              modalTime.textContent = time;
+            } else {
+              modalTimeRow.hidden = true;
+              modalTime.textContent = '';
+              if (modalDate && combined && !date) {
+                modalDate.textContent = combined;
+              }
+            }
+          }
+          const locationLink = document.getElementById('modal-location');
+          if (locationLink) {
+            const cleanLocation = (location || '').trim();
+            const hasLocation = cleanLocation.length > 0;
+            locationLink.textContent = hasLocation ? cleanLocation : 'Location unavailable';
+            if (hasLocation) {
+              locationLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(cleanLocation);
+              locationLink.classList.remove('disabled');
+              locationLink.setAttribute('aria-label', 'Open ' + cleanLocation + ' on Google Maps');
+              locationLink.setAttribute('target', '_blank');
+              locationLink.setAttribute('rel', 'noopener noreferrer');
+            } else {
+              locationLink.removeAttribute('href');
+              locationLink.removeAttribute('aria-label');
+              locationLink.removeAttribute('target');
+              locationLink.removeAttribute('rel');
+              locationLink.classList.add('disabled');
+            }
+          }
+
+          const costEl = document.getElementById('modal-cost');
+          if (costEl) {
+            costEl.textContent = cost || 'Free entrance';
+          }
+
+          let payload = null;
+          if (ratingRaw) {
+            try {
+              payload = JSON.parse(ratingRaw);
+            } catch (err) {
+              payload = null;
+            }
+          }
+
+          renderRatings(payload);
+          modal.classList.add('open');
+        });
+      });
+
+      // Fechar ao clicar fora do modal
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.remove('open');
+        }
+      });
+
+      // Fechar com ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) {
+          modal.classList.remove('open');
+        }
+      });
+    })();
+
+    // Calendar functionality
+    (function() {
+      const calendarView = document.getElementById('calendar-view');
+      const calendarGrid = document.getElementById('calendar-grid');
+      const calendarMonthYear = document.getElementById('calendar-month-year');
+      const calendarToggleBtn = document.getElementById('calendar-toggle-btn');
+      const calendarToggleText = document.getElementById('calendar-toggle-text');
+      const calendarPrevBtn = document.getElementById('calendar-prev');
+      const calendarTodayBtn = document.getElementById('calendar-today');
+      const calendarNextBtn = document.getElementById('calendar-next');
+
+      const monthsPT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      const daysPT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+      let currentDate = new Date();
+      let allEvents = <?php echo json_encode(array_values($eventsForCalendar)); ?>;
+      const canCreateEvents = <?php echo $isAuth ? 'true' : 'false'; ?>;
+      const createAllowedFromDate = '<?php echo $createAllowedFromDate; ?>';
+      const eventsFormUrl = <?php echo json_encode('events_form.php'); ?>;
+
+      function parseEventDate(dateStr) {
+        if (!dateStr) return null;
+        const date = new Date((dateStr || '').replace(' ', 'T'));
+        return isNaN(date.getTime()) ? null : date;
+      }
+
+      function renderCalendar(year, month) {
+        calendarGrid.innerHTML = '';
+        calendarMonthYear.textContent = `${monthsPT[month]} ${year}`;
+
+        // Day headers
+        daysPT.forEach(day => {
+          const header = document.createElement('div');
+          header.className = 'calendar-day-header';
+          header.textContent = day;
+          calendarGrid.appendChild(header);
+        });
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const firstDayOfWeek = firstDay.getDay();
+        const daysInMonth = lastDay.getDate();
+
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+        // Empty cells for days before month starts
+        for (let i = 0; i < firstDayOfWeek; i++) {
+          const emptyDay = document.createElement('div');
+          emptyDay.className = 'calendar-day empty';
+          calendarGrid.appendChild(emptyDay);
+        }
+
+        // Days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dayCell = document.createElement('div');
+          dayCell.className = 'calendar-day';
+          
+          if (isCurrentMonth && day === today.getDate()) {
+            dayCell.classList.add('today');
+          }
+
+          const dayNumber = document.createElement('div');
+          dayNumber.className = 'calendar-day-number';
+          dayNumber.textContent = day;
+          dayCell.appendChild(dayNumber);
+
+          // Find events for this day
+          const dayDate = new Date(year, month, day);
+          const dayDateStr = dayDate.toISOString().split('T')[0];
+
+          const dayEvents = allEvents.reduce((list, evt) => {
+            const evtDate = parseEventDate(evt.date);
+            if (!evtDate) return list;
+            const evtDateStr = evtDate.toISOString().split('T')[0];
+            if (evtDateStr === dayDateStr) {
+              list.push({ data: evt, parsedDate: evtDate, dateStr: evtDateStr });
+            }
+            return list;
+          }, []);
+
+          if (canCreateEvents && dayDateStr >= createAllowedFromDate) {
+            dayCell.classList.add('can-create');
+            const addBtn = document.createElement('button');
+            addBtn.type = 'button';
+            addBtn.className = 'calendar-add-btn';
+            const labelDate = dayDate.toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            addBtn.setAttribute('aria-label', `Criar evento em ${labelDate}`);
+            addBtn.innerHTML = '<i class="bi bi-plus-lg"></i>';
+            addBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const params = new URLSearchParams({ date: dayDateStr });
+              window.location.href = `${eventsFormUrl}?${params.toString()}`;
+            });
+            dayCell.appendChild(addBtn);
+          }
+
+          dayEvents.forEach(({ data, parsedDate, dateStr }) => {
+            const eventItem = document.createElement('div');
+            eventItem.className = 'calendar-event-item';
+            const isUpcomingEvent = dateStr >= todayStr;
+            const hasUserRsvp = !!data.hasUserRsvp;
+            if (isUpcomingEvent) {
+              eventItem.classList.add('upcoming');
+              if (hasUserRsvp) {
+                eventItem.classList.add('rsvp');
+              }
+            } else {
+              eventItem.classList.add('past');
+            }
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'calendar-event-time';
+            timeSpan.textContent = parsedDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+            eventItem.appendChild(timeSpan);
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'calendar-event-name';
+            nameSpan.textContent = data.name || 'Evento';
+            nameSpan.title = data.name || 'Evento';
+            eventItem.appendChild(nameSpan);
+
+            eventItem.addEventListener('click', function() {
+              // Find the corresponding button in the grid and trigger click
+              const buttons = document.querySelectorAll('.js-view-event');
+              buttons.forEach(btn => {
+                if (btn.getAttribute('data-name') === data.name) {
+                  btn.click();
+                }
+              });
+            });
+
+            dayCell.appendChild(eventItem);
+          });
+
+          calendarGrid.appendChild(dayCell);
+        }
+      }
+
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      calendarView.classList.add('show');
+      calendarToggleBtn.classList.add('active');
+      calendarToggleText.textContent = 'Hide Calendar';
+      calendarToggleBtn.setAttribute('aria-expanded', 'true');
+
+      calendarToggleBtn.addEventListener('click', function() {
+        const isVisible = calendarView.classList.contains('show');
+        if (isVisible) {
+          calendarView.classList.remove('show');
+          calendarToggleBtn.classList.remove('active');
+          calendarToggleText.textContent = 'Show Calendar';
+          calendarToggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          calendarView.classList.add('show');
+          calendarToggleBtn.classList.add('active');
+          calendarToggleText.textContent = 'Hide Calendar';
+          calendarToggleBtn.setAttribute('aria-expanded', 'true');
+          renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        }
+      });
+
+      calendarPrevBtn.addEventListener('click', function() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+
+      calendarTodayBtn.addEventListener('click', function() {
+        currentDate = new Date();
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+
+      calendarNextBtn.addEventListener('click', function() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+    })();
   </script>
-  <script src="../../JS/event_page.js"></script>
-
 </body>
 
 </html>
-

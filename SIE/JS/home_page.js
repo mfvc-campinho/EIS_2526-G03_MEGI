@@ -169,6 +169,11 @@
   var timeEl = document.getElementById('modal-time');
   var locationLink = document.getElementById('modal-location');
   var costEl = document.getElementById('modal-cost');
+  var formatDateOnly = function (value) {
+    if (!value) return '';
+    var clean = String(value).replace('T', ' ').trim();
+    return clean.split(' ')[0];
+  };
 
   function setText(target, value) {
     if (!target) {
@@ -184,7 +189,8 @@
     setText(descriptionEl, payload.description);
 
     if (dateEl) {
-      setText(dateEl, payload.date || payload.datetime || '');
+      var displayDate = formatDateOnly(payload.date || payload.datetime || '');
+      setText(dateEl, displayDate || payload.date || payload.datetime || '');
     }
 
     if (timeRow && timeEl) {

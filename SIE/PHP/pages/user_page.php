@@ -258,6 +258,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
         <script src="../../JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
+        <link rel="stylesheet" href="../../CSS/user_page.css">
     </head>
 
 
@@ -476,6 +477,35 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                                     <?php echo $valueTotal > 0 ? number_format($valueTotal, 2, ',', '.') : '0,00'; ?>
                                                 </span>
                                             </div>
+                                        </div>
+                                        <div class="collection-card__actions card-actions">
+                                            <?php if ($isAuthenticated): ?>
+                                                <form action="likes_action.php" method="POST" class="action-icon-form like-form">
+                                                    <input type="hidden" name="type" value="collection">
+                                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
+                                                    <button type="submit" class="action-icon<?php echo $likesTotal > 0 ? ' is-liked' : ''; ?>" title="Like">
+                                                        <i class="bi <?php echo $likesTotal > 0 ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
+                                                        <span class="like-count<?php echo $likesTotal === 0 ? ' is-zero' : ''; ?>"><?php echo $likesTotal; ?></span>
+                                                    </button>
+                                                </form>
+                                            <?php else: ?>
+                                                <button type="button" class="action-icon" data-action="login-popup" data-login-url="auth.php" title="Like">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            <?php endif; ?>
+
+                                            <?php if ($isOwnerProfile): ?>
+                                                <a class="action-icon" href="collections_form.php?id=<?php echo urlencode($col['id']); ?>&from=user_page" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form action="collections_action.php" method="POST" class="action-icon-form">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($col['id']); ?>">
+                                                    <button type="submit" class="action-icon is-danger" title="Delete" onclick="return confirm('Delete this collection?');">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </article>

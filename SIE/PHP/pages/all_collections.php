@@ -158,6 +158,39 @@ $pages = max(1, (int) ceil($total / $perPage));
 $page = min($page, $pages);
 $offset = ($page - 1) * $perPage;
 $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
+
+// CSV export of the currently filtered (unpaginated) collections
+if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="collections.csv"');
+    $out = fopen('php://output', 'w');
+    fputcsv($out, ['ID', 'Name', 'Type', 'Owner', 'Created At', 'Items', 'Likes']);
+    foreach ($filteredCollections as $col) {
+        $cid = $col['id'] ?? '';
+        $ownerId = $col['ownerId'] ?? $col['user_id'] ?? '';
+        $ownerName = $ownerId && isset($usersById[$ownerId])
+            ? ($usersById[$ownerId]['user_name'] ?? $usersById[$ownerId]['username'] ?? $ownerId)
+            : $ownerId;
+        $itemsCount = isset($itemsByCollection[$cid]) ? count($itemsByCollection[$cid]) : 0;
+        $likesCount = $collectionLikeCounts[$cid] ?? 0;
+        fputcsv($out, [
+            $cid,
+            $col['name'] ?? '',
+            $col['type'] ?? '',
+            $ownerName,
+            $col['createdAt'] ?? '',
+            $itemsCount,
+            $likesCount,
+        ]);
+    }
+    fclose($out);
+    exit;
+}
+
+// Export URL with current filters
+$exportParams = $_GET;
+$exportParams['export'] = 'csv';
+$exportUrl = 'all_collections.php?' . http_build_query($exportParams);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -282,6 +315,9 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                         </form>
                     </div>
                     <div class="paginate">
+                        <a class="explore-btn ghost" href="<?php echo htmlspecialchars($exportUrl); ?>">
+                            <i class="bi bi-filetype-csv"></i> Download CSV
+                        </a>
                         <?php if ($isAuth): ?>
                             <a class="explore-btn success" href="collections_form.php">+ Add Collection</a>
                         <?php endif; ?>

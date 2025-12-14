@@ -283,13 +283,20 @@ gcInitScrollRestore({
           const cost = card.getAttribute('data-cost') || '';
           const ratingRaw = card.getAttribute('data-rating') || '';
 
+          const formatDateOnly = (value) => {
+            if (!value) return '';
+            const clean = String(value).replace('T', ' ').trim();
+            return clean.split(' ')[0];
+          };
+
           document.getElementById('modal-title').textContent = name;
           document.getElementById('modal-type').textContent = type;
           document.getElementById('modal-summary').textContent = summary;
           document.getElementById('modal-description').textContent = description;
           const modalDate = document.getElementById('modal-date');
           if (modalDate) {
-            modalDate.textContent = date || combined;
+            const displayDate = formatDateOnly(date || combined);
+            modalDate.textContent = displayDate || (date || combined);
           }
           const modalTimeRow = document.getElementById('modal-time-row');
           const modalTime = document.getElementById('modal-time');
@@ -301,7 +308,8 @@ gcInitScrollRestore({
               modalTimeRow.hidden = true;
               modalTime.textContent = '';
               if (modalDate && combined && !date) {
-                modalDate.textContent = combined;
+                const fallbackDate = formatDateOnly(combined);
+                modalDate.textContent = fallbackDate || combined;
               }
             }
           }

@@ -1,0 +1,4 @@
+/* Remove o sublinhado dos cartões de evento na página de perfil */
+.user-event-card--link {
+  text-decoration: none;
+}

@@ -135,9 +135,19 @@ $existingCollections = array_unique($existingCollections);
                   <label>Image (upload)</label>
                 <input type="file" name="imageFile" accept="image/*">
                 <?php if (!empty($item['image'])): ?>
-                    <p class="muted" style="margin-top:4px;">
-                       Current image: <?php echo htmlspecialchars($item['image']); ?> (leave empty to keep)
-                    </p>
+                    <?php
+                      $imgPreview = $item['image'];
+                      if ($imgPreview && !preg_match('#^https?://#', $imgPreview)) {
+                        // stored under /uploads/items relative to /PHP/pages
+                        $imgPreview = '../../' . ltrim($imgPreview, './');
+                      }
+                    ?>
+                    <div class="muted" style="margin-top:8px; display:flex; align-items:flex-start; gap:10px;">
+                      <div style="flex:0 0 auto; width:120px; height:120px; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; background:#f8fafc; display:flex; align-items:center; justify-content:center;">
+                        <img src="<?php echo htmlspecialchars($imgPreview); ?>" alt="Current item image" style="max-width:100%; max-height:100%; object-fit:cover;">
+                      </div>
+                      <p style="margin:0; line-height:1.5;">Current image (leave empty to keep).</p>
+                    </div>
                 <?php endif; ?>
 
                 <label>

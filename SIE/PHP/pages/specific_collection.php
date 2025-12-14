@@ -12,6 +12,7 @@ $collections = $data['collections'] ?? [];
 $items = $data['items'] ?? [];
 $events = $data['events'] ?? [];
 $collectionItems = $data['collectionItems'] ?? [];
+$eventsUsers = $data['eventsUsers'] ?? [];
 $collectionEvents = $data['collectionEvents'] ?? [];
 $userShowcases = $data['userShowcases'] ?? [];
 $users = $data['users'] ?? [];
@@ -109,6 +110,23 @@ foreach ($collectionEvents as $link) {
         }
     }
 }
+
+// =========================
+// Eventos do utilizador (via RSVP)
+// =========================
+$userRsvpMap = [];
+if ($currentUserId) {
+    foreach ($eventsUsers as $eu) {
+        $uid = $eu['userId'] ?? $eu['user_id'] ?? null;
+        $eid = $eu['eventId'] ?? $eu['event_id'] ?? null;
+        $rsvp = !empty($eu['rsvp']);
+        if ($uid == $currentUserId && $eid && $rsvp) {
+            $userRsvpMap[$eid] = true;
+        }
+    }
+}
+
+
 
 // -----------------------------
 //   Likes em items (se existir userShowcases)
@@ -257,9 +275,11 @@ if ($collection) {
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/specific_collection.css">
+        <link rel="stylesheet" href="../../CSS/events.css">
         <link rel="stylesheet" href="../../CSS/likes.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="../../CSS/christmas.css">
+        <link rel="stylesheet" href="../../CSS/specific_collection_events.css">
         <script src="././JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
     </head>
@@ -390,23 +410,34 @@ if ($collection) {
 
                     <div class="top-controls">
                         <div class="left">
-                            <form id="filters" method="GET" action="specific_collection.php" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                                <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
-                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($collectionId); ?>">
-                                <input type="hidden" name="page" value="1">
-                                <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
-                                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
-                                    <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
-                                    <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
-                                </select>
-                                <label>Show
-                                    <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
+                            <form id="filters" class="filters-form" method="GET" action="specific_collection.php">
+                                <div class="filter-chip filter-chip--select">
+                                    <label class="filter-chip__label" for="sort-select">
+                                        <i class="bi bi-funnel"></i>
+                                        <span>Sort by</span>
+                                    </label>
+                                    <select name="sort" id="sort-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+                                        <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
+                                        <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
+                                        <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
+                                    </select>
+                                </div>
+
+                                <div class="filter-chip filter-chip--compact filter-chip--select">
+                                    <label class="filter-chip__label" for="per-page-select">
+                                        <i class="bi bi-collection"></i>
+                                        <span>Show</span>
+                                    </label>
+                                    <select name="perPage" id="per-page-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
                                         <?php foreach ([5, 10, 20] as $opt): ?>
                                             <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
                                         <?php endforeach; ?>
                                     </select>
-                                    items per page
-                                </label>
+                                    <span class="filter-chip__hint">items per page</span>
+                                </div>
+
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($collectionId); ?>">
+                                <input type="hidden" name="page" value="1">
                             </form>
                         </div>
                         <div class="paginate">
@@ -506,51 +537,241 @@ if ($collection) {
                 <section class="collection-events" style="margin-top:32px;">
                     <h2 class="section-subtitle">Events</h2>
 
-                        <?php if (!$eventsForCollection): ?>
+                    <?php if (!$eventsForCollection): ?>
                         <p class="muted">No events linked to this collection.</p>
                     <?php else: ?>
-                        <div class="collection-events-list">
-        <?php foreach ($eventsForCollection as $ev): ?>
-            <?php
-            $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
-            $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
-            $category = $ev['category'] ?? $ev['type'] ?? 'Event';
-            $eventDate = substr($ev['date'] ?? '', 0, 16);
-            $location = $ev['localization'] ?? $ev['location'] ?? '';
-            ?>
-                                <article class="collection-event-card">
-                                    <div class="event-card-header">
-                                        <span class="event-type-badge"><?php echo htmlspecialchars($category); ?></span>
-                                    </div>
-                                    <h3><?php echo htmlspecialchars($ev['name'] ?? ''); ?></h3>
-                                    <p class="event-summary"><?php echo htmlspecialchars($ev['summary'] ?? ''); ?></p>
-                                    <div class="event-info-grid">
-                                        <div class="event-info-item">
+                        <div class="events-grid js-events-grid">
+                            <?php foreach ($eventsForCollection as $ev): ?>
+                                <?php
+                                $eventRaw = $ev['date'] ?? $ev['event_date'] ?? '';
+                                $eventDateObj = $eventRaw ? new DateTime($eventRaw) : null;
+                                $eventDateDisplay = $eventDateObj ? $eventDateObj->format('d/m/Y') : '';
+                                $eventTimeDisplay = $eventDateObj ? $eventDateObj->format('H:i') : '';
+                                if ($eventTimeDisplay === '00:00') $eventTimeDisplay = '';
+                                $modalCombinedDisplay = $eventTimeDisplay ? ($eventDateDisplay . ' ' . $eventTimeDisplay) : $eventDateDisplay;
+                                $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
+                                $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
+                                $costLabel = ($price !== null && $price > 0) ? '€' . number_format($price, 2, ',', '.') : 'Free entrance';
+                                $location = $ev['localization'] ?? $ev['location'] ?? '';
+                                $eventId = $ev['id'] ?? $ev['event_id'] ?? null;
+                                $category = $ev['category'] ?? $ev['type'] ?? 'Event';
+                                ?>
+                                <article class="event-card js-event-card" tabindex="0"
+                                         data-event-id="<?php echo htmlspecialchars($eventId); ?>"
+                                         data-name="<?php echo htmlspecialchars($ev['name'] ?? ''); ?>"
+                                         data-summary="<?php echo htmlspecialchars($ev['summary'] ?? ''); ?>"
+                                         data-description="<?php echo htmlspecialchars($ev['description'] ?? ''); ?>"
+                                         data-date="<?php echo htmlspecialchars($eventDateDisplay); ?>"
+                                         data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
+                                         data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
+                                         data-location="<?php echo htmlspecialchars($location); ?>"
+                                         data-type="<?php echo htmlspecialchars($category); ?>"
+                                         data-cost="<?php echo htmlspecialchars($costLabel); ?>">
+                                    <h3 class="home-event-title"><?php echo htmlspecialchars($ev['name']); ?></h3>
+                                    <div class="home-event-meta">
+                                        <div class="meta-row">
                                             <i class="bi bi-calendar-event"></i>
-                                            <span><?php echo htmlspecialchars($eventDate); ?></span>
+                                            <span><?php echo htmlspecialchars($eventDateDisplay ?: $modalCombinedDisplay); ?></span>
                                         </div>
                                         <?php if ($location): ?>
-                                        <div class="event-info-item">
+                                        <div class="meta-row">
                                             <i class="bi bi-geo-alt"></i>
                                             <span><?php echo htmlspecialchars($location); ?></span>
                                         </div>
                                         <?php endif; ?>
-                                        <div class="event-info-item">
+                                        <div class="meta-row">
                                             <i class="bi bi-cash-coin"></i>
-                                            <span><?php echo $price !== null ? '€' . number_format($price, 2, '.', '') : 'Free'; ?></span>
+                                            <span><?php echo htmlspecialchars($costLabel); ?></span>
                                         </div>
                                     </div>
                                 </article>
-        <?php endforeach; ?>
+                            <?php endforeach; ?>
                         </div>
-                                    <?php endif; ?>
+                    <?php endif; ?>
                 </section>
 
 <?php endif; ?>
         </main>
 
+    <div class="modal-backdrop" id="event-modal" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <button type="button" class="modal-close" aria-label="Close event details" onclick="document.getElementById('event-modal')?.classList.remove('open')">
+                    <i class="bi bi-x"></i>
+                </button>
+                <h3 id="modal-title"></h3>
+                <span class="modal-type-badge" id="modal-type"></span>
+            </div>
+            <div class="modal-body">
+                <p class="modal-summary" id="modal-summary"></p>
+                <p class="modal-description" id="modal-description"></p>
+                <div class="modal-info-grid">
+                    <div class="modal-info-item">
+                        <div class="modal-info-icon">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <div class="modal-info-content">
+                            <div class="modal-info-label">Date</div>
+                            <div class="modal-info-value" id="modal-date"></div>
+                        </div>
+                    </div>
+                    <div class="modal-info-item" id="modal-time-row" hidden>
+                        <div class="modal-info-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div class="modal-info-content">
+                            <div class="modal-info-label">Time</div>
+                            <div class="modal-info-value" id="modal-time"></div>
+                        </div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div class="modal-info-content">
+                            <div class="modal-info-label">Place</div>
+                            <div class="modal-info-value">
+                                <a id="modal-location" class="modal-location-link" href="#" rel="noopener noreferrer"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-icon">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <div class="modal-info-content">
+                            <div class="modal-info-label">Cost</div>
+                            <div class="modal-info-value" id="modal-cost"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-rsvp-form" id="modal-rsvp-container" style="display:none;">
+                    <?php if ($isAuthenticated): ?>
+                        <form action="events_action.php" method="POST">
+                            <input type="hidden" name="action" value="rsvp">
+                            <input type="hidden" name="id" value="" id="modal-rsvp-event-id">
+                            <input type="hidden" name="return_url" value="specific_collection.php?id=<?php echo htmlspecialchars($collectionId); ?>">
+                            <button type="submit" class="modal-rsvp-btn" id="modal-rsvp-btn">
+                                <i class="bi bi-check2-circle"></i>
+                                <span>RSVP</span>
+                            </button>
+                        </form>
+                    <?php else: ?>
+                        <a class="modal-rsvp-btn" href="auth.php">
+                            <i class="bi bi-lock"></i>
+                            <span>Sign in to RSVP</span>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <?php include __DIR__ . '/../includes/footer.php'; ?>
         <script src="../../JS/specific_collection.js"></script>
+        <script>
+        <?php
+        // Passar o mapa de RSVPs para o JavaScript
+        echo "var userRsvpMap = " . json_encode($userRsvpMap) . ";\n";
+        ?>
+        (function() {
+            var modal = document.getElementById('event-modal');
+            if (!modal) return;
+
+            var closeButton = modal.querySelector('.modal-close');
+            var titleEl = document.getElementById('modal-title');
+            var typeEl = document.getElementById('modal-type');
+            var summaryEl = document.getElementById('modal-summary');
+            var descriptionEl = document.getElementById('modal-description');
+            var dateEl = document.getElementById('modal-date');
+            var timeRow = document.getElementById('modal-time-row');
+            var timeEl = document.getElementById('modal-time');
+            var locationLink = document.getElementById('modal-location');
+            var costEl = document.getElementById('modal-cost');
+            var rsvpContainer = document.getElementById('modal-rsvp-container');
+            var rsvpForm = rsvpContainer ? rsvpContainer.querySelector('form') : null;
+            var rsvpEventIdInput = document.getElementById('modal-rsvp-event-id');
+            var rsvpButton = document.getElementById('modal-rsvp-btn');
+
+            function setText(target, value) {
+                if (target) target.textContent = value || '';
+            }
+
+            function openModal(payload) {
+                setText(titleEl, payload.name);
+                setText(typeEl, payload.type);
+                setText(summaryEl, payload.summary);
+                setText(descriptionEl, payload.description);
+                setText(dateEl, payload.date || payload.datetime || '');
+
+                if (timeRow && timeEl) {
+                    if (payload.time) {
+                        timeRow.hidden = false;
+                        setText(timeEl, payload.time);
+                    } else {
+                        timeRow.hidden = true;
+                        setText(timeEl, '');
+                    }
+                }
+
+                if (locationLink) {
+                    var cleanLocation = (payload.location || '').trim();
+                    if (cleanLocation) {
+                        locationLink.textContent = cleanLocation;
+                        locationLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(cleanLocation);
+                        locationLink.classList.remove('disabled');
+                        locationLink.setAttribute('target', '_blank');
+                    } else {
+                        locationLink.textContent = 'Location unavailable';
+                        locationLink.removeAttribute('href');
+                        locationLink.classList.add('disabled');
+                    }
+                }
+
+                setText(costEl, payload.cost || 'Free entrance');
+
+                if (rsvpContainer) {
+                    if (payload.eventId && rsvpForm && rsvpEventIdInput && rsvpButton) {
+                        rsvpContainer.style.display = 'block';
+                        rsvpEventIdInput.value = payload.eventId;
+                        const hasRsvp = userRsvpMap[payload.eventId] === true;
+                        const rsvpText = rsvpButton.querySelector('span');
+                        if (rsvpText) {
+                            rsvpText.textContent = hasRsvp ? 'RSVP Confirmed' : 'RSVP';
+                        }
+                        rsvpButton.classList.toggle('is-active', hasRsvp);
+                    } else {
+                        rsvpContainer.style.display = 'none';
+                    }
+                }
+
+                modal.style.display = 'flex'; // Use flex to align center
+                setTimeout(() => modal.classList.add('open'), 10);
+            }
+
+            function closeModal() {
+                modal.classList.remove('open');
+                // wait for animation to finish before hiding
+                setTimeout(() => { modal.style.display = 'none'; }, 200);
+            }
+
+            document.querySelectorAll('.js-event-card').forEach(function(card) {
+                card.addEventListener('click', function() {
+                    openModal({
+                        eventId: card.dataset.eventId, name: card.dataset.name, summary: card.dataset.summary, description: card.dataset.description,
+                        date: card.dataset.date, time: card.dataset.time, datetime: card.dataset.datetime,
+                        location: card.dataset.location, type: card.dataset.type, cost: card.dataset.cost
+                    });
+                });
+            });
+
+            if (closeButton) closeButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+            document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+        })();
+        </script>
+        <script src="../../JS/gc-scroll-restore.js"></script>
     
     </body>
 

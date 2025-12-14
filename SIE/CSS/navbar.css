@@ -1,3 +1,9 @@
+/*
+  File: public_html/CSS/navbar.css
+  Purpose: Site navigation bar and header controls styles.
+  Major selector groups: header, navbar, nav-links, mobile menu.
+*/
+
 /* Elegant, dynamic site navbar */
 header {
   position: sticky;
@@ -11,7 +17,8 @@ header {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 22px;
-  background: #0b3b70; /* keep existing background color */
+  background: #0b3b70;
+  /* keep existing background color */
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 26px rgba(11, 59, 112, 0.18);
@@ -142,9 +149,11 @@ header {
   .navbar {
     padding: 12px 16px;
   }
+
   .nav-right {
     gap: 6px;
   }
+
   .nav-link {
     padding: 8px 10px;
   }

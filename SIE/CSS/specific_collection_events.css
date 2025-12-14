@@ -1,3 +1,10 @@
+.
+/*
+  File: public_html/CSS/specific_collection_events.css
+  Purpose: Styles for event lists on specific collection pages and event card visuals.
+  Major selector groups: events grid, card, pill, status-chip, modal styles.
+*/
+
 .user-events-section {
   margin-top: 80px;
   /* increased spacing from previous block */

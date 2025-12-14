@@ -1,6 +1,12 @@
+/*
+  File: public_html/CSS/christmas.css
+  Purpose: Theme overrides for seasonal 'christmas' appearance.
+  Major selector groups: root variables, theme overrides, decorations.
+*/
+
 /* ===============================
-   🎄 CHRISTMAS THEME
-   =============================== */
+  🎄 CHRISTMAS THEME
+  =============================== */
 
 html.christmas-theme {
   /* Christmas color palette */

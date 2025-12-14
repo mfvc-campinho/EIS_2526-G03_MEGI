@@ -1,3 +1,9 @@
+/*
+  File: public_html/CSS/general.css
+  Purpose: Global and utility styles used across the site (typography, variables, defaults).
+  Major selector groups: typography, layout, utilities, color variables, resets.
+*/
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 /* ===============================

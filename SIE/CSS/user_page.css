@@ -1,6 +1,12 @@
+/*
+  File: public_html/CSS/user_page.css
+  Purpose: Styles for the user profile page and user event cards.
+  Major selector groups: profile hero, avatar, user-events-grid, event cards, responsive.
+*/
+
 /* ===============================
-   🌟 Layout base da página
-   =============================== */
+  🌟 Layout base da página
+  =============================== */
 
 body {
   background: #f8fafc;

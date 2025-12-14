@@ -1,3 +1,9 @@
+/*
+  File: public_html/CSS/home_page.css
+  Purpose: Page-specific styles for home_page.css (homepage layout and components).
+  Major selector groups: hero, events grid, cards, responsive layout.
+*/
+
 /* Statistics Cards */
 .stats-grid {
   display: grid;
@@ -194,10 +200,12 @@
     align-items: stretch;
     gap: 12px;
   }
+
   .ranking-section .top-controls .left {
     width: 100%;
     justify-content: center;
   }
+
   .ranking-section .top-controls .paginate {
     width: 100%;
     justify-content: space-between;
@@ -294,18 +302,22 @@
     padding: 10px 8px;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
+
   .ranking-section .filters-form {
     width: 100%;
     justify-content: center;
   }
+
   .ranking-section .filter-chip {
     width: 100%;
     justify-content: space-between;
   }
+
   .ranking-section .filter-chip__select {
     width: auto;
     flex: 1 1 auto;
   }
+
   .ranking-section .paginate {
     width: 100%;
     justify-content: space-between;
@@ -424,6 +436,7 @@
   .upcoming-title {
     font-size: 1.8rem;
   }
+
   .upcoming-sub {
     font-size: 0.95rem;
     margin-bottom: 16px;
@@ -519,8 +532,10 @@
   gap: 8px;
   margin: 18px auto 0;
   padding: 10px 16px;
-  background: #0b3b70; /* enforce visible background */
-  color: #ffffff;      /* enforce visible text */
+  background: #0b3b70;
+  /* enforce visible background */
+  color: #ffffff;
+  /* enforce visible text */
   border: 1px solid #0b3b70;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(11, 59, 112, 0.18);
@@ -547,9 +562,11 @@
   .upcoming-events {
     padding: 0 20px;
   }
+
   .upcoming-inner {
     padding: 28px 24px;
   }
+
   .upcoming-inner .section-header {
     gap: 8px;
   }
@@ -559,6 +576,7 @@
   .upcoming-events {
     padding: 0 14px;
   }
+
   .upcoming-inner {
     padding: 24px 18px;
   }

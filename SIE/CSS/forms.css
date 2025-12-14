@@ -1,6 +1,12 @@
+/*
+  File: public_html/CSS/forms.css
+  Purpose: Styles for form elements and form pages (inputs, validation, layout).
+  Major selector groups: form layout, inputs, buttons, validation, responsive.
+*/
+
 /* ============================================
-   📋 MODERN FORMS CSS — FIXED OVERLAP (scoped)
-   ============================================ */
+  📋 MODERN FORMS CSS — FIXED OVERLAP (scoped)
+  ============================================ */
 
 /* ✅ 1) FIX: on form pages, keep header in normal flow (no overlap) */
 header {

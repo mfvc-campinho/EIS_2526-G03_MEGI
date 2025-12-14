@@ -803,10 +803,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                          data-cost="<?php echo htmlspecialchars($costLabel); ?>"
                                          data-has-rsvp="<?php echo $hasRsvp ? '1' : '0'; ?>"
                                          data-event-id="<?php echo htmlspecialchars($eventId); ?>">
-                                <div class="home-event-header">
-                                    <span class="home-event-type"><?php echo htmlspecialchars($evt['type'] ?? 'event'); ?></span>
-                                    <span class="home-event-badge">SOON</span>
-                                </div>
+                                
                                 <h3 class="home-event-title"><?php echo htmlspecialchars($evt['name']); ?></h3>
                                 <div class="home-event-meta">
                                     <div class="meta-row">
@@ -1198,3 +1195,4 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 </body>
 
 </html>
+

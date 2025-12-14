@@ -373,6 +373,11 @@ main img {
   align-items: center;
 }
 
+/* Top 3 Collections Grid — Aligned Left */
+.cards-grid--spaced {
+  justify-content: flex-start !important;
+  grid-auto-flow: row !important;
+}
 
 /* ===============================
    🎟️ EVENTOS DO UTILIZADOR — REDESIGN

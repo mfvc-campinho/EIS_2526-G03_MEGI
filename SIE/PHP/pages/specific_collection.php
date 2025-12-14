@@ -102,7 +102,7 @@ foreach ($collectionEvents as $link) {
     if ($cid === $collectionId && $eid && isset($eventsById[$eid])) {
         $event = $eventsById[$eid];
         $eventDate = substr($event['date'] ?? '', 0, 10);
-
+        
         // Apenas eventos futuros (data >= hoje)
         if ($eventDate >= $today) {
             $eventsForCollection[] = $event;
@@ -137,9 +137,7 @@ foreach ($userShowcases as $sc) {
 // -----------------------------
 $sort = $_GET['sort'] ?? 'newest';
 $perPage = (int)($_GET['perPage'] ?? 10);
-if (!in_array($perPage, [5, 10, 20], true)) {
-    $perPage = 10;
-}
+if (!in_array($perPage, [5,10,20], true)) { $perPage = 10; }
 $page = max(1, (int)($_GET['page'] ?? 1));
 
 if (!empty($itemsForCollection)) {
@@ -162,9 +160,7 @@ if (!empty($itemsForCollection)) {
 // paginate items
 $totalItems = count($itemsForCollection);
 $pages = max(1, (int)ceil($totalItems / $perPage));
-if ($page > $pages) {
-    $page = $pages;
-}
+if ($page > $pages) { $page = $pages; }
 $offset = ($page - 1) * $perPage;
 $itemsPage = array_slice($itemsForCollection, $offset, $perPage);
 
@@ -251,466 +247,385 @@ if ($collection) {
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo htmlspecialchars($collection['name'] ?? 'Collection'); ?> • GoodCollections</title>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>
+<?php echo htmlspecialchars($collection['name'] ?? 'Collection'); ?> — GoodCollections
+        </title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../CSS/general.css">
-    <link rel="stylesheet" href="../../CSS/specific_collection.css">
-    <link rel="stylesheet" href="../../CSS/likes.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../../CSS/christmas.css">
-    <script src="././JS/theme-toggle.js"></script>
-    <script src="../../JS/christmas-theme.js"></script>
-    <style>
-        .item-card-link {
-            cursor: pointer;
-            position: relative;
-        }
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="../../CSS/general.css">
+        <link rel="stylesheet" href="../../CSS/specific_collection.css">
+        <link rel="stylesheet" href="../../CSS/likes.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="../../CSS/christmas.css">
+        <script src="././JS/theme-toggle.js"></script>
+        <script src="../../JS/christmas-theme.js"></script>
+    </head>
 
-        .item-card-link:focus {
-            outline: 2px solid #6366f1;
-            outline-offset: 4px;
-        }
+    <body>
+<?php include __DIR__ . '/../includes/nav.php'; ?>
 
-        .item-card-link:focus-visible {
-            outline: 2px solid #6366f1;
-            outline-offset: 4px;
-        }
-    </style>
-</head>
+        <main class="page-shell">
+<?php flash_render(); ?>
 
-<body>
-    <?php include __DIR__ . '/../includes/nav.php'; ?>
+            <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
+                    <li class="breadcrumb-item"><a href="all_collections.php">Collections</a></li>
+                    <li class="breadcrumb-item" aria-current="page">
+        <?php echo htmlspecialchars($collection['name'] ?? 'Collection'); ?>
+                    </li>
+                </ol>
+            </nav>
 
-    <main class="page-shell">
-        <?php flash_render(); ?>
+<?php if (!$collection): ?>
+                <section class="collection-hero">
+                    <p class="muted">Collection not found.</p>
+                </section>
+<?php else: ?>
 
-        <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-            <ol class="breadcrumb-list">
-                <li class="breadcrumb-item"><a href="home_page.php">Home</a></li>
-                <li class="breadcrumb-item"><a href="all_collections.php">Collections</a></li>
-                <li class="breadcrumb-item" aria-current="page">
-                    <?php echo htmlspecialchars($collection['name'] ?? 'Collection'); ?>
-                </li>
-            </ol>
-        </nav>
-
-        <?php if (!$collection): ?>
-            <section class="collection-hero">
-                <p class="muted">Collection not found.</p>
-            </section>
-        <?php else: ?>
-
-            <!-- =========================
+                <!-- =========================
                      HERO / OVERVIEW DA COLEÇÃO
                      ========================= -->
-            <section class="collection-hero">
-                <div id="collection-meta">
-                    <div id="meta-text">
-                        <div class="collection-type-line">
-                            <span class="collection-type">
-                                <?php echo htmlspecialchars($collection['type'] ?? ''); ?>
-                            </span>
-                            <span class="dot">·</span>
-                            <span class="collection-category">
-                                Collection
-                            </span>
+                <section class="collection-hero">
+                    <div id="collection-meta">
+                        <div id="meta-text">
+                            <div class="collection-type-line">
+                                <span class="collection-type">
+        <?php echo htmlspecialchars($collection['type'] ?? ''); ?>
+                                </span>
+                                <span class="dot">·</span>
+                                <span class="collection-category">
+                                    Collection
+                                </span>
+                            </div>
+
+                            <h1 class="collection-title">
+        <?php echo htmlspecialchars($collection['name'] ?? ''); ?>
+                            </h1>
+
+        <?php if (!empty($collection['summary'])): ?>
+                                <p class="collection-summary">
+            <?php echo htmlspecialchars($collection['summary']); ?>
+                                </p>
+        <?php endif; ?>
+
+        <?php if (!empty($collection['description'])): ?>
+                                <p id="description-line">
+                                    <?php echo htmlspecialchars($collection['description']); ?>
+                                </p>
+        <?php endif; ?>
+
+                            <p class="collection-owner-line">
+                                Collection owner:
+                                <a href="user_page.php?id=<?php echo urlencode($collectionOwnerId); ?>" class="owner-link">
+            <?php echo htmlspecialchars($ownerName); ?>
+                                </a>
+                            </p>
                         </div>
-
-                        <h1 class="collection-title">
-                            <?php echo htmlspecialchars($collection['name'] ?? ''); ?>
-                        </h1>
-
-                        <?php if (!empty($collection['summary'])): ?>
-                            <p class="collection-summary">
-                                <?php echo htmlspecialchars($collection['summary']); ?>
-                            </p>
-                        <?php endif; ?>
-
-                        <?php if (!empty($collection['description'])): ?>
-                            <p id="description-line">
-                                <?php echo htmlspecialchars($collection['description']); ?>
-                            </p>
-                        <?php endif; ?>
-
-                        <p class="collection-owner-line">
-                            Collection owner:
-                            <a href="user_page.php?id=<?php echo urlencode($collectionOwnerId); ?>" class="owner-link">
-                                <?php echo htmlspecialchars($ownerName); ?>
-                            </a>
-                        </p>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <?php if (!empty($collectionStats)): ?>
+    <?php if (!empty($collectionStats)): ?>
                 <section id="collection-stats" aria-labelledby="collection-stats-heading">
                     <h2 id="collection-stats-heading">Collection statistics</h2>
                     <div class="stats-grid">
-                        <?php foreach ($collectionStats as $stat): ?>
-                            <article class="stat-card">
-                                <div class="stat-icon" aria-hidden="true">
-                                    <i class="bi <?php echo htmlspecialchars($stat['icon']); ?>"></i>
-                                </div>
-                                <div class="stat-body">
-                                    <span class="stat-value"><?php echo htmlspecialchars($stat['value']); ?></span>
-                                    <span class="stat-label"><?php echo htmlspecialchars($stat['label']); ?></span>
-                                </div>
-                            </article>
-                        <?php endforeach; ?>
+        <?php foreach ($collectionStats as $stat): ?>
+                        <article class="stat-card">
+                            <div class="stat-icon" aria-hidden="true">
+                                <i class="bi <?php echo htmlspecialchars($stat['icon']); ?>"></i>
+                            </div>
+                            <div class="stat-body">
+                                <span class="stat-value"><?php echo htmlspecialchars($stat['value']); ?></span>
+                                <span class="stat-label"><?php echo htmlspecialchars($stat['label']); ?></span>
+                            </div>
+                        </article>
+        <?php endforeach; ?>
                     </div>
                 </section>
-            <?php endif; ?>
+    <?php endif; ?>
 
 
-            <!-- BOTÕES PRINCIPAIS DA COLEÇÃO -->
-            <div id="buttons-bar">
-                <a href="all_collections.php" class="explore-btn ghost">
-                    <i class="bi bi-arrow-left"></i>
-                    Back to collections
-                </a>
-
-                <?php if ($isOwner): ?>
-                    <a class="explore-btn"
-                        href="collections_form.php?id=<?php echo urlencode($collection['id']); ?>">
-                        <i class="bi bi-pencil-square"></i>
-                        Edit Collection
+                <!-- BOTÕES PRINCIPAIS DA COLEÇÃO -->
+                <div id="buttons-bar">
+                    <a href="all_collections.php" class="explore-btn ghost">
+                        <i class="bi bi-arrow-left"></i>
+                        Back to collections
                     </a>
 
-                    <a class="explore-btn"
-                        href="items_form.php?collectionId=<?php echo urlencode($collection['id']); ?>&from=specific_collection">
-                        <i class="bi bi-plus-circle"></i>
-                        Add Item
-                    </a>
+    <?php if ($isOwner): ?>
+                        <a class="explore-btn"
+                           href="collections_form.php?id=<?php echo urlencode($collection['id']); ?>">
+                            <i class="bi bi-pencil-square"></i>
+                            Edit Collection
+                        </a>
 
-                    <form action="collections_action.php" method="POST" style="display:inline;">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="id"
-                            value="<?php echo htmlspecialchars($collection['id']); ?>">
-                        <button type="submit"
-                            class="explore-btn danger"
-                            onclick="return confirm('Delete collection?');">
-                            <i class="bi bi-trash"></i>
-                            Delete
-                        </button>
-                    </form>
-                <?php endif; ?>
-            </div>
+                        <a class="explore-btn"
+                           href="items_form.php?collectionId=<?php echo urlencode($collection['id']); ?>">
+                            <i class="bi bi-plus-circle"></i>
+                            Add Item
+                        </a>
 
-            <!-- =========================
+                        <form action="collections_action.php" method="POST" style="display:inline;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id"
+                                   value="<?php echo htmlspecialchars($collection['id']); ?>">
+                            <button type="submit"
+                                    class="explore-btn danger"
+                                    onclick="return confirm('Delete collection?');">
+                                <i class="bi bi-trash"></i>
+                                Delete
+                            </button>
+                        </form>
+    <?php endif; ?>
+                </div>
+
+                <!-- =========================
                      ITEMS
                      ========================= -->
-            <section class="items-section" id="items-section">
-                <h2>Items</h2>
+                <section class="items-section" id="items-section">
+                    <h2>Items</h2>
 
-                <div class="top-controls">
-                    <div class="left">
-                        <form id="filters" class="filters-form" method="GET" action="specific_collection.php">
-                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($collectionId); ?>">
-                            <input type="hidden" name="page" value="1">
-
-                            <div class="filter-chip filter-chip--select">
-                                <label class="filter-chip__label" for="sort-select">
-                                    <i class="bi bi-funnel"></i>
-                                    <span>Sort by</span>
-                                </label>
-                                <select name="sort" id="sort-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+                    <div class="top-controls">
+                        <div class="left">
+                            <form id="filters" method="GET" action="specific_collection.php" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($collectionId); ?>">
+                                <input type="hidden" name="page" value="1">
+                                <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
                                     <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
                                     <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
                                     <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
                                 </select>
-                            </div>
-
-                            <div class="filter-chip filter-chip--compact filter-chip--select">
-                                <label class="filter-chip__label" for="per-page-select">
-                                    <i class="bi bi-collection"></i>
-                                    <span>Show</span>
+                                <label>Show
+                                    <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
+                                        <?php foreach ([5, 10, 20] as $opt): ?>
+                                            <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    items per page
                                 </label>
-                                <select name="perPage" id="per-page-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
-                                    <?php foreach ([5, 10, 20] as $opt): ?>
-                                        <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <span class="filter-chip__hint">per page</span>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
+                        <div class="paginate">
+                            <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
+                            <span>Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $perPage, $totalItems); ?> of <?php echo $totalItems; ?></span>
+                            <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
+                        </div>
                     </div>
-                    <div class="paginate">
-                        <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
-                        <span>Showing <?php echo $offset + 1; ?>-<?php echo min($offset + $perPage, $totalItems); ?> of <?php echo $totalItems; ?></span>
-                        <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('specific_collection.php?<?php echo http_build_query(['id' => $collectionId, 'sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
-                    </div>
-                </div>
 
-                <?php if (!$itemsForCollection): ?>
-                    <p class="muted">No items in this collection.</p>
-                <?php else: ?>
-                    <div class="collection-container">
-                        <?php foreach ($itemsPage as $it): ?>
-                            <?php
-                            $itemId = $it['id'] ?? null;
-                            $priceRaw = $it['price'] ?? 0;
-                            $price = is_numeric($priceRaw) ? (float) $priceRaw : 0.0;
-                            $date = substr($it['acquisitionDate'] ?? $it['acquisition_date'] ?? '', 0, 10);
-                            $likes = $itemLikeCount[$itemId] ?? 0;
-                            $isLiked = isset($likedItems[$itemId]);
+    <?php if (!$itemsForCollection): ?>
+                        <p class="muted">No items in this collection.</p>
+                    <?php else: ?>
+                        <div class="collection-container">
+        <?php foreach ($itemsPage as $it): ?>
+            <?php
+            $itemId = $it['id'] ?? null;
+            $priceRaw = $it['price'] ?? 0;
+            $price = is_numeric($priceRaw) ? (float) $priceRaw : 0.0;
+            $date = substr($it['acquisitionDate'] ?? $it['acquisition_date'] ?? '', 0, 10);
+            $likes = $itemLikeCount[$itemId] ?? 0;
+            $isLiked = isset($likedItems[$itemId]);
 
-                            $thumb = $it['image'] ?? '';
-                            if ($thumb && !preg_match('#^https?://#', $thumb)) {
-                                $thumb = '../../' . ltrim($thumb, './');
-                            }
-                            ?>
-                            <article class="card item-card item-card-link" role="link" tabindex="0" data-item-link="<?php echo $itemId ? 'item_page.php?id=' . urlencode($itemId) : ''; ?>">
-                                <div class="item-image-wrapper">
-                                    <?php if ($thumb): ?>
-                                        <a href="item_page.php?id=<?php echo urlencode($itemId); ?>">
-                                            <img class="item-image"
-                                                src="<?php echo htmlspecialchars($thumb); ?>"
-                                                alt="<?php echo htmlspecialchars($it['name'] ?? ''); ?>">
-                                        </a>
-                                    <?php else: ?>
-                                        <div class="item-image-placeholder">No image available</div>
-                                    <?php endif; ?>
-                                </div>
-
-                                <div class="item-info">
-                                    <h3>
-                                        <a href="item_page.php?id=<?php echo urlencode($itemId); ?>">
-                                            <?php echo htmlspecialchars($it['name'] ?? ''); ?>
-                                        </a>
-                                    </h3>
-
-                                    <div class="item-price">
-                                        €<?php echo number_format($price, 2, '.', ''); ?>
+            $thumb = $it['image'] ?? '';
+            if ($thumb && !preg_match('#^https?://#', $thumb)) {
+                $thumb = '../../' . ltrim($thumb, './');
+            }
+            ?>
+                                <article class="card item-card">
+                                    <div class="item-image-wrapper">
+                                <?php if ($thumb): ?>
+                                            <a href="item_page.php?id=<?php echo urlencode($itemId); ?>">
+                                                <img class="item-image"
+                                                     src="<?php echo htmlspecialchars($thumb); ?>"
+                                                     alt="<?php echo htmlspecialchars($it['name'] ?? ''); ?>">
+                                            </a>
+                                <?php else: ?>
+                                            <div class="item-image-placeholder">No image available</div>
+                                <?php endif; ?>
                                     </div>
-                                </div>
 
-                                <div class="collection-card__actions card-actions card-buttons item-buttons">
-                                    <?php if ($isAuthenticated): ?>
-                                        <form action="likes_action.php" method="POST" class="action-icon-form like-form">
-                                            <input type="hidden" name="type" value="item">
-                                            <input type="hidden" name="id"
-                                                value="<?php echo htmlspecialchars($itemId); ?>">
-                                            <button type="submit"
-                                                class="action-icon<?php echo $isLiked ? ' is-liked' : ''; ?>"
-                                                title="Like item">
-                                                <i class="bi <?php echo $isLiked ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
-                                                <span class="like-count<?php echo $likes === 0 ? ' is-zero' : ''; ?>"><?php echo $likes; ?></span>
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
+                                    <div class="item-info">
+                                        <h3>
+                                            <a href="item_page.php?id=<?php echo urlencode($itemId); ?>">
+                                        <?php echo htmlspecialchars($it['name'] ?? ''); ?>
+                                            </a>
+                                        </h3>
 
-                                    <?php if ($isOwner): ?>
-                                        <a class="action-icon"
-                                            href="items_form.php?id=<?php echo urlencode($itemId); ?>&from=specific_collection&collectionId=<?php echo urlencode($collectionId); ?>"
-                                            title="Edit item">
-                                            <i class="bi bi-pencil"></i>
+                                        <div class="item-price">
+                                            €<?php echo number_format($price, 2, '.', ''); ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-buttons item-buttons">
+                                        <a class="explore-btn"
+                                           href="item_page.php?id=<?php echo urlencode($itemId); ?>">
+                                            Explore More
                                         </a>
 
-                                        <form action="items_action.php" method="POST" class="action-icon-form" data-preserve-scroll="true">
-                                            <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="id"
-                                                value="<?php echo htmlspecialchars($itemId); ?>">
-                                            <input type="hidden" name="return_to" value="specific_collection.php?id=<?php echo urlencode($collectionId); ?>">
-                                            <button type="submit"
-                                                class="action-icon is-danger"
-                                                title="Delete item"
-                                                onclick="return confirm('Delete this item?');">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-                                </div>
-                            </article>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </section>
+                                            <?php if ($isAuthenticated): ?>
+                                            <form action="likes_action.php" method="POST" class="like-form" style="display:inline;">
+                                                <input type="hidden" name="type" value="item">
+                                                <input type="hidden" name="id"
+                                                       value="<?php echo htmlspecialchars($itemId); ?>">
+                                                <button type="submit"
+                                                        class="explore-btn ghost<?php echo $isLiked ? ' success' : ''; ?>">
+                                                    <i class="bi <?php echo $isLiked ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
+				<?php echo $likes; ?>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>            <?php if ($isOwner): ?>
+                                            <a class="explore-btn ghost"
+                                               href="items_form.php?id=<?php echo urlencode($itemId); ?>">
+                                                Edit
+                                            </a>
 
-            <!-- =========================
+                                            <form action="items_action.php" method="POST" style="display:inline;">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="id"
+                                                       value="<?php echo htmlspecialchars($itemId); ?>">
+                                                <button type="submit"
+                                                        class="explore-btn danger"
+                                                        onclick="return confirm('Delete this item?');">
+                                                    Delete
+                                                </button>
+                                            </form>
+            <?php endif; ?>
+                                    </div>
+                                </article>
+        <?php endforeach; ?>
+                        </div>
+    <?php endif; ?>
+                </section>
+
+                <!-- =========================
                      EVENTS
                      ========================= -->
-            <section class="collection-events" style="margin-top:32px;">
-                <h2 class="section-subtitle">Events</h2>
+                <section class="collection-events" style="margin-top:32px;">
+                    <h2 class="section-subtitle">Events</h2>
 
-                <?php if (!$eventsForCollection): ?>
-                    <p class="muted">No events linked to this collection.</p>
-                <?php else: ?>
-                    <div class="collection-events-list">
-                        <?php foreach ($eventsForCollection as $ev): ?>
-                            <?php
-                            $entryFee = $ev['entry_fee'] ?? $ev['entryFee'] ?? 0;
-                            $entryFeeNum = is_numeric($entryFee) ? (float) $entryFee : 0;
-                            $category = $ev['category'] ?? $ev['type'] ?? 'Event';
-                            $eventDate = substr($ev['date'] ?? '', 0, 16);
-                            $location = $ev['localization'] ?? $ev['location'] ?? '';
-                            $eventId = $ev['id'] ?? $ev['event_id'] ?? '';
-                            ?>
-                            <a href="event_page.php?status=<?php echo urlencode($eventId ? 'all' : 'upcoming'); ?>" class="collection-event-card" style="text-decoration: none; color: inherit; display: block;">
-                                <div class="event-card-header">
-                                    <span class="event-type-badge"><?php echo htmlspecialchars($category); ?></span>
-                                </div>
-                                <h3><?php echo htmlspecialchars($ev['name'] ?? ''); ?></h3>
-                                <p class="event-summary"><?php echo htmlspecialchars($ev['summary'] ?? ''); ?></p>
-                                <div class="event-info-grid">
-                                    <div class="event-info-item">
-                                        <i class="bi bi-calendar-event"></i>
-                                        <span><?php echo htmlspecialchars($eventDate); ?></span>
+                        <?php if (!$eventsForCollection): ?>
+                        <p class="muted">No events linked to this collection.</p>
+                    <?php else: ?>
+                        <div class="collection-events-list">
+        <?php foreach ($eventsForCollection as $ev): ?>
+            <?php
+            $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
+            $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
+            $category = $ev['category'] ?? $ev['type'] ?? 'Event';
+            $eventDate = substr($ev['date'] ?? '', 0, 16);
+            $location = $ev['localization'] ?? $ev['location'] ?? '';
+            ?>
+                                <article class="collection-event-card">
+                                    <div class="event-card-header">
+                                        <span class="event-type-badge"><?php echo htmlspecialchars($category); ?></span>
                                     </div>
-                                    <?php if ($location): ?>
+                                    <h3><?php echo htmlspecialchars($ev['name'] ?? ''); ?></h3>
+                                    <p class="event-summary"><?php echo htmlspecialchars($ev['summary'] ?? ''); ?></p>
+                                    <div class="event-info-grid">
+                                        <div class="event-info-item">
+                                            <i class="bi bi-calendar-event"></i>
+                                            <span><?php echo htmlspecialchars($eventDate); ?></span>
+                                        </div>
+                                        <?php if ($location): ?>
                                         <div class="event-info-item">
                                             <i class="bi bi-geo-alt"></i>
                                             <span><?php echo htmlspecialchars($location); ?></span>
                                         </div>
-                                    <?php endif; ?>
-                                    <div class="event-info-item">
-                                        <i class="bi bi-cash-coin"></i>
-                                        <span><?php echo $entryFeeNum > 0 ? '€' . number_format($entryFeeNum, 2, '.', '') : 'Free'; ?></span>
+                                        <?php endif; ?>
+                                        <div class="event-info-item">
+                                            <i class="bi bi-cash-coin"></i>
+                                            <span><?php echo $price !== null ? '€' . number_format($price, 2, '.', '') : 'Free'; ?></span>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </section>
+                                </article>
+        <?php endforeach; ?>
+                        </div>
+                                    <?php endif; ?>
+                </section>
 
-        <?php endif; ?>
-    </main>
+<?php endif; ?>
+        </main>
 
-    <?php include __DIR__ . '/../includes/footer.php'; ?>
-    <script>
-        (function() {
-            var scrollKey = 'gc-scroll-specific-<?php echo (int) $collectionId; ?>';
-            var filtersForm = document.getElementById('filters');
-            var hasStorage = false;
-            try {
-                sessionStorage.setItem('__gc_test', '1');
-                sessionStorage.removeItem('__gc_test');
-                hasStorage = true;
-            } catch (err) {
-                hasStorage = false;
-            }
-
-            function saveScroll() {
-                if (!hasStorage) {
-                    return;
+<?php include __DIR__ . '/../includes/footer.php'; ?>
+        <script>
+            (function () {
+                var scrollKey = 'gc-scroll-specific-<?php echo (int) $collectionId; ?>';
+                var filtersForm = document.getElementById('filters');
+                var hasStorage = false;
+                try {
+                    sessionStorage.setItem('__gc_test', '1');
+                    sessionStorage.removeItem('__gc_test');
+                    hasStorage = true;
+                } catch (err) {
+                    hasStorage = false;
                 }
-                var top = window.scrollY || document.documentElement.scrollTop || 0;
-                sessionStorage.setItem(scrollKey, String(top));
-            }
 
-            window.gcSubmitWithScroll = function(form) {
-                saveScroll();
-                form.submit();
-            };
-
-            window.gcRememberScroll = function(url) {
-                saveScroll();
-                window.location = url;
-            };
-
-            window.addEventListener('pageshow', function() {
-                if (!hasStorage) {
-                    return;
+                function saveScroll() {
+                    if (!hasStorage) {
+                        return;
+                    }
+                    var top = window.scrollY || document.documentElement.scrollTop || 0;
+                    sessionStorage.setItem(scrollKey, String(top));
                 }
-                var stored = sessionStorage.getItem(scrollKey);
-                if (stored !== null) {
-                    window.scrollTo(0, parseFloat(stored));
-                    sessionStorage.removeItem(scrollKey);
+
+                window.gcSubmitWithScroll = function (form) {
+                    saveScroll();
+                    form.submit();
+                };
+
+                window.gcRememberScroll = function (url) {
+                    saveScroll();
+                    window.location = url;
+                };
+
+                window.addEventListener('pageshow', function () {
+                    if (!hasStorage) {
+                        return;
+                    }
+                    var stored = sessionStorage.getItem(scrollKey);
+                    if (stored !== null) {
+                        window.scrollTo(0, parseFloat(stored));
+                        sessionStorage.removeItem(scrollKey);
+                    }
+                });
+
+                if (filtersForm) {
+                    filtersForm.addEventListener('submit', saveScroll);
                 }
-            });
 
-            if (filtersForm) {
-                filtersForm.addEventListener('submit', saveScroll);
-            }
-
-            document.querySelectorAll('form[data-preserve-scroll]').forEach(function(form) {
-                form.addEventListener('submit', saveScroll);
-            });
-
-            // Prevent page scroll on like forms and keep counts in sync
-            document.querySelectorAll('.like-form').forEach(function(form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    var formData = new FormData(form);
-                    fetch('likes_action.php', {
-                        method: 'POST',
-                        body: formData,
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    }).then(function(res) {
-                        if (!res.ok) {
-                            throw new Error('failed');
-                        }
-                        return res.json();
-                    }).then(function(payload) {
-                        if (!payload.ok) {
-                            throw new Error(payload.error || 'failed');
-                        }
-                        var button = form.querySelector('button');
-                        if (!button) {
-                            return;
-                        }
-                        var icon = button.querySelector('i');
-                        var countEl = form.querySelector('.like-count');
-                        var current = countEl ? parseInt(countEl.textContent || '0', 10) : 0;
-                        var likedNow = payload.liked === true || (payload.liked === null ? !button.classList.contains('is-liked') : payload.liked);
-                        if (!icon) {
-                            return;
-                        }
-                        if (likedNow) {
-                            button.classList.add('is-liked');
-                            icon.classList.remove('bi-heart');
-                            icon.classList.add('bi-heart-fill');
-                            if (countEl) {
-                                countEl.textContent = (current + 1).toString();
-                                countEl.classList.remove('is-zero');
+                // Prevent page scroll on like forms
+                document.querySelectorAll('.like-form').forEach(function(form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        var formData = new FormData(form);
+                        fetch('likes_action.php', {
+                            method: 'POST',
+                            body: formData
+                        }).then(function() {
+                            var button = form.querySelector('button');
+                            var icon = button.querySelector('i');
+                            var likeCount = button.textContent.trim();
+                            var currentCount = parseInt(likeCount) || 0;
+                            
+                            if (button.classList.contains('success')) {
+                                button.classList.remove('success');
+                                icon.classList.remove('bi-heart-fill');
+                                icon.classList.add('bi-heart');
+                                button.innerHTML = '<i class="bi bi-heart"></i> ' + Math.max(0, currentCount - 1);
+                            } else {
+                                button.classList.add('success');
+                                icon.classList.remove('bi-heart');
+                                icon.classList.add('bi-heart-fill');
+                                button.innerHTML = '<i class="bi bi-heart-fill"></i> ' + (currentCount + 1);
                             }
-                        } else {
-                            button.classList.remove('is-liked');
-                            icon.classList.remove('bi-heart-fill');
-                            icon.classList.add('bi-heart');
-                            if (countEl) {
-                                var next = Math.max(0, current - 1);
-                                countEl.textContent = next.toString();
-                                countEl.classList.toggle('is-zero', next === 0);
-                            }
-                        }
-                    }).catch(function(err) {
-                        console.error(err);
-                        window.location = 'likes_action.php';
+                        });
                     });
                 });
-            });
-
-            var itemCards = document.querySelectorAll('.item-card-link');
-            itemCards.forEach(function(card) {
-                var targetUrl = card.getAttribute('data-item-link');
-                if (!targetUrl) {
-                    return;
-                }
-
-                card.addEventListener('click', function(e) {
-                    if (e.target.closest('a, button, form, input, textarea, select')) {
-                        return;
-                    }
-                    window.location.href = targetUrl;
-                });
-
-                card.addEventListener('keydown', function(e) {
-                    if (e.target !== card) {
-                        return;
-                    }
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        window.location.href = targetUrl;
-                    }
-                });
-            });
-        })();
-    </script>
-</body>
+            })();
+        </script>
+    </body>
 
 </html>

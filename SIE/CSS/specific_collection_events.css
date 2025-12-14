@@ -34,8 +34,14 @@
   color: #334155;
   font-weight: 700;
 }
+.home-event-meta .meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-.home-event-meta .meta-row i {
-  font-size: 1.1rem;
-  color: #475569;
+.home-event-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: #111827;
 }

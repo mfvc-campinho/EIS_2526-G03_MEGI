@@ -133,7 +133,7 @@ $existingCollections = array_unique($existingCollections);
                 <input type="date" name="acquisitionDate"
                        value="<?php echo htmlspecialchars($item['acquisitionDate']); ?>">
 
-                                    <label>Image (upload) <span class="required-badge">R</span></label>
+                                    <label>Image (upload) </label>
                                 <input type="file" name="imageFile" accept="image/*" required>
                 <?php if (!empty($item['image'])): ?>
                     <?php

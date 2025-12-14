@@ -548,14 +548,37 @@ if ($collection) {
                         <p class="muted">No events linked to this collection.</p>
                     <?php else: ?>
                         <div class="events-grid js-events-grid">
+                            <?php
+                            // Helper to format date as ordinal and month name lowercase
+                            if (!function_exists('gc_format_ordinal_date')) {
+                                function gc_format_ordinal_date(?DateTime $dt): string {
+                                    if (!$dt) return '';
+                                    $day = (int)$dt->format('j');
+                                    $year = $dt->format('Y');
+                                    $monthNum = (int)$dt->format('n');
+                                    // Ordinal suffix
+                                    $suffix = 'th';
+                                    if (!in_array($day % 100, [11,12,13], true)) {
+                                        $last = $day % 10;
+                                        if ($last === 1) $suffix = 'st';
+                                        elseif ($last === 2) $suffix = 'nd';
+                                        elseif ($last === 3) $suffix = 'rd';
+                                    }
+                                    // Month names lowercase (with "dezember" spelling for December as requested)
+                                    $months = [
+                                        1=>'january',2=>'february',3=>'march',4=>'april',5=>'may',6=>'june',
+                                        7=>'july',8=>'august',9=>'september',10=>'october',11=>'november',12=>'dezember'
+                                    ];
+                                    $monthName = $months[$monthNum] ?? strtolower($dt->format('F'));
+                                    return $day . $suffix . ' of ' . $monthName . ' of ' . $year;
+                                }
+                            }
+                            ?>
                             <?php foreach ($eventsForCollection as $ev): ?>
                                 <?php
                                 $eventRaw = $ev['date'] ?? $ev['event_date'] ?? '';
                                 $eventDateObj = $eventRaw ? new DateTime($eventRaw) : null;
-                                $eventDateDisplay = $eventDateObj ? $eventDateObj->format('d/m/Y') : '';
-                                $eventTimeDisplay = $eventDateObj ? $eventDateObj->format('H:i') : '';
-                                if ($eventTimeDisplay === '00:00') $eventTimeDisplay = '';
-                                $modalCombinedDisplay = $eventTimeDisplay ? ($eventDateDisplay . ' ' . $eventTimeDisplay) : $eventDateDisplay;
+                                $eventDateText = gc_format_ordinal_date($eventDateObj);
                                 $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
                                 $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
                                 $costLabel = ($price !== null && $price > 0) ? '€' . number_format($price, 2, ',', '.') : 'Free entrance';
@@ -568,26 +591,23 @@ if ($collection) {
                                          data-name="<?php echo htmlspecialchars($ev['name'] ?? ''); ?>"
                                          data-summary="<?php echo htmlspecialchars($ev['summary'] ?? ''); ?>"
                                          data-description="<?php echo htmlspecialchars($ev['description'] ?? ''); ?>"
-                                         data-date="<?php echo htmlspecialchars($eventDateDisplay); ?>"
-                                         data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
-                                         data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
+                                         data-date="<?php echo htmlspecialchars($eventDateText); ?>"
+                                         data-time=""
+                                         data-datetime="<?php echo htmlspecialchars($eventDateText); ?>"
                                          data-location="<?php echo htmlspecialchars($location); ?>"
                                          data-type="<?php echo htmlspecialchars($category); ?>"
                                          data-cost="<?php echo htmlspecialchars($costLabel); ?>">
                                     <h3 class="home-event-title"><?php echo htmlspecialchars($ev['name']); ?></h3>
                                     <div class="home-event-meta">
                                         <div class="meta-row">
-                                            <i class="bi bi-calendar-event"></i>
-                                            <span><?php echo htmlspecialchars($eventDateDisplay ?: $modalCombinedDisplay); ?></span>
+                                            <span><?php echo htmlspecialchars($eventDateText); ?></span>
                                         </div>
                                         <?php if ($location): ?>
                                         <div class="meta-row">
-                                            <i class="bi bi-geo-alt"></i>
                                             <span><?php echo htmlspecialchars($location); ?></span>
                                         </div>
                                         <?php endif; ?>
                                         <div class="meta-row">
-                                            <i class="bi bi-cash-coin"></i>
                                             <span><?php echo htmlspecialchars($costLabel); ?></span>
                                         </div>
                                     </div>
@@ -763,15 +783,29 @@ if ($collection) {
                 setTimeout(() => { modal.style.display = 'none'; }, 200);
             }
 
-            document.querySelectorAll('.js-event-card').forEach(function(card) {
-                card.addEventListener('click', function() {
-                    openModal({
-                        eventId: card.dataset.eventId, name: card.dataset.name, summary: card.dataset.summary, description: card.dataset.description,
-                        date: card.dataset.date, time: card.dataset.time, datetime: card.dataset.datetime,
-                        location: card.dataset.location, type: card.dataset.type, cost: card.dataset.cost
-                    });
+            // Navigate to events page on card click
+            (function() {
+                var eventsGrid = document.querySelector('.js-events-grid');
+                if (!eventsGrid) return;
+                function goToEventsPage() {
+                    window.location.href = 'event_page.php';
+                }
+                eventsGrid.addEventListener('click', function(e) {
+                    var card = e.target.closest('.js-event-card');
+                    if (!card) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    goToEventsPage();
                 });
-            });
+                eventsGrid.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        var card = e.target.closest('.js-event-card');
+                        if (!card) return;
+                        e.preventDefault();
+                        goToEventsPage();
+                    }
+                });
+            })();
 
             if (closeButton) closeButton.addEventListener('click', closeModal);
             modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });

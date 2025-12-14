@@ -41,7 +41,20 @@
 }
 
 .home-event-title {
-  margin: 0 0 8px;
-  font-weight: 700;
-  color: #111827;
+  margin: 0 0 10px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  font-size: 1.15rem;
+  position: relative;
+}
+.home-event-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 44px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #6366f1, #22d3ee);
 }

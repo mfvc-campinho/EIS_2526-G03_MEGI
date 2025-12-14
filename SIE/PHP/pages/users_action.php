@@ -42,7 +42,7 @@ function handle_upload($field, $folder, $fallback = '')
     redirect_error('Invalid image format.', 'users_form.php');
   }
 
-  $dir = __DIR__ . '/../uploads/' . $folder;
+  $dir = dirname(__DIR__, 2) . '/uploads/' . $folder;
   if (!is_dir($dir)) {
     @mkdir($dir, 0777, true);
   }

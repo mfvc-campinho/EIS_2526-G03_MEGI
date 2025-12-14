@@ -4,28 +4,28 @@ $team = [
   [
     'name' => 'Afonso Dias Fachada Ramos',
     'id' => 'up202108474',
-    'photo' => '../../images/team/Afonso.jpeg',
+    'photo' => '../../uploads/team/Afonso.jpeg',
     'blurb' => "If I used this site, I'd collect Minecraft limited edition figures.",
     'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202108474'
   ],
   [
     'name' => 'Ana Isabel Dias Cunha Amorim',
     'id' => 'up202107329',
-    'photo' => '../../images/team/Ana.jpg',
+    'photo' => '../../uploads/team/Ana.jpg',
     'blurb' => "If I used this site, I'd collect CS:GO Skins. I love them!",
     'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202107329'
   ],
   [
     'name' => 'Filipa Marisa Duarte Mota',
     'id' => 'up202402072',
-    'photo' => '../../images/team/Filipa.jpg',
+    'photo' => '../../uploads/team/Filipa.jpg',
     'blurb' => "If I used this site, I'd collect photos of José Condessa.",
     'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202402072'
   ],
   [
     'name' => 'Matheus Fernandes Vilhena Campinho',
     'id' => 'up202202004',
-    'photo' => '../../images/team/Matheus.jpeg',
+    'photo' => '../../uploads/team/Matheus.jpeg',
     'blurb' => "If I used this site, I'd collect retro games and consoles.",
     'page' => 'https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=202202004'
   ],

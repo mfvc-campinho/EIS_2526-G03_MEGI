@@ -65,10 +65,10 @@ if (!$user) {
       <?php if (!empty($user['user_photo'])): ?>
         <?php
           $avatarPreview = $user['user_photo'];
-          if ($avatarPreview && !preg_match('#^https?://#', $avatarPreview)) {
-            // Files are stored under /PHP/uploads/... so from /PHP/pages go one level up
-            $avatarPreview = '../' . ltrim($avatarPreview, './');
-          }
+            if ($avatarPreview && !preg_match('#^https?://#', $avatarPreview)) {
+              // Files are stored under /uploads/... so from /PHP/pages go two levels up
+              $avatarPreview = '../../' . ltrim($avatarPreview, './');
+            }
         ?>
         <div class="muted" style="margin-top:8px; display:flex; align-items:flex-start; gap:10px;">
           <div style="flex:0 0 auto; width:96px; height:96px; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; background:#f8fafc; display:flex; align-items:center; justify-content:center;">

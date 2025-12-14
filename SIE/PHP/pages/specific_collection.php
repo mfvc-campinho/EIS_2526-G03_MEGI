@@ -541,7 +541,7 @@ if ($collection) {
                 <!-- =========================
                      EVENTS
                      ========================= -->
-                <section class="collection-events">
+                <section class="collection-events" style="margin-top:32px;">
                     <h2 class="section-subtitle">Events</h2>
 
                     <?php if (!$eventsForCollection): ?>
@@ -579,81 +579,66 @@ if ($collection) {
                                 $eventRaw = $ev['date'] ?? $ev['event_date'] ?? '';
                                 $eventDateObj = $eventRaw ? new DateTime($eventRaw) : null;
                                 $eventDateText = gc_format_ordinal_date($eventDateObj);
-                                $hasTime = (bool) preg_match('/\d{1,2}:\d{2}/', (string)$eventRaw);
-                                $cardDateOnly = $eventDateObj ? $eventDateObj->format('d/m/Y') : '';
-                                $cardTimeOnly = ($eventDateObj && $hasTime) ? $eventDateObj->format('H:i') : '';
+                                // derive card-only date and time from the original raw value (keeps time when present)
+                                $cardDateOnly = '';
+                                $cardTimeOnly = '';
+                                if ($eventRaw !== '') {
+                                    $normalizedRaw = str_replace('T', ' ', $eventRaw);
+                                    $rawHasTime = preg_match('/\d{2}:\d{2}/', $normalizedRaw) === 1;
+                                    $dt = DateTime::createFromFormat('Y-m-d H:i:s', $normalizedRaw)
+                                        ?: DateTime::createFromFormat('Y-m-d H:i', $normalizedRaw)
+                                        ?: DateTime::createFromFormat('Y-m-d', $normalizedRaw);
+                                    if ($dt instanceof DateTime) {
+                                        $cardDateOnly = $dt->format('d/m/Y');
+                                        $cardTimeOnly = $rawHasTime ? $dt->format('H:i') : '';
+                                    } else {
+                                        $cardDateOnly = substr($normalizedRaw, 0, 10);
+                                        $cardTimeOnly = $rawHasTime ? substr($normalizedRaw, 11, 5) : '';
+                                    }
+                                }
+
                                 $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
                                 $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
                                 $costLabel = ($price !== null && $price > 0) ? '€' . number_format($price, 2, ',', '.') : 'Free entrance';
                                 $location = $ev['localization'] ?? $ev['location'] ?? '';
                                 $eventId = $ev['id'] ?? $ev['event_id'] ?? null;
                                 $category = $ev['category'] ?? $ev['type'] ?? 'Event';
-                                $now = new DateTime();
-                                $statusIsUpcoming = $eventDateObj ? ($eventDateObj > $now) : true;
-                                $hasRsvp = !empty($userRsvpMap[$eventId]);
+                                $statusIsUpcoming = ($eventDateObj instanceof DateTime) ? ($eventDateObj >= new DateTime()) : false;
                                 ?>
                                 <article class="event-card js-event-card" tabindex="0"
                                          data-event-id="<?php echo htmlspecialchars($eventId); ?>"
                                          data-name="<?php echo htmlspecialchars($ev['name'] ?? ''); ?>"
                                          data-summary="<?php echo htmlspecialchars($ev['summary'] ?? ''); ?>"
                                          data-description="<?php echo htmlspecialchars($ev['description'] ?? ''); ?>"
-                                         data-date="<?php echo htmlspecialchars($cardDateOnly); ?>"
+                                         data-date="<?php echo htmlspecialchars($cardDateOnly ?: $eventDateText); ?>"
                                          data-time="<?php echo htmlspecialchars($cardTimeOnly); ?>"
                                          data-datetime="<?php echo htmlspecialchars(($cardDateOnly ?: $eventDateText) . ($cardTimeOnly ? ' · ' . $cardTimeOnly : '')); ?>"
                                          data-location="<?php echo htmlspecialchars($location); ?>"
                                          data-type="<?php echo htmlspecialchars($category); ?>"
                                          data-cost="<?php echo htmlspecialchars($costLabel); ?>">
-                                    <div class="event-card-top">
-                                        <p class="pill"><?php echo htmlspecialchars($category); ?></p>
-                                        <span class="status-chip <?php echo $statusIsUpcoming ? 'upcoming' : 'past'; ?>">
-                                            <?php echo $statusIsUpcoming ? 'Soon' : 'Past'; ?>
-                                        </span>
+                                    <div class="user-event-card__top">
+                                        <span class="pill pill--event"><?php echo htmlspecialchars($category); ?></span>
+                                        <span class="user-event-badge <?php echo $statusIsUpcoming ? 'upcoming' : 'past'; ?>"><?php echo $statusIsUpcoming ? 'UPCOMING' : 'PAST'; ?></span>
                                     </div>
-                                    <h3 class="home-event-title"><?php echo htmlspecialchars($ev['name']); ?></h3>
-                                    <div class="home-event-meta">
-                                        <div class="meta-row">
-                                            <i class="bi bi-calendar-event"></i>
-                                            <span><?php echo htmlspecialchars($cardDateOnly . ($cardTimeOnly ? ' · ' . $cardTimeOnly : '')); ?></span>
-                                        </div>
+                                    <h3><?php echo htmlspecialchars($ev['name'] ?? 'Event'); ?></h3>
+                                    <ul class="user-event-meta">
+                                        <?php if (!empty($cardDateOnly) || !empty($eventDateText)): ?>
+                                            <li>
+                                                <i class="bi bi-calendar-event"></i>
+                                                <?php echo htmlspecialchars($cardDateOnly ?: $eventDateText); ?>
+                                            </li>
+                                        <?php endif; ?>
                                         <?php if (!empty($location)): ?>
-                                        <div class="meta-row">
-                                            <i class="bi bi-geo-alt"></i>
-                                            <span><?php echo htmlspecialchars($location); ?></span>
-                                        </div>
+                                            <li>
+                                                <i class="bi bi-geo-alt"></i>
+                                                <?php echo htmlspecialchars($location); ?>
+                                            </li>
                                         <?php endif; ?>
-                                        <div class="meta-row">
-                                            <i class="bi bi-cash-coin"></i>
-                                            <span><?php echo htmlspecialchars($costLabel); ?></span>
-                                        </div>
-                                    </div>
-                                    <?php if (!empty($ev['summary'])): ?>
-                                        <p class="muted"><?php echo htmlspecialchars($ev['summary']); ?></p>
-                                    <?php endif; ?>
-                                    <div class="event-actions">
-                                        <?php if ($isOwner && $eventId): ?>
-                                            <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($eventId); ?>" title="Edit">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <form action="events_action.php" method="POST">
-                                                <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
-                                                <button type="submit" class="explore-btn ghost danger small" title="Delete" onclick="return confirm('Delete this event?');">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        <?php endif; ?>
-                                        <?php if ($isAuthenticated && $eventId): ?>
-                                            <form action="events_action.php" method="POST">
-                                                <input type="hidden" name="action" value="rsvp">
-                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
-                                                <input type="hidden" name="return_url" value="specific_collection.php?id=<?php echo htmlspecialchars($collectionId); ?>">
-                                                <input type="hidden" name="return_target" value="#">
-                                                <button type="submit" class="explore-btn small<?php echo $hasRsvp ? ' success' : ''; ?>">
-                                                    <i class="bi bi-check2-circle"></i> <?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?>
-                                                </button>
-                                            </form>
-                                        <?php endif; ?>
-                                    </div>
+                                        <li>
+                                            <i class="bi bi-ticket-perforated"></i>
+                                            <?php echo htmlspecialchars($costLabel); ?>
+                                        </li>
+                                    </ul>
                                 </article>
                             <?php endforeach; ?>
                         </div>
@@ -826,26 +811,43 @@ if ($collection) {
                 setTimeout(() => { modal.style.display = 'none'; }, 200);
             }
 
-            // Navigate to events page on card click
+            // Open modal populated from card data when an event card is activated
             (function() {
                 var eventsGrid = document.querySelector('.js-events-grid');
                 if (!eventsGrid) return;
-                function goToEventsPage() {
-                    window.location.href = 'event_page.php';
+
+                function buildPayloadFromCard(card) {
+                    if (!card) return {};
+                    return {
+                        eventId: card.getAttribute('data-event-id') || card.dataset.eventId,
+                        name: card.getAttribute('data-name') || card.dataset.name,
+                        summary: card.getAttribute('data-summary') || card.dataset.summary,
+                        description: card.getAttribute('data-description') || card.dataset.description,
+                        date: card.getAttribute('data-date') || card.dataset.date,
+                        time: card.getAttribute('data-time') || card.dataset.time,
+                        datetime: card.getAttribute('data-datetime') || card.dataset.datetime,
+                        location: card.getAttribute('data-location') || card.dataset.location,
+                        type: card.getAttribute('data-type') || card.dataset.type,
+                        cost: card.getAttribute('data-cost') || card.dataset.cost,
+                    };
                 }
+
                 eventsGrid.addEventListener('click', function(e) {
                     var card = e.target.closest('.js-event-card');
                     if (!card) return;
                     e.preventDefault();
                     e.stopPropagation();
-                    goToEventsPage();
+                    var payload = buildPayloadFromCard(card);
+                    openModal(payload);
                 });
+
                 eventsGrid.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' || e.key === ' ') {
                         var card = e.target.closest('.js-event-card');
                         if (!card) return;
                         e.preventDefault();
-                        goToEventsPage();
+                        var payload = buildPayloadFromCard(card);
+                        openModal(payload);
                     }
                 });
             })();

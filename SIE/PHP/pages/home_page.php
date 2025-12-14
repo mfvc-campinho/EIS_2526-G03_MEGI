@@ -174,6 +174,8 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
     <!-- Estilos globais -->
     <link rel="stylesheet" href="../../CSS/general.css">
+    <!-- Navbar dedicated styles -->
+    <link rel="stylesheet" href="../../CSS/navbar.css">
 
     <!-- Estilos específicos da home -->
     <link rel="stylesheet" href="../../CSS/home_page.css?v=14">
@@ -214,18 +216,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 </div>
             </section>
 
-            <section class="quick-actions">
-                <div class="quick-actions__grid">
-                    <a href="collections_form.php" class="explore-btn success">
-                        <i class="bi bi-plus-circle"></i>
-                        Add Collection
-                    </a>
-                    <a href="events_form.php" class="explore-btn success">
-                        <i class="bi bi-calendar-plus"></i>
-                        New Event
-                    </a>
-                </div>
-            </section>
+            
 
             <section class="collections-hero">
                 <h1>Top Collections</h1>
@@ -261,8 +252,8 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
             <section class="ranking-section" id="ranking-section">
                 <div class="top-controls">
-                    <div class="left">
-                        <form id="filters" class="filters-form" method="GET">
+                    <div class="left" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <form id="filters" class="filters-form" method="GET" style="flex:0 0 auto;">
                             <div class="filter-chip filter-chip--select">
                                 <label class="filter-chip__label" for="sort-select">
                                     <i class="bi bi-funnel"></i>
@@ -275,6 +266,16 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 </select>
                             </div>
                         </form>
+                        <div class="inline-actions" style="display:flex; gap:10px;">
+                            <a href="collections_form.php" class="explore-btn success">
+                                <i class="bi bi-plus-circle"></i>
+                                Add Collection
+                            </a>
+                            <a href="events_form.php" class="explore-btn">
+                                <i class="bi bi-calendar-plus"></i>
+                                New Event
+                            </a>
+                        </div>
                     </div>
                 </div>
 

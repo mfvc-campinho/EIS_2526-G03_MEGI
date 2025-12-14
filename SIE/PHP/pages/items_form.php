@@ -82,6 +82,7 @@ $existingCollections = array_unique($existingCollections);
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo $editing ? 'Edit' : 'New'; ?> Item • PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
+        <link rel="stylesheet" href="../../CSS/navbar.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="../../CSS/christmas.css">
@@ -132,8 +133,8 @@ $existingCollections = array_unique($existingCollections);
                 <input type="date" name="acquisitionDate"
                        value="<?php echo htmlspecialchars($item['acquisitionDate']); ?>">
 
-                  <label>Image (upload)</label>
-                <input type="file" name="imageFile" accept="image/*">
+                                    <label>Image (upload) <span class="required-badge">R</span></label>
+                                <input type="file" name="imageFile" accept="image/*" required>
                 <?php if (!empty($item['image'])): ?>
                     <?php
                       $imgPreview = $item['image'];

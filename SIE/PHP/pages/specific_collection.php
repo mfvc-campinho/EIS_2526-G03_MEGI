@@ -274,6 +274,7 @@ if ($collection) {
 
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="../../CSS/general.css">
+        <link rel="stylesheet" href="../../CSS/navbar.css">
         <link rel="stylesheet" href="../../CSS/specific_collection.css">
         <link rel="stylesheet" href="../../CSS/events.css">
         <link rel="stylesheet" href="../../CSS/likes.css">

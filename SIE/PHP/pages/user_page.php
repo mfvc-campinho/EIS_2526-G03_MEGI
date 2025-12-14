@@ -324,8 +324,8 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 <?php
                                 $avatar = $profileUser['user_photo'] ?? '';
                                 if ($avatar && !preg_match('#^https?://#', $avatar)) {
-                                    // From /PHP/pages to /SIE/uploads requires two levels up
-                                    $avatar = '../../' . ltrim($avatar, './');
+                                    // Stored in /PHP/uploads/..., so from /PHP/pages go one level up
+                                    $avatar = '../' . ltrim($avatar, './');
                                 }
                                 ?>
                                 <?php if (!empty($avatar)): ?>
@@ -661,8 +661,8 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 $followerName = $follower['user_name'] ?? $follower['username'] ?? 'Unknown';
                                 $followerPhoto = $follower['user_photo'] ?? '';
                                 if ($followerPhoto && !preg_match('#^https?://#', $followerPhoto)) {
-                                    // From /PHP/pages to /SIE/uploads requires two levels up
-                                    $followerPhoto = '../../' . ltrim($followerPhoto, './');
+                                    // Stored in /PHP/uploads/... so from /PHP/pages go one level up
+                                    $followerPhoto = '../' . ltrim($followerPhoto, './');
                                 }
                                 ?>
                                 <li style="display:flex; align-items:center; gap:12px; padding:12px; background:#f9fafb; border-radius:12px; border:1px solid #e5e7eb;">

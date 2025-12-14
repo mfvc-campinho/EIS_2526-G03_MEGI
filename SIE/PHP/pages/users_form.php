@@ -65,8 +65,8 @@ if (!$user) {
         <?php
           $avatarPreview = $user['user_photo'];
           if ($avatarPreview && !preg_match('#^https?://#', $avatarPreview)) {
-            // Go two levels up from /PHP/pages to reach /SIE/uploads
-            $avatarPreview = '../../' . ltrim($avatarPreview, './');
+            // Files are stored under /PHP/uploads/... so from /PHP/pages go one level up
+            $avatarPreview = '../' . ltrim($avatarPreview, './');
           }
         ?>
         <div class="muted" style="margin-top:8px; display:flex; align-items:flex-start; gap:10px;">

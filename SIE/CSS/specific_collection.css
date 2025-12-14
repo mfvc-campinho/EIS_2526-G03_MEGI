@@ -467,6 +467,18 @@ body {
   align-items: center;
 }
 
+/* Stronger centering for action buttons inside item cards */
+.collection-container .item-card .collection-card__actions.card-actions {
+  display: flex;
+  width: 100%;
+  justify-content: center !important;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0 16px;
+  margin: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
 .collection-container .item-buttons .like-form {
   display: inline-flex;
   margin: 0;

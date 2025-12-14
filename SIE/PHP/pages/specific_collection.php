@@ -491,40 +491,44 @@ if ($collection) {
                                         </div>
                                     </div>
 
-                                    <div class="card-buttons item-buttons">
-                                        <a class="explore-btn"
-                                           href="item_page.php?id=<?php echo urlencode($itemId); ?>">
-                                            Explore More
+                                    <div class="collection-card__actions card-actions">
+                                        <a class="action-icon" href="item_page.php?id=<?php echo urlencode($itemId); ?>" title="Explore">
+                                            <i class="bi bi-plus-lg"></i>
                                         </a>
 
-                                            <?php if ($isAuthenticated): ?>
-                                            <form action="likes_action.php" method="POST" class="like-form" style="display:inline;">
+                                        <?php if ($isAuthenticated): ?>
+                                            <form action="likes_action.php" method="POST" class="action-icon-form like-form">
                                                 <input type="hidden" name="type" value="item">
                                                 <input type="hidden" name="id"
                                                        value="<?php echo htmlspecialchars($itemId); ?>">
                                                 <button type="submit"
-                                                        class="explore-btn ghost<?php echo $isLiked ? ' success' : ''; ?>">
+                                                        class="action-icon<?php echo $isLiked ? ' is-liked' : ''; ?>"
+                                                        title="Like">
                                                     <i class="bi <?php echo $isLiked ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
-				<?php echo $likes; ?>
+                                                    <span class="like-count<?php echo $likes === 0 ? ' is-zero' : ''; ?>"><?php echo $likes; ?></span>
                                                 </button>
                                             </form>
-                                        <?php endif; ?>            <?php if ($isOwner): ?>
-                                            <a class="explore-btn ghost"
-                                               href="items_form.php?id=<?php echo urlencode($itemId); ?>">
-                                                Edit
+                                        <?php endif; ?>
+
+                                        <?php if ($isOwner): ?>
+                                            <a class="action-icon"
+                                               href="items_form.php?id=<?php echo urlencode($itemId); ?>"
+                                               title="Edit">
+                                                <i class="bi bi-pencil"></i>
                                             </a>
 
-                                            <form action="items_action.php" method="POST" style="display:inline;">
+                                            <form action="items_action.php" method="POST" class="action-icon-form">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id"
                                                        value="<?php echo htmlspecialchars($itemId); ?>">
                                                 <button type="submit"
-                                                        class="explore-btn danger"
+                                                        class="action-icon is-danger"
+                                                        title="Delete"
                                                         onclick="return confirm('Delete this item?');">
-                                                    Delete
+                                                    <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
-            <?php endif; ?>
+                                        <?php endif; ?>
                                     </div>
                                 </article>
         <?php endforeach; ?>
@@ -670,6 +674,7 @@ if ($collection) {
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
         <script src="../../JS/specific_collection.js"></script>
+        <script src="../../JS/collection_card.js"></script>
         <script>
         <?php
         // Passar o mapa de RSVPs para o JavaScript

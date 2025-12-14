@@ -68,21 +68,8 @@ body {
 /* Compact circular controls inside each collection card */
 /* Card-level tweaks live in general.css to stay consistent across pages */
 
-.action-icon-form {
-  display: inline-flex;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-}
-
-.card-actions {
-  gap: 12px;
-  justify-content: center;
-}
-
 /* ===============================
-   Responsivo
+   Collection grid layout
    =============================== */
 
 @media (max-width: 900px) {
@@ -97,6 +84,7 @@ body {
 }
 
 @media (max-width: 600px) {
+
   .top-controls .controls-row,
   .top-controls .controls-row--secondary {
     flex-direction: column;
@@ -163,11 +151,4 @@ body {
   max-width: 620px;
 }
 
-/* Override pointer-events for expand icon to allow clicking */
-.collection-card__actions .action-icon i {
-  pointer-events: auto;
-}
-
 /* ===============================
-   🔍 Filters + controls section
-   =============================== */

@@ -2183,6 +2183,45 @@ button {
   background: none;
 }
 
+.action-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  background: #f8fafc;
+  color: #1e3a8a;
+  border: 1.5px solid rgba(30, 58, 138, 0.4);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 3px 10px rgba(30, 58, 138, 0.18);
+}
+
+.action-icon:hover {
+  background: #1e3a8a;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(30, 58, 138, 0.25);
+  transform: translateY(-1px);
+}
+
+.action-icon:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 12px rgba(30, 58, 138, 0.2);
+}
+
+.action-icon.is-danger {
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.5);
+  background: #fef2f2;
+}
+
 .collection-card .action-icon,
 .collection-card__actions .action-icon,
 .item-page-actions .action-icon {
@@ -2506,6 +2545,17 @@ button {
     padding: 0 8px;
     justify-content: center;
   }
+}
+
+/* ==================================================
+   Buttons bar container styling
+   ================================================== */
+#buttons-bar {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /* ===============================

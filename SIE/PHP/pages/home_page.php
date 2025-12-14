@@ -23,6 +23,13 @@ $collectionItems = $data['collectionItems'] ?? [];
 $items = $data['items'] ?? [];
 $isAuthenticated = !empty($_SESSION['user']);
 $currentUserId = $isAuthenticated ? ($_SESSION['user']['id'] ?? null) : null;
+$collectionOwnerMap = [];
+foreach ($collections as $col) {
+    $cid = $col['id'] ?? null;
+    if ($cid) {
+        $collectionOwnerMap[$cid] = $col['ownerId'] ?? null;
+    }
+}
 $likedCollections = [];
 $collectionLikeCounts = [];
 
@@ -429,13 +436,15 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
         <!-- BLOCOS DE EVENTOS (mantive exatamente a tua lógica) -->
         <section class="upcoming-events inner-block">
             <div class="upcoming-inner">
-                <h2 class="upcoming-title">
-                    <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i>
-                    Upcoming Events
-                </h2>
-                <p class="upcoming-sub">
-                    Don't miss the next exhibitions, fairs and meetups curated by our community.
-                </p>
+                <div class="section-header">
+                    <h2 class="upcoming-title">
+                        <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i>
+                        Upcoming Events
+                    </h2>
+                    <p class="upcoming-sub">
+                        Don't miss the next exhibitions, fairs and meetups curated by our community.
+                    </p>
+                </div>
 
                 <div class="events-grid" id="eventsList">
                     <?php if ($upcomingEvents): ?>
@@ -489,11 +498,13 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 : 'Free entrance';
                             ?>
                                      <?php
-                                     $eventId = $evt['id'] ?? null;
-                                     $cardDomId = $eventId ? 'upcoming-event-' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) $eventId) : 'upcoming-event';
-                                     $hasRsvp = $currentUserId && $eventId ? !empty($eventRsvpMap["{$eventId}|{$currentUserId}"]) : false;
-                                     ?>
-                                     <article id="<?php echo htmlspecialchars($cardDomId); ?>"
+                                      $eventId = $evt['id'] ?? null;
+                                      $cardDomId = $eventId ? 'upcoming-event-' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) $eventId) : 'upcoming-event';
+                                      $hasRsvp = $currentUserId && $eventId ? !empty($eventRsvpMap["{$eventId}|{$currentUserId}"]) : false;
+                                      $primaryCollection = $evt['collectionId'] ?? null;
+                                      $ownerId = $primaryCollection ? ($collectionOwnerMap[$primaryCollection] ?? null) : null;
+                                      ?>
+                                      <article id="<?php echo htmlspecialchars($cardDomId); ?>"
                                          class="event-card js-event-card"
                                          tabindex="0"
                                          data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
@@ -509,7 +520,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                          data-event-id="<?php echo htmlspecialchars($eventId); ?>">
 
                                         <?php
-                                            $isOwner = $isAuthenticated && (($evt['host_user_id'] ?? $evt['hostUserId'] ?? null) === $currentUserId);
+                                            $isOwner = $isAuthenticated && $ownerId && $ownerId === $currentUserId;
                                             $statusIsUpcoming = true;
                                             $parsed = parse_event_datetime_home($evt['date'] ?? null, $appTimezone);
                                             if ($parsed['date'] instanceof DateTime) {
@@ -571,7 +582,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 </div>
 
                 <div class="events-actions">
-                    <a href="event_page.php" class="explore-btn ghost">View Events</a>
+                    <a href="event_page.php" class="explore-btn ghost view-events-cta">View Events</a>
                 </div>
             </div>
         </section>
@@ -731,4 +742,3 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 </body>
 
 </html>
-

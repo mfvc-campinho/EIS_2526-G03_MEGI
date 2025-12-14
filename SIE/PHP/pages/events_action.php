@@ -193,8 +193,8 @@ if ($action === 'create') {
   $costForSql = (float)number_format($costValue, 2, '.', '');
   $primaryCol = $collectionIds[0];
 
-  $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,cost,created_at,host_user_id,collection_id) VALUES (?,?,?,?,?,?,?,?,NOW(),?,?)');
-  $stmt->bind_param('sssssssdss', $id, $name, $localization, $dateForSql, $type, $summary, $description, $costForSql, $currentUser, $primaryCol);
+  $stmt = $mysqli->prepare('INSERT INTO events (event_id,name,localization,event_date,type,summary,description,cost,created_at,collection_id) VALUES (?,?,?,?,?,?,?,?,NOW(),?)');
+  $stmt->bind_param('sssssssds', $id, $name, $localization, $dateForSql, $type, $summary, $description, $costForSql, $primaryCol);
   $ok = $stmt->execute();
   $stmt->close();
 
@@ -209,7 +209,7 @@ if ($action === 'update') {
   if (!$id) redirect_error('ID missing.');
   if (!$collectionIds) redirect_error('Select at least one collection.');
 
-  $currentEventStmt = $mysqli->prepare('SELECT host_user_id, event_date FROM events WHERE event_id = ? LIMIT 1');
+  $currentEventStmt = $mysqli->prepare('SELECT collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
   $currentEventStmt->bind_param('s', $id);
   $currentEventStmt->execute();
   $currentEvent = $currentEventStmt->get_result()->fetch_assoc();
@@ -218,7 +218,8 @@ if ($action === 'update') {
     $mysqli->close();
     redirect_error('Event not found.');
   }
-  if (($currentEvent['host_user_id'] ?? null) !== $currentUser) {
+  $currentCollectionId = $currentEvent['collection_id'] ?? null;
+  if (!$currentCollectionId || !user_owns_collection($mysqli, $currentCollectionId, $currentUser)) {
     $mysqli->close();
     redirect_error('You do not have permission to edit this event.');
   }
@@ -296,13 +297,14 @@ if ($action === 'delete') {
   if (!$id) redirect_error('ID missing.');
 
   // ownership check via event host
-  $chk = $mysqli->prepare('SELECT host_user_id FROM events WHERE event_id = ? LIMIT 1');
+  $chk = $mysqli->prepare('SELECT collection_id FROM events WHERE event_id = ? LIMIT 1');
   $chk->bind_param('s', $id);
   $chk->execute();
   $res = $chk->get_result();
   $row = $res->fetch_assoc();
   $chk->close();
-  if (!$row || ($row['host_user_id'] ?? null) !== $currentUser) {
+  $eventCollection = $row['collection_id'] ?? null;
+  if (!$row || !$eventCollection || !user_owns_collection($mysqli, $eventCollection, $currentUser)) {
     $mysqli->close();
     redirect_error('You do not have permission to delete this event.');
   }
@@ -319,7 +321,7 @@ if ($action === 'delete') {
 
 // Fetch helper
 $fetchEvent = function ($mysqli, $eventId) {
-  $stmt = $mysqli->prepare('SELECT event_id, host_user_id AS hostUserId, collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
+  $stmt = $mysqli->prepare('SELECT event_id, collection_id, event_date FROM events WHERE event_id = ? LIMIT 1');
   $stmt->bind_param('s', $eventId);
   $stmt->execute();
   $res = $stmt->get_result();

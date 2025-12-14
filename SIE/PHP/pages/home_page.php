@@ -90,8 +90,9 @@ foreach ($collectionItems as $link) {
 }
 
 $sort = $_GET['sort'] ?? 'newest';
-$perPage = max(1, (int) ($_GET['perPage'] ?? 5));
-$page = max(1, (int) ($_GET['page'] ?? 1));
+// Home: force first page with 5 results (no pagination UI)
+$perPage = 5;
+$page = 1;
 
 usort($collections, function ($a, $b) use ($sort) {
     $aDate = $a['createdAt'] ?? '';
@@ -106,12 +107,7 @@ usort($collections, function ($a, $b) use ($sort) {
 });
 
 $totalCollections = count($collections);
-$pages = max(1, (int) ceil($totalCollections / $perPage));
-$page = min($page, $pages);
-$offset = ($page - 1) * $perPage;
-$collectionsPage = array_slice($collections, $offset, $perPage);
-$startDisplay = $totalCollections ? $offset + 1 : 0;
-$endDisplay = $totalCollections ? min($offset + $perPage, $totalCollections) : 0;
+$collectionsPage = array_slice($collections, 0, $perPage);
 
 $appTimezone = new DateTimeZone(date_default_timezone_get());
 $now = new DateTime('now', $appTimezone);
@@ -180,7 +176,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <link rel="stylesheet" href="../../CSS/general.css">
 
     <!-- Estilos específicos da home -->
-    <link rel="stylesheet" href="../../CSS/home_page.css?v=4">
+    <link rel="stylesheet" href="../../CSS/home_page.css?v=7">
 
     <!-- Eventos + likes -->
     <link rel="stylesheet" href="../../CSS/events.css">
@@ -277,28 +273,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                     <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
                                 </select>
                             </div>
-
-                            <div class="filter-chip filter-chip--compact filter-chip--select">
-                                <label class="filter-chip__label" for="per-page-select">
-                                    <i class="bi bi-collection"></i>
-                                    <span>Show</span>
-                                </label>
-                                <select name="perPage" id="per-page-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
-                                    <?php foreach ([5, 10, 20] as $opt): ?>
-                                        <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <span class="filter-chip__hint">per page</span>
-                            </div>
-
-                            <input type="hidden" name="page" value="1">
                         </form>
-                    </div>
-                    <div class="paginate">
-                        
-                        <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
-                        <span>Showing <?php echo $startDisplay; ?>-<?php echo $endDisplay; ?> of <?php echo $totalCollections; ?></span>
-                        <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
                     </div>
                 </div>
 
@@ -750,7 +725,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <script src="../../JS/search-toggle.js"></script>
     <script src="../../JS/gc-scroll-restore.js"></script>
     <script src="../../JS/back-to-top.js"></script>
-    <script src="../../JS/home_page.js"></script>
+    <script src="../../JS/home_page.js?v=2"></script>
 </body>
 
 </html>

@@ -526,6 +526,67 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
     </div>
   </main>
 
+  <!-- Event detail modal -->
+  <div class="modal-backdrop" id="event-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <button type="button" class="modal-close" aria-label="Close event details">
+          <i class="bi bi-x"></i>
+        </button>
+        <h3 id="modal-title"></h3>
+        <span class="modal-type-badge" id="modal-type"></span>
+      </div>
+      <div class="modal-body">
+        <p class="modal-summary" id="modal-summary"></p>
+        <p class="modal-description" id="modal-description"></p>
+        <div class="modal-info-grid">
+          <div class="modal-info-item">
+            <div class="modal-info-icon">
+              <i class="bi bi-calendar-event"></i>
+            </div>
+            <div class="modal-info-content">
+              <div class="modal-info-label">Date</div>
+              <div class="modal-info-value" id="modal-date"></div>
+            </div>
+          </div>
+          <div class="modal-info-item" id="modal-time-row" hidden>
+            <div class="modal-info-icon">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="modal-info-content">
+              <div class="modal-info-label">Time</div>
+              <div class="modal-info-value" id="modal-time"></div>
+            </div>
+          </div>
+          <div class="modal-info-item">
+            <div class="modal-info-icon">
+              <i class="bi bi-geo-alt-fill"></i>
+            </div>
+            <div class="modal-info-content">
+              <div class="modal-info-label">Place</div>
+              <div class="modal-info-value">
+                <a id="modal-location" class="modal-location-link" href="#" rel="noopener noreferrer"></a>
+              </div>
+            </div>
+          </div>
+          <div class="modal-info-item">
+            <div class="modal-info-icon">
+              <i class="bi bi-cash-coin"></i>
+            </div>
+            <div class="modal-info-content">
+              <div class="modal-info-label">Cost</div>
+              <div class="modal-info-value" id="modal-cost"></div>
+            </div>
+          </div>
+        </div>
+        <div id="modal-rsvp-container" style="display:none;">
+          <!-- RSVP removed to match event page -->
+        </div>
+        <div id="modal-ratings" class="modal-ratings"></div>
+      </div>
+    </div>
+  </div>
+
   <?php include __DIR__ . '/../includes/footer.php'; ?>
   <script src="../../JS/search-toggle.js"></script>
   <script src="../../JS/gc-scroll-restore.js"></script>

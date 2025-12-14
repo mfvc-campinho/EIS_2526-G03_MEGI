@@ -44,6 +44,28 @@
   letter-spacing: 0.5px;
 }
 
+/* Status chip (match event page) */
+.status-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-chip.upcoming {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.status-chip.past {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
 /* Event modal (shared with events page) */
 .modal-backdrop {
   position: fixed;
@@ -72,6 +94,63 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/* Modal header/content styling (match event page) */
+.modal-header {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  padding: 32px 28px;
+  color: white;
+  position: relative;
+  text-align: center;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-header h3 {
+  margin: 0 0 12px 0;
+  font-size: 2.25rem;
+  font-weight: 900 !important;
+  color: white !important;
+  line-height: 1.2;
+}
+
+.modal-type-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+}
+
+.modal-body {
+  padding: 28px;
+  overflow-y: auto;
 }
 
 @media (max-width: 768px) {
@@ -105,6 +184,12 @@
 /* Secção das Top Collections */
 .ranking-section {
   margin-top: 8px;
+}
+
+/* Make ranking section grid a bit more flexible than the global default */
+.ranking-section .collection-container {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  padding: 12px;
 }
 
 
@@ -301,6 +386,38 @@
   }
 }
 
+/* Extra tweaks for the ranking section on narrow screens */
+@media (max-width: 900px) {
+  .ranking-section .collection-container {
+    padding: 12px;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .ranking-section .collection-container {
+    padding: 10px 8px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .ranking-section .filters-form {
+    width: 100%;
+    justify-content: center;
+  }
+  .ranking-section .filter-chip {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .ranking-section .filter-chip__select {
+    width: auto;
+    flex: 1 1 auto;
+  }
+  .ranking-section .paginate {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
 @media (max-width: 600px) {
   .top-controls {
     align-items: flex-start;
@@ -346,6 +463,23 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 18px;
+}
+
+/* Upcoming events spacing */
+.upcoming-events {
+  padding: 0 32px;
+}
+
+@media (max-width: 768px) {
+  .upcoming-events {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .upcoming-events {
+    padding: 0 14px;
+  }
 }
 
 .stat-card {

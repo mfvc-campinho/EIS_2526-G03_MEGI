@@ -41,6 +41,116 @@
   document.querySelectorAll('.collection-card-link').forEach(enhanceCard);
 })();
 
+// Show “login required” flash for unauthenticated actions (e.g., like)
+(function () {
+  var triggers = document.querySelectorAll('[data-action="login-popup"]');
+  if (!triggers.length) return;
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function createFlash(detail) {
+    detail = detail || {};
+    var type = detail.type || 'info';
+    var title = detail.title || (type === 'success' ? 'Success' : type === 'error' ? 'Oops!' : 'Heads up');
+    var message = detail.message || '';
+    var htmlMessage = detail.htmlMessage || null;
+
+    document.querySelectorAll('.flash-modal[data-dynamic="true"]').forEach(function (node) {
+      if (node && node.parentNode) {
+        node.parentNode.removeChild(node);
+      }
+    });
+
+    var modal = document.createElement('div');
+    modal.className = 'flash-modal flash-modal--' + type;
+    modal.setAttribute('role', 'alertdialog');
+    modal.setAttribute('aria-live', 'assertive');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', title);
+    modal.dataset.flashType = type;
+    modal.setAttribute('data-dynamic', 'true');
+    modal.innerHTML = '' +
+      '<div class="flash-modal__backdrop"></div>' +
+      '<div class="flash-modal__card" tabindex="-1">' +
+      '  <button class="flash-modal__close" type="button" aria-label="Close notification">&times;</button>' +
+      '  <div class="flash-modal__icon" aria-hidden="true">' + (type === 'success' ? '&#10003;' : '&#9888;') + '</div>' +
+      '  <div class="flash-modal__content">' +
+      '    <h3>' + escapeHtml(title) + '</h3>' +
+      '    <p></p>' +
+      '  </div>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    var messageNode = modal.querySelector('.flash-modal__content p');
+    if (htmlMessage) {
+      messageNode.innerHTML = htmlMessage;
+    } else {
+      messageNode.textContent = message;
+    }
+
+    var card = modal.querySelector('.flash-modal__card');
+    var closeBtn = modal.querySelector('.flash-modal__close');
+    var delay = type === 'error' ? 8000 : 5000;
+    var timer;
+
+    function remove() {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      modal.classList.add('is-closing');
+      setTimeout(function () {
+        if (modal && modal.parentNode) {
+          modal.parentNode.removeChild(modal);
+        }
+        document.removeEventListener('keydown', onKey);
+      }, 220);
+    }
+
+    function onKey(ev) {
+      if (ev.key === 'Escape') {
+        remove();
+      }
+    }
+
+    modal.addEventListener('click', function (ev) {
+      if (ev.target === modal || ev.target.classList.contains('flash-modal__backdrop')) {
+        remove();
+      }
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', remove);
+    }
+
+    document.addEventListener('keydown', onKey);
+    timer = setTimeout(remove, delay);
+
+    if (card && typeof card.focus === 'function') {
+      requestAnimationFrame(function () {
+        card.focus();
+      });
+    }
+  }
+
+  window.appShowFlash = window.appShowFlash || createFlash;
+
+  triggers.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      (window.appShowFlash || createFlash)({
+        type: 'error',
+        title: 'Oops!',
+        message: 'Log in to like this collection.'
+      });
+    });
+  });
+})();
+
 (function () {
   var modal = document.getElementById('event-modal');
   if (!modal) {

@@ -98,21 +98,21 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
         </div>
       </section>
 
-      <div id="buttons-bar" style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+      <div id="buttons-bar">
         <a href="javascript:history.back()" class="explore-btn ghost">
           <i class="bi bi-arrow-left"></i>
           Back
         </a>
         <?php if ($isOwner): ?>
-          <a class="explore-btn" href="items_form.php?id=<?php echo urlencode($item['id']); ?>" title="Edit item">
-            <i class="bi bi-pencil"></i> Edit
+          <a class="action-icon" href="items_form.php?id=<?php echo urlencode($item['id']); ?>" title="Edit">
+            <i class="bi bi-pencil"></i>
           </a>
           <form action="items_action.php" method="POST" class="action-icon-form" style="margin:0;">
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($item['id']); ?>">
             <input type="hidden" name="return_to" value="specific_collection.php?id=<?php echo urlencode($col['id'] ?? ''); ?>">
-            <button type="submit" class="explore-btn danger" title="Delete item" onclick="return confirm('Delete item?');">
-              <i class="bi bi-trash"></i> Delete
+            <button type="submit" class="action-icon is-danger" title="Delete" onclick="return confirm('Delete this item?');">
+              <i class="bi bi-trash"></i>
             </button>
           </form>
         <?php endif; ?>

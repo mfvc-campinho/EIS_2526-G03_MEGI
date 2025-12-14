@@ -375,11 +375,11 @@
 /* Upcoming Events layout: denser and cohesive */
 .upcoming-inner .section-header {
   display: flex;
-  align-items: center;
+  margin: 0; 
   justify-content: center;
   text-align: center;
   gap: 16px;
-  margin-bottom: 16px;
+  font-size: 2.2rem;
 }
 
 .upcoming-inner .section-header h2,
@@ -393,6 +393,41 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+}
+
+/* Upcoming Events heading styles to match Top Collections */
+.upcoming-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0b3b70;
+}
+
+.upcoming-underline {
+  width: 90px;
+  height: 4px;
+  background: #0b3b70;
+  border-radius: 999px;
+  margin: 10px auto 14px;
+}
+
+/* Subtitle under Upcoming Events */
+.upcoming-sub {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 auto 18px;
+  max-width: 820px;
+}
+
+@media (max-width: 640px) {
+  .upcoming-title {
+    font-size: 1.8rem;
+  }
+  .upcoming-sub {
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+    padding: 0 8px;
+  }
 }
 
 .upcoming-inner .section-header h2 .icon,

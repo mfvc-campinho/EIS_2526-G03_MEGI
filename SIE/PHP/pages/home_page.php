@@ -437,13 +437,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
         <section class="upcoming-events inner-block">
             <div class="upcoming-inner">
                 <div class="section-header">
-                    <h2 class="upcoming-title">
-                        <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i>
-                        Upcoming Events
-                    </h2>
-                    <p class="upcoming-sub">
-                        Don't miss the next exhibitions, fairs and meetups curated by our community.
-                    </p>
+                    <h2 class="upcoming-title">Upcoming Events</h2>
                 </div>
 
                 <div class="events-grid" id="eventsList">

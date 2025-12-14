@@ -446,27 +446,53 @@ h1.page-title::after {
   border: none;
   background-color: transparent;
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: #0f172a;
-  padding: 4px 18px 4px 0;
+  padding: 4px 24px 4px 0;
   cursor: pointer;
-  min-width: 90px;
+  min-width: 120px;
+  line-height: 1.2;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='%232563eb'%3E%3Cpath d='M1.5 5.5l6.5 6 6.5-6-1-1L8 9.5 2.5 4.5l-1 1z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 4px center;
-  background-size: 12px;
-  line-height: 1.2;
 }
 
-.filter-chip__select:focus {
+.filter-chip__select::-ms-expand {
+  display: none;
+}
+
+.filter-chip__select:focus,
+.filter-chip__select:focus-visible {
   outline: none;
+  box-shadow: none;
 }
 
 .filter-chip__select:hover {
   color: #1d4ed8;
+}
+
+.filter-chip--select {
+  position: relative;
+}
+
+.filter-chip--select::after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='%231d3a78'%3E%3Cpath d='M2 5.5l6 6 6-6-1.1-1-4.9 4.9L3.1 4.5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 12px;
+  transform: translateY(-50%);
+  opacity: 0.9;
+}
+
+.filter-chip--select .filter-chip__select {
+  background-image: none;
+  padding-right: 36px;
 }
 
 .filter-chip__hint {
@@ -2149,12 +2175,83 @@ button {
   padding-top: 12px;
 }
 
+.action-icon-form {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.collection-card .action-icon,
+.collection-card__actions .action-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  background: #f8fafc;
+  color: #1e3a8a;
+  border: 1.5px solid rgba(30, 58, 138, 0.4);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 3px 10px rgba(30, 58, 138, 0.18);
+}
+
+.collection-card .action-icon:hover,
+.collection-card__actions .action-icon:hover {
+  background: #1e3a8a;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(30, 58, 138, 0.25);
+  transform: translateY(-1px);
+}
+
+.collection-card .action-icon:active,
+.collection-card__actions .action-icon:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 12px rgba(30, 58, 138, 0.2);
+}
+
+.collection-card .action-icon.is-liked,
+.collection-card__actions .action-icon.is-liked {
+  color: #15803d;
+  border-color: rgba(22, 163, 74, 0.5);
+  background: #ecfdf3;
+}
+
+.collection-card .action-icon.is-liked:hover,
+.collection-card__actions .action-icon.is-liked:hover {
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(22, 163, 74, 0.28);
+}
+
+.collection-card .action-icon.is-danger,
+.collection-card__actions .action-icon.is-danger {
+  color: #b91c1c;
+  border-color: rgba(185, 28, 28, 0.45);
+}
+
+.collection-card .action-icon.is-danger:hover,
+.collection-card__actions .action-icon.is-danger:hover {
+  background: #b91c1c;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(185, 28, 28, 0.28);
+}
+
 .collection-card__actions .explore-btn {
   white-space: nowrap;
 }
 
 .collection-card__actions .like-count.is-zero {
-  visibility: hidden;
+  display: none;
 }
 
 .collection-card .preview-toggle {

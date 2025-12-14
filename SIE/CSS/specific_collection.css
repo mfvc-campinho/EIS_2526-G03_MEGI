@@ -293,114 +293,7 @@ body {
   }
 }
 
-/* ===============================
-   🔹 ITEMS FILTER PANEL
-   =============================== */
-
-.items-filter {
-  margin: 28px 0 12px;
-  padding: 22px 26px;
-  background: #ffffff;
-  border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
-
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: nowrap;
-}
-
-.items-filter .filter-control {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
-.items-filter .filter-label {
-  font-weight: 600;
-  color: #0f172a;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.items-filter .filter-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.items-filter .filter-select {
-  min-width: 210px;
-  padding: 8px 14px;
-  border-radius: 12px;
-  border: 1px solid #cbd5f5;
-  background: #f8fafc;
-  font-size: 0.95rem;
-  color: #0f172a;
-  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
-}
-
-.items-filter .filter-select:focus-visible {
-  outline: 2px solid #93c5fd;
-  outline-offset: 2px;
-}
-
-.items-filter .filter-clear {
-  border: none;
-  background: #eff6ff;
-  color: #1d4ed8;
-  border-radius: 999px;
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.items-filter .filter-clear:hover {
-  background: #dbeafe;
-  transform: rotate(90deg);
-}
-
-/* ===============================
-   🔹 TOP CONTROLS (match All Collections)
-   =============================== */
-.top-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin: 12px 0 8px;
-  flex-wrap: wrap;
-}
-
-.top-controls .left {
-  display: flex;
-  align-items: center;
-}
-
-.top-controls #filters label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-}
-
-/* Match All Collections: keep native select rendering */
-.top-controls #filters select {
-  padding: 8px 12px;
-  border-radius: 12px;
-  border: 1px solid #cbd5f5;
-  background: #f8fafc;
-  font-size: 0.95rem;
-  color: #0f172a;
-}
+/* filter chips rely on shared rules in general.css */
 
 .paginate {
   display: flex;
@@ -568,30 +461,6 @@ body {
   align-items: center;
 }
 
-.collection-container .item-buttons .explore-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 8px 12px;
-  font-size: 0.82rem;
-  white-space: nowrap;
-  flex: 0 1 auto;
-  min-width: 0;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.collection-container .item-buttons .explore-btn.small {
-  padding: 7px 11px;
-  font-size: 0.8rem;
-}
-
-.collection-container .item-buttons .explore-btn i {
-  font-size: 0.88rem;
-  flex-shrink: 0;
-}
-
 .collection-container .item-buttons .like-form {
   display: inline-flex;
   margin: 0;
@@ -609,11 +478,6 @@ body {
   .collection-container .item-card .card-buttons {
     padding: 0 10px 12px;
     gap: 6px;
-  }
-
-  .collection-container .item-buttons .explore-btn {
-    padding: 6px 10px;
-    font-size: 0.78rem;
   }
 }
 

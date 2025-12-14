@@ -461,7 +461,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
         <form id="events-filters-form" class="filters-form" method="GET">
           <input type="hidden" name="status" value="<?php echo htmlspecialchars($status); ?>">
 
-          <div class="filter-chip">
+          <div class="filter-chip filter-chip--select">
             <label class="filter-chip__label" for="events-type-select">
               <i class="bi bi-tags"></i>
               <span>Type</span>
@@ -474,7 +474,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
             </select>
           </div>
 
-          <div class="filter-chip">
+          <div class="filter-chip filter-chip--select">
             <label class="filter-chip__label" for="events-loc-select">
               <i class="bi bi-geo-alt"></i>
               <span>Location</span>
@@ -487,7 +487,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
             </select>
           </div>
 
-          <div class="filter-chip">
+          <div class="filter-chip filter-chip--select">
             <label class="filter-chip__label" for="events-sort-select">
               <i class="bi bi-funnel"></i>
               <span>Sort by</span>
@@ -499,7 +499,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
             </select>
           </div>
 
-          <div class="filter-chip filter-chip--compact">
+          <div class="filter-chip filter-chip--compact filter-chip--select">
             <label class="filter-chip__label" for="events-per-page-select">
               <i class="bi bi-eye"></i>
               <span>Show</span>

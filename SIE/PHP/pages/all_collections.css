@@ -17,126 +17,15 @@ body {
    Top controls (filtros + paginação)
    =============================== */
 
-.top-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-  margin: 16px 0 28px;
-  flex-wrap: wrap;
-}
-
-.top-controls .left {
-  flex: 1 1 auto;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.filters-form {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.filter-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid #d9e3f5;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
-  flex-shrink: 0;
-}
-
-.filter-chip--compact {
-  gap: 8px;
-}
-
-.filter-chip__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  font-size: 0.82rem;
-  color: #1d2b4d;
-  white-space: nowrap;
-}
-
-.filter-chip__label i {
-  color: #2563eb;
-  font-size: 0.95rem;
-}
-
-.filter-chip__select {
-  min-width: 120px;
-  border: none;
-  background: transparent;
-  font-weight: 600;
-  color: #0f172a;
-}
+/* filter chip layout lives in general.css */
 
 /* ===============================
    Action icons (expand, like, edit, delete)
    =============================== */
 
-.action-icon {
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
-  min-height: 56px;
-  background: #ffffff;
-  color: #1e3a8a;
-  border: 2.5px solid #1e3a8a;
-  border-radius: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  padding: 0;
-  margin: 0;
-  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.12);
-}
 
-.action-icon:hover {
-  background: #1e3a8a;
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
-  transform: translateY(-3px);
-}
-
-.action-icon:active {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(30, 58, 138, 0.15);
-}
-
-.action-icon.is-liked {
-  color: #15803d;
-  border-color: #16a34a;
-  background: #ecfdf3;
-}
-
-.action-icon.is-liked:hover {
-  background: #16a34a;
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(22, 163, 74, 0.25);
-}
-
-.action-icon.is-danger {
-  color: #1e3a8a;
-  border-color: #1e3a8a;
-}
-
-.action-icon.is-danger:hover {
-  background: #1e3a8a;
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(30, 58, 138, 0.25);
-}
+/* Compact circular controls inside each collection card */
+/* Card-level tweaks live in general.css to stay consistent across pages */
 
 .action-icon-form {
   display: inline-flex;
@@ -147,7 +36,8 @@ body {
 }
 
 .card-actions {
-  gap: 14px;
+  gap: 12px;
+  justify-content: center;
 }
 
 /* ===============================

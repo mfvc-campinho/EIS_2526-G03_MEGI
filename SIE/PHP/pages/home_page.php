@@ -499,7 +499,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 <div class="top-controls">
                     <div class="left">
                         <form id="filters" class="filters-form" method="GET">
-                            <div class="filter-chip">
+                            <div class="filter-chip filter-chip--select">
                                 <label class="filter-chip__label" for="sort-select">
                                     <i class="bi bi-funnel"></i>
                                     <span>Sort by</span>
@@ -511,7 +511,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 </select>
                             </div>
 
-                            <div class="filter-chip filter-chip--compact">
+                            <div class="filter-chip filter-chip--compact filter-chip--select">
                                 <label class="filter-chip__label" for="per-page-select">
                                     <i class="bi bi-collection"></i>
                                     <span>Show</span>
@@ -576,9 +576,16 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                             <?php echo htmlspecialchars($col['name']); ?>
                                         </a>
                                     </h3>
-                                    <div class="product-card__meta">
-                                        <div class="product-card__owner">
-                                            <a class="owner-link" href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>">
+
+                                    <?php if (!empty($col['summary'])): ?>
+                                        <p class="muted">
+                                            <?php echo htmlspecialchars($col['summary']); ?>
+                                        </p>
+                                    <?php endif; ?>
+                                    <div class="collection-card__meta collection-card__meta--center">
+                                        <div class="collection-card__owner">
+                                            <i class="bi bi-people"></i>
+                                            <a href="user_page.php?id=<?php echo urlencode($col['ownerId']); ?>">
                                                 <?php
                                                 $ownerId = $col['ownerId'] ?? null;
                                                 $ownerName = $ownerId && isset($usersById[$ownerId])
@@ -590,8 +597,9 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                         </div>
 
                                         <?php if (!empty($col['createdAt'])): ?>
-                                            <div class="product-card__date">
-                                                <span class="meta-date"><?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?></span>
+                                            <div class="collection-card__date">
+                                                <i class="bi bi-calendar3"></i>
+                                                <?php echo htmlspecialchars(substr($col['createdAt'], 0, 10)); ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>

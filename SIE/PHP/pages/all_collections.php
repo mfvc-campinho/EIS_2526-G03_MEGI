@@ -207,7 +207,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                 <div class="top-controls">
                     <div class="left">
                         <form id="filters" class="filters-form" method="GET">
-                            <div class="filter-chip">
+                            <div class="filter-chip filter-chip--select">
                                 <label class="filter-chip__label" for="sort-select">
                                     <i class="bi bi-funnel"></i>
                                     <span>Sort by</span>
@@ -219,7 +219,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                 </select>
                             </div>
 
-                            <div class="filter-chip">
+                            <div class="filter-chip filter-chip--select">
                                 <label class="filter-chip__label" for="type-select">
                                     <i class="bi bi-tag"></i>
                                     <span>Type</span>
@@ -258,7 +258,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                 <input type="hidden" name="mine" value="<?php echo $myCollections ? '1' : '0'; ?>">
                             <?php endif; ?>
 
-                            <div class="filter-chip filter-chip--compact">
+                            <div class="filter-chip filter-chip--compact filter-chip--select">
                                 <label class="filter-chip__label" for="per-page-select">
                                     <i class="bi bi-collection"></i>
                                     <span>Show</span>
@@ -305,6 +305,9 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                 <div class="collection-card__body">
                                     <p class="pill"><?php echo htmlspecialchars($col['type'] ?? ''); ?></p>
                                     <h3><a href="<?php echo htmlspecialchars($collectionHref); ?>"><?php echo htmlspecialchars($col['name']); ?></a></h3>
+                                    <?php if (!empty($col['summary'])): ?>
+                                        <p class="muted"><?php echo htmlspecialchars($col['summary']); ?></p>
+                                    <?php endif; ?>
                                     <div class="collection-card__meta collection-card__meta--center">
                                         <div class="collection-card__owner">
                                             <i class="bi bi-people"></i>

@@ -409,7 +409,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                         <div class="user-top-collections-controls">
                             <form id="user-top-filters" class="filters-form" method="GET">
                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($profileUserId); ?>">
-                                <div class="filter-chip">
+                                <div class="filter-chip filter-chip--select">
                                     <label class="filter-chip__label" for="top-sort-select">
                                         <i class="bi bi-funnel"></i>
                                         <span>Top por</span>

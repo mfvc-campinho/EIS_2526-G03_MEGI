@@ -408,23 +408,34 @@ if ($collection) {
 
                 <div class="top-controls">
                     <div class="left">
-                        <form id="filters" method="GET" action="specific_collection.php" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                            <label for="sort-select"><i class="bi bi-funnel"></i> Sort by</label>
+                        <form id="filters" class="filters-form" method="GET" action="specific_collection.php">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($collectionId); ?>">
                             <input type="hidden" name="page" value="1">
-                            <select name="sort" id="sort-select" onchange="gcSubmitWithScroll(this.form)">
-                                <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
-                                <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
-                                <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
-                            </select>
-                            <label>Show
-                                <select name="perPage" onchange="gcSubmitWithScroll(this.form)">
+
+                            <div class="filter-chip filter-chip--select">
+                                <label class="filter-chip__label" for="sort-select">
+                                    <i class="bi bi-funnel"></i>
+                                    <span>Sort by</span>
+                                </label>
+                                <select name="sort" id="sort-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
+                                    <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Last Added</option>
+                                    <option value="oldest" <?php echo $sort === 'oldest' ? 'selected' : ''; ?>>Oldest First</option>
+                                    <option value="name" <?php echo $sort === 'name' ? 'selected' : ''; ?>>Name A-Z</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-chip filter-chip--compact filter-chip--select">
+                                <label class="filter-chip__label" for="per-page-select">
+                                    <i class="bi bi-collection"></i>
+                                    <span>Show</span>
+                                </label>
+                                <select name="perPage" id="per-page-select" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
                                     <?php foreach ([5, 10, 20] as $opt): ?>
                                         <option value="<?php echo $opt; ?>" <?php echo $perPage == $opt ? 'selected' : ''; ?>><?php echo $opt; ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                items per page
-                            </label>
+                                <span class="filter-chip__hint">per page</span>
+                            </div>
                         </form>
                     </div>
                     <div class="paginate">
@@ -477,35 +488,38 @@ if ($collection) {
                                     </div>
                                 </div>
 
-                                <div class="card-buttons item-buttons">
-                                    
-
+                                <div class="collection-card__actions card-actions card-buttons item-buttons">
                                     <?php if ($isAuthenticated): ?>
-                                        <form action="likes_action.php" method="POST" class="like-form" style="display:inline;">
+                                        <form action="likes_action.php" method="POST" class="action-icon-form like-form">
                                             <input type="hidden" name="type" value="item">
                                             <input type="hidden" name="id"
                                                 value="<?php echo htmlspecialchars($itemId); ?>">
                                             <button type="submit"
-                                                class="explore-btn ghost small<?php echo $isLiked ? ' success' : ''; ?>">
+                                                class="action-icon<?php echo $isLiked ? ' is-liked' : ''; ?>"
+                                                title="Like item">
                                                 <i class="bi <?php echo $isLiked ? 'bi-heart-fill' : 'bi-heart'; ?>"></i>
-                                                <?php echo $likes; ?>
+                                                <span class="like-count<?php echo $likes === 0 ? ' is-zero' : ''; ?>"><?php echo $likes; ?></span>
                                             </button>
                                         </form>
-                                    <?php endif; ?> <?php if ($isOwner): ?>
-                                        <a class="explore-btn ghost small"
-                                            href="items_form.php?id=<?php echo urlencode($itemId); ?>">
-                                            Edit
+                                    <?php endif; ?>
+
+                                    <?php if ($isOwner): ?>
+                                        <a class="action-icon"
+                                            href="items_form.php?id=<?php echo urlencode($itemId); ?>"
+                                            title="Edit item">
+                                            <i class="bi bi-pencil"></i>
                                         </a>
 
-                                        <form action="items_action.php" method="POST" style="display:inline;" data-preserve-scroll="true">
+                                        <form action="items_action.php" method="POST" class="action-icon-form" data-preserve-scroll="true">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="id"
                                                 value="<?php echo htmlspecialchars($itemId); ?>">
                                             <input type="hidden" name="return_to" value="specific_collection.php?id=<?php echo urlencode($collectionId); ?>">
                                             <button type="submit"
-                                                class="explore-btn danger small"
+                                                class="action-icon is-danger"
+                                                title="Delete item"
                                                 onclick="return confirm('Delete this item?');">
-                                                Delete
+                                                <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
                                     <?php endif; ?>
@@ -617,31 +631,56 @@ if ($collection) {
                 form.addEventListener('submit', saveScroll);
             });
 
-            // Prevent page scroll on like forms
+            // Prevent page scroll on like forms and keep counts in sync
             document.querySelectorAll('.like-form').forEach(function(form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     var formData = new FormData(form);
                     fetch('likes_action.php', {
                         method: 'POST',
-                        body: formData
-                    }).then(function() {
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    }).then(function(res) {
+                        if (!res.ok) {
+                            throw new Error('failed');
+                        }
+                        return res.json();
+                    }).then(function(payload) {
+                        if (!payload.ok) {
+                            throw new Error(payload.error || 'failed');
+                        }
                         var button = form.querySelector('button');
+                        if (!button) {
+                            return;
+                        }
                         var icon = button.querySelector('i');
-                        var likeCount = button.textContent.trim();
-                        var currentCount = parseInt(likeCount) || 0;
-
-                        if (button.classList.contains('success')) {
-                            button.classList.remove('success');
-                            icon.classList.remove('bi-heart-fill');
-                            icon.classList.add('bi-heart');
-                            button.innerHTML = '<i class="bi bi-heart"></i> ' + Math.max(0, currentCount - 1);
-                        } else {
-                            button.classList.add('success');
+                        var countEl = form.querySelector('.like-count');
+                        var current = countEl ? parseInt(countEl.textContent || '0', 10) : 0;
+                        var likedNow = payload.liked === true || (payload.liked === null ? !button.classList.contains('is-liked') : payload.liked);
+                        if (!icon) {
+                            return;
+                        }
+                        if (likedNow) {
+                            button.classList.add('is-liked');
                             icon.classList.remove('bi-heart');
                             icon.classList.add('bi-heart-fill');
-                            button.innerHTML = '<i class="bi bi-heart-fill"></i> ' + (currentCount + 1);
+                            if (countEl) {
+                                countEl.textContent = (current + 1).toString();
+                                countEl.classList.remove('is-zero');
+                            }
+                        } else {
+                            button.classList.remove('is-liked');
+                            icon.classList.remove('bi-heart-fill');
+                            icon.classList.add('bi-heart');
+                            if (countEl) {
+                                var next = Math.max(0, current - 1);
+                                countEl.textContent = next.toString();
+                                countEl.classList.toggle('is-zero', next === 0);
+                            }
                         }
+                    }).catch(function(err) {
+                        console.error(err);
+                        window.location = 'likes_action.php';
                     });
                 });
             });

@@ -152,3 +152,18 @@ body {
 }
 
 /* ===============================
+   Card image placeholder
+   =============================== */
+
+.card-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ===============================

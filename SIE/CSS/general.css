@@ -2030,6 +2030,21 @@ button {
   filter: brightness(1.03);
 }
 
+/* ===============================
+   Card image placeholder
+   =============================== */
+
+.card-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
 .collection-card__body,
 .collection-card .product-card__body,
 .collection-card .card-info {
@@ -3785,4 +3800,176 @@ html.dark-mode .paginate button:disabled {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* ===============================================
+   MODAL BACKDROP AND CARD — FOR EVENT MODALS
+=============================================== */
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 16px;
+  max-width: 740px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  font-family: 'Poppins', sans-serif;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.modal-close:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.modal-type-badge {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.modal-body {
+  color: #374151;
+}
+
+.modal-summary {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+
+.modal-description {
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.modal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.modal-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.modal-info-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.modal-info-content {
+  flex: 1;
+}
+
+.modal-info-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.modal-info-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.modal-location-link {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.modal-location-link:hover {
+  text-decoration: underline;
+}
+
+.modal-location-link.disabled {
+  color: #6b7280;
+  cursor: default;
+}
+
+.modal-rsvp-form {
+  text-align: center;
+}
+
+.modal-rsvp-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.modal-rsvp-btn:hover {
+  background: #1d4ed8;
+}
+
+.modal-rsvp-btn.is-active {
+  background: #059669;
+}
+
+.modal-rsvp-btn.is-active:hover {
+  background: #047857;
 }

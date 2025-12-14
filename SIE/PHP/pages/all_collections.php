@@ -347,7 +347,13 @@ $exportUrl = 'all_collections.php?' . http_build_query($exportParams);
                             ?>
                             <article class="collection-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionHref); ?>">
                                 <a href="<?php echo htmlspecialchars($collectionHref); ?>" class="collection-card__media">
-                                    <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($col['name']); ?>">
+                                    <?php if ($img): ?>
+                                        <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($col['name']); ?>">
+                                    <?php else: ?>
+                                        <div class="card-image-placeholder">
+                                            No image available
+                                        </div>
+                                    <?php endif; ?>
                                 </a>
                                 <input type="checkbox" id="<?php echo $previewId; ?>" class="preview-toggle">
                                 <div class="collection-card__body">

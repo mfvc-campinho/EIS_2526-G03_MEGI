@@ -469,7 +469,13 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 ?>
                                 <article class="collection-card collection-card-link" role="link" tabindex="0" data-collection-link="<?php echo htmlspecialchars($collectionLink); ?>">
                                     <a href="<?php echo htmlspecialchars($collectionLink); ?>" class="collection-card__media">
-                                        <img src="<?php echo htmlspecialchars($img ?: '../../images/default.jpg'); ?>" alt="<?php echo htmlspecialchars($col['name']); ?>">
+                                        <?php if ($img): ?>
+                                            <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($col['name']); ?>">
+                                        <?php else: ?>
+                                            <div class="card-image-placeholder">
+                                                No image available
+                                            </div>
+                                        <?php endif; ?>
                                     </a>
                                     <div class="collection-card__body">
                                         <?php if (!empty($typeFilterLink)): ?>

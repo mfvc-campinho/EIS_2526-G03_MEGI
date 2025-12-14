@@ -477,7 +477,7 @@ if ($collection) {
                                                      alt="<?php echo htmlspecialchars($it['name'] ?? ''); ?>">
                                             </a>
                                 <?php else: ?>
-                                            <div class="item-image-placeholder">No image available</div>
+                                            <div class="card-image-placeholder">No image available</div>
                                 <?php endif; ?>
                                     </div>
 

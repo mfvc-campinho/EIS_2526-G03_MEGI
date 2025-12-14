@@ -231,7 +231,6 @@ foreach ($userFollows as $followerId => $list) {
 $isOwnerProfile = $currentUserId && $profileUserId && $currentUserId === $profileUserId;
 $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileUserId, $followingList, true);
 
-// Exemplo: depois de obter $user e $userCollections
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -248,7 +247,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
         <link rel="stylesheet" href="../../CSS/general.css">
 
         <!-- Estilos específicos da página de perfil -->
-        <link rel="stylesheet" href="user_page.css">
+        <link rel="stylesheet" href="../../CSS/user_page.css">
 
         <!-- Ícones -->
         <link rel="stylesheet"
@@ -257,7 +256,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
         <!-- Christmas Theme CSS -->
         <link rel="stylesheet" href="../../CSS/christmas.css">
 
-        <script src="././JS/theme-toggle.js"></script>
+        <script src="../../JS/theme-toggle.js"></script>
         <script src="../../JS/christmas-theme.js"></script>
     </head>
 
@@ -687,48 +686,12 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
             </div>
         </div>
 
-        <style>
-            .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:1000; backdrop-filter: blur(4px); }
-            .modal-backdrop.open { display:flex; animation: fadeIn 0.2s ease; }
-            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-            .modal-card { background:#fff; border-radius:18px; padding:0; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; animation: slideUp 0.3s ease; overflow:hidden; }
-            @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-            .modal-header { padding: 24px 28px; position: relative; text-align: center; }
-            .modal-close { position: absolute; top: 12px; right: 12px; border:none; background: rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-size:20px; cursor:pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-            .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
-            .modal-body { padding: 24px; }
-            .section-header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
-            .section-header .section-title { margin-bottom:0; }
-            .empty-state-actions { margin: 12px 0; }
-        </style>
+        <link rel="stylesheet" href="../../CSS/user_page_inline.css">
+
 
         <script src="../../JS/gc-scroll-restore.js"></script>
-        <script>
-            gcInitScrollRestore({
-                key: 'gc-scroll-user',
-                formSelector: '#user-top-filters'
-            });
-            document.addEventListener('DOMContentLoaded', function() {
-                var cards = document.querySelectorAll('.collection-card-link');
-                cards.forEach(function(card) {
-                    var href = card.getAttribute('data-collection-link');
-                    if (!href) return;
-                    card.addEventListener('click', function(e) {
-                        if (e.target.closest('a, button')) {
-                            return;
-                        }
-                        window.location.href = href;
-                    });
-                    card.addEventListener('keydown', function(e) {
-                        if (e.target !== card) return;
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            window.location.href = href;
-                        }
-                    });
-                });
-            });
-        </script>
+        <script src="../../JS/user_page.js"></script>
+
 
         <?php include __DIR__ . '/../includes/footer.php'; ?>
     </body>

@@ -21,22 +21,4 @@
   <i class="bi bi-arrow-up"></i>
 </button>
 
-<script>
-  (function () {
-    var btn = document.getElementById('backToTop');
-    if (!btn) return;
-    var toggleBtn = function () {
-      if (window.scrollY > 200) {
-        btn.classList.add('show');
-      } else {
-        btn.classList.remove('show');
-      }
-    };
-    window.addEventListener('scroll', toggleBtn, { passive: true });
-    toggleBtn();
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  })();
-</script>
+<script src="../../JS/back-to-top.js"></script>

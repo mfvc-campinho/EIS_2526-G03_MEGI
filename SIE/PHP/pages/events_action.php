@@ -38,7 +38,7 @@ function sanitize_local_return($raw)
     return '';
   }
   // Allow relative php targets with optional query/anchor
-  if (preg_match('#^[A-Za-z0-9_./-]+\.php(?:\?[A-Za-z0-9_=&%\\-]+)?(?:#[A-Za-z0-9_\\-]+)?$#', $raw)) {
+  if (preg_match('/^[A-Za-z0-9_./-]+\.php(?:\?[A-Za-z0-9_=&%\\-]+)?(?:#[A-Za-z0-9_\\-]+)?$/', $raw)) {
     return $raw;
   }
   return '';

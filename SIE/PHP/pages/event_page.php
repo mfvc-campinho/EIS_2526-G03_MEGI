@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once __DIR__ . '/../includes/data_loader.php';
 require_once __DIR__ . '/../includes/flash.php';
@@ -434,12 +434,12 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
           ];
           $modalDataJson = htmlspecialchars(json_encode($modalData), ENT_QUOTES, 'UTF-8');
           ?>
-          <?php // Atribui um id único ao cartão para conseguirmos regressar ao mesmo ponto após ações como RSVP. ?>
+          <?php // Atribui um id ·nico ao cartão para conseguirmos regressar ao mesmo ponto após ações como RSVP. ?>
           <article id="event-card-<?php echo htmlspecialchars($eventId); ?>" class="event-card js-event-card"
                    data-name="<?php echo htmlspecialchars($evt['name']); ?>"
                    data-summary="<?php echo htmlspecialchars($evt['summary']); ?>"
                    data-description="<?php echo htmlspecialchars($evt['description']); ?>"
-                   data-date="<?php echo htmlspecialchars($eventDateDisplay); ?>"
+                   data-date="<?php echo htmlspecialchars($evt['date'] ?? $eventDateDisplay); ?>"
                    data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
                    data-datetime="<?php echo htmlspecialchars($eventTimeDisplay ? ($eventDateDisplay . ' · ' . $eventTimeDisplay) : $eventDateDisplay); ?>"
                    data-location="<?php echo htmlspecialchars($evt['localization']); ?>"
@@ -603,3 +603,4 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
 </body>
 
 </html>
+

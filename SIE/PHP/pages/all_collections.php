@@ -350,7 +350,7 @@ $collectionsPage = array_slice($filteredCollections, $offset, $perPage);
                                         <?php endif; ?>
 
                                         <?php if ($isOwner): ?>
-                                            <a class="action-icon" href="collections_form.php?id=<?php echo urlencode($col['id']); ?>" title="Edit">
+                                            <a class="action-icon" href="collections_form.php?id=<?php echo urlencode($col['id']); ?>&from=all_collections" title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <form action="collections_action.php" method="POST" class="action-icon-form">

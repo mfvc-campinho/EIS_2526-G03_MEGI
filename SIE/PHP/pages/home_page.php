@@ -485,6 +485,18 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             pointer-events: none;
             text-decoration: none;
         }
+
+        .quick-actions {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .quick-actions__grid {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
     </style>
 
     <script src="../../JS/theme-toggle.js"></script>
@@ -509,6 +521,19 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                             <span class="pill pill--outline"><strong>Focus</strong> Collectors Experience</span>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <section class="quick-actions">
+                <div class="quick-actions__grid">
+                    <a href="collections_form.php" class="explore-btn success">
+                        <i class="bi bi-plus-circle"></i>
+                        Add Collection
+                    </a>
+                    <a href="events_form.php" class="explore-btn success">
+                        <i class="bi bi-calendar-plus"></i>
+                        New Event
+                    </a>
                 </div>
             </section>
 
@@ -577,9 +602,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                         </form>
                     </div>
                     <div class="paginate">
-                        <?php if ($isAuthenticated): ?>
-                            <a class="explore-btn success" href="collections_form.php">+ Add Collection</a>
-                        <?php endif; ?>
+                        
                         <button <?php echo $page <= 1 ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => max(1, $page - 1)]); ?>')"><i class="bi bi-chevron-left"></i></button>
                         <span>Showing <?php echo $startDisplay; ?>-<?php echo $endDisplay; ?> of <?php echo $totalCollections; ?></span>
                         <button <?php echo $page >= $pages ? 'disabled' : ''; ?> onclick="gcRememberScroll('?<?php echo http_build_query(['sort' => $sort, 'perPage' => $perPage, 'page' => min($pages, $page + 1)]); ?>')"><i class="bi bi-chevron-right"></i></button>
@@ -777,7 +800,9 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                          data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
                                          data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
                                          data-type="<?php echo htmlspecialchars($evt['type'] ?? 'event'); ?>"
-                                         data-cost="<?php echo htmlspecialchars($costLabel); ?>">
+                                         data-cost="<?php echo htmlspecialchars($costLabel); ?>"
+                                         data-has-rsvp="<?php echo $hasRsvp ? '1' : '0'; ?>"
+                                         data-event-id="<?php echo htmlspecialchars($eventId); ?>">
                                 <div class="home-event-header">
                                     <span class="home-event-type"><?php echo htmlspecialchars($evt['type'] ?? 'event'); ?></span>
                                     <span class="home-event-badge">SOON</span>
@@ -798,10 +823,10 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                     </div>
                                 </div>
                                 <?php if ($isAuthenticated && $eventId): ?>
-                                    <form action="events_action.php" method="POST" class="home-event-rsvp<?php echo $hasRsvp ? ' is-active' : ''; ?>" data-home-rsvp-form>
+                                    <form action="events_action.php" method="POST" class="home-event-rsvp<?php echo $hasRsvp ? ' is-active' : ''; ?>">
                                         <input type="hidden" name="action" value="rsvp">
                                         <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
-                                        <input type="hidden" name="return_url" value="home_page.php#<?php echo htmlspecialchars($cardDomId); ?>">
+                                        <input type="hidden" name="return_url" value="event_page.php">
                                         <button type="submit" class="home-event-rsvp__button">
                                             <i class="bi bi-check2-circle"></i>
                                             <span><?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?></span>
@@ -962,6 +987,9 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                         </div>
                     </div>
                 </div>
+                <div id="modal-rsvp-container" style="display:none;">
+                    <!-- RSVP removed to match event page -->
+                </div>
             </div>
         </div>
     </div>
@@ -974,6 +1002,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <script src="../../JS/search-toggle.js"></script>
     <script src="../../JS/gc-scroll-restore.js"></script>
     <script>
+        var currentUserId = <?php echo $currentUserId ? json_encode($currentUserId) : 'null'; ?>;
         gcInitScrollRestore({
             key: 'gc-scroll-home',
             formSelector: '#filters',
@@ -1064,7 +1093,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 target.textContent = value || '';
             }
 
-            function openModal(payload) {
+            function openModal(payload, card) {
                 setText(titleEl, payload.name);
                 setText(typeEl, payload.type);
                 setText(summaryEl, payload.summary);
@@ -1125,7 +1154,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                         location: card.getAttribute('data-location') || '',
                         type: card.getAttribute('data-type') || '',
                         cost: card.getAttribute('data-cost') || ''
-                    });
+                    }, card);
                 }
 
                 card.addEventListener('click', function(event) {

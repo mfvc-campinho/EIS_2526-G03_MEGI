@@ -44,6 +44,18 @@ if ($id) {
     }
 }
 
+$from = $_GET['from'] ?? null;
+
+if ($editing) {
+    if ($from === 'all_collections') {
+        $backUrl = "all_collections.php";
+    } else {
+        $backUrl = "specific_collection.php?id=" . htmlspecialchars($id);
+    }
+} else {
+    $backUrl = "all_collections.php";
+}
+
 function extract_internal_path($url)
 {
     if (!$url) return '';
@@ -103,7 +115,7 @@ if (!$returnTo || stripos($returnTo, 'collections_form.php') !== false) {
             <?php flash_render(); ?>
             <header class="page__header">
                 <h1><?php echo $editing ? 'Edit Collection' : 'Create Collection'; ?></h1>
-                <a href="all_collections.php" class="text-link">Back</a>
+                <a href="<?php echo $backUrl; ?>" class="text-link">Back</a>
             </header>
 
             <form class="form-card" action="collections_action.php" method="POST" enctype="multipart/form-data">

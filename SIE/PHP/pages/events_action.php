@@ -1,14 +1,23 @@
 <?php
+ob_start();
 session_start();
 require_once __DIR__ . '/../includes/flash.php';
 require_once __DIR__ . '/../config/db.php';
 
 $action = $_POST['action'] ?? null;
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 $currentUser = $_SESSION['user']['id'] ?? null;
 if (!$currentUser) {
-  flash_set('error', 'Precisa de iniciar sessão.');
-  header('Location: event_page.php');
-  exit;
+  if ($isAjax) {
+    ob_end_clean();
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'You need to log in.']);
+    exit;
+  } else {
+    flash_set('error', 'Precisa de iniciar sessão.');
+    header('Location: event_page.php');
+    exit;
+  }
 }
 
 $appTimezone = new DateTimeZone(date_default_timezone_get());
@@ -58,9 +67,16 @@ function redirect_success($msg)
 
 function redirect_error($msg)
 {
-  flash_set('error', $msg);
-  header('Location: event_page.php');
-  exit;
+  if ($GLOBALS['isAjax']) {
+    ob_end_clean();
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => $msg]);
+    exit;
+  } else {
+    flash_set('error', $msg);
+    header('Location: event_page.php');
+    exit;
+  }
 }
 
 function normalize_cost_input($raw)
@@ -330,10 +346,24 @@ if ($action === 'rsvp') {
     if ($ok) {
       flash_set('success', 'RSVP removed.');
       $_SESSION['rsvp_removed'] = true;
+      if ($isAjax) {
+        ob_end_clean();
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'hasRsvp' => false]);
+        exit;
+      }
       header('Location: ' . $redirectUrl);
       exit;
+    } else {
+      if ($isAjax) {
+        ob_end_clean();
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Failed to remove RSVP.']);
+        exit;
+      } else {
+        redirect_error('Failed to remove RSVP.');
+      }
     }
-    redirect_error('Failed to remove RSVP.');
   } else {
     // Add RSVP
     $stmt = $mysqli->prepare('INSERT INTO event_rsvps (event_id,user_id) VALUES (?,?)');
@@ -344,10 +374,24 @@ if ($action === 'rsvp') {
     if ($ok) {
       flash_set('success', 'RSVP registered.');
       $_SESSION['rsvp_removed'] = false;
+      if ($isAjax) {
+        ob_end_clean();
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'hasRsvp' => true]);
+        exit;
+      }
       header('Location: ' . $redirectUrl);
       exit;
+    } else {
+      if ($isAjax) {
+        ob_end_clean();
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Failed to register RSVP.']);
+        exit;
+      } else {
+        redirect_error('Failed to register RSVP.');
+      }
     }
-    redirect_error('Failed to register RSVP.');
   }
 }
 

@@ -381,7 +381,7 @@ if ($collection) {
                     </a>
 
                     <a class="explore-btn"
-                        href="items_form.php?collectionId=<?php echo urlencode($collection['id']); ?>">
+                        href="items_form.php?collectionId=<?php echo urlencode($collection['id']); ?>&from=specific_collection">
                         <i class="bi bi-plus-circle"></i>
                         Add Item
                     </a>
@@ -505,7 +505,7 @@ if ($collection) {
 
                                     <?php if ($isOwner): ?>
                                         <a class="action-icon"
-                                            href="items_form.php?id=<?php echo urlencode($itemId); ?>"
+                                            href="items_form.php?id=<?php echo urlencode($itemId); ?>&from=specific_collection&collectionId=<?php echo urlencode($collectionId); ?>"
                                             title="Edit item">
                                             <i class="bi bi-pencil"></i>
                                         </a>

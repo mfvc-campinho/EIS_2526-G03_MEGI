@@ -421,7 +421,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
 
     <div style="text-align:center; margin-bottom: 12px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; align-items: center;">
       <?php if ($isAuth): ?>
-        <a class="explore-btn success" href="events_form.php">+ New Event</a>
+        <a class="explore-btn success" href="events_form.php"><i class="bi bi-calendar-plus"></i> New Event</a>
       <?php endif; ?>
       <button type="button" class="calendar-toggle-btn active" id="calendar-toggle-btn" aria-expanded="true" aria-controls="calendar-view">
         <i class="bi bi-calendar3"></i>

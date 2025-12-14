@@ -70,6 +70,23 @@ if (!$id && $preferredCollectionId) {
 }
 
 $existingCollections = array_unique($existingCollections);
+
+$from = $_GET['from'] ?? null;
+$collectionIdFrom = $_GET['collectionId'] ?? null;
+
+if ($editing) {
+    if ($from === 'specific_collection' && $collectionIdFrom) {
+        $backUrl = "specific_collection.php?id=" . urlencode($collectionIdFrom);
+    } else {
+        $backUrl = "item_page.php?id=" . htmlspecialchars($id);
+    }
+} else {
+    if ($from === 'specific_collection' && $collectionIdFrom) {
+        $backUrl = "specific_collection.php?id=" . urlencode($collectionIdFrom);
+    } else {
+        $backUrl = "home_page.php";
+    }
+}
 ?>
 
 
@@ -96,11 +113,7 @@ $existingCollections = array_unique($existingCollections);
 
             <header class="page__header">
                 <h1><?php echo $editing ? 'Edit Item' : 'Create Item'; ?></h1>
-                <?php if ($editing): ?>
-                <a href="item_page.php?id=<?php echo htmlspecialchars($id); ?>" class="text-link">Back</a>
-                <?php else: ?>
-                <a href="home_page.php" class="text-link">Back</a>
-                <?php endif; ?>
+                <a href="<?php echo $backUrl; ?>" class="text-link">Back</a>
             </header>
 
             <form class="form-card" action="items_action.php" method="POST" enctype="multipart/form-data">

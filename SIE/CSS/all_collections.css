@@ -157,6 +157,30 @@ body {
   max-width: 620px;
 }
 
+/* Centered search bar under the hero and above filters */
+.collections-search {
+  text-align: center;
+  margin: 18px 0;
+}
+
+.collections-search-form {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.collections-search-form .search-bar {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  min-width: 380px;
+}
+
+.collections-search-form .explore-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
 /* ===============================
    Card image placeholder
    =============================== */

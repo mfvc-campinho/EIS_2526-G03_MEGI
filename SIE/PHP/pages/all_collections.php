@@ -237,18 +237,19 @@ $exportUrl = 'all_collections.php?' . http_build_query($exportParams);
                     <div class="collections-hero-underline"></div>
                     <p>Browse and manage all available collections.</p>
                 </section>
+                </section>
 
+                <div class="collections-search">
+                    <form method="GET" action="all_collections.php" class="collections-search-form" role="search">
+                        <input id="search-input-main" type="search" name="search" class="search-bar" placeholder="Search collections..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                        <button type="submit" class="explore-btn">Search</button>
+                    </form>
+                </div>
 
                 <div class="top-controls">
                     <div class="controls-row">
                         <form id="filters" class="filters-form" method="GET">
-                            <div class="filter-chip filter-chip--search">
-                                <label class="filter-chip__label" for="search-input">
-                                    <i class="bi bi-search"></i>
-                                    <span>Search</span>
-                                </label>
-                                <input id="search-input" type="search" name="search" class="filter-chip__input" placeholder="Search collections..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
-                            </div>
+                            <input type="hidden" name="search" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
                             <div class="filter-chip filter-chip--select">
                                 <label class="filter-chip__label" for="sort-select">
                                     <i class="bi bi-funnel"></i>

@@ -144,7 +144,6 @@ function load_app_data($mysqli)
     'description',
     'created_at',
     'updated_at',
-    'collection_id'
   ];
   if ($eventsSelectCost) $eventFields[] = 'cost';
   if ($eventsSelectHost) $eventFields[] = 'host_user_id';
@@ -165,7 +164,8 @@ function load_app_data($mysqli)
       'createdAt' => $r['created_at'] ?? null,
       'updatedAt' => $r['updated_at'] ?? null,
       'hostUserId' => $host,
-      'collectionId' => $r['collection_id'] ?? null,
+      'collectionId' => null,
+      'collection_id' => null,
       // legacy aliases
       'host_user_id' => $host
     ];
@@ -182,6 +182,33 @@ function load_app_data($mysqli)
   $collectionEvents = array_map(function ($r) {
     return ['collectionId' => $r['collection_id'], 'eventId' => $r['event_id']];
   }, $ceRows);
+
+  $eventCollectionMap = [];
+  foreach ($collectionEvents as $link) {
+    $eid = $link['eventId'] ?? null;
+    $cid = $link['collectionId'] ?? null;
+    if (!$eid || !$cid) continue;
+    if (!isset($eventCollectionMap[$eid])) {
+      $eventCollectionMap[$eid] = [];
+    }
+    if (!in_array($cid, $eventCollectionMap[$eid], true)) {
+      $eventCollectionMap[$eid][] = $cid;
+    }
+  }
+  foreach ($events as &$evt) {
+    $eid = $evt['id'] ?? null;
+    if ($eid && !empty($eventCollectionMap[$eid])) {
+      $primary = $eventCollectionMap[$eid][0];
+      if (empty($evt['collectionId']) && empty($evt['collection_id'])) {
+        $evt['collectionId'] = $primary;
+        $evt['collection_id'] = $primary;
+      } else {
+        $evt['collectionId'] = $evt['collectionId'] ?? $primary;
+        $evt['collection_id'] = $evt['collection_id'] ?? $primary;
+      }
+    }
+  }
+  unset($evt);
 
   // 7) collectionsUsers mapping (derived from collections.user_id)
   $collectionsUsers = array_map(function ($c) {

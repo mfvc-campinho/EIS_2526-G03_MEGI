@@ -53,6 +53,10 @@ if ($editing) {
         $backUrl = "specific_collection.php?id=" . htmlspecialchars($id);
     }
 } else {
+    // For creation, prefer an explicit return_to or sanitized referer
+    // so that Back returns to the originating page (e.g., home_page or all_collections).
+    // Fallback stays all_collections.php.
+    // Note: $returnTo is computed below using extract_internal_path.
     $backUrl = "all_collections.php";
 }
 
@@ -92,6 +96,11 @@ if (!$returnTo) {
 }
 if (!$returnTo || stripos($returnTo, 'collections_form.php') !== false) {
     $returnTo = 'all_collections.php';
+}
+
+// Ensure the Back link points to the originating page for creation flows
+if (!$editing) {
+    $backUrl = $returnTo;
 }
 ?>
 <!DOCTYPE html>

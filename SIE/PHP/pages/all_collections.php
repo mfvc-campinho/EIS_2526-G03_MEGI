@@ -323,6 +323,11 @@ $exportUrl = 'all_collections.php?' . http_build_query($exportParams);
                             <a class="explore-btn ghost paginate__csv" href="<?php echo htmlspecialchars($exportUrl); ?>">
                                 <i class="bi bi-filetype-csv"></i> Download CSV
                             </a>
+                            <?php if (!empty($_SESSION['user'])): ?>
+                                <a class="explore-btn success paginate__add" href="collections_form.php?return_to=all_collections.php" title="Add Collection">
+                                    <i class="bi bi-plus-circle"></i> Add Collection
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

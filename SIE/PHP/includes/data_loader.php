@@ -1,4 +1,9 @@
 <?php
+// Define Lisbon timezone globally for consistent date/time handling
+if (function_exists('date_default_timezone_set')) {
+  @date_default_timezone_set('Europe/Lisbon');
+}
+
 require_once __DIR__ . '/../config/db.php';
 
 // Shared helpers so both JSON endpoints and bootstrap scripts can reuse the same logic.

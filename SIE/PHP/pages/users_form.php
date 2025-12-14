@@ -78,8 +78,8 @@ if (!$user) {
         </div>
       <?php endif; ?>
 
-      <label>Date of birth</label>
-      <input type="date" name="dob" value="<?php echo htmlspecialchars($user['date_of_birth'] ?? ''); ?>">
+      <label>Date of birth <span class="required-badge">R</span></label>
+      <input type="date" name="dob" id="edit-dob" required value="<?php echo htmlspecialchars($user['date_of_birth'] ?? ''); ?>">
 
       <label>Password (leave empty to keep)</label>
       <input type="password" name="password" value="">
@@ -89,6 +89,46 @@ if (!$user) {
         <a class="explore-btn ghost" href="user_page.php">Cancel</a>
       </div>
     </form>
+    <script>
+      (function(){
+        var dob = document.getElementById('edit-dob');
+        var form = dob ? dob.closest('form') : null;
+        if (dob) {
+          var today = new Date();
+          var minAge = 14;
+          var maxAge = 90;
+          function toISO(d){
+            var y = d.getFullYear();
+            var m = String(d.getMonth()+1).padStart(2,'0');
+            var day = String(d.getDate()).padStart(2,'0');
+            return y+'-'+m+'-'+day;
+          }
+          var maxDate = new Date(today.getFullYear()-minAge, today.getMonth(), today.getDate());
+          var minDate = new Date(today.getFullYear()-maxAge, today.getMonth(), today.getDate());
+          dob.setAttribute('max', toISO(maxDate));
+          dob.setAttribute('min', toISO(minDate));
+        }
+        if (form) {
+          form.addEventListener('submit', function(e){
+            if (dob && dob.value) {
+              try {
+                var d = new Date(dob.value);
+                var today = new Date();
+                var age = today.getFullYear() - d.getFullYear();
+                var m = today.getMonth() - d.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < d.getDate())) { age--; }
+                if (age < 14 || age > 90) {
+                  e.preventDefault();
+                  alert('Age must be between 14 and 90 years.');
+                  dob.focus();
+                  return;
+                }
+              } catch(err) {}
+            }
+          });
+        }
+      })();
+    </script>
   </main>
 </body>
 

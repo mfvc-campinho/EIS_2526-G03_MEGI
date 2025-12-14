@@ -274,10 +274,12 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                             </div>
                         </form>
                         <div class="inline-actions" style="display:flex; gap:10px;">
-                            <a href="collections_form.php" class="explore-btn success">
-                                <i class="bi bi-plus-circle"></i>
-                                Add Collection
-                            </a>
+                                     <?php if (!empty($_SESSION['user'])): ?>
+                                     <a href="collections_form.php?return_to=home_page.php" class="explore-btn success">
+                                         <i class="bi bi-plus-circle"></i>
+                                           Add Collection
+                                     </a>
+                                     <?php endif; ?>
                             <a href="events_form.php" class="explore-btn">
                                 <i class="bi bi-calendar-plus"></i>
                                 New Event
@@ -542,11 +544,15 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                         <?php endif; ?>
                                         <div class="event-actions">
                                             <?php if ($isOwner): ?>
-                                                <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($eventId); ?>">Edit</a>
+                                                <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($eventId); ?>" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
                                                 <form action="events_action.php" method="POST" style="display:inline;">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
-                                                    <button type="submit" class="explore-btn ghost danger small" onclick="return confirm('Delete this event?');">Delete</button>
+                                                    <button type="submit" class="explore-btn ghost danger small" title="Delete" onclick="return confirm('Delete this event?');">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
                                                 </form>
                                             <?php endif; ?>
                                             <?php if ($isAuthenticated && $eventId): ?>
@@ -718,7 +724,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     </div>
 
     <!-- Back to Top Button -->
-    <button id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
         <i class="bi bi-arrow-up"></i>
     </button>
 

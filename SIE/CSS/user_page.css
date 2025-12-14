@@ -354,17 +354,21 @@ main.page-shell {
 }
 
 .user-top-collections-controls {
-  margin: 6px 0 18px;
+  margin: 8px 0 28px;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
   align-items: center;
 }
 
+/* Make the Add Collection button more prominent in the Top 3 section */
+/* (Reverted) Keep default button styling from general.css */
+
 /* Top 3 Collections Grid — Aligned Left */
 .cards-grid--spaced {
   justify-content: flex-start !important;
   grid-auto-flow: row !important;
+  margin-bottom: 50px; /* extra spacing after top collections */
 }
 
 /* ===============================
@@ -372,7 +376,7 @@ main.page-shell {
    =============================== */
 
 .user-events-section {
-  margin-top: 60px;
+  margin-top: 80px; /* increased spacing from previous block */
   position: relative;
 }
 

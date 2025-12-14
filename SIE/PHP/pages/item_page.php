@@ -144,7 +144,7 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
   </main>
 
   <!-- Back to Top Button -->
-  <button id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
+  <button id="backToTop" class="back-to-top" aria-label="Back to top">
     <i class="bi bi-arrow-up"></i>
   </button>
 

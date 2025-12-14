@@ -56,6 +56,18 @@ function handle_upload($field, $folder, $fallback = '')
   return 'uploads/' . $folder . '/' . $filename;
 }
 
+function compute_age($dob)
+{
+  $dob = trim((string)$dob);
+  if ($dob === '') return null;
+  $ts = strtotime($dob);
+  if ($ts === false) return null;
+  $birth = new DateTime(date('Y-m-d', $ts));
+  $today = new DateTime('today');
+  $diff = $birth->diff($today);
+  return (int)$diff->y;
+}
+
 if ($action === 'create') {
   $name = trim($_POST['name'] ?? '');
   $email = trim($_POST['email'] ?? '');
@@ -66,6 +78,17 @@ if ($action === 'create') {
   if ($name === '' || $email === '' || $password === '') {
     $mysqli->close();
     redirect_error('Please fill in all required fields.', 'user_create.php');
+  }
+
+  // Require valid DOB and age between 14 and 90
+  if ($dob === null || trim((string)$dob) === '') {
+    $mysqli->close();
+    redirect_error('Date of birth is required.', 'user_create.php');
+  }
+  $age = compute_age($dob);
+  if ($age === null || $age < 14 || $age > 90) {
+    $mysqli->close();
+    redirect_error('Age must be between 14 and 90 years.', 'user_create.php');
   }
 
   $stmt = $mysqli->prepare('SELECT user_id FROM users WHERE email = ? LIMIT 1');
@@ -134,6 +157,17 @@ if ($action === 'update') {
   if ($name === '' || $email === '') {
     $mysqli->close();
     redirect_error('Name and email are required.', 'users_form.php');
+  }
+
+  // Require valid DOB and age between 14 and 90 on update as well
+  if ($dob === null || trim((string)$dob) === '') {
+    $mysqli->close();
+    redirect_error('Date of birth is required.', 'users_form.php');
+  }
+  $age = compute_age($dob);
+  if ($age === null || $age < 14 || $age > 90) {
+    $mysqli->close();
+    redirect_error('Age must be between 14 and 90 years.', 'users_form.php');
   }
 
   if ($password !== '') {

@@ -151,7 +151,7 @@ foreach ($eventsUsers as $eu) {
 }
 
 // array final de eventos do utilizador (based on RSVP, not collection ownership)
-$today = date('Y-m-d');
+$nowTs = time();
 
 if (!function_exists('format_user_event_date')) {
     function format_user_event_date($raw)
@@ -185,19 +185,40 @@ if (!function_exists('format_user_event_date')) {
         return $trimmed;
     }
 }
+// Helper to parse event timestamp robustly (supports 'Y-m-d', 'Y-m-d H:i', 'Y-m-d H:i:s' and 'T' separator)
+if (!function_exists('gc_parse_event_ts')) {
+    function gc_parse_event_ts($raw)
+    {
+        if (!$raw) return null;
+        $s = str_replace('T', ' ', trim((string)$raw));
+        if ($s === '') return null;
+        $ts = strtotime($s);
+        if ($ts !== false) return $ts;
+        // Fallback: try date-only by appending midnight
+        $dateOnly = substr($s, 0, 10);
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateOnly)) {
+            $ts2 = strtotime($dateOnly . ' 00:00:00');
+            if ($ts2 !== false) return $ts2;
+        }
+        return null;
+    }
+}
+
 $upcomingEvents = [];
 $pastEvents = [];
 
 foreach (array_keys($userRsvpMap) as $eid) {
     if (isset($eventsById[$eid])) {
         $evt = $eventsById[$eid];
-        $eventDate = substr($evt['date'] ?? '', 0, 10);
-        
-        if ($eventDate >= $today) {
-            // Upcoming: include if RSVP exists
+        $evtTs = gc_parse_event_ts($evt['date'] ?? $evt['event_date'] ?? '');
+        if ($evtTs === null) {
+            // If unparsable, treat as upcoming to avoid incorrectly hiding
+            $upcomingEvents[] = $evt;
+            continue;
+        }
+        if ($evtTs >= $nowTs) {
             $upcomingEvents[] = $evt;
         } else {
-            // Past: include if RSVP exists
             $pastEvents[] = $evt;
         }
     }
@@ -205,10 +226,14 @@ foreach (array_keys($userRsvpMap) as $eid) {
 
 // Sort both by date
 usort($upcomingEvents, function ($a, $b) {
-    return strcmp($a['date'] ?? '', $b['date'] ?? '');
+    $ta = gc_parse_event_ts($a['date'] ?? $a['event_date'] ?? '') ?? PHP_INT_MAX;
+    $tb = gc_parse_event_ts($b['date'] ?? $b['event_date'] ?? '') ?? PHP_INT_MAX;
+    return $ta <=> $tb;
 });
 usort($pastEvents, function ($a, $b) {
-    return strcmp($b['date'] ?? '', $a['date'] ?? ''); // descending for past
+    $ta = gc_parse_event_ts($a['date'] ?? $a['event_date'] ?? '') ?? 0;
+    $tb = gc_parse_event_ts($b['date'] ?? $b['event_date'] ?? '') ?? 0;
+    return $tb <=> $ta; // descending for past
 });
 
 // Followers count and following map
@@ -388,7 +413,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 <?php if ($isOwnerProfile): ?>
                                     <a class="explore-btn ghost" href="users_form.php">Edit Profile</a>
                                     <button id="christmas-toggle" class="explore-btn" style="background: linear-gradient(135deg, #c41e3a, #165b33); border-color: #d4af37; color: white;">
-                                        🎄 <span class="btn-text">Natal</span>
+                                        🎄 <span class="btn-text">Christmas</span>
                                     </button>
                                 <?php elseif ($isAuthenticated): ?>
                                     <form action="follow_action.php" method="POST" style="display:inline;">
@@ -404,9 +429,9 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
                     <?php if (!empty($topCollections)): ?>
                         <div class="section-header">
-                            <h3 class="section-title">Your Top 3 Collections</h3>
+                            <h3 class="section-title">Top 3 Collections</h3>
                             <?php if ($isOwnerProfile): ?>
-                                <a class="explore-btn success" href="collections_form.php">Add Collection</a>
+                                <a class="explore-btn success" href="collections_form.php?return_to=user_page.php">Add Collection</a>
                             <?php endif; ?>
                         </div>
                         <div class="user-top-collections-controls">
@@ -517,13 +542,13 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
-                        <h3 class="section-title">Your Collections</h3>
+                        <h3 class="section-title">Collections</h3>
                         <p class="muted">
-                            You don't have any collections yet.
+                            No collections yet.
                         </p>
                         <?php if ($isOwnerProfile): ?>
                             <div class="empty-state-actions">
-                                <a class="explore-btn success" href="collections_form.php">Add Collection</a>
+                                <a class="explore-btn success" href="collections_form.php?return_to=user_page.php">Add Collection</a>
                             </div>
                         <?php endif; ?>
                     <?php endif; ?>
@@ -536,7 +561,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                     <!-- Upcoming Events Section -->
                     <section class="user-events-section">
                         <h2 class="section-title">
-                            Upcoming Events you're attending
+                            Upcoming Events
                         </h2>
 
                         <?php if (!empty($upcomingEvents)): ?>

@@ -115,12 +115,14 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  z-index: 2;
+  pointer-events: auto;
 }
 
 .modal-close:hover {
@@ -424,7 +426,7 @@
 
 .home-card .card-info,
 .home-card .card-body {
-  padding: 12px 15px 14px;
+  padding: 12px 18px 14px;
   gap: 9px;
 }
 
@@ -547,15 +549,25 @@
   padding: 0 32px;
 }
 
+.upcoming-inner {
+  padding: 32px 36px;
+}
+
 @media (max-width: 768px) {
   .upcoming-events {
     padding: 0 20px;
+  }
+  .upcoming-inner {
+    padding: 28px 24px;
   }
 }
 
 @media (max-width: 480px) {
   .upcoming-events {
     padding: 0 14px;
+  }
+  .upcoming-inner {
+    padding: 24px 18px;
   }
 }
 

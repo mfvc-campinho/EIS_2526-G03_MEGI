@@ -530,7 +530,7 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
   <div class="modal-backdrop" id="event-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <button type="button" class="modal-close" aria-label="Close event details">
+        <button type="button" class="modal-close" aria-label="Close event details" onclick="document.getElementById('event-modal')?.classList.remove('open')">
           <i class="bi bi-x"></i>
         </button>
         <h3 id="modal-title"></h3>

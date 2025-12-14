@@ -176,7 +176,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <link rel="stylesheet" href="../../CSS/general.css">
 
     <!-- Estilos específicos da home -->
-    <link rel="stylesheet" href="../../CSS/home_page.css?v=9">
+    <link rel="stylesheet" href="../../CSS/home_page.css?v=11">
 
     <!-- Eventos + likes -->
     <link rel="stylesheet" href="../../CSS/events.css">

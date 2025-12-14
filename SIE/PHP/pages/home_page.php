@@ -148,20 +148,356 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <!-- Estilos globais -->
     <link rel="stylesheet" href="../../CSS/general.css">
 
+    <!-- Estilos específicos da home -->
+    <link rel="stylesheet" href="home_page.css">
+
     <!-- Eventos + likes -->
     <link rel="stylesheet" href="../../CSS/events.css">
     <link rel="stylesheet" href="../../CSS/likes.css">
 
     <!-- Ícones -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Christmas Theme -->
     <link rel="stylesheet" href="../../CSS/christmas.css">
 
-    <!-- Estilos específicos da home (por último para sobrepor) -->
-    <link rel="stylesheet" href="../../CSS/home-page.css">
+    <style>
+        /* Home events cards styled like events page */
+        .upcoming-events .event-card {
+            cursor: pointer;
+            position: relative;
+            display: block;
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 18px 18px 16px;
+            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.18s ease, box-shadow 0.2s ease;
+            color: inherit;
+            text-decoration: none;
+        }
 
-    
+        .upcoming-events .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+        }
+
+        .upcoming-events .event-card:focus {
+            outline: 2px solid #6366f1;
+            outline-offset: 4px;
+        }
+
+        .upcoming-events .event-card:active {
+            transform: translateY(0);
+        }
+
+        .home-event-rsvp {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            color: #1e3a8a;
+            font-weight: 700;
+            background: #ffffff;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        form.home-event-rsvp {
+            margin: 0;
+        }
+
+        .home-event-rsvp__button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .home-event-rsvp:hover,
+        .home-event-rsvp:focus-within {
+            background: #f8fafc;
+            color: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .home-event-rsvp.is-active {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #15803d;
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.12);
+        }
+
+        .home-event-rsvp.is-active:hover,
+        .home-event-rsvp.is-active:focus-within {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .home-event-rsvp--login {
+            justify-content: center;
+        }
+            font-weight: 700;
+            border: 1px solid #bbf7d0;
+            font-size: 0.9rem;
+        }
+
+        .home-event-title {
+            margin: 0 0 12px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.3;
+        }
+
+        .home-event-meta {
+            display: grid;
+            gap: 10px;
+            margin: 0 0 16px;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        .home-event-meta .meta-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.98rem;
+            color: #1f2937;
+        }
+
+        .home-event-meta .meta-row i {
+            font-size: 1.1rem;
+            color: #475569;
+        }
+
+        .home-event-rsvp {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            color: #1e3a8a;
+            font-weight: 700;
+            background: #ffffff;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+        }
+
+        .home-event-rsvp:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        /* Shared modal styling reused from Events page */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideUp 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            padding: 32px 28px;
+            color: white;
+            position: relative;
+            text-align: center;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-header h3 {
+            margin: 0 0 12px 0;
+            font-size: 2.25rem;
+            font-weight: 900 !important;
+            color: white !important;
+            line-height: 1.2;
+        }
+
+        .modal-type-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        .modal-body {
+            padding: 28px;
+            overflow-y: auto;
+        }
+
+        .modal-summary {
+            font-size: 1.05rem;
+            color: #374151;
+            line-height: 1.6;
+            margin: 0 0 24px 0;
+            font-weight: 500;
+        }
+
+        .modal-description {
+            color: #6b7280;
+            line-height: 1.7;
+            margin: 0 0 24px 0;
+        }
+
+        .modal-info-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .modal-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .modal-info-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .modal-info-content {
+            flex: 1;
+        }
+
+        .modal-info-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .modal-info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .modal-location-link {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .modal-location-link:hover {
+            text-decoration: none;
+        }
+
+        .modal-location-link.disabled {
+            color: #9ca3af;
+            pointer-events: none;
+            text-decoration: none;
+        }
+
+        .quick-actions {
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .quick-actions__grid {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
 
     <script src="../../JS/theme-toggle.js"></script>
     <script src="../../JS/christmas-theme.js"></script>
@@ -662,25 +998,201 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
     <script src="../../JS/search-toggle.js"></script>
     <script src="../../JS/gc-scroll-restore.js"></script>
-    <script id="home-page-data" type="application/json">
-        <?php
-        echo json_encode(
-            [
-                'currentUserId' => $currentUserId ?: null,
-                'scrollOptions' => [
-                    'key' => 'gc-scroll-home',
-                    'formSelector' => '#filters',
-                    'reapplyFrames' => 3,
-                    'reinforceMs' => 800,
-                    'reinforceInterval' => 80,
-                    'stabilizeMs' => 1200
-                ]
-            ],
-            JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE
-        );
-        ?>
+    <script>
+        var currentUserId = <?php echo $currentUserId ? json_encode($currentUserId) : 'null'; ?>;
+        gcInitScrollRestore({
+            key: 'gc-scroll-home',
+            formSelector: '#filters',
+            reapplyFrames: 3,
+            reinforceMs: 800,
+            reinforceInterval: 80,
+            stabilizeMs: 1200
+        });
     </script>
-    <script src="../../JS/home-page.js" defer></script>
+
+        // Back to Top functionality
+        (function() {
+            var backToTopBtn = document.getElementById('backToTop');
+            if (!backToTopBtn) return;
+
+            function toggleBackToTop() {
+                var scrollTop = window.scrollY || document.documentElement.scrollTop;
+                if (scrollTop > 300) {
+                    backToTopBtn.classList.add('show');
+                } else {
+                    backToTopBtn.classList.remove('show');
+                }
+            }
+
+            backToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            window.addEventListener('scroll', toggleBackToTop);
+            toggleBackToTop(); // Check initial state
+        })();
+    </script>
+    <script>
+        (function() {
+            var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';
+
+            function enhanceCard(card) {
+                var href = card.getAttribute('data-collection-link');
+                if (!href) {
+                    return;
+                }
+                card.addEventListener('click', function(event) {
+                    if (event.target.closest(interactiveSelector)) {
+                        return;
+                    }
+                    window.location.href = href;
+                });
+                card.addEventListener('keydown', function(event) {
+                    if (event.target !== card) {
+                        return;
+                    }
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        window.location.href = href;
+                    }
+                });
+            }
+            document.querySelectorAll('.collection-card-link').forEach(enhanceCard);
+        })();
+    </script>
+    <script>
+        (function() {
+            var modal = document.getElementById('event-modal');
+            if (!modal) {
+                return;
+            }
+
+            var cardInteractiveSelector = '[data-home-rsvp-form], .home-event-rsvp, button, input, select, textarea, form, a';
+
+            var closeButton = modal.querySelector('.modal-close');
+            var titleEl = document.getElementById('modal-title');
+            var typeEl = document.getElementById('modal-type');
+            var summaryEl = document.getElementById('modal-summary');
+            var descriptionEl = document.getElementById('modal-description');
+            var dateEl = document.getElementById('modal-date');
+            var timeRow = document.getElementById('modal-time-row');
+            var timeEl = document.getElementById('modal-time');
+            var locationLink = document.getElementById('modal-location');
+            var costEl = document.getElementById('modal-cost');
+
+            function setText(target, value) {
+                if (!target) {
+                    return;
+                }
+                target.textContent = value || '';
+            }
+
+            function openModal(payload, card) {
+                setText(titleEl, payload.name);
+                setText(typeEl, payload.type);
+                setText(summaryEl, payload.summary);
+                setText(descriptionEl, payload.description);
+                if (dateEl) {
+                    setText(dateEl, payload.date || payload.datetime || '');
+                }
+                if (timeRow && timeEl) {
+                    if (payload.time) {
+                        timeRow.hidden = false;
+                        setText(timeEl, payload.time);
+                    } else {
+                        timeRow.hidden = true;
+                        setText(timeEl, '');
+                    }
+                }
+                if (locationLink) {
+                    var cleanLocation = (payload.location || '').trim();
+                    if (cleanLocation) {
+                        locationLink.textContent = cleanLocation;
+                        locationLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(cleanLocation);
+                        locationLink.classList.remove('disabled');
+                        locationLink.setAttribute('target', '_blank');
+                        locationLink.setAttribute('rel', 'noopener noreferrer');
+                        locationLink.setAttribute('aria-label', 'Open ' + cleanLocation + ' on Google Maps');
+                    } else {
+                        locationLink.textContent = 'Location unavailable';
+                        locationLink.removeAttribute('href');
+                        locationLink.removeAttribute('target');
+                        locationLink.removeAttribute('rel');
+                        locationLink.removeAttribute('aria-label');
+                        locationLink.classList.add('disabled');
+                    }
+                }
+                if (costEl) {
+                    setText(costEl, payload.cost || 'Free entrance');
+                }
+                modal.classList.add('open');
+            }
+
+            function closeModal() {
+                modal.classList.remove('open');
+            }
+
+            function bindEventCard(card) {
+                if (!card) {
+                    return;
+                }
+
+                function launchModal() {
+                    openModal({
+                        name: card.getAttribute('data-name') || '',
+                        summary: card.getAttribute('data-summary') || '',
+                        description: card.getAttribute('data-description') || '',
+                        date: card.getAttribute('data-date') || '',
+                        time: card.getAttribute('data-time') || '',
+                        datetime: card.getAttribute('data-datetime') || '',
+                        location: card.getAttribute('data-location') || '',
+                        type: card.getAttribute('data-type') || '',
+                        cost: card.getAttribute('data-cost') || ''
+                    }, card);
+                }
+
+                card.addEventListener('click', function(event) {
+                    if (event.target.closest(cardInteractiveSelector)) {
+                        return;
+                    }
+                    event.preventDefault();
+                    launchModal();
+                });
+
+                card.addEventListener('keydown', function(event) {
+                    if (event.target !== card) {
+                        return;
+                    }
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        launchModal();
+                    }
+                });
+            }
+
+            document.querySelectorAll('.js-event-card').forEach(bindEventCard);
+
+            if (closeButton) {
+                closeButton.addEventListener('click', closeModal);
+            }
+
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.classList.contains('open')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
 </body>
 
 </html>
+

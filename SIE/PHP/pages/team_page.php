@@ -40,10 +40,9 @@ $team = [
   <title>Team • GoodCollections</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../CSS/general.css">
+  <link rel="stylesheet" href="team_page.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../../CSS/christmas.css">
-  <!-- Estilos específicos da página (último para sobrepor) -->
-  <link rel="stylesheet" href="../../CSS/team_page.css">
   <script src="../../JS/theme-toggle.js"></script>
   <script src="../../JS/christmas-theme.js"></script>
 </head>
@@ -161,7 +160,34 @@ $team = [
     </section>
   </main>
   <?php include __DIR__ . '/../includes/footer.php'; ?>
-  <script src="../../JS/team-page.js" defer></script>
+  <script>
+    (function() {
+      var interactiveSelector = 'a, button, label, input, textarea, select, form, [role="button"]';
+
+      function enhanceMemberCard(card) {
+        var href = card.getAttribute('data-member-link');
+        if (!href) {
+          return;
+        }
+        card.addEventListener('click', function(event) {
+          if (event.target.closest(interactiveSelector)) {
+            return;
+          }
+          window.open(href, '_blank', 'noopener');
+        });
+        card.addEventListener('keydown', function(event) {
+          if (event.target !== card) {
+            return;
+          }
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            window.open(href, '_blank', 'noopener');
+          }
+        });
+      }
+      document.querySelectorAll('.team-card-link').forEach(enhanceMemberCard);
+    })();
+  </script>
 </body>
 
 </html>

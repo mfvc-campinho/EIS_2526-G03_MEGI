@@ -152,6 +152,82 @@
 })();
 
 (function () {
+  // Delegated handler to keep likes AJAX and avoid full page reload
+  function handleLikeSubmit(form, ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var countSpan = form.querySelector('.like-count');
+    var icon = form.querySelector('i');
+    if (!submitBtn) return;
+
+    // Hint return URL for server handlers that support it
+    if (!form.querySelector('input[name="return_url"]')) {
+      var ret = document.createElement('input');
+      ret.type = 'hidden';
+      ret.name = 'return_url';
+      ret.value = 'home_page.php';
+      form.appendChild(ret);
+    }
+
+    var formData = new FormData(form);
+    submitBtn.disabled = true;
+
+    fetch(form.action || 'likes_action.php', {
+      method: 'POST',
+      body: formData,
+      credentials: 'same-origin'
+    }).then(function (res) {
+      var contentType = res.headers.get('content-type') || '';
+      if (contentType.indexOf('application/json') !== -1) {
+        return res.json();
+      }
+      return res.text().then(function (t) {
+        try { return JSON.parse(t); } catch (e) { return { ok: res.ok }; }
+      });
+    }).then(function (data) {
+      submitBtn.classList.toggle('is-liked');
+      if (icon) {
+        icon.classList.toggle('bi-heart');
+        icon.classList.toggle('bi-heart-fill');
+      }
+      if (countSpan) {
+        if (data && typeof data.likeCount === 'number') {
+          countSpan.textContent = data.likeCount;
+          countSpan.classList.toggle('is-zero', data.likeCount === 0);
+        } else {
+          var current = parseInt(countSpan.textContent || '0', 10) || 0;
+          var liked = submitBtn.classList.contains('is-liked');
+          var next = liked ? (current + 1) : Math.max(0, current - 1);
+          countSpan.textContent = String(next);
+          countSpan.classList.toggle('is-zero', next === 0);
+        }
+      }
+    }).catch(function () {
+      if (window.appShowFlash) {
+        window.appShowFlash({ type: 'error', title: 'Oops!', message: 'Could not update like. Please try again.' });
+      }
+    }).finally(function () {
+      submitBtn.disabled = false;
+    });
+  }
+
+  document.addEventListener('submit', function (ev) {
+    var form = ev.target;
+    if (form && form.classList && form.classList.contains('like-form')) {
+      handleLikeSubmit(form, ev);
+    }
+  }, true);
+
+  document.addEventListener('click', function (ev) {
+    var btn = ev.target.closest('.like-form button[type="submit"]');
+    if (btn && btn.form) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      handleLikeSubmit(btn.form, ev);
+    }
+  }, true);
+
   var modal = document.getElementById('event-modal');
   if (!modal) {
     return;

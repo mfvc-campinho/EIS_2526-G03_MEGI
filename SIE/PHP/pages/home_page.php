@@ -355,9 +355,9 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 
                                     <?php $isOwner = $isAuthenticated && (($col['ownerId'] ?? null) === $currentUserId); ?>
                                     <div class="collection-card__actions card-actions">
-                                        <label class="action-icon" for="<?php echo $previewId; ?>" title="Expand">
-                                            <i class="bi bi-plus-lg"></i>
-                                        </label>
+                                        <button type="button" class="action-icon" data-toggle="<?php echo $previewId; ?>" title="Expand">
+                                            <i class="bi bi-plus-lg" id="icon-<?php echo $previewId; ?>"></i>
+                                        </button>
 
                                         <?php if ($isAuthenticated): ?>
                                             <form action="likes_action.php" method="POST" class="action-icon-form like-form">
@@ -389,16 +389,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                         <?php endif; ?>
                                     </div>
 
-                                    <div class="card-buttons">
-                                        <label class="explore-btn ghost preview-show"
-                                            for="<?php echo $previewId; ?>">
-                                            Show Preview
-                                        </label>
-                                        <label class="explore-btn ghost preview-hide"
-                                            for="<?php echo $previewId; ?>">
-                                            Hide Preview
-                                        </label>
-                                    </div>
+                                    
 
                                     <div class="preview-items">
                                         <?php if ($previewItems): ?>
@@ -437,13 +428,9 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
         <section class="upcoming-events inner-block">
             <div class="upcoming-inner">
                 <div class="section-header">
-                    <h2 class="upcoming-title">
-                        <i class="bi bi-calendar-event-fill me-2" aria-hidden="true"></i>
-                        Upcoming Events
-                    </h2>
-                    <p class="upcoming-sub">
-                        Don't miss the next exhibitions, fairs and meetups curated by our community.
-                    </p>
+                    <h2 class="upcoming-title">Upcoming Events</h2>
+                    <div class="upcoming-underline"></div>
+                    <p class="upcoming-sub">Discover upcoming community exhibitions and fairs</p>
                 </div>
 
                 <div class="events-grid" id="eventsList">
@@ -739,6 +726,7 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <script src="../../JS/gc-scroll-restore.js"></script>
     <script src="../../JS/back-to-top.js"></script>
     <script src="../../JS/home_page.js?v=2"></script>
+    <script src="../../JS/collection_card.js"></script>
 </body>
 
 </html>

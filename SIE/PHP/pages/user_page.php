@@ -283,7 +283,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                     <p>To see your profile and manage collections, please sign in or create an account.</p>
 
                     <div class="signin-actions">
-                        <a class="signin-btn signin-btn--primary" href="user_create.php">Log In</a>
+                        <a class="signin-btn signin-btn--primary" href="login.php">Log In</a>
                         <a class="signin-btn signin-btn--accent" href="user_create.php">Create Account</a>
                         <a class="signin-btn" href="home_page.php">Browse As Guest</a>
                     </div>
@@ -314,7 +314,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                 <?php if (!$profileUser): ?>
                     <section class="profile-hero">
                         <?php if (!$isAuthenticated): ?>
-                            <p class="muted">Please <a href="user_create.php">login</a> to view your profile.</p>
+                            <p class="muted">Please <a href="login.php">login</a> to view your profile.</p>
                         <?php else: ?>
                             <p class="muted">User not found.</p>
                         <?php endif; ?>
@@ -418,10 +418,10 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                         <span>Top por</span>
                                     </label>
                                     <select id="top-sort-select" name="topSort" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
-                                        <option value="likes" <?php echo $topSort==='likes'?'selected':''; ?>>Mais gostos</option>
-                                        <option value="value" <?php echo $topSort==='value'?'selected':''; ?>>Maior valor</option>
-                                        <option value="oldest" <?php echo $topSort==='oldest'?'selected':''; ?>>Mais antigas</option>
-                                        <option value="items" <?php echo $topSort==='items'?'selected':''; ?>>Mais items</option>
+                                        <option value="likes" <?php echo $topSort==='likes'?'selected':''; ?>>More likes</option>
+                                        <option value="value" <?php echo $topSort==='value'?'selected':''; ?>>Higher value</option>
+                                        <option value="oldest" <?php echo $topSort==='oldest'?'selected':''; ?>>Oldest</option>
+                                        <option value="items" <?php echo $topSort==='items'?'selected':''; ?>>Most items</option>
                                     </select>
                                 </div>
                             </form>

@@ -375,11 +375,12 @@
 /* Upcoming Events layout: denser and cohesive */
 .upcoming-inner .section-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin: 0;
 }
 
 .upcoming-inner .section-header h2,
@@ -393,6 +394,41 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+}
+
+/* Upcoming Events heading styles to match Top Collections */
+.upcoming-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0b3b70;
+}
+
+.upcoming-underline {
+  width: 90px;
+  height: 4px;
+  background: #0b3b70;
+  border-radius: 999px;
+  margin: 10px auto 14px;
+}
+
+/* Subtitle under Upcoming Events */
+.upcoming-sub {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 auto 18px;
+  max-width: 820px;
+}
+
+@media (max-width: 640px) {
+  .upcoming-title {
+    font-size: 1.8rem;
+  }
+  .upcoming-sub {
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+    padding: 0 8px;
+  }
 }
 
 .upcoming-inner .section-header h2 .icon,
@@ -483,8 +519,8 @@
   gap: 8px;
   margin: 18px auto 0;
   padding: 10px 16px;
-  background: #0b3b70;
-  color: #ffffff;
+  background: #0b3b70; /* enforce visible background */
+  color: #ffffff;      /* enforce visible text */
   border: 1px solid #0b3b70;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(11, 59, 112, 0.18);
@@ -498,6 +534,15 @@
   box-shadow: 0 10px 26px rgba(11, 59, 112, 0.28);
 }
 
+/* Override ghost style if applied */
+.events-actions .view-events-cta,
+.view-events-cta.explore-btn.ghost {
+  background: #0b3b70 !important;
+  color: #ffffff !important;
+  border-color: #0b3b70 !important;
+  opacity: 1 !important;
+}
+
 @media (max-width: 768px) {
   .upcoming-events {
     padding: 0 20px;
@@ -506,10 +551,7 @@
     padding: 28px 24px;
   }
   .upcoming-inner .section-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
+    gap: 8px;
   }
 }
 

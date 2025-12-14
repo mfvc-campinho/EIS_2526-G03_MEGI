@@ -70,23 +70,6 @@ if (!$id && $preferredCollectionId) {
 }
 
 $existingCollections = array_unique($existingCollections);
-
-$from = $_GET['from'] ?? null;
-$collectionIdFrom = $_GET['collectionId'] ?? null;
-
-if ($editing) {
-    if ($from === 'specific_collection' && $collectionIdFrom) {
-        $backUrl = "specific_collection.php?id=" . urlencode($collectionIdFrom);
-    } else {
-        $backUrl = "item_page.php?id=" . htmlspecialchars($id);
-    }
-} else {
-    if ($from === 'specific_collection' && $collectionIdFrom) {
-        $backUrl = "specific_collection.php?id=" . urlencode($collectionIdFrom);
-    } else {
-        $backUrl = "home_page.php";
-    }
-}
 ?>
 
 
@@ -97,7 +80,7 @@ if ($editing) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><?php echo $editing ? 'Edit' : 'New'; ?> Item • GoodCollections</title>
+        <title><?php echo $editing ? 'Edit' : 'New'; ?> Item • PHP</title>
         <link rel="stylesheet" href="../../CSS/general.css">
         <link rel="stylesheet" href="../../CSS/forms.css">
         <link rel="stylesheet" href="../../CSS/christmas.css">
@@ -113,7 +96,7 @@ if ($editing) {
 
             <header class="page__header">
                 <h1><?php echo $editing ? 'Edit Item' : 'Create Item'; ?></h1>
-                <a href="<?php echo $backUrl; ?>" class="text-link">Back</a>
+                <a href="home_page.php" class="text-link">Back</a>
             </header>
 
             <form class="form-card" action="items_action.php" method="POST" enctype="multipart/form-data">
@@ -161,25 +144,27 @@ if ($editing) {
                     <span class="required-badge">R</span>
                 </label>
 
-                <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">
+                <fieldset class="checkbox-group" style="background: linear-gradient(135deg, #f8fafb 0%, #ffffff 100%); padding: 18px; border-radius: 14px; border: 2px solid #f0f4f8;">
                     <?php foreach ($ownedCollections as $col): ?>
                         <?php
                         $checked = in_array($col['id'], $existingCollections, true) || (!$editing && ($item['collectionId'] ?? '') === $col['id']);
                         ?>
-                        <label style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid #e5e7eb; font-weight:600; color:#1f2937;">
+                        <div class="checkbox-item">
                             <input
                                 type="checkbox"
                                 name="collectionIds[]"
                                 value="<?php echo htmlspecialchars($col['id']); ?>"
+                                id="collection-<?php echo htmlspecialchars($col['id']); ?>"
                                 <?php echo $checked ? 'checked' : ''; ?>
-                                style="width:18px; height:18px;"
                                 >
-                            <span><?php echo htmlspecialchars($col['name']); ?></span>
-                        </label>
+                            <label for="collection-<?php echo htmlspecialchars($col['id']); ?>" style="margin: 0; font-weight: 600;">
+                                <?php echo htmlspecialchars($col['name']); ?>
+                            </label>
+                        </div>
                     <?php endforeach; ?>
-                </div>
+                </fieldset>
 
-                <p class="muted" style="margin-top:6px;">
+                <p class="form-help" style="margin-top: 10px;">
                     Only collections that belong to you are shown.
                 </p>
 

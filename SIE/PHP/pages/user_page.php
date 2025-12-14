@@ -418,10 +418,10 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                         <span>Top por</span>
                                     </label>
                                     <select id="top-sort-select" name="topSort" class="filter-chip__select" onchange="gcSubmitWithScroll(this.form)">
-                                        <option value="likes" <?php echo $topSort==='likes'?'selected':''; ?>>Mais gostos</option>
-                                        <option value="value" <?php echo $topSort==='value'?'selected':''; ?>>Maior valor</option>
-                                        <option value="oldest" <?php echo $topSort==='oldest'?'selected':''; ?>>Mais antigas</option>
-                                        <option value="items" <?php echo $topSort==='items'?'selected':''; ?>>Mais items</option>
+                                        <option value="likes" <?php echo $topSort==='likes'?'selected':''; ?>>More likes</option>
+                                        <option value="value" <?php echo $topSort==='value'?'selected':''; ?>>Higher value</option>
+                                        <option value="oldest" <?php echo $topSort==='oldest'?'selected':''; ?>>Oldest</option>
+                                        <option value="items" <?php echo $topSort==='items'?'selected':''; ?>>Most items</option>
                                     </select>
                                 </div>
                             </form>

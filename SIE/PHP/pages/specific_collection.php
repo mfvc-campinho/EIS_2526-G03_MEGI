@@ -541,7 +541,7 @@ if ($collection) {
                 <!-- =========================
                      EVENTS
                      ========================= -->
-                <section class="collection-events" style="margin-top:32px;">
+                <section class="collection-events">
                     <h2 class="section-subtitle">Events</h2>
 
                     <?php if (!$eventsForCollection): ?>
@@ -579,37 +579,80 @@ if ($collection) {
                                 $eventRaw = $ev['date'] ?? $ev['event_date'] ?? '';
                                 $eventDateObj = $eventRaw ? new DateTime($eventRaw) : null;
                                 $eventDateText = gc_format_ordinal_date($eventDateObj);
+                                $hasTime = (bool) preg_match('/\d{1,2}:\d{2}/', (string)$eventRaw);
+                                $cardDateOnly = $eventDateObj ? $eventDateObj->format('d/m/Y') : '';
+                                $cardTimeOnly = ($eventDateObj && $hasTime) ? $eventDateObj->format('H:i') : '';
                                 $priceRaw = $ev['price'] ?? $ev['ticket_price'] ?? $ev['cost'] ?? null;
                                 $price = is_numeric($priceRaw) ? (float) $priceRaw : null;
                                 $costLabel = ($price !== null && $price > 0) ? '€' . number_format($price, 2, ',', '.') : 'Free entrance';
                                 $location = $ev['localization'] ?? $ev['location'] ?? '';
                                 $eventId = $ev['id'] ?? $ev['event_id'] ?? null;
                                 $category = $ev['category'] ?? $ev['type'] ?? 'Event';
+                                $now = new DateTime();
+                                $statusIsUpcoming = $eventDateObj ? ($eventDateObj > $now) : true;
+                                $hasRsvp = !empty($userRsvpMap[$eventId]);
                                 ?>
                                 <article class="event-card js-event-card" tabindex="0"
                                          data-event-id="<?php echo htmlspecialchars($eventId); ?>"
                                          data-name="<?php echo htmlspecialchars($ev['name'] ?? ''); ?>"
                                          data-summary="<?php echo htmlspecialchars($ev['summary'] ?? ''); ?>"
                                          data-description="<?php echo htmlspecialchars($ev['description'] ?? ''); ?>"
-                                         data-date="<?php echo htmlspecialchars($eventDateText); ?>"
-                                         data-time=""
-                                         data-datetime="<?php echo htmlspecialchars($eventDateText); ?>"
+                                         data-date="<?php echo htmlspecialchars($cardDateOnly); ?>"
+                                         data-time="<?php echo htmlspecialchars($cardTimeOnly); ?>"
+                                         data-datetime="<?php echo htmlspecialchars(($cardDateOnly ?: $eventDateText) . ($cardTimeOnly ? ' · ' . $cardTimeOnly : '')); ?>"
                                          data-location="<?php echo htmlspecialchars($location); ?>"
                                          data-type="<?php echo htmlspecialchars($category); ?>"
                                          data-cost="<?php echo htmlspecialchars($costLabel); ?>">
+                                    <div class="event-card-top">
+                                        <p class="pill"><?php echo htmlspecialchars($category); ?></p>
+                                        <span class="status-chip <?php echo $statusIsUpcoming ? 'upcoming' : 'past'; ?>">
+                                            <?php echo $statusIsUpcoming ? 'Soon' : 'Past'; ?>
+                                        </span>
+                                    </div>
                                     <h3 class="home-event-title"><?php echo htmlspecialchars($ev['name']); ?></h3>
                                     <div class="home-event-meta">
                                         <div class="meta-row">
-                                            <span><?php echo htmlspecialchars($eventDateText); ?></span>
+                                            <i class="bi bi-calendar-event"></i>
+                                            <span><?php echo htmlspecialchars($cardDateOnly . ($cardTimeOnly ? ' · ' . $cardTimeOnly : '')); ?></span>
                                         </div>
-                                        <?php if ($location): ?>
+                                        <?php if (!empty($location)): ?>
                                         <div class="meta-row">
+                                            <i class="bi bi-geo-alt"></i>
                                             <span><?php echo htmlspecialchars($location); ?></span>
                                         </div>
                                         <?php endif; ?>
                                         <div class="meta-row">
+                                            <i class="bi bi-cash-coin"></i>
                                             <span><?php echo htmlspecialchars($costLabel); ?></span>
                                         </div>
+                                    </div>
+                                    <?php if (!empty($ev['summary'])): ?>
+                                        <p class="muted"><?php echo htmlspecialchars($ev['summary']); ?></p>
+                                    <?php endif; ?>
+                                    <div class="event-actions">
+                                        <?php if ($isOwner && $eventId): ?>
+                                            <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($eventId); ?>" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form action="events_action.php" method="POST">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
+                                                <button type="submit" class="explore-btn ghost danger small" title="Delete" onclick="return confirm('Delete this event?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                        <?php if ($isAuthenticated && $eventId): ?>
+                                            <form action="events_action.php" method="POST">
+                                                <input type="hidden" name="action" value="rsvp">
+                                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
+                                                <input type="hidden" name="return_url" value="specific_collection.php?id=<?php echo htmlspecialchars($collectionId); ?>">
+                                                <input type="hidden" name="return_target" value="#">
+                                                <button type="submit" class="explore-btn small<?php echo $hasRsvp ? ' success' : ''; ?>">
+                                                    <i class="bi bi-check2-circle"></i> <?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
                                     </div>
                                 </article>
                             <?php endforeach; ?>

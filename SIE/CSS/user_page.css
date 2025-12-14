@@ -368,7 +368,8 @@ main.page-shell {
 .cards-grid--spaced {
   justify-content: flex-start !important;
   grid-auto-flow: row !important;
-  margin-bottom: 50px; /* extra spacing after top collections */
+  margin-bottom: 50px;
+  /* extra spacing after top collections */
 }
 
 /* ===============================
@@ -376,7 +377,8 @@ main.page-shell {
    =============================== */
 
 .user-events-section {
-  margin-top: 80px; /* increased spacing from previous block */
+  margin-top: 80px;
+  /* increased spacing from previous block */
   position: relative;
 }
 
@@ -401,6 +403,7 @@ main.page-shell {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  cursor: pointer;
 }
 
 .user-event-card::before {

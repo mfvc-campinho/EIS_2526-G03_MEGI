@@ -149,6 +149,16 @@ foreach ($eventsUsers as $eu) {
         $userRsvpMap[$eid] = $rsvp;
     }
 }
+// Build RSVP map for the current viewer to determine button state
+$viewerRsvpMap = [];
+foreach ($eventsUsers as $eu) {
+    $uid = $eu['userId'] ?? $eu['user_id'] ?? null;
+    $eid = $eu['eventId'] ?? $eu['event_id'] ?? null;
+    $rsvp = $eu['rsvp'] ?? null;
+    if ($uid == $currentUserId && $eid && $rsvp) {
+        $viewerRsvpMap[$eid] = $rsvp;
+    }
+}
 
 // array final de eventos do utilizador (based on RSVP, not collection ownership)
 $nowTs = time();
@@ -275,6 +285,8 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
         <!-- Estilos específicos da página de perfil -->
         <link rel="stylesheet" href="../../CSS/user_page.css">
+        <link rel="stylesheet" href="../../CSS/events.css">
+        <link rel="stylesheet" href="../../CSS/event_page_inline.css">
 
         <!-- Ícones -->
         <link rel="stylesheet"
@@ -580,6 +592,8 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 $eventDateRaw = $evt['date'] ?? '';
                                 // Formata a data do evento garantindo que a hora aparece sempre que exista no valor original.
                                 $eventDateDisplay = '';
+                                $cardDateOnly = '';
+                                $cardTimeOnly = '';
                                 if ($eventDateRaw !== '') {
                                     $normalizedRaw = str_replace('T', ' ', $eventDateRaw);
                                     $rawHasTime = preg_match('/\d{2}:\d{2}/', $normalizedRaw) === 1;
@@ -587,15 +601,30 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                         ?: DateTime::createFromFormat('Y-m-d H:i', $normalizedRaw)
                                         ?: DateTime::createFromFormat('Y-m-d', $normalizedRaw);
                                     if ($dt instanceof DateTime) {
-                                        $eventDateDisplay = $dt->format($rawHasTime ? 'd/m/Y H:i' : 'd/m/Y');
+                                        $cardDateOnly = $dt->format('d/m/Y');
+                                        $cardTimeOnly = $rawHasTime ? $dt->format('H:i') : '';
+                                        $eventDateDisplay = $cardDateOnly . ($cardTimeOnly ? ' ' . $cardTimeOnly : '');
                                     } else {
-                                        $eventDateDisplay = $rawHasTime
-                                            ? substr($normalizedRaw, 0, 16)
-                                            : substr($normalizedRaw, 0, 10);
+                                        $cardDateOnly = $rawHasTime ? substr($normalizedRaw, 0, 10) : substr($normalizedRaw, 0, 10);
+                                        $cardTimeOnly = $rawHasTime ? substr($normalizedRaw, 11, 5) : '';
+                                        $eventDateDisplay = $cardDateOnly . ($cardTimeOnly ? ' ' . $cardTimeOnly : '');
                                     }
                                 }
+                                $cardDomId = $eventId ? 'user-event-' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) $eventId) : 'user-event';
+                                $viewerHasRsvp = $currentUserId && $eventId ? !empty($viewerRsvpMap[$eventId]) : false;
                             ?>
-                            <a class="user-event-card user-event-card--link" href="event_page.php?id=<?php echo urlencode($eventId); ?>">
+                            <article id="<?php echo htmlspecialchars($cardDomId); ?>" class="user-event-card js-event-card" tabindex="0"
+                                     data-event-id="<?php echo htmlspecialchars($eventId); ?>"
+                                     data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
+                                     data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
+                                     data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
+                                     data-date="<?php echo htmlspecialchars($cardDateOnly); ?>"
+                                     data-time="<?php echo htmlspecialchars($cardTimeOnly); ?>"
+                                     data-datetime="<?php echo htmlspecialchars(($cardDateOnly ?: $eventDateDisplay) . ($cardTimeOnly ? ' · ' . $cardTimeOnly : '')); ?>"
+                                     data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
+                                     data-type="<?php echo htmlspecialchars($evt['type'] ?? 'event'); ?>"
+                                     data-cost="<?php echo htmlspecialchars($costLabel); ?>"
+                                     data-has-rsvp="<?php echo $viewerHasRsvp ? '1' : '0'; ?>">
                                 <div class="user-event-card__top">
                                     <span class="pill pill--event"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></span>
                                     <span class="user-event-badge soon">SOON</span>
@@ -605,7 +634,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                     <?php if (!empty($eventDateDisplay)): ?>
                                         <li>
                                             <i class="bi bi-calendar-event"></i>
-                                            <?php echo htmlspecialchars($eventDateDisplay); ?>
+                                            <?php echo htmlspecialchars($cardDateOnly ?: $eventDateDisplay); ?>
                                         </li>
                                     <?php endif; ?>
                                     <?php if (!empty($evt['localization'])): ?>
@@ -621,11 +650,19 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                         </li>
                                     <?php endif; ?>
                                 </ul>
-                                <div class="user-event-cta">
-                                    <i class="bi bi-check2-circle"></i>
-                                    <span>RSVP</span>
-                                </div>
-                            </a>
+                                <?php if ($isAuthenticated && $eventId): ?>
+                                    <form action="events_action.php" method="POST" style="display:inline;">
+                                        <input type="hidden" name="action" value="rsvp">
+                                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
+                                        <input type="hidden" name="return_url" value="user_page.php?id=<?php echo urlencode($profileUserId); ?>">
+                                        <input type="hidden" name="return_target" value="#<?php echo htmlspecialchars($cardDomId); ?>">
+                                        <button type="submit" class="explore-btn small<?php echo $viewerHasRsvp ? ' success' : ''; ?>">
+                                            <i class="bi bi-check2-circle"></i>
+                                            <?php echo $viewerHasRsvp ? 'RSVP confirmed' : 'RSVP'; ?>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </article>
                         <?php endforeach; ?>
                             </div>
                         <?php else: ?>
@@ -651,6 +688,8 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                 $eventDateRaw = $evt['date'] ?? '';
                                 // Formata a data do evento garantindo que a hora aparece sempre que exista no valor original.
                                 $eventDateDisplay = '';
+                                $cardDateOnly = '';
+                                $cardTimeOnly = '';
                                 if ($eventDateRaw !== '') {
                                     $normalizedRaw = str_replace('T', ' ', $eventDateRaw);
                                     $rawHasTime = preg_match('/\d{2}:\d{2}/', $normalizedRaw) === 1;
@@ -658,15 +697,31 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                         ?: DateTime::createFromFormat('Y-m-d H:i', $normalizedRaw)
                                         ?: DateTime::createFromFormat('Y-m-d', $normalizedRaw);
                                     if ($dt instanceof DateTime) {
-                                        $eventDateDisplay = $dt->format($rawHasTime ? 'd/m/Y H:i' : 'd/m/Y');
+                                        $cardDateOnly = $dt->format('d/m/Y');
+                                        $cardTimeOnly = $rawHasTime ? $dt->format('H:i') : '';
+                                        $eventDateDisplay = $cardDateOnly . ($cardTimeOnly ? ' ' . $cardTimeOnly : '');
                                     } else {
-                                        $eventDateDisplay = $rawHasTime
-                                            ? substr($normalizedRaw, 0, 16)
-                                            : substr($normalizedRaw, 0, 10);
+                                        $cardDateOnly = substr($normalizedRaw, 0, 10);
+                                        $cardTimeOnly = $rawHasTime ? substr($normalizedRaw, 11, 5) : '';
+                                        $eventDateDisplay = $cardDateOnly . ($cardTimeOnly ? ' ' . $cardTimeOnly : '');
                                     }
                                 }
                             ?>
-                            <a class="user-event-card user-event-card--link" href="event_page.php?id=<?php echo urlencode($eventId); ?>">
+                                  <?php $cardDomId = $eventId ? 'user-event-' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) $eventId) : 'user-event';
+                                      $viewerHasRsvp = $currentUserId && $eventId ? !empty($viewerRsvpMap[$eventId]) : false;
+                                  ?>
+                                <article id="<?php echo htmlspecialchars($cardDomId); ?>" class="user-event-card js-event-card" tabindex="0"
+                                     data-event-id="<?php echo htmlspecialchars($eventId); ?>"
+                                     data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
+                                     data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
+                                     data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
+                                     data-date="<?php echo htmlspecialchars($cardDateOnly); ?>"
+                                     data-time="<?php echo htmlspecialchars($cardTimeOnly); ?>"
+                                     data-datetime="<?php echo htmlspecialchars(($cardDateOnly ?: $eventDateDisplay) . ($cardTimeOnly ? ' · ' . $cardTimeOnly : '')); ?>"
+                                     data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
+                                     data-type="<?php echo htmlspecialchars($evt['type'] ?? 'event'); ?>"
+                                     data-cost="<?php echo htmlspecialchars($costLabel); ?>"
+                                     data-has-rsvp="<?php echo $viewerHasRsvp ? '1' : '0'; ?>">
                                 <div class="user-event-card__top">
                                     <span class="pill pill--event"><?php echo htmlspecialchars($evt['type'] ?? 'Evento'); ?></span>
                                     <span class="user-event-badge past">PAST</span>
@@ -676,7 +731,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                     <?php if (!empty($eventDateDisplay)): ?>
                                         <li>
                                             <i class="bi bi-calendar-event"></i>
-                                            <?php echo htmlspecialchars($eventDateDisplay); ?>
+                                            <?php echo htmlspecialchars($cardDateOnly ?: $eventDateDisplay); ?>
                                         </li>
                                     <?php endif; ?>
                                     <?php if (!empty($evt['localization'])): ?>
@@ -696,7 +751,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
                                     <i class="bi bi-eye"></i>
                                     <span>View</span>
                                 </div>
-                            </a>
+                            </article>
                         <?php endforeach; ?>
                             </div>
                         <?php else: ?>
@@ -708,6 +763,66 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
                 <?php endif; ?>  <!-- fecha if ($currentUser) -->
         </main>
+
+        <!-- Event Modal (copied from home_page.php) -->
+        <div class="modal-backdrop" id="event-modal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <button type="button" class="modal-close" aria-label="Close event details" onclick="document.getElementById('event-modal')?.classList.remove('open')">
+                        <i class="bi bi-x"></i>
+                    </button>
+                    <h3 id="modal-title"></h3>
+                    <span class="modal-type-badge" id="modal-type"></span>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-summary" id="modal-summary"></p>
+                    <p class="modal-description" id="modal-description"></p>
+                    <div class="modal-info-grid">
+                        <div class="modal-info-item">
+                            <div class="modal-info-icon">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                            <div class="modal-info-content">
+                                <div class="modal-info-label">Date</div>
+                                <div class="modal-info-value" id="modal-date"></div>
+                            </div>
+                        </div>
+                        <div class="modal-info-item" id="modal-time-row" hidden>
+                            <div class="modal-info-icon">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div class="modal-info-content">
+                                <div class="modal-info-label">Time</div>
+                                <div class="modal-info-value" id="modal-time"></div>
+                            </div>
+                        </div>
+                        <div class="modal-info-item">
+                            <div class="modal-info-icon">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div class="modal-info-content">
+                                <div class="modal-info-label">Place</div>
+                                <div class="modal-info-value">
+                                    <a id="modal-location" class="modal-location-link" href="#" rel="noopener noreferrer"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-info-item">
+                            <div class="modal-info-icon">
+                                <i class="bi bi-cash-coin"></i>
+                            </div>
+                            <div class="modal-info-content">
+                                <div class="modal-info-label">Cost</div>
+                                <div class="modal-info-value" id="modal-cost"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="modal-rsvp-container" style="display:none;">
+                        <!-- RSVP removed to match event page -->
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Followers Modal -->
         <div class="modal-backdrop" id="followers-modal">
@@ -759,6 +874,7 @@ $isFollowingProfile = $isAuthenticated && !$isOwnerProfile && in_array($profileU
 
         <script src="../../JS/gc-scroll-restore.js"></script>
         <script src="../../JS/user_page.js"></script>
+        <script src="../../JS/home_page.js?v=2"></script>
 
 
         <?php include __DIR__ . '/../includes/footer.php'; ?>

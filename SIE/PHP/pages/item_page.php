@@ -74,7 +74,7 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
         <?php if ($col): ?>
           <li class="breadcrumb-item"><a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name'] ?? 'Collection'); ?></a></li>
         <?php endif; ?>
-        <li class="breadcrumb-item" aria-current="page">Item</li>
+        <li class="breadcrumb-item" aria-current="page"><?php echo htmlspecialchars($item['name'] ?? 'Item'); ?></li>
       </ol>
     </nav>
 
@@ -95,12 +95,16 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
             <p><strong>Collection:</strong> <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name'] ?? ''); ?></a></p>
           <?php endif; ?>
           <?php if ($isOwner): ?>
-            <div class="actions" style="margin-top:12px; gap:10px;">
-              <a class="explore-btn ghost" href="items_form.php?id=<?php echo urlencode($item['id']); ?>">Edit</a>
-              <form action="items_action.php" method="POST" style="display:inline;">
+            <div class="collection-card__actions card-actions card-buttons item-page-actions">
+              <a class="action-icon" href="items_form.php?id=<?php echo urlencode($item['id']); ?>" title="Edit item">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <form action="items_action.php" method="POST" class="action-icon-form">
                 <input type="hidden" name="action" value="delete">
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($item['id']); ?>">
-                <button type="submit" class="explore-btn danger" onclick="return confirm('Delete item?');">Delete</button>
+                <button type="submit" class="action-icon is-danger" title="Delete item" onclick="return confirm('Delete item?');">
+                  <i class="bi bi-trash"></i>
+                </button>
               </form>
             </div>
           <?php endif; ?>

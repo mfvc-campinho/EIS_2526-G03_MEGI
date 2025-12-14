@@ -296,12 +296,22 @@ if ($action === 'rsvp') {
     $mysqli->close();
     redirect_error('Event not found.');
   }
-  // Valida a âncora enviada pelo formulário para que possamos regressar ao mesmo ponto depois do RSVP.
-  $returnTarget = trim($_POST['return_target'] ?? '');
-  if ($returnTarget !== '' && !preg_match('/^#[A-Za-z0-9_-]+$/', $returnTarget)) {
-    $returnTarget = '';
+  // Determine redirect destination (allow specific page anchors when provided).
+  $returnUrlRaw = trim($_POST['return_url'] ?? '');
+  $redirectUrl = '';
+  if ($returnUrlRaw !== '') {
+    $isLocal = strpos($returnUrlRaw, '://') === false && strpos($returnUrlRaw, '//') !== 0;
+    if ($isLocal && preg_match('#^[A-Za-z0-9_./-]+\.php(?:\?[A-Za-z0-9_=&%\-]+)?(?:#[A-Za-z0-9_\-]+)?$#', $returnUrlRaw)) {
+      $redirectUrl = ltrim($returnUrlRaw, '/');
+    }
   }
-  $redirectUrl = 'event_page.php' . ($returnTarget !== '' ? $returnTarget : '');
+  if ($redirectUrl === '') {
+    $returnTarget = trim($_POST['return_target'] ?? '');
+    if ($returnTarget !== '' && !preg_match('/^#[A-Za-z0-9_-]+$/', $returnTarget)) {
+      $returnTarget = '';
+    }
+    $redirectUrl = 'event_page.php' . ($returnTarget !== '' ? $returnTarget : '');
+  }
   
   // Check if user already has RSVP
   $chk = $mysqli->prepare('SELECT user_id FROM event_rsvps WHERE event_id = ? AND user_id = ? LIMIT 1');

@@ -96,7 +96,11 @@ $existingCollections = array_unique($existingCollections);
 
             <header class="page__header">
                 <h1><?php echo $editing ? 'Edit Item' : 'Create Item'; ?></h1>
+                <?php if ($editing): ?>
+                <a href="item_page.php?id=<?php echo htmlspecialchars($id); ?>" class="text-link">Back</a>
+                <?php else: ?>
                 <a href="home_page.php" class="text-link">Back</a>
+                <?php endif; ?>
             </header>
 
             <form class="form-card" action="items_action.php" method="POST" enctype="multipart/form-data">

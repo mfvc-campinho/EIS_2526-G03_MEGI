@@ -152,6 +152,12 @@ body {
   color: #6b7280;
 }
 
+.item-page-actions {
+  margin-top: 18px;
+  align-self: flex-start;
+  justify-content: flex-start;
+}
+
 .item-action-buttons {
   display: flex;
   flex-wrap: wrap;

@@ -2184,7 +2184,8 @@ button {
 }
 
 .collection-card .action-icon,
-.collection-card__actions .action-icon {
+.collection-card__actions .action-icon,
+.item-page-actions .action-icon {
   width: 44px;
   height: 44px;
   min-width: 44px;
@@ -2206,7 +2207,8 @@ button {
 }
 
 .collection-card .action-icon:hover,
-.collection-card__actions .action-icon:hover {
+.collection-card__actions .action-icon:hover,
+.item-page-actions .action-icon:hover {
   background: #1e3a8a;
   color: #ffffff;
   box-shadow: 0 10px 20px rgba(30, 58, 138, 0.25);
@@ -2214,33 +2216,38 @@ button {
 }
 
 .collection-card .action-icon:active,
-.collection-card__actions .action-icon:active {
+.collection-card__actions .action-icon:active,
+.item-page-actions .action-icon:active {
   transform: translateY(0);
   box-shadow: 0 6px 12px rgba(30, 58, 138, 0.2);
 }
 
 .collection-card .action-icon.is-liked,
-.collection-card__actions .action-icon.is-liked {
+.collection-card__actions .action-icon.is-liked,
+.item-page-actions .action-icon.is-liked {
   color: #15803d;
   border-color: rgba(22, 163, 74, 0.5);
   background: #ecfdf3;
 }
 
 .collection-card .action-icon.is-liked:hover,
-.collection-card__actions .action-icon.is-liked:hover {
+.collection-card__actions .action-icon.is-liked:hover,
+.item-page-actions .action-icon.is-liked:hover {
   background: #16a34a;
   color: #ffffff;
   box-shadow: 0 10px 20px rgba(22, 163, 74, 0.28);
 }
 
 .collection-card .action-icon.is-danger,
-.collection-card__actions .action-icon.is-danger {
+.collection-card__actions .action-icon.is-danger,
+.item-page-actions .action-icon.is-danger {
   color: #b91c1c;
   border-color: rgba(185, 28, 28, 0.45);
 }
 
 .collection-card .action-icon.is-danger:hover,
-.collection-card__actions .action-icon.is-danger:hover {
+.collection-card__actions .action-icon.is-danger:hover,
+.item-page-actions .action-icon.is-danger:hover {
   background: #b91c1c;
   color: #ffffff;
   box-shadow: 0 10px 20px rgba(185, 28, 28, 0.28);

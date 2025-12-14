@@ -7,6 +7,7 @@ $users = $data['users'] ?? [];
 $collections = $data['collections'] ?? [];
 $items = $data['items'] ?? [];
 $events = $data['events'] ?? [];
+$eventsUsers = $data['eventsUsers'] ?? [];
 
 $statsUsers = count($users);
 $statsCollections = count($collections);
@@ -21,6 +22,17 @@ $users = $data['users'] ?? [];
 $collectionItems = $data['collectionItems'] ?? [];
 $items = $data['items'] ?? [];
 $isAuthenticated = !empty($_SESSION['user']);
+$currentUserId = $isAuthenticated ? ($_SESSION['user']['id'] ?? null) : null;
+
+$eventRsvpMap = [];
+foreach ($eventsUsers as $entry) {
+    $eid = $entry['eventId'] ?? $entry['event_id'] ?? null;
+    $uid = $entry['userId'] ?? $entry['user_id'] ?? null;
+    $hasRsvp = !empty($entry['rsvp']) || (($entry['type'] ?? '') === 'rsvp');
+    if ($eid && $uid && $hasRsvp) {
+        $eventRsvpMap["{$eid}|{$uid}"] = true;
+    }
+}
 
 // Build usersById lookup
 $usersById = [];
@@ -180,24 +192,61 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
             transform: translateY(0);
         }
 
-        .home-event-header {
-            display: flex;
-            justify-content: space-between;
+        .home-event-rsvp {
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .home-event-type {
-            font-size: 0.95rem;
-            color: #475569;
-            text-transform: lowercase;
-        }
-
-        .home-event-badge {
-            padding: 8px 14px;
+            gap: 8px;
+            padding: 12px 18px;
             border-radius: 999px;
-            background: #ecfdf3;
+            border: 1px solid #e5e7eb;
+            color: #1e3a8a;
+            font-weight: 700;
+            background: #ffffff;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        form.home-event-rsvp {
+            margin: 0;
+        }
+
+        .home-event-rsvp__button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .home-event-rsvp:hover,
+        .home-event-rsvp:focus-within {
+            background: #f8fafc;
+            color: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .home-event-rsvp.is-active {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #15803d;
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.12);
+        }
+
+        .home-event-rsvp.is-active:hover,
+        .home-event-rsvp.is-active:focus-within {
+            background: #dcfce7;
             color: #166534;
+        }
+
+        .home-event-rsvp--login {
+            justify-content: center;
+        }
             font-weight: 700;
             border: 1px solid #bbf7d0;
             font-size: 0.9rem;
@@ -710,17 +759,25 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                 ? '€' . number_format($costValue, 2, ',', '.')
                                 : 'Free entrance';
                             ?>
-                            <a class="event-card js-event-card"
-                               href="#"
-                               data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
-                               data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
-                               data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
-                               data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
-                               data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
-                               data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
-                               data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
-                               data-type="<?php echo htmlspecialchars($evt['type'] ?? 'event'); ?>"
-                               data-cost="<?php echo htmlspecialchars($costLabel); ?>">
+                                     <?php
+                                     $eventId = $evt['id'] ?? null;
+                                     $cardDomId = $eventId ? 'upcoming-event-' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) $eventId) : 'upcoming-event';
+                                     $hasRsvp = $currentUserId && $eventId ? !empty($eventRsvpMap["{$eventId}|{$currentUserId}"]) : false;
+                                     ?>
+                                     <article id="<?php echo htmlspecialchars($cardDomId); ?>"
+                                         class="event-card js-event-card"
+                                         tabindex="0"
+                                         role="button"
+                                         aria-label="View details for <?php echo htmlspecialchars($evt['name'] ?? 'event'); ?>"
+                                         data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
+                                         data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
+                                         data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
+                                         data-date="<?php echo htmlspecialchars($modalPrimaryDate); ?>"
+                                         data-time="<?php echo htmlspecialchars($eventTimeDisplay); ?>"
+                                         data-datetime="<?php echo htmlspecialchars($modalCombinedDisplay); ?>"
+                                         data-location="<?php echo htmlspecialchars($evt['localization'] ?? ''); ?>"
+                                         data-type="<?php echo htmlspecialchars($evt['type'] ?? 'event'); ?>"
+                                         data-cost="<?php echo htmlspecialchars($costLabel); ?>">
                                 <div class="home-event-header">
                                     <span class="home-event-type"><?php echo htmlspecialchars($evt['type'] ?? 'event'); ?></span>
                                     <span class="home-event-badge">SOON</span>
@@ -740,11 +797,23 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                         <span><?php echo htmlspecialchars($costLabel); ?></span>
                                     </div>
                                 </div>
-                                <div class="home-event-rsvp">
-                                    <i class="bi bi-check2-circle"></i>
-                                    <span>RSVP</span>
-                                </div>
-                            </a>
+                                <?php if ($isAuthenticated && $eventId): ?>
+                                    <form action="events_action.php" method="POST" class="home-event-rsvp<?php echo $hasRsvp ? ' is-active' : ''; ?>" data-home-rsvp-form>
+                                        <input type="hidden" name="action" value="rsvp">
+                                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
+                                        <input type="hidden" name="return_url" value="home_page.php#<?php echo htmlspecialchars($cardDomId); ?>">
+                                        <button type="submit" class="home-event-rsvp__button">
+                                            <i class="bi bi-check2-circle"></i>
+                                            <span><?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?></span>
+                                        </button>
+                                    </form>
+                                <?php else: ?>
+                                    <a class="home-event-rsvp home-event-rsvp--login" href="<?php echo $isAuthenticated ? 'event_page.php' : 'auth.php'; ?>">
+                                        <i class="bi <?php echo $isAuthenticated ? 'bi-box-arrow-up-right' : 'bi-lock'; ?>"></i>
+                                        <span><?php echo $isAuthenticated ? 'View event details' : 'Sign in to RSVP'; ?></span>
+                                    </a>
+                                <?php endif; ?>
+                            </article>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <p class="muted">No upcoming events scheduled</p>
@@ -975,6 +1044,8 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 return;
             }
 
+            var cardInteractiveSelector = '[data-home-rsvp-form], .home-event-rsvp, button, input, select, textarea, form, a';
+
             var closeButton = modal.querySelector('.modal-close');
             var titleEl = document.getElementById('modal-title');
             var typeEl = document.getElementById('modal-type');
@@ -1058,6 +1129,9 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                 }
 
                 card.addEventListener('click', function(event) {
+                    if (event.target.closest(cardInteractiveSelector)) {
+                        return;
+                    }
                     event.preventDefault();
                     launchModal();
                 });

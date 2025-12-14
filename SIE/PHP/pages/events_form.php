@@ -60,6 +60,13 @@ $event = ['id' => '', 'name' => '', 'summary' => '', 'description' => '', 'type'
 $ownedCollections = array_filter($collections, function ($c) use ($currentUserId) {
     return ($c['ownerId'] ?? null) === $currentUserId;
 });
+$collectionOwnerMap = [];
+foreach ($collections as $col) {
+    $cid = $col['id'] ?? null;
+    if ($cid) {
+        $collectionOwnerMap[$cid] = $col['ownerId'] ?? null;
+    }
+}
 $existingCollections = [];
 
 if ($id) {
@@ -81,8 +88,18 @@ if ($id) {
         exit;
     }
 
-    $hostId = $event['hostUserId'] ?? $event['host_user_id'] ?? null;
-    if ($hostId !== $currentUserId) {
+    $ownershipCandidates = $existingCollections;
+    if (!empty($event['collectionId']) && !in_array($event['collectionId'], $ownershipCandidates, true)) {
+        $ownershipCandidates[] = $event['collectionId'];
+    }
+    $ownsEvent = false;
+    foreach ($ownershipCandidates as $cid) {
+        if (($collectionOwnerMap[$cid] ?? null) === $currentUserId) {
+            $ownsEvent = true;
+            break;
+        }
+    }
+    if (!$ownsEvent) {
         flash_set('error', 'Não tem permissões para editar este evento.');
         header('Location: event_page.php');
         exit;

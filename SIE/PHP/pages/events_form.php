@@ -121,6 +121,19 @@ if ($id) {
 }
 $existingCollections = array_unique($existingCollections);
 
+// If the form was opened from a collection card (events_form.php?collectionId=...)
+// and we're creating a new event, ensure that collection is pre-selected.
+if (!$editing) {
+    $prefillCid = $_GET['collectionId'] ?? null;
+    if ($prefillCid) {
+        // Only add if not already present
+        if (!in_array($prefillCid, $existingCollections, true)) {
+            $existingCollections[] = $prefillCid;
+            $existingCollections = array_unique($existingCollections);
+        }
+    }
+}
+
 $prefillDateValue = '';
 $rawEventDate = $event['date'] ?? '';
 if ($rawEventDate !== '') {
@@ -223,11 +236,11 @@ $currentType = $event['type'] ?? null;
                       value="<?php echo htmlspecialchars($prefillDateValue); ?>">
 
                 <label>Collections (can associate to multiple of yours) <span class="required-badge">R</span></label>
-                <div style="background:#f8fafc; padding:16px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">
+                <div class="checkbox-grid" style="background:#f8fafc; padding:12px; border-radius:14px; border:1px solid #e5e7eb; box-shadow: inset 0 1px 0 #f1f5f9;">
                     <?php foreach ($ownedCollections as $col): ?>
                         <?php $checked = in_array($col['id'], $existingCollections, true) || (!$editing && ($event['collectionId'] ?? '') === $col['id']); ?>
-                        <label style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid #e5e7eb; font-weight:600; color:#1f2937;">
-                            <input type="checkbox" name="collectionIds[]" value="<?php echo htmlspecialchars($col['id']); ?>" <?php echo $checked ? 'checked' : ''; ?> style="width:18px; height:18px;">
+                        <label class="checkbox-pill">
+                            <input type="checkbox" name="collectionIds[]" value="<?php echo htmlspecialchars($col['id']); ?>" <?php echo $checked ? 'checked' : ''; ?>>
                             <span><?php echo htmlspecialchars($col['name']); ?></span>
                         </label>
                     <?php endforeach; ?>

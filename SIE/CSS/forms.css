@@ -511,3 +511,41 @@ main .form-actions .form-btn {
   width: auto !important;
   min-width: 160px;
 }
+
+/* ===== Robust checkbox checkmark (MAIN only) ===== */
+main input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  position: relative;
+  cursor: pointer;
+}
+
+/* draw the check (hidden by default) */
+main input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border-right: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  transform: rotate(45deg);
+  opacity: 0;
+}
+
+/* checked state */
+main input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, #0b3b70 0%, #1d4ed8 100%);
+  border-color: #0b3b70;
+}
+
+/* show the check */
+main input[type="checkbox"]:checked::after {
+  opacity: 1;
+}

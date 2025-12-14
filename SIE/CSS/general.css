@@ -2900,6 +2900,54 @@ section#buttons-bar .explore-btn.ghost {
   accent-color: #2563eb;
 }
 
+/* Fallback visible checkbox for environments where native checkbox appearance is reset
+   Renders a custom box and check mark while keeping the input accessible. */
+.checkbox-pill {
+  position: relative;
+}
+.checkbox-pill input[type="checkbox"] {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+.checkbox-pill span {
+  display: inline-block;
+  padding-left: 36px;
+  line-height: 18px;
+  position: relative;
+}
+.checkbox-pill span::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: inset 0 1px 0 rgba(0,0,0,0.02);
+}
+.checkbox-pill input[type="checkbox"]:checked + span::after {
+  content: '\2713';
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #2563eb;
+  z-index: 3;
+  font-weight: 700;
+}
+
 .checkbox-pill span {
   color: var(--text-color);
   font-weight: 500;

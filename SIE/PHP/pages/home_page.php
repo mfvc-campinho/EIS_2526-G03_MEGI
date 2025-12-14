@@ -176,10 +176,11 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
     <link rel="stylesheet" href="../../CSS/general.css">
 
     <!-- Estilos específicos da home -->
-    <link rel="stylesheet" href="../../CSS/home_page.css?v=11">
+    <link rel="stylesheet" href="../../CSS/home_page.css?v=14">
 
     <!-- Eventos + likes -->
     <link rel="stylesheet" href="../../CSS/events.css">
+    <link rel="stylesheet" href="../../CSS/event_page_inline.css">
     <link rel="stylesheet" href="../../CSS/likes.css">
 
     <!-- Ícones -->
@@ -729,3 +730,4 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
 </body>
 
 </html>
+

@@ -91,9 +91,6 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
           <p><strong>Weight:</strong> <span id="item-weight-display"><?php echo htmlspecialchars($item['weight'] ?? '-'); ?></span> g</p>
           <p><strong>Price:</strong> €<span id="item-price-display"><?php echo htmlspecialchars($item['price'] ?? '-'); ?></span></p>
           <p><strong>Acquisition Date:</strong> <span id="item-date-display"><?php echo htmlspecialchars($item['acquisitionDate'] ?? '-'); ?></span></p>
-          <?php if ($col): ?>
-            <p><strong>Collection:</strong> <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name'] ?? ''); ?></a></p>
-          <?php endif; ?>
           <?php if ($isOwner): ?>
             <div class="collection-card__actions card-actions card-buttons item-page-actions">
               <a class="action-icon" href="items_form.php?id=<?php echo urlencode($item['id']); ?>" title="Edit item">
@@ -123,10 +120,10 @@ $isOwner = $isAuth && $col && ($col['ownerId'] ?? null) === $currentUserId;
           </div>
           <div class="related-list">
             <?php if ($col): ?>
-              <div class="related-chip">
+              <a class="related-chip" href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>">
                 <i class="bi bi-box"></i>
-                <a href="specific_collection.php?id=<?php echo urlencode($col['id']); ?>"><?php echo htmlspecialchars($col['name'] ?? ''); ?></a>
-              </div>
+                <span><?php echo htmlspecialchars($col['name'] ?? ''); ?></span>
+              </a>
             <?php else: ?>
               <p class="muted">No related collections.</p>
             <?php endif; ?>

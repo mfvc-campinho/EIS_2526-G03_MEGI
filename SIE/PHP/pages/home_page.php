@@ -280,10 +280,12 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                            Add Collection
                                      </a>
                                      <?php endif; ?>
+                            <?php if (!empty($_SESSION['user'])): ?>
                             <a href="events_form.php" class="explore-btn">
                                 <i class="bi bi-calendar-plus"></i>
                                 New Event
                             </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

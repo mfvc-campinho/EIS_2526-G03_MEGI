@@ -371,9 +371,9 @@ $exportUrl = 'all_collections.php?' . http_build_query($exportParams);
                                     </div>
                                     <div class="collection-card__actions card-actions">
                                         <!-- Expand/Collapse Preview -->
-                                        <label class="action-icon" for="<?php echo $previewId; ?>" title="Expand">
-                                            <i class="bi bi-plus-lg"></i>
-                                        </label>
+                                        <button type="button" class="action-icon" data-toggle="<?php echo $previewId; ?>" title="Expand">
+                                            <i class="bi bi-plus-lg" id="icon-<?php echo $previewId; ?>"></i>
+                                        </button>
 
                                         <!-- Like -->
                                         <?php if ($isAuth): ?>
@@ -435,8 +435,8 @@ $exportUrl = 'all_collections.php?' . http_build_query($exportParams);
             <?php include __DIR__ . '/../includes/footer.php'; ?>
         </div>
         <script src="../../JS/gc-scroll-restore.js"></script>
-
-      <script src="../../JS/all_collections.js"></script>
-</body>
+        <script src="../../JS/all_collections.js"></script>
+        <script src="../../JS/collection_card.js"></script>
+    </body>
 
 </html>

@@ -150,8 +150,8 @@ body { background: #f5f6f8; }
     .calendar-toggle-btn.active i {
       color: #ffffff;
     }
-    .calendar-view { max-width: 820px; margin: 0 auto 28px; display: none; background: white; border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-    .calendar-view.show { display: block; }
+    .calendar-view { max-width: 820px; margin: 0 auto 28px; display: block; background: white; border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .calendar-view:not(.show) { display: none; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .calendar-header h2 { margin: 0; font-size: 1.35rem; color: #1f2937; }
     .calendar-nav { display: flex; gap: 8px; }

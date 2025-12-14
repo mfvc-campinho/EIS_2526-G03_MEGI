@@ -374,10 +374,11 @@ gcInitScrollRestore({
       const daysPT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
       let currentDate = new Date();
-      let allEvents = <?php echo json_encode(array_values($eventsForCalendar)); ?>;
-      const canCreateEvents = <?php echo $isAuth ? 'true' : 'false'; ?>;
-      const createAllowedFromDate = '<?php echo $createAllowedFromDate; ?>';
-      const eventsFormUrl = <?php echo json_encode('events_form.php'); ?>;
+      const cfg = window.eventPageData || {};
+      let allEvents = Array.isArray(cfg.events) ? cfg.events : [];
+      const canCreateEvents = !!cfg.canCreateEvents;
+      const createAllowedFromDate = cfg.createAllowedFromDate || '';
+      const eventsFormUrl = cfg.eventsFormUrl || 'events_form.php';
 
       function parseEventDate(dateStr) {
         if (!dateStr) return null;

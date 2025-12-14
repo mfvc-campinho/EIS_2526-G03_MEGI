@@ -529,6 +529,14 @@ $eventsForCalendar = array_map(function ($evt) use ($currentUserId, $eventRsvpMa
   <?php include __DIR__ . '/../includes/footer.php'; ?>
   <script src="../../JS/search-toggle.js"></script>
   <script src="../../JS/gc-scroll-restore.js"></script>
+  <script>
+    window.eventPageData = {
+      events: <?php echo json_encode(array_values($eventsForCalendar)); ?>,
+      canCreateEvents: <?php echo $isAuth ? 'true' : 'false'; ?>,
+      createAllowedFromDate: <?php echo json_encode($createAllowedFromDate); ?>,
+      eventsFormUrl: 'events_form.php'
+    };
+  </script>
   <script src="../../JS/event_page.js"></script>
 
 </body>

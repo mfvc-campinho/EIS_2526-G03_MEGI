@@ -519,8 +519,6 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                      <article id="<?php echo htmlspecialchars($cardDomId); ?>"
                                          class="event-card js-event-card"
                                          tabindex="0"
-                                         role="button"
-                                         aria-label="View details for <?php echo htmlspecialchars($evt['name'] ?? 'event'); ?>"
                                          data-name="<?php echo htmlspecialchars($evt['name'] ?? ''); ?>"
                                          data-summary="<?php echo htmlspecialchars($evt['summary'] ?? ''); ?>"
                                          data-description="<?php echo htmlspecialchars($evt['description'] ?? ''); ?>"
@@ -532,34 +530,63 @@ $upcomingEvents = array_slice($upcomingEvents, 0, 4);
                                          data-cost="<?php echo htmlspecialchars($costLabel); ?>"
                                          data-has-rsvp="<?php echo $hasRsvp ? '1' : '0'; ?>"
                                          data-event-id="<?php echo htmlspecialchars($eventId); ?>">
-                                
-                                <h3 class="home-event-title"><?php echo htmlspecialchars($evt['name']); ?></h3>
-                                <div class="home-event-meta">
-                                    <div class="meta-row">
-                                        <i class="bi bi-calendar-event"></i>
-                                        <span><?php echo htmlspecialchars($eventDateDisplay ?: $modalCombinedDisplay); ?></span>
-                                    </div>
-                                    <div class="meta-row">
-                                        <i class="bi bi-geo-alt"></i>
-                                        <span><?php echo htmlspecialchars($evt['localization']); ?></span>
-                                    </div>
-                                    <div class="meta-row">
-                                        <i class="bi bi-cash-coin"></i>
-                                        <span><?php echo htmlspecialchars($costLabel); ?></span>
-                                    </div>
-                                </div>
-                                <?php if ($isAuthenticated && $eventId): ?>
-                                    <form action="events_action.php" method="POST" class="home-event-rsvp<?php echo $hasRsvp ? ' is-active' : ''; ?>">
-                                        <input type="hidden" name="action" value="rsvp">
-                                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
-                                        <input type="hidden" name="return_url" value="home_page.php">
-                                        <button type="submit" class="home-event-rsvp__button">
-                                            <i class="bi bi-check2-circle"></i>
-                                            <span><?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?></span>
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-                            </article>
+
+                                        <?php
+                                            $isOwner = $isAuthenticated && (($evt['host_user_id'] ?? $evt['hostUserId'] ?? null) === $currentUserId);
+                                            $statusIsUpcoming = true;
+                                            $parsed = parse_event_datetime_home($evt['date'] ?? null, $appTimezone);
+                                            if ($parsed['date'] instanceof DateTime) {
+                                                $statusIsUpcoming = $parsed['date'] > $now;
+                                            }
+                                        ?>
+                                        <div class="event-card-top">
+                                            <p class="pill"><?php echo htmlspecialchars($evt['type'] ?? ''); ?></p>
+                                            <span class="status-chip <?php echo $statusIsUpcoming ? 'upcoming' : 'past'; ?>">
+                                                <?php echo $statusIsUpcoming ? 'Soon' : 'Past'; ?>
+                                            </span>
+                                        </div>
+                                        <h3><?php echo htmlspecialchars($evt['name'] ?? 'Event'); ?></h3>
+                                        <div class="event-meta-row">
+                                            <i class="bi bi-calendar-event"></i>
+                                            <span><?php echo htmlspecialchars($eventDateDisplay ?: $modalCombinedDisplay); ?></span>
+                                        </div>
+                                        <?php if (!empty($evt['localization'])): ?>
+                                        <div class="event-meta-row">
+                                            <i class="bi bi-geo-alt"></i>
+                                            <a class="event-location-link" href="https://www.google.com/maps/search/?api=1&query=<?php echo urlencode($evt['localization']); ?>" target="_blank" rel="noopener noreferrer" aria-label="Open <?php echo htmlspecialchars($evt['localization']); ?> on Google Maps">
+                                                <?php echo htmlspecialchars($evt['localization']); ?>
+                                            </a>
+                                        </div>
+                                        <?php endif; ?>
+                                        <div class="event-meta-row">
+                                            <i class="bi bi-cash-coin"></i>
+                                            <span><?php echo htmlspecialchars($costLabel); ?></span>
+                                        </div>
+                                        <?php if (!empty($evt['summary'])): ?>
+                                            <p class="muted" style="margin:8px 0 0;"><?php echo htmlspecialchars($evt['summary']); ?></p>
+                                        <?php endif; ?>
+                                        <div class="event-actions">
+                                            <?php if ($isOwner): ?>
+                                                <a class="explore-btn ghost small" href="events_form.php?id=<?php echo urlencode($eventId); ?>">Edit</a>
+                                                <form action="events_action.php" method="POST" style="display:inline;">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
+                                                    <button type="submit" class="explore-btn ghost danger small" onclick="return confirm('Delete this event?');">Delete</button>
+                                                </form>
+                                            <?php endif; ?>
+                                            <?php if ($isAuthenticated && $eventId): ?>
+                                                <form action="events_action.php" method="POST" style="display:inline;">
+                                                    <input type="hidden" name="action" value="rsvp">
+                                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($eventId); ?>">
+                                                    <input type="hidden" name="return_url" value="home_page.php">
+                                                    <input type="hidden" name="return_target" value="#<?php echo htmlspecialchars($cardDomId); ?>">
+                                                    <button type="submit" class="explore-btn small<?php echo $hasRsvp ? ' success' : ''; ?>">
+                                                        <i class="bi bi-check2-circle"></i> <?php echo $hasRsvp ? 'RSVP confirmed' : 'RSVP'; ?>
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                    </article>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <p class="muted">No upcoming events scheduled</p>

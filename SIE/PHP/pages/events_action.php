@@ -20,6 +20,30 @@ if (!$currentUser) {
   }
 }
 
+// Sanitize a return URL so we only redirect locally
+function sanitize_local_return($raw)
+{
+  $raw = trim((string)$raw);
+  if ($raw === '') return '';
+  // Allow same-host absolute URLs
+  if (preg_match('#^https?://#i', $raw) || strpos($raw, '//') === 0) {
+    $parsed = parse_url($raw);
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    if ($parsed && !empty($parsed['host']) && $host && strcasecmp($parsed['host'], $host) === 0) {
+      $path = $parsed['path'] ?? '';
+      $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+      $fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+      return $path . $query . $fragment;
+    }
+    return '';
+  }
+  // Allow relative php targets with optional query/anchor
+  if (preg_match('#^[A-Za-z0-9_./-]+\.php(?:\?[A-Za-z0-9_=&%\\-]+)?(?:#[A-Za-z0-9_\\-]+)?$#', $raw)) {
+    return $raw;
+  }
+  return '';
+}
+
 $appTimezone = new DateTimeZone(date_default_timezone_get());
 $now = new DateTime('now', $appTimezone);
 $today = $now->format('Y-m-d');
@@ -314,19 +338,17 @@ if ($action === 'rsvp') {
   }
   // Determine redirect destination (allow specific page anchors when provided).
   $returnUrlRaw = trim($_POST['return_url'] ?? '');
-  $redirectUrl = '';
-  if ($returnUrlRaw !== '') {
-    $isLocal = strpos($returnUrlRaw, '://') === false && strpos($returnUrlRaw, '//') !== 0;
-    if ($isLocal && preg_match('#^[A-Za-z0-9_./-]+\.php(?:\?[A-Za-z0-9_=&%\-]+)?(?:#[A-Za-z0-9_\-]+)?$#', $returnUrlRaw)) {
-      $redirectUrl = ltrim($returnUrlRaw, '/');
-    }
-  }
+  $redirectUrl = sanitize_local_return($returnUrlRaw);
   if ($redirectUrl === '') {
     $returnTarget = trim($_POST['return_target'] ?? '');
     if ($returnTarget !== '' && !preg_match('/^#[A-Za-z0-9_-]+$/', $returnTarget)) {
       $returnTarget = '';
     }
-    $redirectUrl = 'event_page.php' . ($returnTarget !== '' ? $returnTarget : '');
+    $fallback = sanitize_local_return($_SERVER['HTTP_REFERER'] ?? '');
+    $redirectUrl = $fallback !== '' ? $fallback : 'event_page.php';
+    if ($returnTarget !== '') {
+      $redirectUrl .= $returnTarget;
+    }
   }
   
   // Check if user already has RSVP
@@ -465,4 +487,3 @@ if ($action === 'rate') {
 
 $mysqli->close();
 redirect_error('Invalid action.');
-

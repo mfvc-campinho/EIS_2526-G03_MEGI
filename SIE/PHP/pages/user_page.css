@@ -1,8 +1,0 @@
-/* Remove o sublinhado dos cartões de evento na página de perfil */
-.user-event-card--link {
-  text-decoration: none;
-}
-
-.user-top-collections-controls {
-  margin-top: 16px;
-}
